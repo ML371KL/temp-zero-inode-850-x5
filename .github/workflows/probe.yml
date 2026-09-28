@@ -1,0 +1,24 @@
+name: probe
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reachability of data sources from GitHub runners
+        run: |
+          set +e
+          curl -s -m 15 https://ipinfo.io/json | head -8
+          for u in \
+            "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/X5.json?iss.meta=off&iss.only=marketdata&marketdata.columns=LAST" \
+            "https://iss.moex.com/iss/engines/stock/zcyc.json?iss.meta=off&iss.only=params" \
+            "https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx" \
+            "https://www.cbr.ru/hd_base/KeyRate/" \
+            "https://www.x5.ru/ru/investors/" \
+            "https://rabota.x5.ru/" \
+            "https://rosstat.gov.ru/" \
+            "https://tzi-850oa.pages.dev/" ; do
+            code=$(curl -s -o /tmp/out -m 25 -A "Mozilla/5.0" -w "%{http_code} %{size_download}B %{time_total}s" "$u")
+            echo "$u -> $code"
+          done

@@ -92,8 +92,13 @@ def test_valid_until_is_inclusive(grid, book_date):
     assert next(x for x in res if x.name == g.name).status == "explained"
 
 
-def test_template_loads_empty():
-    assert load_gate_explanations(GATE_EXPLANATIONS) == {}
+def test_book_explanations_load_and_cover_fired_gates(grid, book_date):
+    """Файл объяснений книги читается, и на входах книги ни один гейт не блокирует сборку."""
+    loaded = load_gate_explanations(GATE_EXPLANATIONS)
+    fired = {g.name for g in gate_masses(grid) if g.fired}
+    assert fired <= set(loaded)
+    res = gates(grid, loaded, today=book_date)
+    assert all(x.status in ("ok", "explained") for x in res)
 
 
 @pytest.mark.parametrize("text,word", [

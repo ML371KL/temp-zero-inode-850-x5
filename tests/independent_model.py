@@ -72,8 +72,8 @@ SCENARIOS = [
     {"key": "trajectory_rules", "title": "Траектории: интерполяция между годами, ключи полугодий, сход к LT",
      "set": {"capex.maintenance.base": {"2026H2": 0.028, "2027H1": 0.020, "2027H2": 0.030,
                                         "2029": 0.024, "LT": 0.025, "LT_from": 2032},
-             "network.net_growth.mid": {"2026H2": 0.065, "2028": 0.05, "2031": 0.03, "LT": 0.0,
-                                        "LT_from": 2034},
+             "network.net_growth.mid": {"2026H2": 0.065, "2027": 0.058, "2028": 0.05, "2029": 0.045,
+                                        "2030": 0.04, "LT": 0.0, "LT_from": 2034},
              "revenue.vat_effect": {"2026H2": -0.006, "LT": 0.0, "LT_from": 2027}}},
     {"key": "g_guard", "title": "Защита терминала g ≥ r ⇒ g = r − 0,0001 (мир N, режим full)",
      "set": {"revenue.ticket_shift.bull.LT": 0.12}},
@@ -105,9 +105,8 @@ INTERPRETATIONS = {
         "§0.1, полугодие раньше первого заданного ключа траектории — значение первого "
         "заданного года (плоско назад). В книге 1.0 такого случая нет."),
     "rho_d": (
-        "§4.3 и §10: ρ_d = `margin.deviation_persistence`. В книге есть и "
-        "`joint.regime_update.rho` (сейчас с тем же значением), MODEL.md его не называет — "
-        "два ключа одного смысла; контрольная модель читает только первый."),
+        "§4.3 и §10: ρ_d = `margin.deviation_persistence` — единственный ключ затухания "
+        "(дубль `joint.regime_update.rho` снят из книги 1.0)."),
     "season_anchor": (
         "§4.3, сезонность «начиная с первого прогнозного года»: год первого прогнозного "
         "полугодия (2026), поэтому season применяется и на якоре 2026H1 в правиле якоря. "
@@ -536,6 +535,7 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
     buf_pct = fin["cash_buffer_pct"]
     nwc_prev = ctx.nwc_anchor
     opcash_prev = path_value(opc, anchor) * r_ann_anchor
+    opcash_anchor_level = opcash_prev
     buf_prev = path_value(buf_pct, anchor) * r_ann_anchor
     nd_prev = ctx.net_debt_fact + ctx.div_payable
     rep_prev = ai["ebitda_rep"]
@@ -616,7 +616,9 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
         fixed = ell * fin["legacy_rate"] + (1.0 - ell) * (zero_rate(W["zero_curve"], 3.0)
                                                           + fin["spread_fixed"][credit])
         debt_rate = fshare * fixed + (1.0 - fshare) * (key + fin["spread_float"][credit])
-        gross = nd_prev + opcash_prev + buf_prev
+        # валовой долг: ND модели уже содержит накопленный прирост операционной кассы (он вычтен
+        # из FCFF), поэтому операционная касса в нём — уровнем якоря (§4.9)
+        gross = nd_prev + opcash_anchor_level + buf_prev
         interest = gross * half_rate(debt_rate) - buf_prev * half_rate(fin["cash_yield_k"] * key)
 
         # налог и FCFF (§4.7, §4.8)
@@ -631,7 +633,9 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
         # путь долга и дивиденды (§4.9)
         nd_pre = nd_prev - (fcff + shield - interest)
         ltm = rep + rep_prev
-        div = max(0.0, path_value(fin["target_leverage"], i) * ltm - nd_pre) if i >= div_from else 0.0
+        nd_company_pre = nd_pre - (opcash - opcash_anchor_level)
+        div = (max(0.0, path_value(fin["target_leverage"], i) * ltm - nd_company_pre)
+               if i >= div_from else 0.0)
         nd = nd_pre + div
 
         rows[i] = {
@@ -643,7 +647,8 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
             "opcash": opcash, "opcash_change": d_opc, "lease": lease, "proceeds": proceeds,
             "tax_unlevered": tax_u, "tax_actual": tax_a, "shield": shield, "fcff": fcff,
             "debt_rate": debt_rate, "interest": interest, "dividends": div, "net_debt": nd,
-            "ebitda_rep_ltm": ltm, "leverage": nd / ltm, "index": index[i],
+            "ebitda_rep_ltm": ltm, "leverage": (nd - (opcash - opcash_anchor_level)) / ltm,
+            "net_debt_company": nd - (opcash - opcash_anchor_level), "index": index[i],
         }
         nwc_prev, opcash_prev, buf_prev, nd_prev, rep_prev = nwc, opcash, buf, nd, rep
 
@@ -854,7 +859,7 @@ FLOW_ROWS = ("revenue", "adj_ebitda", "lti", "ebitda_rep", "da", "ebit", "capex"
              "capex_maintenance", "capex_growth", "capex_infra", "nwc_change", "opcash_change",
              "lease", "proceeds", "tax_unlevered", "tax_actual", "shield", "fcff", "interest",
              "dividends", "opened", "closed")
-STOCK_ROWS = ("area_end", "net_debt", "ebitda_rep_ltm", "nwc", "opcash")
+STOCK_ROWS = ("area_end", "net_debt", "net_debt_company", "ebitda_rep_ltm", "nwc", "opcash")
 MEAN_ROWS = ("ticket", "traffic", "debt_rate")
 FACT_ROWS = ("revenue", "adj_ebitda", "lti", "ebitda_rep", "da", "capex")
 
@@ -867,7 +872,7 @@ def expected_paths(ctx: Ctx, cells: list) -> dict:
         for k in FLOW_ROWS + STOCK_ROWS + MEAN_ROWS:
             row[k] = sum(c["p_analytical"] * c["rows"][i][k] for c in cells)
         row["margin"] = row["adj_ebitda"] / row["revenue"]
-        row["leverage"] = row["net_debt"] / row["ebitda_rep_ltm"]
+        row["leverage"] = row["net_debt_company"] / row["ebitda_rep_ltm"]
         halves.append(row)
     annual = []
     for year in sorted({i // 2 for i in ctx.halves}):
@@ -883,7 +888,7 @@ def expected_paths(ctx: Ctx, cells: list) -> dict:
             row[k] = hs[-1][k]
         row["margin"] = row["adj_ebitda"] / row["revenue"]
         row["capex_pct"] = row["capex"] / row["revenue"]
-        row["leverage"] = row["net_debt"] / row["ebitda_rep_ltm"]
+        row["leverage"] = row["net_debt_company"] / row["ebitda_rep_ltm"]
         annual.append(row)
     return {"halves": halves, "annual": annual}
 

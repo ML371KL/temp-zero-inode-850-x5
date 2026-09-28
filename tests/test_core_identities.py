@@ -47,11 +47,14 @@ def test_debt_path_identity(grid):
 
 
 def test_dividends_keep_leverage_at_or_below_target(grid, book):
+    """Дивиденд модели возвращает долг КОМПАНИИ (ND модели без прироста операционной
+    кассы, §4.9) ровно на целевой рычаг."""
     target = book["financing"]["target_leverage"]
+    opc0 = grid.ctx.opcash_anchor
     for c in grid.cells:
         for r in c.result.rows:
             if r.dividends > 0:
-                assert _close(r.net_debt, target * r.ebitda_rep_ltm, 1e-10)
+                assert _close(r.net_debt - (r.opcash - opc0), target * r.ebitda_rep_ltm, 1e-10)
 
 
 def test_ev_is_sum_of_parts(grid):

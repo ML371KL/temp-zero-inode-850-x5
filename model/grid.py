@@ -302,7 +302,9 @@ def expected_path(grid: Grid, layer: str = "analytical") -> list[dict]:
         for name in PATH_FIELDS:
             row[name] = fsum(c.p[layer] * getattr(c.result.rows[i], name) for c in cells)
         row["margin"] = row["adj_ebitda"] / row["revenue"]
-        row["leverage"] = row["net_debt"] / row["ebitda_rep_ltm"]
+        # долг компании: ND модели несёт прирост операционной кассы (§4.9)
+        row["net_debt_company"] = row["net_debt"] - (row["opcash"] - grid.ctx.opcash_anchor)
+        row["leverage"] = row["net_debt_company"] / row["ebitda_rep_ltm"]
         out.append(row)
     return out
 
@@ -322,7 +324,7 @@ def annual_path(grid: Grid, halves: list[dict]) -> list[dict]:
         acc["halves"] += 1
         for name in FLOW_FIELDS:
             acc[name] = acc.get(name, 0.0) + row[name]
-        for name in ("area_end", "net_debt", "ebitda_rep_ltm", "nwc", "opcash"):
+        for name in ("area_end", "net_debt", "net_debt_company", "ebitda_rep_ltm", "nwc", "opcash"):
             acc[name] = row[name]
     if cf.anchor[:4] in {str(y) for y in years}:
         acc = years[int(cf.anchor[:4])]
@@ -341,6 +343,6 @@ def annual_path(grid: Grid, halves: list[dict]) -> list[dict]:
         acc = years[y]
         acc["margin"] = acc["adj_ebitda"] / acc["revenue"]
         acc["capex_pct"] = acc["capex"] / acc["revenue"]
-        acc["leverage"] = acc["net_debt"] / acc["ebitda_rep_ltm"]
+        acc["leverage"] = acc["net_debt_company"] / acc["ebitda_rep_ltm"]
         out.append(acc)
     return out

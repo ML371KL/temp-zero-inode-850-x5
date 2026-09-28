@@ -162,12 +162,17 @@ def test_ltm_revenue_and_leverage():
 
 def test_nwc_definitions():
     b = load("balance")
-    c = {k: v(x) for k, x in b["nwc_components"].items()}
+    c = {k: (v(x) if "v" in x else x) for k, x in b["nwc_components"].items()}
     trade = c["inventories"] + c["receivables_and_advances"] - c["trade_payables"]
     assert close(v(b["nwc_trade"]), trade, 1e-9)
     like = trade - c["other_taxes_payable"] - c["income_tax_payable"] - c["contract_liabilities_st"]
     assert close(v(b["nwc_magnit_like"]), like, 1e-9)
-    assert v(b["nwc"]) == v(b["nwc_magnit_like"])
+    op = c["operating_other_liabilities"]
+    nwc_op = (trade + c["vat_other_taxes_receivable"] - c["contract_liabilities_st"]
+              - sum(v(x) for x in op.values()))
+    assert close(v(b["nwc_op"]), nwc_op, 1e-9)
+    # определение книги A-W1 — всё, что проходит через операционный поток
+    assert v(b["nwc"]) == v(b["nwc_op"])
 
 
 def test_network_consistency():

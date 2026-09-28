@@ -687,17 +687,20 @@ def run_cell(ctx: Context, cell: Cell) -> CellResult:
         tax_u = tau * max(0.0, base)
         d_nwc, d_opc = nwc - nwc_prev, opc - opc_prev
         fcff = ebitda - lti - tax_u - capex - d_nwc - d_opc + lease + proceeds
-        # проценты от долга и кассы начала полугодия (§4.9)
-        gross = nd_prev + opc_prev + buf_prev
+        # проценты от долга и кассы начала полугодия (§4.9). ND модели уже несёт прирост
+        # операционной кассы (ΔOpCash вычтен из FCFF), поэтому в валовой долг операционная
+        # касса входит уровнем якоря, а рычаг меряется долгом компании ND − (OpCash − OpCash_якоря)
+        gross = nd_prev + ctx.opcash_anchor + buf_prev
         interest = gross * half_debt[i] - buf_prev * half_yield[i]
         tax_a = tau * max(0.0, base - interest)
         shield = tax_u - tax_a
         # путь долга и дивиденды модели
         nd_pre = nd_prev - (fcff + shield - interest)
         ltm = ebitda_rep + rep_prev
-        div = max(0.0, lt * ltm - nd_pre) if ctx.pays[i] else 0.0
+        opc_growth = opc - ctx.opcash_anchor
+        div = max(0.0, lt * ltm - (nd_pre - opc_growth)) if ctx.pays[i] else 0.0
         nd = nd_pre + div
-        lev = nd / ltm if ltm > 0 else math.inf
+        lev = (nd - opc_growth) / ltm if ltm > 0 else math.inf
         # порядок — порядок полей HalfRow
         data.append((p, R, R_ann, RV.ticket[i], RV.traffic[i], G.area_end[i], G.eff_avg[i],
                      opened, closed, margin, target[i], deviation[i], ebitda, lti, ebitda_rep,

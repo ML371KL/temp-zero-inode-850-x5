@@ -46,8 +46,8 @@
   "calc": "nwc_trade − налоги, кроме налога на прибыль (краткоср.) − налог на прибыль к уплате − краткосрочные обязательства по договорам (определение книги Магнита, research/X1 §5.1)"
  },
  "nwc": {
-  "v": -78.512,
-  "calc": "= nwc_magnit_like (определение книги working_capital; выбор — книга)"
+  "v": -163.156,
+  "calc": "= nwc_op (определение книги working_capital, A-W1)"
  },
  "nwc_components": {
   "inventories": {
@@ -73,6 +73,32 @@
   "contract_liabilities_st": {
    "v": 2.885,
    "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R52"
+  },
+  "vat_other_taxes_receivable": {
+   "v": 14.781,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R25"
+  },
+  "operating_other_liabilities": {
+   "other_payables_accruals": {
+    "v": 51.449,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, прим. 13 «Резервы и прочие краткосрочные обязательства», с. 19"
+   },
+   "personnel": {
+    "v": 44.994,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, прим. 13 «Резервы и прочие краткосрочные обязательства», с. 19"
+   },
+   "other_taxes": {
+    "v": 53.115,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, прим. 13 «Резервы и прочие краткосрочные обязательства», с. 19"
+   },
+   "advances_received": {
+    "v": 2.982,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, прим. 13 «Резервы и прочие краткосрочные обязательства», с. 19"
+   },
+   "other_nonfinancial": {
+    "v": 3.915,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, прим. 13 «Резервы и прочие краткосрочные обязательства», с. 19"
+   }
   }
  },
  "revenue_ltm": {
@@ -104,5 +130,9 @@
  "st_investments": {
   "v": 0.204,
   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R22"
+ },
+ "nwc_op": {
+  "v": -163.156,
+  "calc": "запасы + торговая и прочая дебиторка с авансами + НДС и прочие налоги к возмещению − торговая кредиторка − краткосрочные обязательства по договорам − операционная часть «Резервов и прочих обязательств» (прочая кредиторка и начисления, обязательства перед персоналом, налоги кроме налога на прибыль, авансы полученные, прочие нефинансовые); не входят дивиденды к выплате, кредиторка за ОС/НМА/бизнесы, налоговые резервы, выкуп НДУ (строки моста или capex). Определение книги A-W1 (data/assumptions/evidence/capex-wc-tax/README.md §9)"
  }
 }

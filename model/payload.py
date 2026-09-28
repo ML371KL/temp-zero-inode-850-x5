@@ -484,14 +484,14 @@ def paths_block(F, cf, grid) -> dict:
                      "capex_pct": a["capex_pct"], "nwc_change": a["nwc_change"],
                      "tax_unlevered": a["tax_unlevered"], "fcff": a["fcff"], "shield": a["shield"],
                      "interest": a["interest"], "dividends": a["dividends"],
-                     "net_debt": a["net_debt"], "leverage": a["leverage"], "fact": a["fact"]})
+                     "net_debt": a["net_debt_company"], "leverage": a["leverage"], "fact": a["fact"]})
         prev_rev, prev_area = a["revenue"], a["area_end"]
     first = [{"period": anchor, "revenue": cf.revenue[anchor], "margin": cf.margin_anchor,
               "adj_ebitda": cf.adj_ebitda[anchor], "capex": cf.capex_anchor, "fcff": None,
               "net_debt": cf.net_debt}]
     hrows = first + [{"period": h["period"], "revenue": h["revenue"], "margin": h["margin"],
                       "adj_ebitda": h["adj_ebitda"], "capex": h["capex"], "fcff": h["fcff"],
-                      "net_debt": h["net_debt"]} for h in halves]
+                      "net_debt": h["net_debt_company"]} for h in halves]
     return {"annual": rows, "halves": hrows,
             "fact_marks": {"annual": [a["year"] for a in annual if a["fact"]], "halves": [anchor]}}
 

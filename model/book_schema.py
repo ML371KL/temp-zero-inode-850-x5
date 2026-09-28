@@ -82,7 +82,7 @@ SCHEMA: dict[str, Any] = {
               "regime_demand": _keyed(REGIMES, "demand"),
               "world_links": _keyed(WORLDS, {"growth": "tariff", "credit": "credit"}),
               "stress_growth": "tariff",
-              "regime_update": {"sigma_pp": "pos", "rho": "persistence", "cap_pp": "prob",
+              "regime_update": {"sigma_pp": "pos", "cap_pp": "prob",
                                 "observations": _list(_OBSERVATION)}},
     "network": {"net_growth": _keyed(TARIFFS, "traj"), "close_rate": "traj",
                 "maturity_curve": "maturity", "new_space_density": "pos",
@@ -448,9 +448,6 @@ def _semantic(A: dict, out: list[str]) -> None:
             out.append(f"{path}: вероятности в сумме {math.fsum(values)!r}, а не 1")
 
     J = A["joint"]
-    if J["regime_update"]["rho"] != A["margin"]["deviation_persistence"]:
-        out.append("joint.regime_update.rho ≠ margin.deviation_persistence: по docs/MODEL.md "
-                   "§4.3 и §10 затухание отклонения одно — ρ_d = margin.deviation_persistence")
     seen = set()
     for i, obs in enumerate(J["regime_update"]["observations"]):
         p = obs["period"]

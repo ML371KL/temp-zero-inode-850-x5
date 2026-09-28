@@ -101,7 +101,6 @@ def test_negative_persistence_is_valid_ar1(book, facts):
 
     B = copy.deepcopy(book)
     B["margin"]["deviation_persistence"] = -0.4
-    B["joint"]["regime_update"]["rho"] = -0.4
     validate_book(B)
     ctx = Context(B, facts)
     RG = ctx.regime("floor")

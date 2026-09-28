@@ -35,7 +35,7 @@
 |---|---|
 | `default_facts_dir() -> Path` | `data/facts`, если там есть `accounting.json`, иначе фикстура `tests/fixtures/facts` (предупреждение `FactsFallbackWarning`) |
 | `load_facts(path=None) -> Facts` | все `*.json` каталога; узлы `{"v", "src"\|"calc"}` раскрываются в значения; число без `src` и `calc` — `FactsError`; `null` → `None` (не 0). `Facts.raw` — JSON как есть (с источниками, для выпуска), `Facts.data` — раскрытый, `Facts.get("файл.ключ…")`, `Facts.fixture` |
-| `core_facts(F, A) -> CoreFacts` | проверенные факты прохода клетки: выручка, скорр. и отчётная EBITDA, D&A и capex якоря, площадь, исторические открытия (якорь − (n+1) … якорь), ЧД, дивиденды к выплате, NWC, строки моста (`BridgeLine`: key, label, amount, included), акции, реестр (`DeclaredDividend`: id, amount, ex_date, in_company). `None` там, где значение нужно, — `FactsError` с путём |
+| `core_facts(F, A) -> CoreFacts` | проверенные факты прохода клетки: выручка, скорр. и отчётная EBITDA, D&A и capex якоря, capex 2L полугодий до якоря (`capex_hist`: выручка × capex/выручку из `history.json` — выбывание базы D&A якоря), площадь, исторические открытия (якорь − (n+1) … якорь), ЧД, дивиденды к выплате, NWC, строки моста (`BridgeLine`: key, label, amount, included), акции в обращении (`shares_mln`) и казначейские (`treasury_mln`), реестр (`DeclaredDividend`: id, amount, ex_date, in_company). `None` там, где значение нужно, — `FactsError` с путём |
 
 ## Расчёт
 
@@ -49,20 +49,30 @@ res = run_cell(ctx, ctx.cell("H", "floor", "base"))
 `Context` — всё общее для клеток одной книги на одну дату: `P` (полугодия),
 `timing` (`Timing`: `closed`, `elapsed`, `roll` — Δ переката в годах, `fraction`,
 `t_mid`, `t_end`), `market_price`, `governance`, `facts` (`CoreFacts`),
-`opcash_anchor`, `bridge_total`, `dividends_declared` (сумма реестра с отсечкой
-≤ даты оценки), кэши: `world(w) -> WorldPaths` (key, cpi, food, index, pi_lt,
-z3, z_lt, r_terminal, df, df_end), `regime(r) -> RegimePaths` (target, season,
-deviation по полугодиям; значения на якоре; target_lt), `network(tariff) ->
-NetworkPaths`, `revenue(w, tariff, demand) -> RevenuePaths` (выручка, чек,
-трафик, ticket_lt, traffic_lt), `rates(w, credit)`, `maintenance(level)`.
+`opcash_anchor`, `buffer_anchor`, `bridge_total`, `dividends_declared` (сумма
+реестра с отсечкой ≤ даты оценки), `da_runoff` (S(k)/S(0), k = 1…N + 2L — доля
+базы D&A якоря, §4.5), `treasury_mln`, `treasury_value` (n·k·P_рынок/1000, §7.2),
+цена: `price_of(equity)`, `v0_of(price, d)`, `rub_per_1pct(v0)`; кэши:
+`world(w) -> WorldPaths` (key, cpi, food, index, pi_lt, z_fix — трёхлетний
+форвард на начало полугодия, z_lt, r_terminal, df, df_end), `regime(r) ->
+RegimePaths` (target, season, deviation по полугодиям; значения на якоре;
+target_lt), `network(tariff) -> NetworkPaths`, `revenue(w, tariff, demand) ->
+RevenuePaths` (выручка, чек, трафик, ticket_lt, traffic_lt), `rates(w, credit)
+-> RatePaths` (debt, half_debt, half_clean — без издержек размещения, half_fair —
+со спредами base, half_yield, half_key; индекс N — терминал), `maintenance(level)`.
 Живые входы — только `valuation_date` (дата принятой цены) и `market_price`;
 по умолчанию `meta.valuation_date` и `meta.market_price`.
 
 `CellResult` клетки: `cell` (`Cell`: world, regime, capex, growth, credit, demand;
 `key` = "W|режим|capex"), `rows` (кортеж `HalfRow` по полугодиям; поля — ниже),
-`terminal` (`Terminal`: growth g, rate r, pi, halves — два `TerminalHalf`, da_half,
-tv_flow, tv_shield, shield_annual, ebitda_rep_annual; TV — на конец явного
-участка), `ev`, `pv_fcff`, `pv_shield`, `pv_terminal`, `terminal_share`, `claims`
+`terminal` (`Terminal`: growth g, rate r, pi, debt_rate r_T, halves — два
+`TerminalHalf` (с da и da_pi по полугодию, buffer, gross_debt_start, interest,
+shield, issuance_cost, excess_spread, buffer_carry), tv_da_transition, tv_flow,
+tv_shield, tv_issuance, tv_excess_spread, tv_buffer_carry, tv_financing,
+ebitda_rep_annual; TV — на конец явного участка), `ev`, `pv_fcff`, `pv_shield`
+(явный участок), `pv_terminal` ((TV + TV_S)·df_end), `pv_issuance`,
+`pv_excess_spread`, `pv_buffer_carry` (вычеты: явный участок + терминал;
+`pv_financing` — их сумма), `terminal_share` (чистый терминал / EV), `claims`
 (`Claims`: net_debt_fact, opcash_anchor, bridge, rolled, dividends, total = D),
 `equity` (= EV − D), `price`, `ebitda_ntm` (скорр. EBITDA текущего и следующего
 полугодий), `ev_ebitda_fwd`, `max_leverage`, `margin_min/max`, `capex_pct_years`.
@@ -72,12 +82,15 @@ eff_area_avg, opened, closed, margin, target, deviation, adj_ebitda, lti,
 ebitda_rep, da, ebit, capex, capex_maintenance, capex_growth, capex_infra,
 price_index, nwc, nwc_change, opcash, opcash_change, buffer, lease, proceeds,
 tax_base, tax_unlevered, tax_actual, shield, fcff, debt_rate, gross_debt_start,
-interest, net_debt_pre, dividends, net_debt, ebitda_rep_ltm, leverage, fraction,
-t, df.
+interest, issuance_cost, excess_spread, buffer_carry, net_debt_pre, dividends,
+net_debt, ebitda_rep_ltm, leverage, fraction, t, df.
 
 Прочее: `make_cell(A, w, r, c)`, `grid_position(P, day)`, `ruler(first, day)`,
 `make_timing(P, v, curve_as_of)`, `homogeneity(A, w, demand, year|None)`,
-`season_of(A, p)`, `annuity_ratio(x, L)`, `price_of_equity(equity, g_gov, shares)`.
+`season_of(A, p)`, `annuity_ratio(x, L)`, `steady_da(c1, c2, x, L)` (установившаяся
+D&A T1, T2), `forward_rate(curve, start, tenor)`, `price_of_equity(equity, g_gov, N,
+n=0, T=0)`, `v0_from_price(price, d, g_gov, N, n=0, T=0)`, `rub_per_1pct_ev(v0, g_gov,
+N, n=0)` (n = 0 — формула без казначейского пакета).
 
 ### Сетка, слои, точка — `model/grid.py`
 
@@ -90,7 +103,9 @@ low, high = layer_prices(A, facts)          # короткий путь для �
 вероятность}, `key`), `regime_prior`, `regime_posterior` (A-P2u),
 `regime_steps` (`RegimeUpdate` по наблюдениям), `layers` (`analytical`,
 `market_implied`, `macro_neutral` → `LayerResult`: world_weights, v0, d, equity,
-price, pv_fcff, pv_shield, pv_terminal, terminal_share, ev_ebitda_fwd, v0_to_d),
+price, pv_fcff, pv_shield, pv_terminal, pv_issuance, pv_excess_spread,
+pv_buffer_carry, treasury_value, terminal_share, ev_ebitda_fwd, v0_to_d; `ev_parts` —
+строки EV со знаком, сумма = V0),
 `worlds_only` (N, H, M → `LayerResult` «только этот мир»), `point` (`Point`:
 low, high, central, lam, rates_view, v0_point, v_star, gap_point,
 rub_per_1pct_ev_point, equity_share_of_ev), `grid.cell(w, r, c)`.
@@ -98,9 +113,9 @@ rub_per_1pct_ev_point, equity_share_of_ev), `grid.cell(w, r, c)`.
 Функции: `regime_updates(ctx) -> (posterior, steps)`, `cap_shift(prior, post, cap)`,
 `layer_world_weights(A)`, `layer_of(ctx, name, weights, cell_results, regime_p)`,
 `point_of(ctx, layers, lam)` (точка при другом λ без пересчёта клеток — таблица
-`by_lambda`), `v0_from_price(price, d, g_gov, shares)` (EV, при котором функция
-«EV → цена» даёт цену: V\* для рыночной, V0 медианы для медианы, §7.3),
-`rub_per_1pct_ev(v0, g_gov, shares)`, `expected_path(grid, layer="analytical")`
+`by_lambda`), `ctx.v0_of(price, d)` (EV, при котором функция «EV → цена» даёт
+цену: V\* для рыночной, V0 медианы для медианы, §7.3), `ctx.rub_per_1pct(v0)`,
+`expected_path(grid, layer="analytical")`
 (полугодия: средние строк по вероятностям клеток; маржа и рычаг — отношения
 средних), `annual_path(grid, halves)` (годы; год якоря — с фактом якоря, поле
 `fact`).
@@ -112,7 +127,7 @@ rub_per_1pct_ev_point, equity_share_of_ev), `grid.cell(w, r, c)`.
 ### Проверки — `model/checks.py`
 
 * `invariants(grid) -> [Invariant(name, ok, detail)]`: `probabilities` (1e-12),
-  `fcff_identity`, `debt_identity`, `capex_identity`, `finite`.
+  `fcff_identity`, `debt_identity`, `capex_identity`, `ev_identity`, `finite`.
   `printed_ok(value, printed, step)`, `round_to_step(value, step)` (половина — вверх),
   `payload_size_ok(n_bytes)` (≤ 500 000).
 * `gate_masses(grid) -> [GateResult]` — гейты §13.2 без объяснений: fired, mass
@@ -140,7 +155,7 @@ rub_per_1pct_ev_point, equity_share_of_ev), `grid.cell(w, r, c)`.
   по всем осям (ось `dict`: `blend_weights(книга, конец, |s|)`), затем
   `layer_prices(B, core_facts)` → (низ_i, верх_i). `CoreFacts` передавать один
   раз собранным (`core_facts(F, A)`), не `Facts`.
-* Медиана/V0 медианы: `v0_from_price(median, grid.layers["analytical"].d, g, shares)`.
+* Медиана/V0 медианы: `grid.ctx.v0_of(median, grid.layers["analytical"].d)`.
 * «Что даст отчёт»: `add_observation(A, period, value)`; ожидание модели —
   `expected_path(grid)` в строке открытого полугодия (`open_period(A)`).
 * Суждения по цене ошибки: `evaluate(override(A, paths, kind, low|high), F).point.central`.
@@ -158,14 +173,17 @@ dist = distribution(A, cf, grid, valuation_date=v, market_price=p, period=open_p
 high — (низ, верх) каждого прогона), `stats` (p10, p25, median, p75, p90, mean, p_below —
 по прогонам, округлённым до `round_draws` знаков, как они лежат в выпуске), `contributions`
 (вклад оси по Спирмену), `judgements` («суждения по цене ошибки»: точка при low и high оси),
-`reverse_dcf` (§11: решение для медианы и для точки), `next_report` (§12: таблица, нейтральная
-маржа медианы и точки, ₽ медианы на 0,1 п.п.), `subsample`, `delta` (δ подвыборки).
+`reverse_dcf` (§11: решение для медианы — `search_value` поиска на подвыборке, `solved` после
+уточнения секущей на полной полосе, `gap_full` — невязка полной полосы; решение для точки),
+`next_report` (§12: таблица — медианы полной полосы, нейтральная маржа медианы (с невязкой
+`neutral_gap`) и точки, ₽ медианы на 0,1 п.п.), `subsample`, `delta` (δ подвыборки).
 
 Кирпичи: `tri_s(u)`, `lhs(n, k, seed)` (точный порядок случайных чисел §9),
 `draw_positions`, `band_axes(A)`, `trial_book(A, axes, s)`, `at_end(A, axis, "low"|"high")`,
 `band(A, cf, …)`, `band_stats(low, high, λ, рынок)`, `quantile7`, `contributions`, `bisect`
-(≤ 40 шагов, стоп по цене), `Subsample` (медиана первых m прогонов + δ; оси, совпавшие путями с
-осью обратного DCF, фиксируются), `with_fact(A, p, m)`, `expectation(grid, p)` (ожидание модели
+(≤ 40 шагов, стоп по цене; возвращает и наклон последней скобки), `secant_refine` (1–2 шага
+секущей на полной полосе), `Subsample` (`at` — медиана первых m прогонов + δ, `full` — медиана
+всех прогонов; оси, совпавшие путями с осью обратного DCF, фиксируются), `with_fact(A, p, m)`, `expectation(grid, p)` (ожидание модели
 на полугодие: средние маржа, выручка, скорр. EBITDA по клеткам слоя; маржа по режимам).
 
 **Процессы.** `run_draws` считает прогоны пулом `spawn` кусками по порядку строк; результат бит в

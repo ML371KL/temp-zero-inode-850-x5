@@ -22,6 +22,12 @@ PREVIOUS = {"meta": {"payload_sha256": "a" * 64},
             "market": {"price": 1808.5, "price_date": "2026-09-25", "price_status": "live"}}
 
 
+@pytest.fixture(autouse=True)
+def no_run_summary(monkeypatch):
+    """Внутри Actions тесты не пишут в сводку самого прогона."""
+    monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
+
+
 def getter_with(failures: dict | None = None):
     failures = failures or {}
 
@@ -116,6 +122,32 @@ def test_cli_price_failure_is_nonzero(tmp_path, monkeypatch, capsys):
     assert live.main(["--out", str(out)]) == 1
     assert not out.exists()
     assert "ПРОВАЛ на шаге сбор живых входов" in capsys.readouterr().err
+
+
+def test_run_summary_gets_fallback_price_source_failures_and_the_result(tmp_path, monkeypatch):
+    """Сводка прогона: цена (здесь ЗАПАСНАЯ с причиной), отказы источников и
+    итоговая строка шага; провал сбора — строка ПРОВАЛ."""
+    summary = tmp_path / "summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    failures = {name: FetchError("u", None, "timeout") for name in
+                ("quotes_tqbr.json", "history_X5_0.json", "zcyc.json")}
+    real = live.collect_live
+    monkeypatch.setattr(live, "collect_live", lambda previous, today=None: real(
+        previous, today=TODAY, getter=getter_with(failures)))
+    previous = tmp_path / "latest.json"
+    previous.write_text(json.dumps(PREVIOUS), encoding="utf-8")
+    assert live.main(["--previous", str(previous), "--out", str(tmp_path / "live.json")]) == 0
+    lines = summary.read_text(encoding="utf-8").splitlines()
+    assert lines[0].startswith("- цена X5: ЗАПАСНАЯ 1808.5 ₽ от 2026-09-25 — цена X5 не собрана")
+    assert "- ОТКАЗ ИСТОЧНИКА curve: FetchError: u: timeout" in lines
+    assert lines[-1].startswith("- готово: живые входы записаны")
+
+    def boom(previous, today=None):
+        raise live.PriceUnavailable("цена X5 не собрана; запасной цены нет")
+    monkeypatch.setattr(live, "collect_live", boom)
+    assert live.main(["--out", str(tmp_path / "x.json")]) == 1
+    assert summary.read_text(encoding="utf-8").splitlines()[-1] == \
+        "- ПРОВАЛ на шаге сбор живых входов: цена X5 не собрана; запасной цены нет"
 
 
 def test_cli_unreadable_previous_is_nonzero(tmp_path, capsys):

@@ -16,6 +16,7 @@ FACTS = load("facts_extract.json")
 PRIM = load("primary.json")
 CPI = load("cpi.json")
 BOOK = load("book_refs.json")
+CFI = load("cf_investing.json")      # ОДДС до МСФО 16: выбытие ОС, прочие инвестиционные платежи
 
 
 def v(x) -> float | None:

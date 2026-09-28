@@ -1,0 +1,405 @@
+{
+ "file": "financial_and_operating_results_q2_2026.xlsx",
+ "sha256": "d16d7b8f71004de5f579268c08e12a09d7b989f4d09b0125361550be67ef520b",
+ "units": "млрд ₽; знак ОДДС",
+ "labels": {
+  "ppe_disposal_gain_noncash": "Прибыль от выбытия основных средств, инвестиционной недвижимости и нематериальных активов и прибыль от прекращения признания активов в форме права пользования",
+  "ppe_disposal_proceeds": "Поступления от выбытия основных средств, инвестиционной недвижимости и нематериальных активов",
+  "finance_lease_principal_receipts": "Поступления от основной суммы чистых инвестиций в аренду",
+  "other_investing_payments": "Прочие платежи по инвестиционной деятельности"
+ },
+ "cash_flow": {
+  "2021": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.66,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!D9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 4.611,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!D35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!D41"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!D42"
+   }
+  },
+  "2022": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.047,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!E9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 3.192,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!E35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!E41"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!E42"
+   }
+  },
+  "2023": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.332,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!F9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 7.726,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!F35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.054,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!F41"
+   },
+   "other_investing_payments": {
+    "v": -0.208,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!F42"
+   }
+  },
+  "2023Q1": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.067,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.621,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O41"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O42"
+   }
+  },
+  "2023Q2": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.194,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!P9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.673,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!P35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!P41"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!P42"
+   }
+  },
+  "2023Q3": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.073,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 1.206,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q41"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q42"
+   }
+  },
+  "2023Q4": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.002,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!R9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 5.226,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!R35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.054,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!R41"
+   },
+   "other_investing_payments": {
+    "v": -0.208,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!R42"
+   }
+  },
+  "2024": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.037,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!G9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 4.014,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!G35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.233,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!G41"
+   },
+   "other_investing_payments": {
+    "v": -3.181,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!G42"
+   }
+  },
+  "2024Q1": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.028,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.164,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.042,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S41"
+   },
+   "other_investing_payments": {
+    "v": -0.05,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S42"
+   }
+  },
+  "2024Q2": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.171,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!T9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 2.155,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!T35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.048,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!T41"
+   },
+   "other_investing_payments": {
+    "v": -0.181,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!T42"
+   }
+  },
+  "2024Q3": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.068,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.82,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.038,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U41"
+   },
+   "other_investing_payments": {
+    "v": -2.153,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U42"
+   }
+  },
+  "2024Q4": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.038,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!V9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.875,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!V35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.105,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!V41"
+   },
+   "other_investing_payments": {
+    "v": -0.797,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!V42"
+   }
+  },
+  "2025": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.294,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!H9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 1.741,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!H35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.488,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!H41"
+   },
+   "other_investing_payments": {
+    "v": -8.424,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!H42"
+   }
+  },
+  "2025Q1": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.133,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.671,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.079,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W41"
+   },
+   "other_investing_payments": {
+    "v": -0.63,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W42"
+   }
+  },
+  "2025Q2": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.116,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!X9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.188,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!X35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.081,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!X41"
+   },
+   "other_investing_payments": {
+    "v": -1.186,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!X42"
+   }
+  },
+  "2025Q3": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.192,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.462,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.091,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y41"
+   },
+   "other_investing_payments": {
+    "v": -2.354,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y42"
+   }
+  },
+  "2025Q4": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.735,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Z9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.42,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Z35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.237,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Z41"
+   },
+   "other_investing_payments": {
+    "v": -4.254,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Z42"
+   }
+  },
+  "2026Q1": {
+   "ppe_disposal_gain_noncash": {
+    "v": -0.201,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.45,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.272,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA41"
+   },
+   "other_investing_payments": {
+    "v": -3.281,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA42"
+   }
+  },
+  "2026Q2": {
+   "ppe_disposal_gain_noncash": {
+    "v": 0.033,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB9"
+   },
+   "ppe_disposal_proceeds": {
+    "v": 0.047,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB35"
+   },
+   "finance_lease_principal_receipts": {
+    "v": 0.372,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB41"
+   },
+   "other_investing_payments": {
+    "v": -0.946,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB42"
+   }
+  }
+ },
+ "other_noncurrent_assets": {
+  "2021-12-31": {
+   "v": 4.206,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!D14"
+  },
+  "2022-12-31": {
+   "v": 4.163,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!E14"
+  },
+  "2023-12-31": {
+   "v": 4.725,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!F14"
+  },
+  "2024-06-30": {
+   "v": 5.126,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!J14"
+  },
+  "2024-09-30": {
+   "v": 6.62,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!K14"
+  },
+  "2024-12-31": {
+   "v": 6.051,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!L14"
+  },
+  "2025-03-31": {
+   "v": 6.599,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!M14"
+  },
+  "2025-06-30": {
+   "v": 7.449,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!N14"
+  },
+  "2025-09-30": {
+   "v": 9.391,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!O14"
+  },
+  "2025-12-31": {
+   "v": 9.932,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!P14"
+  },
+  "2026-03-31": {
+   "v": 13.043,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!Q14"
+  },
+  "2026-06-30": {
+   "v": 11.144,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R14"
+  }
+ }
+}

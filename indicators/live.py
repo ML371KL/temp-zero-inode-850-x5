@@ -15,8 +15,9 @@
      "errors": {источник: причина}}
 
 **Годность цены** (§13.4; пороги перенесены из Магнита 850oa):
-возраст ≤ 7 дней; отклонение от ПОСЛЕДНЕЙ ПРИНЯТОЙ ≤ 30 %; отличие в 10 раз и
-больше — чужие единицы, не принимается никогда. Негодная цена заменяется
+возраст ≤ 7 дней; не старше ПОСЛЕДНЕЙ ПРИНЯТОЙ (дата торгов не раньше её
+даты); отклонение от неё ≤ 30 %; отличие в 10 раз и больше — чужие единицы,
+не принимается никогда. Негодная цена заменяется
 последней принятой из прошлого выпуска (`status: "fallback"` + причина). Нет
 годной цены и нет запасной — `PriceUnavailable` (ненулевой код конвейера:
 выпуск не собирается, на витрине прежний).
@@ -47,6 +48,7 @@ if str(ROOT) not in sys.path:
 
 from indicators import cbr, iss  # noqa: E402
 from indicators.http import FetchError, fetch, read_json_source  # noqa: E402
+from indicators.runlog import report, summary  # noqa: E402
 
 SCHEMA = "x5-live-v1"
 MSK = timezone(timedelta(hours=3))
@@ -166,6 +168,12 @@ def judge_price(collected: dict | None, *, reference: dict | None, history: list
     if age > MAX_PRICE_AGE_DAYS:
         return fallback(f"цена {value:g} ₽ от {price_date} устарела на {age} дн. "
                         f"при пределе {MAX_PRICE_AGE_DAYS}")
+    ref_day = _day(reference["date"]) if reference else None
+    if ref_day is not None and price_date < ref_day:
+        # Повторный прогон в тот же день при отказе котировок: закрытие
+        # прошлого дня из истории не должно откатить цену и эталон назад.
+        return fallback(f"цена {value:g} ₽ от {price_date} старше последней принятой "
+                        f"{reference['value']:g} ₽ от {reference['date']}")
 
     check = reference or _history_reference(history, price_date)
     note = None
@@ -283,6 +291,15 @@ def describe(live: dict) -> list[str]:
     return lines
 
 
+def log_live(live: dict, indent: str = "") -> None:
+    """Строки `describe` — в журнал; цена (принятая или ЗАПАСНАЯ с причиной),
+    пометка о снятой проверке и отказы источников — ещё и в сводку прогона."""
+    for line in describe(live):
+        print(f"{indent}{line}")
+        if line.startswith(("цена X5:", "  пометка:", "ОТКАЗ ИСТОЧНИКА")):
+            summary(line.strip())
+
+
 def write_live(live: dict, out: Path) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(live, ensure_ascii=False, indent=1, allow_nan=False) + "\n",
@@ -298,17 +315,16 @@ def main(argv: list[str] | None = None) -> int:
     try:
         previous = read_json_source(args.previous) if args.previous else None
     except (OSError, ValueError, FetchError) as exc:
-        print(f"ПРОВАЛ на шаге чтение прошлого выпуска: {exc}", file=sys.stderr, flush=True)
+        report(f"ПРОВАЛ на шаге чтение прошлого выпуска: {exc}")
         return 1
     try:
         live = collect_live(previous, today=date.fromisoformat(args.today) if args.today else None)
     except PriceUnavailable as exc:
-        print(f"ПРОВАЛ на шаге сбор живых входов: {exc}", file=sys.stderr, flush=True)
+        report(f"ПРОВАЛ на шаге сбор живых входов: {exc}")
         return 1
-    for line in describe(live):
-        print(line)
+    log_live(live)
     write_live(live, Path(args.out))
-    print(f"готово: живые входы записаны в {args.out}")
+    report(f"готово: живые входы записаны в {args.out}")
     return 0
 
 

@@ -28,11 +28,16 @@ def git(*args, cwd=None) -> str:
                           check=True, encoding="utf-8").stdout.strip()
 
 
+@pytest.fixture(autouse=True)
+def no_run_summary(monkeypatch):
+    """Внутри Actions тесты не пишут в сводку самого прогона."""
+    monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
+
+
 @pytest.fixture
 def remote(tmp_path, monkeypatch) -> str:
     path = tmp_path / "remote.git"
     git("init", "-q", "--bare", str(path))
-    monkeypatch.delenv("GITHUB_STEP_SUMMARY", raising=False)
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     return str(path)
 
@@ -156,10 +161,101 @@ def test_fetch_state(tmp_path, remote):
     (target / "latest.json").write_text("stale", encoding="utf-8")
     assert "ещё нет" in publish.fetch_state(target, remote)
     assert not (target / "latest.json").exists()
+    assert (target / ".commit").read_text(encoding="utf-8") == ""
     publish.publish(release(tmp_path, "a", [entry(1)]), remote)
     line = publish.fetch_state(target, remote)
     assert line.startswith("готово: состояние ветки data")
-    assert sorted(p.name for p in target.iterdir()) == ["history.json", "journal.json", "latest.json"]
+    assert sorted(p.name for p in target.iterdir()) == [".commit", "history.json", "journal.json",
+                                                        "latest.json"]
+    assert (target / ".commit").read_text(encoding="utf-8") == head(remote)
+
+
+def test_rollback_during_the_run_fails_the_publication(tmp_path, remote):
+    """Сценарий аудита: состояние прочитано, во время прогона откат — выпуск,
+    собранный от снятого B, не затирает восстановленный A."""
+    publish.publish(release(tmp_path, "a", [entry(1)]), remote)
+    publish.publish(release(tmp_path, "b", [entry(1)]), remote)
+    state = tmp_path / "state"
+    publish.fetch_state(state, remote)
+    publish.rollback(remote)
+    after_rollback = head(remote)
+    expect = (state / ".commit").read_text(encoding="utf-8")
+    with pytest.raises(publish.PublishError) as caught:
+        publish.publish(release(tmp_path, "c", [entry(1)]), remote, expect=expect)
+    assert "изменилась во время прогона" in caught.value.reason
+    assert head(remote) == after_rollback
+    assert json.loads(branch_files(remote)["latest.json"])["meta"]["payload_sha256"] == "a" * 64
+    # Следующий прогон начинает с отката.
+    publish.fetch_state(state, remote)
+    publish.publish(release(tmp_path, "c", [entry(1)]), remote,
+                    expect=(state / ".commit").read_text(encoding="utf-8"))
+    files = branch_files(remote)
+    assert json.loads(files["previous.json"])["meta"]["payload_sha256"] == "a" * 64
+
+
+def test_expect_commit_on_the_first_release(tmp_path, remote):
+    state = tmp_path / "state"
+    publish.fetch_state(state, remote)
+    expect = (state / ".commit").read_text(encoding="utf-8")
+    assert expect == ""
+    publish.publish(release(tmp_path, "a", [entry(1)]), remote, expect=expect)
+    # Ветку создали, пока шёл прогон, ждавший первого выпуска, — тоже провал.
+    with pytest.raises(publish.PublishError, match="ветки не было"):
+        publish.publish(release(tmp_path, "b", [entry(1)]), remote, expect=expect)
+
+
+def test_cli_passes_the_expected_commit(tmp_path, remote, capsys):
+    publish.publish(release(tmp_path, "a", [entry(1)]), remote)
+    stale = head(remote)
+    publish.publish(release(tmp_path, "b", [entry(1)]), remote)
+    argv = ["--release", str(release(tmp_path, "c", [entry(1)])), "--remote", remote]
+    assert publish.main([*argv, "--expect-commit", stale + "\n"]) == 1
+    assert "изменилась во время прогона" in capsys.readouterr().err
+    assert publish.main([*argv, "--expect-commit", head(remote)]) == 0
+
+
+def test_rollback_note_goes_to_history(tmp_path, remote):
+    publish.publish(release(tmp_path, "a", [entry(1)]), remote)
+    publish.publish(release(tmp_path, "b", [entry(1)]), remote)
+    assert publish.main(["--rollback", "--note", "скачок медианы по ошибке фактов",
+                         "--remote", remote]) == 0
+    row = json.loads(branch_files(remote)["history.json"])[-1]
+    assert row["event"] == "rollback" and row["note"] == "скачок медианы по ошибке фактов"
+    assert "note" not in json.loads(branch_files(remote)["history.json"])[0]
+
+
+def test_reopen_clears_actual_and_records_the_reason(tmp_path, remote):
+    publish.publish(release(tmp_path, "a", [entry(1)]), remote)
+    filled = dict(entry(1), actual=0.0605, errors={"forecast": 0.0007})
+    publish.publish(release(tmp_path, "b", [filled, entry(2)]), remote)
+    latest_before = branch_files(remote)["latest.json"]
+    line = publish.reopen("x5.adj_margin:2026H1", "факт 2П взят из неверной строки", remote)
+    assert line.startswith("готово: запись x5.adj_margin:2026H1 переоткрыта")
+    files = branch_files(remote)
+    entries = json.loads(files["journal.json"])["entries"]
+    assert entries[0] == entry(1) and entries[1] == entry(2)
+    assert files["latest.json"] == latest_before
+    row = json.loads(files["history.json"])[-1]
+    assert (row["event"], row["entry"], row["actual_was"], row["note"]) == \
+        ("reopen", "x5.adj_margin:2026H1", 0.0605, "факт 2П взят из неверной строки")
+    # Следующий выпуск закрывает запись исправленным фактом — журнал это принимает.
+    publish.publish(release(tmp_path, "c", [dict(entry(1), actual=0.0612,
+                                                 errors={"forecast": 0.0}), entry(2)]), remote)
+    assert json.loads(branch_files(remote)["journal.json"])["entries"][0]["actual"] == 0.0612
+
+
+@pytest.mark.parametrize("entry_id,note,problem", [
+    ("x5.adj_margin:2026H1", "", "нужна причина"),
+    ("x5.adj_margin:2030H1", "почему", "записи x5.adj_margin:2030H1 в журнале нет"),
+    ("x5.adj_margin:2026H2", "почему", "не закрыта"),
+])
+def test_reopen_refusals_leave_the_branch(tmp_path, remote, entry_id, note, problem):
+    filled = dict(entry(1), actual=0.0605, errors={"forecast": 0.0007})
+    publish.publish(release(tmp_path, "a", [filled, entry(2)]), remote)
+    before = head(remote)
+    with pytest.raises(publish.PublishError, match=problem):
+        publish.reopen(entry_id, note, remote)
+    assert head(remote) == before
 
 
 def test_lease_protects_a_concurrent_write(tmp_path, remote):

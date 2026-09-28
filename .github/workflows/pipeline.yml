@@ -4,7 +4,7 @@ name: pipeline
 # контракта → публикация в орфан-ветку data → сверка через боевую дверь.
 # Любой упавший шаг — ветка data не трогается, на витрине прежний выпуск;
 # красный прогон — письмо GitHub владельцу. Секретов не нужно: GITHUB_TOKEN.
-# Порядок действий оператора — ops/README.md.
+# Публикует только main. Порядок действий оператора — ops/README.md.
 on:
   schedule:
     # По будням 16:50 UTC (19:50 МСК) — после основной сессии MOEX.
@@ -33,10 +33,15 @@ concurrency:
 env:
   PYTHONUNBUFFERED: "1"
   PYTHONIOENCODING: utf-8
+  # Одно «сегодня» у сборщиков и ядра — день по Москве: местная дата раннера
+  # (её берёт ядро) = дата сборщиков (UTC+3).
+  TZ: Europe/Moscow
   PUBLIC_DATA_URL: https://tzi-850-x5.pages.dev/api/model
 
 jobs:
   pipeline:
+    # Ручной запуск с другой ветки не публикует неслитый код в боевую data.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -52,11 +57,18 @@ jobs:
           python-version: "3.12"
 
       - name: Зависимости
-        run: python -m pip install --quiet -r requirements.txt
+        run: |
+          if python -m pip install --quiet -r requirements.txt; then
+            echo "- готово: зависимости из requirements.txt" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- ПРОВАЛ на шаге зависимости: pip install -r requirements.txt" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
       - name: Состояние из ветки data
         # latest.json (прошлый выпуск: эталон цены, защита заголовка),
-        # journal.json, history.json. Ветки ещё нет — первый выпуск.
+        # journal.json, history.json и коммит ветки (.commit — для публикации).
+        # Ветки ещё нет — первый выпуск.
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python ops/publish.py --fetch-state var/state
@@ -68,7 +80,13 @@ jobs:
           python -m indicators.live "${args[@]}"
 
       - name: Тесты такта
-        run: python -m pytest -q -m "not network and not ci_only and not docs"
+        run: |
+          if python -m pytest -q -m "not network and not ci_only and not docs"; then
+            echo "- готово: тесты такта" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- ПРОВАЛ на шаге тесты такта: упавшие тесты — в журнале шага" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
       - name: Сборка выпуска
         run: |
@@ -81,9 +99,11 @@ jobs:
         run: python ops/build_release.py --check var/release/latest.json
 
       - name: Публикация в ветку data
+        # Ветка изменилась после шага «Состояние из ветки data» (ручной откат,
+        # переоткрытие записи) — провал, ветка не тронута.
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python ops/publish.py --release var/release/latest.json
+        run: python ops/publish.py --release var/release/latest.json --expect-commit "$(cat var/state/.commit)"
 
       - name: Сверка через боевую дверь
         # raw.githubusercontent.com кэширует до 5 мин: до 20 попыток × 30 с.
@@ -102,8 +122,17 @@ jobs:
           if-no-files-found: ignore
 
       - name: Keepalive расписания
-        # Против отключения расписания через 60 дней без активности репозитория.
+        # Против отключения расписания через 60 дней без активности репозитория:
+        # включение уже включённого workflow (как keepalive-workflow). Отключённый
+        # (вручную или GitHub) не включается: включает только владелец.
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/pipeline.yml/enable"
+        run: |
+          state=$(gh api "repos/${{ github.repository }}/actions/workflows/pipeline.yml" --jq .state)
+          if [ "$state" = active ]; then
+            gh api -X PUT "repos/${{ github.repository }}/actions/workflows/pipeline.yml/enable"
+            echo "- готово: keepalive расписания" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- keepalive: workflow в состоянии $state — не включаю (включает владелец)" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi

@@ -13,7 +13,7 @@
      среднем 398 (2025) — плотность новой площади при средней продуктивности формата и отсюда — отношение
      «новый магазин / средний магазин своего формата».
   4. Прогноз по тарифу mid книги: NL, m, и ошибка правила ядра (исторические когорты с d = 1) против
-     согласованного расчёта на 2П2026–2028.
+     согласованного расчёта на 2П2026–2036 (цена ошибки — valuation_effect.py, разд. 3).
   5. Терминал: подъём от ротации (d − κ)·cl и его доля «вне LFL» и «в LFL».
 
 Выход: density_out.txt / density_out.json.
@@ -55,6 +55,51 @@ def fit(H: dict, T: dict, mu: list[float], kappa: float) -> dict:
             best = (sse, d, r)
     sse, d, r = best
     return {"d": d, "rmse": (sse / len(CALIB)) ** 0.5, "yoy": r}
+
+
+def core_index(H: dict, mu: list[float], q: str) -> float:
+    """Индекс ядра на конец q (MODEL §4.1): площадь минус незрелая часть последних n когорт с плотностью 1."""
+    return H["A"][q] - sum(H["O"][shift_half(q, -a)] * (1.0 - mu[a]) for a in range(len(mu) - 1))
+
+
+def fit_anchor_units(H: dict, T: dict, mu: list[float], kappa: float) -> tuple[float, float, float]:
+    """Подбор той же модели (eff_consistent) с d и κ в единицах ядра — к средней по сети на якоре 2026H1:
+    в единицах старой сети это d·r и κ·r, r = согласованный индекс / индекс ядра на якоре (неподвижная точка)."""
+    order = [p for p in H["A"] if p >= "2022H2"]
+    best = None
+    for i in range(500, 1301):
+        d, r = i / 1000, 1.0
+        for _ in range(100):
+            ec = eff_consistent(order, H["A"]["2022H2"], H["O"], H["C"], mu, d * r, kappa * r)
+            r_new = ec["eff"]["2026H1"] / core_index(H, mu, "2026H1")
+            if abs(r_new - r) < 1e-12:
+                break
+            r = r_new
+        sse = sum((ec["yoy"][p]["nonlfl"] - T[p]["nl"]) ** 2 for p in CALIB)
+        if best is None or sse < best[0]:
+            best = (sse, d, r)
+    return best[1], (best[0] / len(CALIB)) ** 0.5, best[2]
+
+
+def fit_core_rolling(H: dict, T: dict, mu: list[float], kappa: float) -> tuple[float, float]:
+    """Правило ядра, заякоренное на b = p − 2 (история — физическая площадь, когорты ≤ b с плотностью 1,
+    закрытие b — физическое), когорты p − 1 и p — с d, закрытия — с κ; часть роста «вне LFL» против NL."""
+    from common import mu_avg
+    O, C = H["O"], H["C"]
+
+    def nonlfl(p, d):
+        b = shift_half(p, -2)
+        base = (core_index(H, mu, shift_half(b, -1)) + core_index(H, mu, b)) / 2.0
+        new = d * (O[p] * mu_avg(mu, 0) + O[shift_half(p, -1)] * mu_avg(mu, 1)) + 0.5 * O[b] * mu_avg(mu, 2)
+        clo = -(C[b] / 2.0 + kappa * C[shift_half(p, -1)] + kappa * C[p] / 2.0)
+        return (new + clo) / base
+    best = None
+    for i in range(500, 1301):
+        d = i / 1000
+        sse = sum((nonlfl(p, d) - T[p]["nl"]) ** 2 for p in CALIB)
+        if best is None or sse < best[0]:
+            best = (sse, d)
+    return best[1], (best[0] / len(CALIB)) ** 0.5
 
 
 def jackknife(H: dict, T: dict, mu: list[float], kappa: float) -> float:
@@ -155,7 +200,7 @@ def main() -> None:
     R.p(f"Смесь по стратегии-2028 (П +1 409, Ч +402, Пер ≈+20 в год): {mix_plan:.3f} — смесь меняется мало, d держится.")
 
     R.h("5. Прогноз по тарифу mid: NL, m и ошибка правила ядра (история с d = 1)")
-    P = halves("2026H2", "2028H2")
+    P = halves("2026H2", "2036H2")
     A_f, O_f, C_f = forward_network(A["2026H1"], P, netw["net_growth"]["mid"], netw["close_rate"])
     O_all, C_all = {**H["O"], **O_f}, {**H["C"], **C_f}
     order = [p for p in H["A"] if p >= "2022H2"] + P
@@ -165,8 +210,17 @@ def main() -> None:
     for p in P:
         rows.append([p, pc(cons[p]["nonlfl"]), pc(cons[p]["m"]), pc(cons[p]["g"]), pc(rule[p]), f"{100 * (rule[p] - cons[p]['g']):+.2f}"])
     R.table(["полугодие", "NL (вне LFL)", "m (в LFL)", "эфф. площадь, согласованно", "эфф. площадь, правило ядра", "разница, п.п."], rows)
-    R.p("Правило ядра считает исторические когорты с d = 1 (MODEL §4.1); при d книги 0,84 это завышает рост эффективной "
-        "площади 2П2026 на величину из последней колонки — в пределах шума (RMSE подгонки 0,6 п.п.).")
+    ec = eff_consistent([p for p in H["A"] if p >= "2022H2"], A["2022H2"], H["O"], H["C"], MU_BOOK, d_book, KAPPA_BOOK)["eff"]
+    core_idx = core_index(H, MU_BOOK, "2026H1")
+    ratio = ec["2026H1"] / core_idx
+    R.p("Правило ядра (MODEL §4.1) строит индекс на якоре по физической площади с плотностью 1 для исторических когорт, "
+        f"а d подобрана на индексе, где все когорты с 2022H1 созревают до d, закрытия — с κ; на 30.06.2026 согласованный "
+        f"индекс ниже индекса ядра на {100 * (1 - ratio):.1f} % ({core_idx - ec['2026H1']:.0f} тыс. м²). Отсюда две ошибки "
+        "разного знака: в 2П2026 рост эффективной площади завышен (история 2025H1–2026H1 — на физической площади), с 2028 г. "
+        "занижен (новая площадь с d к индексу, который выше согласованного), к 2036H2 разница сходит к нулю медленно. "
+        "Вместе правило занижает стоимость (valuation_effect.py, разд. 3). Исправляется только в ядре: стартовый индекс "
+        "как в подборе (когорты 2022H1–2026H1 с плотностью d, закрытия с κ); подбор d под правило ядра не помогает — "
+        "см. разд. 7.")
     variants_art = {}
     for mu in VARIANTS:
         dd = round(fits[(tuple(mu), KAPPA_BOOK)]["d"], 2)
@@ -188,6 +242,20 @@ def main() -> None:
     R.p(f"(d − κ)·cl = ({d_book} − {KAPPA_BOOK}) × {cl} = {pc(up)} % в год; из них вне LFL {pc(newp)} %, в отчётном LFL {pc(mlt)} %.")
     R.p(f"Черновик: (0,95 − 0,6) × 0,02 = 0,70 %. Магнит (книга 1.6): (0,85 − 0,6) × закрытия LT.")
 
+    R.h("7. Подбор d под правило ядра (справка: почему книга его не берёт)")
+    d_anchor, rm_anchor, r_anchor = fit_anchor_units(H, T, MU_BOOK, KAPPA_BOOK)
+    d_roll, rm_roll = fit_core_rolling(H, T, MU_BOOK, KAPPA_BOOK)
+    R.p(f"(а) Та же модель подбора в единицах ядра (средняя продуктивность сети на якоре, κ = {KAPPA_BOOK} к ней же): "
+        f"d = {d_anchor:.3f} (RMSE {100 * rm_anchor:.2f} п.п.; в единицах старой сети — {d_anchor * r_anchor:.3f}). "
+        "С ней ядро повторяет согласованный рост с 2028 г., но ошибка первого года (история на физической площади) "
+        "остаётся и уже ничем не гасится.")
+    R.p(f"(б) Правило ядра, заякоренное на каждом историческом полугодии p − 2 (история — физическая площадь с плотностью 1, "
+        f"новые когорты — d, закрытия — κ), рост p к p − 2 против NL: d = {d_roll:.3f} (RMSE {100 * rm_roll:.2f} п.п.) — "
+        "в d уходят упрощения первого года правила (закрытия и когорты базы с плотностью 1), а в прогнозе d работает все "
+        "десять лет.")
+    R.p("Ни один подбор не делает правило ядра согласованным с историей: расхождение — в стартовом индексе ядра, а не в d. "
+        "Цена трёх вариантов — valuation_effect.py, разд. 3.")
+
     R.data = {"mu_book": MU_BOOK, "kappa_book": KAPPA_BOOK, "d_fit": r6(fb["d"]), "d_book": d_book, "d_se_jackknife": r6(se),
               "rmse": r6(fb["rmse"]), "ratio_nl_area": r6(ratio_mean), "wedge": r6(wedge_2026()),
               "targets": {p: {k: r6(x) for k, x in T[p].items()} for p in CALIB},
@@ -198,7 +266,10 @@ def main() -> None:
                       "mix_plan": r6(mix_plan), "d_to_format_avg": r6(d_book / mix)},
               "forecast_mid": {p: {"nl": r6(cons[p]["nonlfl"]), "m": r6(cons[p]["m"]), "eff_consistent": r6(cons[p]["g"]),
                                    "eff_rule": r6(rule[p])} for p in P},
-              "terminal": {"uplift": r6(up), "nonlfl": r6(newp), "m_lt": r6(mlt)}}
+              "terminal": {"uplift": r6(up), "nonlfl": r6(newp), "m_lt": r6(mlt)},
+              "core_rule": {"consistent_to_core_index_2026H1": r6(ratio), "gap_2026H1": r6(core_idx - ec["2026H1"]),
+                            "d_fit_anchor_units": d_anchor, "rmse_anchor_units": r6(rm_anchor),
+                            "d_fit_core_rolling": d_roll, "rmse_core_rolling": r6(rm_roll)}}
     R.save("density")
 
 

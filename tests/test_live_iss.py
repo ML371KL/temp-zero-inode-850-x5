@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import sys
 from datetime import date
@@ -100,6 +101,14 @@ def test_quotes_without_any_price_are_none_not_zero():
 def test_quotes_garbage_is_an_error():
     with pytest.raises(iss.IssError):
         iss.parse_quotes({"error": "html instead of json"})
+
+
+def test_fixtures_are_the_recorded_raw_responses():
+    """Фикстуры ISS и ЦБ — байт в байт сырые ответы из манифеста (git их не
+    нормализует: `tests/fixtures/{iss,cbr}/.gitattributes`)."""
+    for name, meta in manifest().items():
+        body = (FIX / name).read_bytes()
+        assert (len(body), hashlib.sha256(body).hexdigest()) == (meta["bytes"], meta["sha256"]), name
 
 
 def test_quotes_url_is_the_recorded_one():

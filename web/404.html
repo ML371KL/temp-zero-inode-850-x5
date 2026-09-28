@@ -4,6 +4,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Страница не найдена — X5</title>
+<meta name="color-scheme" content="light dark">
+<script>
+/* Тема до первой отрисовки. Правило владельца для всех панелей: с 20:00 до 07:00
+   по часам зрителя страница открывается тёмной. Выбор, сделанный вечером, живёт до
+   закрытия вкладки (sessionStorage), дневной — в localStorage, и вечер его не
+   затирает. Правило лежит здесь одной копией: app.js берёт его через window.__theme.
+   После любой правки этого скрипта пересчитать хэш в CSP (web/_headers и
+   functions/_middleware.js): тест печатает готовую строку. */
+(function () {
+  var DAY = "x5-850-theme", NIGHT = "x5-850-theme-tonight", FROM = 20, TO = 7;
+  function isNight(d) { var h = (d || new Date()).getHours(); return h >= FROM || h < TO; }
+  function read(area, key) {
+    try { var v = window[area].getItem(key); return v === "light" || v === "dark" ? v : null; }
+    catch (e) { return null; }
+  }
+  function resolve() {
+    if (isNight()) return read("sessionStorage", NIGHT) || "dark";
+    return read("localStorage", DAY)
+      || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function remember(theme) {
+    try {
+      if (isNight()) window.sessionStorage.setItem(NIGHT, theme);
+      else window.localStorage.setItem(DAY, theme);
+    } catch (e) { /* приватный режим: тема живёт до перезагрузки */ }
+  }
+  document.documentElement.dataset.theme = resolve();
+  window.__theme = { isNight: isNight, resolve: resolve, remember: remember, from: FROM, to: TO };
+})();
+</script>
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>

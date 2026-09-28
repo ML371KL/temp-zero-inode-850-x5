@@ -4,13 +4,16 @@
 эффективная площадь → выручка «год к году» → маржа (цель режима + сезонность +
 затухающее отклонение с фильтром Калмана) → LTI, capex, D&A, оборотный
 капитал, операционная касса, налог → FCFF → проценты, путь долга и дивиденды
-модели → дисконт от даты оценки с перекатом по форвардам → терминал с
-разделением Гордона → EV клетки → требования D на дату оценки → цена клетки.
+модели, издержки размещения, проценты сверх справедливого спреда и кэрри
+подушки → дисконт от даты оценки с перекатом по форвардам → терминал с
+разделением Гордона → EV клетки → требования D на дату оценки → цена клетки
+(с казначейским пакетом).
 
 Всё, что не зависит от клетки целиком, считается один раз на книгу в
 `Context`: траектории миров и дисконт-факторы, пути отклонения маржи режимов,
-сеть по тарифам роста, выручка по (мир, тариф, спрос). Числа — только из книги
-и фактов, по именам ключей. Суммы — `math.fsum` (одинаково на Python 3.11 и 3.12).
+сеть по тарифам роста, выручка по (мир, тариф, спрос), выбытие базы D&A якоря,
+ставки. Числа — только из книги и фактов, по именам ключей. Суммы —
+`math.fsum` (одинаково на Python 3.11 и 3.12).
 
 Единицы: деньги — млрд ₽, площадь — тыс. м², ставки и доли — доли единицы,
 цена — ₽ на акцию.
@@ -26,12 +29,17 @@ from functools import cached_property
 from model.book import (half_rate, interp_curve, next_period, path_value, period_end,
                         period_index, period_of, period_start, periods, prev_period,
                         trajectory)
-from model.facts import CoreFacts, Facts, core_facts
+from model.facts import CoreFacts, Facts, FactsError, core_facts
 
 fsum = math.fsum
 
 # Защита терминала: вечный рост не выше ставки (docs/MODEL.md §6: g = r − 0,0001).
 GROWTH_GUARD = 0.0001
+# Фиксированный долг — выпуски на срок узла "3" кривой (§4.9): купон нового фикса —
+# форвард кривой мира на этот срок с начала полугодия.
+FIXED_NODE = "3"
+# Кредитное состояние со справедливым спредом (§4.9): проценты сверх него — потеря.
+FAIR_CREDIT = "base"
 
 
 # -------------------------------------------------------------------- клетка
@@ -135,6 +143,14 @@ def rolled_discount(curve: dict, premium: float, roll: float, t: float) -> float
     return discount_factor(curve, premium, roll + t) / discount_factor(curve, premium, roll)
 
 
+def forward_rate(curve: dict, start: float, tenor: float) -> float:
+    """Форвард кривой на `tenor` лет с момента `start` лет (§4.9):
+    [(1 + z(s + T))^(s + T) / (1 + z(s))^s]^(1/T) − 1; при s = 0 — ставка z(T)."""
+    end = start + tenor
+    grow = (1.0 + interp_curve(curve, end)) ** end / (1.0 + interp_curve(curve, start)) ** start
+    return grow ** (1.0 / tenor) - 1.0
+
+
 # ------------------------------------------------------ пути, общие для клеток
 
 
@@ -149,12 +165,25 @@ class WorldPaths:
     index: tuple                # Π(1 + half(cpi)) от якоря
     pi_lt: float                # lt.inflation
     food_last: float            # food_cpi последнего полугодия (для LT)
-    z3: float                   # узел 3 года
+    z_fix: tuple                # форвард узла "3" с начала полугодия (купон нового фикса)
     z_lt: float                 # узел LT
     premium: float              # β_u × ERP
     r_terminal: float           # z_LT + β_u × ERP
     df: tuple                   # по полугодиям (0 у закрытых)
     df_end: float
+
+
+@dataclass(frozen=True)
+class RatePaths:
+    """Ставки клетки (§4.9, §6): по полугодиям явного участка и последним элементом
+    (индекс N) — терминал; half(·) — полугодовые ставки."""
+
+    debt: tuple                 # debt_rate: годовая ставка долга с издержками размещения
+    half_debt: tuple            # half(debt_rate)
+    half_clean: tuple           # half(debt_rate без издержек размещения)
+    half_fair: tuple            # half(debt_rate при справедливых спредах — base)
+    half_yield: tuple           # half(cash_yield_k × key)
+    half_key: tuple             # half(key)
 
 
 @dataclass(frozen=True)
@@ -228,6 +257,14 @@ def annuity_ratio(x: float, life: float) -> float:
     return -math.expm1(-life * math.log1p(x)) / (life * x)
 
 
+def steady_da(c1: float, c2: float, x: float, life: float) -> tuple[float, float]:
+    """Установившаяся D&A первого и второго полугодия года (§6) при capex полугодий c1, c2,
+    растущем с темпом x в год, и списании каждой когорты по 1/(2L) в 2L следующих
+    полугодиях: T1 — (c1 + c2)·ratio/2, T2 — (c1·(1 + x) + c2)·ratio/2."""
+    ratio = annuity_ratio(x, life)
+    return (c1 + c2) * ratio / 2.0, (c1 * (1.0 + x) + c2) * ratio / 2.0
+
+
 def observations(A: dict) -> list[tuple[str, float, float]]:
     """Наблюдения маржи A-P2u по порядку полугодий: (период, значение, se)."""
     raw = A["joint"]["regime_update"]["observations"]
@@ -258,6 +295,9 @@ class Context:
         v = v if isinstance(v, dt.date) else dt.date.fromisoformat(v)
         self.market_price = float(market_price if market_price is not None else M["market_price"])
         self.timing = make_timing(self.P, v, dt.date.fromisoformat(M["curve_as_of"]))
+        # Положение даты кривой на линейке полугодий (от начала first_period) — от неё
+        # отсчитываются форварды купона нового фикса (§4.9).
+        self.curve_position = ruler(self.P[0], self.timing.curve_as_of)
         V = A["valuation"]
         self.premium = float(V["beta_u"]) * float(V["erp"])
         self.governance = float(V["governance_discount"])
@@ -284,11 +324,49 @@ class Context:
         self.dividends_declared = fsum(d.amount for d in cf.dividends
                                        if d.in_company and d.ex_date is not None and d.ex_date <= v)
         self.half_life = int(round(2 * float(C["asset_life_years"])))
+        self.da_runoff = self._da_runoff()
+        # Казначейский пакет (§7.2): n акций продаются по k × рыночной цены.
+        self.treasury_mln = cf.treasury_mln
+        self.treasury_value = (cf.treasury_mln * float(V["treasury_sale_price_k"])
+                               * self.market_price / 1000.0)
         pays_from = period_index(FN["dividends_from"])
         self.pays = tuple(period_index(p) >= pays_from for p in self.P)
         self.is_h1 = tuple(p[5] == "1" for p in self.P)
         self.infra_on = tuple(int(p[:4]) >= int(C["infra_from_year"]) for p in self.P)
-        self._rates: dict[tuple, tuple] = {}
+        self._rates: dict[tuple, RatePaths] = {}
+
+    # ------------------------------------------------------------ цена (§7.2)
+    def price_of(self, equity: float) -> float:
+        """Цена акции из капитала V0 − D (с казначейским пакетом, §7.2)."""
+        return price_of_equity(equity, self.governance, self.facts.shares_mln,
+                               self.treasury_mln, self.treasury_value)
+
+    def v0_of(self, price: float, d: float) -> float:
+        """V0, при котором функция «EV → цена» даёт `price` при требованиях `d` (§7.3)."""
+        return v0_from_price(price, d, self.governance, self.facts.shares_mln,
+                             self.treasury_mln, self.treasury_value)
+
+    def rub_per_1pct(self, v0: float) -> float:
+        """Цена 1 % EV (§7.3)."""
+        return rub_per_1pct_ev(v0, self.governance, self.facts.shares_mln, self.treasury_mln)
+
+    # --------------------------------------------------------- база D&A (§4.5)
+    def _da_runoff(self) -> tuple:
+        """S(k)/S(0) для k = 1…N + 2L: доля базы D&A якоря, ещё живая в k-м прогнозном
+        полугодии. S(k) — сумма капвложений полугодий якорь−1 … якорь−(2L−k)."""
+        H, cf = self.half_life, self.facts
+        cohorts, p = [], self.anchor
+        for _ in range(H):
+            p = prev_period(p)
+            if p not in cf.capex_hist:
+                raise FactsError(f"факты: нет capex {p} — база D&A якоря выбывает по когортам "
+                                 "2L полугодий до якоря (docs/MODEL.md §4.5)")
+            cohorts.append(cf.capex_hist[p])
+        cohorts.reverse()                       # от старых к новым
+        total = fsum(cohorts)
+        if total <= 0:
+            raise FactsError("факты: capex 2L полугодий до якоря в сумме не положителен")
+        return tuple(fsum(cohorts[k:]) / total for k in range(1, self.N + H + 1))
 
     # ---------------------------------------------------------------- мир
     def world(self, name: str) -> WorldPaths:
@@ -308,9 +386,14 @@ class Context:
         df = tuple(rolled_discount(curve, self.premium, T.roll, t) if f else 0.0
                    for f, t in zip(T.fraction, T.t_mid))
         z_lt = float(curve["LT"])
+        # купон нового фикса полугодия i — форвард узла "3" с начала полугодия, лет от даты
+        # кривой (0,5 года на полугодие линейки; до даты кривой — от неё самой)
+        tenor = float(FIXED_NODE)
+        z_fix = tuple(forward_rate(curve, max(0.0, 0.5 * (i - self.curve_position)), tenor)
+                      for i in range(self.N))
         return WorldPaths(
             name=name, key=key, cpi=cpi, food=food, index=tuple(index),
-            pi_lt=float(W["lt"]["inflation"]), food_last=food[-1], z3=float(curve["3"]),
+            pi_lt=float(W["lt"]["inflation"]), food_last=food[-1], z_fix=z_fix,
             z_lt=z_lt, premium=self.premium, r_terminal=z_lt + self.premium, df=df,
             df_end=rolled_discount(curve, self.premium, T.roll, T.t_end))
 
@@ -448,23 +531,36 @@ class Context:
                             ticket=tuple(ticket), traffic=traffic, ticket_lt=ticket_lt,
                             traffic_lt=traffic[-1])
 
-    def rates(self, world: str, credit: str) -> tuple:
-        """Ставки полугодий (§4.9): (half(debt_rate), half(cash_yield_k·key), debt_rate)."""
-        key = (world, credit)
-        hit = self._rates.get(key)
-        if hit is None:
-            FN, W = self.A["financing"], self.world(world)
-            legacy = float(FN["legacy_rate"])
-            s_fixed = float(FN["spread_fixed"][credit])
-            s_float = float(FN["spread_float"][credit])
-            yield_k = float(FN["cash_yield_k"])
-            debt = []
-            for i in range(self.N):
-                lw, fs = self.legacy_weight[i], self.fixed_share[i]
-                fixed_rate = lw * legacy + (1.0 - lw) * (W.z3 + s_fixed)
-                debt.append(fs * fixed_rate + (1.0 - fs) * (W.key[i] + s_float))
-            hit = self._rates[key] = (tuple(half_rate(r) for r in debt),
-                                      tuple(half_rate(yield_k * k) for k in W.key), tuple(debt))
+    def rates(self, world: str, credit: str) -> RatePaths:
+        """Ставки полугодий (§4.9) и терминала (§6, индекс N).
+
+        debt_rate(p) = f·[ℓ·legacy + (1 − ℓ)(z_fix(p) + s_fix[c] + ic)] + (1 − f)(key + s_float[c] + ic);
+        терминал — то же на последних значениях f, ℓ, key и узле LT вместо z_fix.
+        """
+        hit = self._rates.get((world, credit))
+        if hit is not None:
+            return hit
+        FN, W = self.A["financing"], self.world(world)
+        legacy = float(FN["legacy_rate"])
+        cost = float(FN["issuance_cost"])
+        yield_k = float(FN["cash_yield_k"])
+        steps = range(self.N + 1)
+
+        def rate(i: int, state: str, ic: float) -> float:
+            j = min(i, self.N - 1)
+            lw, fs = self.legacy_weight[j], self.fixed_share[j]
+            z = W.z_fix[i] if i < self.N else W.z_lt
+            fixed_rate = lw * legacy + (1.0 - lw) * (z + float(FN["spread_fixed"][state]) + ic)
+            return fs * fixed_rate + (1.0 - fs) * (W.key[j] + float(FN["spread_float"][state]) + ic)
+
+        debt = tuple(rate(i, credit, cost) for i in steps)
+        keys = tuple(W.key[min(i, self.N - 1)] for i in steps)
+        hit = self._rates[(world, credit)] = RatePaths(
+            debt=debt, half_debt=tuple(half_rate(r) for r in debt),
+            half_clean=tuple(half_rate(rate(i, credit, 0.0)) for i in steps),
+            half_fair=tuple(half_rate(rate(i, FAIR_CREDIT, cost)) for i in steps),
+            half_yield=tuple(half_rate(yield_k * k) for k in keys),
+            half_key=tuple(half_rate(k) for k in keys))
         return hit
 
     def maintenance(self, level: str) -> tuple:
@@ -522,6 +618,9 @@ class HalfRow:
     debt_rate: float
     gross_debt_start: float
     interest: float
+    issuance_cost: float        # издержки размещения в процентах: G⁺·(half(r) − half(r без ic))
+    excess_spread: float        # проценты сверх справедливого спреда: G⁺·max(0, half(r) − half(r_fair))
+    buffer_carry: float         # кэрри подушки: Buf(p−1)·(half(key) − half(k·key))
     net_debt_pre: float
     dividends: float
     net_debt: float
@@ -547,33 +646,48 @@ class TerminalHalf:
     capex_replacement: float
     capex_pi: float
     price_index: float
-    da: float
+    da: float                   # установившаяся D&A полугодия (g-часть + π-часть)
+    da_pi: float                # её π-часть
     tax_base: float
     tax: float
     nwc: float
     nwc_change: float
     opcash: float
     opcash_change: float
+    buffer: float
     lease: float
     proceeds: float
     fcff: float
     f_pi: float
+    gross_debt_start: float     # Lt·EBITDA_rep_LTM + OpCash + Buf на начало полугодия
+    interest: float
+    shield: float
+    issuance_cost: float
+    excess_spread: float
+    buffer_carry: float
 
 
 @dataclass(frozen=True)
 class Terminal:
-    """Терминальная стоимость клетки (§6); TV и TV_S — на конец явного участка."""
+    """Терминальная стоимость клетки (§6); все TV — на конец явного участка."""
 
     growth: float
     rate: float
     pi: float
+    debt_rate: float            # r_T — ставка долга терминала
     halves: tuple
-    da_half: float
-    da_pi_half: float
-    tv_flow: float
+    tv_da_transition: float     # PV τ·(D&A по когортам − установившаяся), 2L полугодий
+    tv_flow: float              # Gordon_g + Gordon_π + переходный член D&A
     tv_shield: float
-    shield_annual: float
+    tv_issuance: float
+    tv_excess_spread: float
+    tv_buffer_carry: float
     ebitda_rep_annual: float
+
+    @property
+    def tv_financing(self) -> float:
+        """Вычеты финансирования терминала: издержки, сверх справедливого спреда, кэрри."""
+        return self.tv_issuance + self.tv_excess_spread + self.tv_buffer_carry
 
 
 @dataclass(frozen=True)
@@ -594,10 +708,13 @@ class CellResult:
     row_data: tuple = field(repr=False)     # кортежи строк в порядке полей HalfRow
     terminal: Terminal = field(repr=False)
     ev: float = 0.0
-    pv_fcff: float = 0.0
-    pv_shield: float = 0.0
-    pv_terminal: float = 0.0
-    terminal_share: float = 0.0
+    pv_fcff: float = 0.0            # явный участок
+    pv_shield: float = 0.0          # явный участок
+    pv_terminal: float = 0.0        # (TV + TV_S) × df_end
+    pv_issuance: float = 0.0        # издержки размещения: явный участок + терминал
+    pv_excess_spread: float = 0.0   # проценты сверх справедливого спреда: явный + терминал
+    pv_buffer_carry: float = 0.0    # кэрри подушки: явный + терминал
+    terminal_share: float = 0.0     # (TV + TV_S − TV_фин) × df_end / EV
     claims: Claims | None = None
     equity: float = 0.0
     price: float = 0.0
@@ -621,10 +738,33 @@ class CellResult:
     def r_terminal(self) -> float:
         return self.terminal.rate
 
+    @property
+    def pv_financing(self) -> float:
+        """Вычеты из EV: издержки размещения + сверх справедливого спреда + кэрри подушки."""
+        return self.pv_issuance + self.pv_excess_spread + self.pv_buffer_carry
 
-def price_of_equity(equity: float, governance: float, shares_mln: float) -> float:
-    """Цена из капитала (§7.2): дисконт за управление — только у положительного."""
-    return (equity * (1.0 - governance) if equity > 0 else equity) * 1000.0 / shares_mln
+
+def price_of_equity(equity: float, governance: float, shares_mln: float,
+                    treasury_mln: float = 0.0, treasury_value: float = 0.0) -> float:
+    """Цена из капитала V0 − D (§7.2): казначейский пакет n = `treasury_mln` продаётся
+    за `treasury_value` млрд ₽ — капитал + выручка от продажи делится на N + n акций;
+    дисконт за управление — только у положительного. n = 0 — прежняя формула."""
+    total = equity + treasury_value
+    shares = shares_mln + treasury_mln
+    return (total * (1.0 - governance) if total > 0 else total) * 1000.0 / shares
+
+
+def v0_from_price(price: float, d: float, governance: float, shares_mln: float,
+                  treasury_mln: float = 0.0, treasury_value: float = 0.0) -> float:
+    """V0, при котором `price_of_equity(V0 − d, …)` даёт `price` (§7.3)."""
+    total = price * (shares_mln + treasury_mln) / 1000.0
+    return (total / (1.0 - governance) if total > 0 else total) - treasury_value + d
+
+
+def rub_per_1pct_ev(v0: float, governance: float, shares_mln: float,
+                    treasury_mln: float = 0.0) -> float:
+    """Цена 1 % EV (§7.3): 0,01 × V0 × (1 − g_gov) × 1000 / (N + n)."""
+    return v0 / 100.0 * (1.0 - governance) * 1000.0 / (shares_mln + treasury_mln)
 
 
 def run_cell(ctx: Context, cell: Cell) -> CellResult:
@@ -635,7 +775,7 @@ def run_cell(ctx: Context, cell: Cell) -> CellResult:
     G = ctx.network(cell.growth)
     RV = ctx.revenue(cell.world, cell.growth, cell.demand)
     mnt = ctx.maintenance(cell.capex)
-    half_debt, half_yield, debt_rates = ctx.rates(cell.world, cell.credit)
+    rp = ctx.rates(cell.world, cell.credit)
     C, WC, TX, FN = A["capex"], A["working_capital"], A["tax"], A["financing"]
     phi = float(C["maintenance_area_share"])
     price_m2, infra_m2 = float(C["price_per_m2"]), float(C["infra_per_m2"])
@@ -656,8 +796,12 @@ def run_cell(ctx: Context, cell: Cell) -> CellResult:
     nd_prev = cf.net_debt + cf.dividends_payable
     rep_prev = cf.ebitda_rep[ctx.anchor]
     capex_hist = [cf.capex_anchor]
-    x0 = area_mid[0] * index[0] / revenue_annual[0]
-    data, pv_f, pv_s, margins, leverage = [], [], [], [], []
+    # физическая доля поддерживающего capex — рубли якоря (половина годовой выручки якоря
+    # на тыс. м² площади якоря в ценах якоря) × площадь × индекс цен полугодия (§4.5)
+    phys_unit = ctx.revenue_ltm_anchor / 2.0 / cf.area_end[ctx.anchor]
+    runoff = ctx.da_runoff
+    data, margins, leverage = [], [], []
+    pv_f, pv_s, pv_iss, pv_exc, pv_car = [], [], [], [], []
     for i, p in enumerate(P):
         R, R_ann = revenue[i], revenue_annual[i]
         margin = target[i] + season[i] + deviation[i]
@@ -667,14 +811,13 @@ def run_cell(ctx: Context, cell: Cell) -> CellResult:
         # capex (§4.5): поддерживающий с физической долей, открытия, инфраструктура
         idx = index[i]
         opened, closed = opened_l[i], closed_l[i]
-        maint = R * mnt[i] * ((1.0 - phi) + phi * (area_mid[i] * idx / R_ann) / x0)
+        maint = mnt[i] * ((1.0 - phi) * R + phi * phys_unit * area_mid[i] * idx)
         growth_capex = opened * price_m2 * idx
         infra = max(0.0, opened - closed) * infra_m2 * idx if ctx.infra_on[i] else 0.0
         capex = maint + growth_capex + infra
-        # D&A: база якоря линейно за 2L полугодий + когорты capex по 1/(2L)
+        # D&A: база якоря выбывает по своим когортам S(k)/S(0) + когорты capex по 1/(2L)
         k = i + 1
-        da = (cf.da_anchor * max(0.0, 1.0 - k / H)
-              + fsum(capex_hist[k - min(k, H):k]) / H)
+        da = cf.da_anchor * runoff[i] + fsum(capex_hist[k - min(k, H):k]) / H
         ebit = ebitda - da
         # оборотный капитал, касса, аренда (§4.6)
         nwc = ctx.nwc_pct[i] * R_ann + (h1x * R_ann if ctx.is_h1[i] else 0.0)
@@ -691,9 +834,15 @@ def run_cell(ctx: Context, cell: Cell) -> CellResult:
         # операционной кассы (ΔOpCash вычтен из FCFF), поэтому в валовой долг операционная
         # касса входит уровнем якоря, а рычаг меряется долгом компании ND − (OpCash − OpCash_якоря)
         gross = nd_prev + ctx.opcash_anchor + buf_prev
-        interest = gross * half_debt[i] - buf_prev * half_yield[i]
+        interest = gross * rp.half_debt[i] - buf_prev * rp.half_yield[i]
         tax_a = tau * max(0.0, base - interest)
         shield = tax_u - tax_a
+        # вычеты из EV до налога (§4.9): издержки размещения, проценты сверх справедливого
+        # спреда (оба — только на положительный валовой долг), кэрри подушки
+        debt = max(0.0, gross)
+        issuance = debt * (rp.half_debt[i] - rp.half_clean[i])
+        excess = debt * max(0.0, rp.half_debt[i] - rp.half_fair[i])
+        carry = buf_prev * (rp.half_key[i] - rp.half_yield[i])
         # путь долга и дивиденды модели
         nd_pre = nd_prev - (fcff + shield - interest)
         ltm = ebitda_rep + rep_prev
@@ -705,20 +854,30 @@ def run_cell(ctx: Context, cell: Cell) -> CellResult:
         data.append((p, R, R_ann, RV.ticket[i], RV.traffic[i], G.area_end[i], G.eff_avg[i],
                      opened, closed, margin, target[i], deviation[i], ebitda, lti, ebitda_rep,
                      da, ebit, capex, maint, growth_capex, infra, idx, nwc, d_nwc, opc, d_opc,
-                     buf, lease, proceeds, base, tax_u, tax_a, shield, fcff, debt_rates[i],
-                     gross, interest, nd_pre, div, nd, ltm, lev, fraction[i], t_mid[i], df[i]))
+                     buf, lease, proceeds, base, tax_u, tax_a, shield, fcff, rp.debt[i],
+                     gross, interest, issuance, excess, carry, nd_pre, div, nd, ltm, lev,
+                     fraction[i], t_mid[i], df[i]))
         if fraction[i]:
-            pv_f.append(fcff * fraction[i] * df[i])
-            pv_s.append(shield * fraction[i] * df[i])
+            w = fraction[i] * df[i]
+            pv_f.append(fcff * w)
+            pv_s.append(shield * w)
+            pv_iss.append(issuance * w)
+            pv_exc.append(excess * w)
+            pv_car.append(carry * w)
         margins.append(margin)
         leverage.append(lev)
         nwc_prev, opc_prev, buf_prev, nd_prev, rep_prev = nwc, opc, buf, nd, ebitda_rep
         capex_hist.append(capex)
 
-    terminal = _terminal(ctx, cell, W, RG, G, RV, x0, data[-2], data[-1])
+    terminal = _terminal(ctx, cell, W, RG, G, RV, rp, phys_unit, data, capex_hist)
+    end = W.df_end
     pv_fcff, pv_shield = fsum(pv_f), fsum(pv_s)
-    pv_terminal = (terminal.tv_flow + terminal.tv_shield) * W.df_end
-    ev = pv_fcff + pv_shield + pv_terminal
+    pv_terminal = (terminal.tv_flow + terminal.tv_shield) * end
+    pv_issuance = fsum([*pv_iss, terminal.tv_issuance * end])
+    pv_excess = fsum([*pv_exc, terminal.tv_excess_spread * end])
+    pv_carry = fsum([*pv_car, terminal.tv_buffer_carry * end])
+    ev = fsum([pv_fcff, pv_shield, pv_terminal, -pv_issuance, -pv_excess, -pv_carry])
+    terminal_net = (terminal.tv_flow + terminal.tv_shield - terminal.tv_financing) * end
 
     # требования на дату оценки (§7.1): денежный результат закрытых полугодий и
     # прошедшей части текущего (FCFF + щит − проценты)
@@ -737,9 +896,10 @@ def run_cell(ctx: Context, cell: Cell) -> CellResult:
     ntm = data[closed][_EBITDA] + ahead
     return CellResult(
         cell=cell, row_data=tuple(data), terminal=terminal, ev=ev, pv_fcff=pv_fcff,
-        pv_shield=pv_shield, pv_terminal=pv_terminal,
-        terminal_share=pv_terminal / ev if ev else math.inf, claims=claims, equity=equity,
-        price=price_of_equity(equity, ctx.governance, cf.shares_mln), ebitda_ntm=ntm,
+        pv_shield=pv_shield, pv_terminal=pv_terminal, pv_issuance=pv_issuance,
+        pv_excess_spread=pv_excess, pv_buffer_carry=pv_carry,
+        terminal_share=terminal_net / ev if ev else math.inf, claims=claims, equity=equity,
+        price=ctx.price_of(equity), ebitda_ntm=ntm,
         ev_ebitda_fwd=ev / ntm if ntm > 0 else None, max_leverage=max(leverage),
         margin_min=min(margins), margin_max=max(margins),
         capex_pct_years=_capex_by_year(cf, P, data))
@@ -751,6 +911,7 @@ _EBITDA, _CAPEX, _REVENUE = (_FIELDS.index(n) for n in ("adj_ebitda", "capex", "
 _FCFF, _SHIELD, _INTEREST = (_FIELDS.index(n) for n in ("fcff", "shield", "interest"))
 _INDEX, _AREA, _NWC, _OPCASH = (_FIELDS.index(n) for n in ("price_index", "area_end", "nwc",
                                                              "opcash"))
+_BUFFER, _EBITDA_REP, _LTM = (_FIELDS.index(n) for n in ("buffer", "ebitda_rep", "ebitda_rep_ltm"))
 
 
 def _capex_by_year(cf: CoreFacts, P: list[str], data: list) -> tuple:
@@ -766,9 +927,11 @@ def _capex_by_year(cf: CoreFacts, P: list[str], data: list) -> tuple:
 
 
 def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: NetworkPaths,
-              RV: RevenuePaths, x0: float, last_h1: tuple, last: tuple) -> Terminal:
-    """Терминал (§6): два полугодия года после last_period, разделение Гордона."""
-    A = ctx.A
+              RV: RevenuePaths, rp: RatePaths, phys_unit: float, data: list,
+              capex_hist: list) -> Terminal:
+    """Терминал (§6): два полугодия года после last_period, разделение Гордона, щит и
+    вычеты финансирования оператором явного участка, переходный член D&A."""
+    A, cf = ctx.A, ctx.facts
     NW, C, WC, TX, FN = A["network"], A["capex"], A["working_capital"], A["tax"], A["financing"]
     tau, padd = float(TX["rate"]), float(TX["permanent_add_pct"])
     phi = float(C["maintenance_area_share"])
@@ -777,6 +940,7 @@ def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: Netwo
     lti_pct = float(A["margin"]["lti_pct"])
     h1x, opc_pct = float(WC["h1_excess_pct"]), float(WC["operating_cash_pct"])
     lease_pct, disposal = float(WC["lease_adj_pct"]), float(C["disposal_proceeds_pct"])
+    buf_pct, lt = float(FN["cash_buffer_pct"]), float(FN["target_leverage"])
     nwc_lt = ctx.nwc_pct[-1]
     mnt_lt = ctx.maintenance(cell.capex)[-1]
     r = W.r_terminal
@@ -789,6 +953,7 @@ def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: Netwo
         g = r - GROWTH_GUARD
     pi = W.pi_lt if W.pi_lt < r else r - GROWTH_GUARD
 
+    last_h1, last = data[-2], data[-1]
     area = last[_AREA]
     year = int(ctx.P[-1][:4]) + 1
     idx = last[_INDEX]
@@ -800,7 +965,7 @@ def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: Netwo
         R_ann = R + prev_rev
         prev_rev = R
         margin = RG.target_lt + RG.season_terminal[h - 1]
-        physical = R * mnt_lt * phi * (area * idx / R_ann) / x0
+        physical = mnt_lt * phi * phys_unit * area * idx
         maint = R * mnt_lt * (1.0 - phi) + physical
         replacement = area * cl / 2.0 * price_m2 * idx
         nwc = nwc_lt * R_ann + (h1x * R_ann if h == 1 else 0.0)
@@ -809,39 +974,81 @@ def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: Netwo
                           ebitda=R * margin, lti=lti_pct * R, maint=maint,
                           replacement=replacement, capex=maint + replacement,
                           capex_pi=replacement + physical, nwc=nwc, d_nwc=nwc - nwc_prev,
-                          opc=opc, d_opc=opc - opc_prev, lease=lease_pct * R,
-                          proceeds=disposal * R))
+                          opc=opc, d_opc=opc - opc_prev, buf=buf_pct * R_ann,
+                          lease=lease_pct * R, proceeds=disposal * R))
         nwc_prev, opc_prev = nwc, opc
-    capex_ann = parts[0]["capex"] + parts[1]["capex"]
-    capex_pi_ann = parts[0]["capex_pi"] + parts[1]["capex_pi"]
-    da_pi = capex_pi_ann * annuity_ratio(pi, life) / 2.0
-    da_half = ((capex_ann - capex_pi_ann) * annuity_ratio(g, life)
-               + capex_pi_ann * annuity_ratio(pi, life)) / 2.0
 
+    # D&A (§6): установившаяся по правилу когорт §4.5 при росте capex g (g-часть) и π
+    # (π-часть), по полугодиям: T2 несёт когорту T1
+    cap_g = [q["capex"] - q["capex_pi"] for q in parts]
+    cap_pi = [q["capex_pi"] for q in parts]
+    da_g = steady_da(cap_g[0], cap_g[1], g, life)
+    da_pi = steady_da(cap_pi[0], cap_pi[1], pi, life)
+
+    # долг начала полугодия на целевом рычаге (оператор §4.9): начало T1 — конец явного
+    # участка, начало T2 — конец T1
+    starts = ((last[_LTM], last[_OPCASH], last[_BUFFER]),
+              (last[_EBITDA_REP] + parts[0]["ebitda"] - parts[0]["lti"], parts[0]["opc"],
+               parts[0]["buf"]))
+    N = ctx.N
     halves = []
-    for q in parts:
-        base = q["ebitda"] - q["lti"] - da_half + padd * q["R"]
+    for h, q in enumerate(parts):
+        da = da_g[h] + da_pi[h]
+        base = q["ebitda"] - q["lti"] - da + padd * q["R"]
         tax = tau * max(0.0, base)
         fcff = (q["ebitda"] - q["lti"] - tax - q["capex"] - q["d_nwc"] - q["d_opc"]
                 + q["lease"] + q["proceeds"])
-        f_pi = (tau * da_pi if base > 0 else 0.0) - q["capex_pi"]
+        f_pi = (tau * da_pi[h] if base > 0 else 0.0) - q["capex_pi"]
+        ltm, opc0, buf0 = starts[h]
+        gross = lt * ltm + opc0 + buf0
+        interest = gross * rp.half_debt[N] - buf0 * rp.half_yield[N]
+        shield = tax - tau * max(0.0, base - interest)
+        debt = max(0.0, gross)
         halves.append(TerminalHalf(
             period=q["period"], revenue=q["R"], revenue_annual=q["R_ann"], margin=q["margin"],
             adj_ebitda=q["ebitda"], lti=q["lti"], capex=q["capex"],
             capex_maintenance=q["maint"], capex_replacement=q["replacement"],
-            capex_pi=q["capex_pi"], price_index=q["idx"], da=da_half, tax_base=base, tax=tax,
-            nwc=q["nwc"], nwc_change=q["d_nwc"], opcash=q["opc"], opcash_change=q["d_opc"],
-            lease=q["lease"], proceeds=q["proceeds"], fcff=fcff, f_pi=f_pi))
+            capex_pi=q["capex_pi"], price_index=q["idx"], da=da, da_pi=da_pi[h],
+            tax_base=base, tax=tax, nwc=q["nwc"], nwc_change=q["d_nwc"], opcash=q["opc"],
+            opcash_change=q["d_opc"], buffer=q["buf"], lease=q["lease"],
+            proceeds=q["proceeds"], fcff=fcff, f_pi=f_pi, gross_debt_start=gross,
+            interest=interest, shield=shield,
+            issuance_cost=debt * (rp.half_debt[N] - rp.half_clean[N]),
+            excess_spread=debt * max(0.0, rp.half_debt[N] - rp.half_fair[N]),
+            buffer_carry=buf0 * (rp.half_key[N] - rp.half_yield[N])))
+
+    # Переходный член (§6): в первых 2L полугодиях терминала D&A по правилу когорт §4.5
+    # (база якоря, capex явного участка и терминала) отличается от установившейся;
+    # щит разницы — конечной суммой на конец явного участка.
+    H = ctx.half_life
+    seq = list(capex_hist)              # capex якоря, явного участка, дальше — терминала
+    window = fsum(seq[max(0, N + 1 - H):N + 1])     # живые когорты первого полугодия терминала
+    grow_g = grow_pi = 1.0                          # (1 + g)^n, (1 + π)^n
+    transition = []
+    for j in range(1, H + 1):
+        n, h = divmod(j - 1, 2)
+        if j > 1 and h == 0:
+            grow_g, grow_pi = grow_g * (1.0 + g), grow_pi * (1.0 + pi)
+        k = N + j
+        rule = cf.da_anchor * ctx.da_runoff[k - 1] + window / H
+        steady = da_g[h] * grow_g + da_pi[h] * grow_pi
+        if halves[h].tax_base > 0:
+            transition.append(tau * (rule - steady) * (1.0 + r) ** -(n + 0.25 + 0.5 * h))
+        seq.append(cap_g[h] * grow_g + cap_pi[h] * grow_pi)
+        window += seq[k] - (seq[k - H] if k >= H else 0.0)
+    tv_transition = fsum(transition)
 
     def gordon(f1: float, f2: float, x: float) -> float:
         return (f1 * (1.0 + r) ** 0.75 + f2 * (1.0 + r) ** 0.25) / (r - x)
 
     h1, h2 = halves
-    tv = gordon(h1.fcff - h1.f_pi, h2.fcff - h2.f_pi, g) + gordon(h1.f_pi, h2.f_pi, pi)
-    rep_annual = (h1.adj_ebitda - h1.lti) + (h2.adj_ebitda - h2.lti)
-    shield = (tau * float(FN["target_leverage"]) * rep_annual
-              * (W.z_lt + float(FN["spread_fixed"][cell.credit])))
-    tv_shield = gordon(shield / 2.0, shield / 2.0, g)
-    return Terminal(growth=g, rate=r, pi=pi, halves=tuple(halves), da_half=da_half,
-                    da_pi_half=da_pi, tv_flow=tv, tv_shield=tv_shield, shield_annual=shield,
-                    ebitda_rep_annual=rep_annual)
+    tv = (gordon(h1.fcff - h1.f_pi, h2.fcff - h2.f_pi, g) + gordon(h1.f_pi, h2.f_pi, pi)
+          + tv_transition)
+    return Terminal(
+        growth=g, rate=r, pi=pi, debt_rate=rp.debt[N], halves=tuple(halves),
+        tv_da_transition=tv_transition, tv_flow=tv,
+        tv_shield=gordon(h1.shield, h2.shield, g),
+        tv_issuance=gordon(h1.issuance_cost, h2.issuance_cost, g),
+        tv_excess_spread=gordon(h1.excess_spread, h2.excess_spread, g),
+        tv_buffer_carry=gordon(h1.buffer_carry, h2.buffer_carry, g),
+        ebitda_rep_annual=(h1.adj_ebitda - h1.lti) + (h2.adj_ebitda - h2.lti))

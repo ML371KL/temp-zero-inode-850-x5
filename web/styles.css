@@ -735,3 +735,9 @@ td .indent { display: inline-block; padding-left: 14px; }
 .key-neg { border-color: var(--neg); }
 .key-neg { border-color: var(--neg); }
 td .cell-badge { display: block; margin-top: 5px; font-weight: 400; }
+.key.key-hollow { background: var(--surface); border-width: 2px; border-style: solid; box-sizing: border-box; }
+.key-band { width: 14px; height: 10px; border-radius: 3px; background: var(--market-wash); border: 1px solid var(--market); box-sizing: border-box; }
+/* Плитка со словом вместо числа: переносится внутри своей колонки. */
+.kpi-value.is-text { white-space: normal; overflow-wrap: anywhere; font-size: 18px; }
+.table-note { margin-top: 10px; }
+.part-mark { margin-left: 5px; font-weight: 520; color: var(--muted); }

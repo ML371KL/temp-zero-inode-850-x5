@@ -7,8 +7,11 @@
 from __future__ import annotations
 
 import datetime as dt
+import importlib.util
 import json
 from pathlib import Path
+
+import pytest
 
 from model.book import load_book, period_index
 from model.facts import core_facts, load_facts
@@ -16,9 +19,12 @@ from model.facts import core_facts, load_facts
 ROOT = Path(__file__).resolve().parents[1]
 FACTS = ROOT / "data" / "facts"
 CALENDAR = ROOT / "data" / "calendar.json"
+BUILDER = ROOT / "ops" / "tools" / "build_facts.py"
 FILES = ("accounting", "network", "balance", "bridge", "shares", "dividends", "debt_register",
          "history", "peers", "brokers", "actuals", "guidance")
 ANCHOR_DATE = "2026-06-30"
+COLLECTED_ON = "2026-09-28"
+DIVIDEND_STATUSES = {"declared", "paying", "paid", "unclaimed"}
 DATE_KEYS = {"as_of", "date", "decided_on", "record_date", "ex_date", "last_cum_date", "pay_until",
              "pay_until_nominee", "reported_on", "published", "collected_on", "put_date", "maturity",
              "repayment_date_for_model"}
@@ -97,6 +103,7 @@ def test_calendar_events():
         assert isinstance(e["confirmed"], bool) and e["title"] and e["src"], e
         if not e["confirmed"]:
             assert e["note"], f"оценочная дата без пояснения: {e}"
+        assert day.weekday() < 5, f"событие на выходной: {e}"
         days.append(day)
     assert days == sorted(days)
     kinds = {e["kind"] for e in events}
@@ -143,6 +150,18 @@ def test_dividend_register_matches_payable():
     book_day = dt.date(2026, 9, 25)
     claims = [r for r in liable if dt.date.fromisoformat(r["ex_date"]) <= book_day]
     assert close(sum(v(r["amount"]) for r in claims), v(b["dividends_payable"]), 1e-9)
+
+
+def test_dividend_register_statuses():
+    """Статус записи реестра — на дату сбора фактов: declared (объявлен) | paying (идёт выплата) |
+    paid (срок выплаты истёк) | unclaimed (невостребованный остаток прошлых выплат)."""
+    for r in load("dividends")["register"]:
+        assert r["status"] in DIVIDEND_STATUSES, r["id"]
+        if r["status"] == "unclaimed":
+            assert r["dps"] is None, r["id"]
+        elif r.get("pay_until"):
+            done = r["pay_until"] < COLLECTED_ON
+            assert (r["status"] == "paid") == done, f"{r['id']}: {r['status']} при сроке выплаты {r['pay_until']}"
 
 
 def test_shares_identity():
@@ -194,9 +213,12 @@ def test_network_consistency():
 def test_bridge_lines_and_signs():
     lines = {line["key"]: v(line["amount"]) for line in load("bridge")["lines"]}
     assert set(lines) == {"accrued_interest", "nci_put", "lti_liability", "tax_provisions_net",
-                          "st_investments", "associates"}
+                          "income_tax_net", "st_investments", "associates"}
     assert lines["st_investments"] <= 0 and lines["associates"] <= 0
     assert all(lines[k] >= 0 for k in ("accrued_interest", "nci_put", "lti_liability", "tax_provisions_net"))
+    # налог на прибыль к уплате − к возмещению: к уплате — та же ячейка, что в балансе
+    payable = v(load("balance")["nwc_components"]["income_tax_payable"])
+    assert close(payable - lines["income_tax_net"], 5.298, 1e-9)
 
 
 def test_history_coverage():
@@ -204,6 +226,49 @@ def test_history_coverage():
     assert [r["year"] for r in h["annual"]] == list(range(2011, 2026))
     halves = [r["period"] for r in h["halves"]]
     assert halves[0] == "2018H1" and halves[-1] == "2026H1" and len(halves) == 17
+
+
+def test_history_da_and_other_investing():
+    """D&A в истории — двумя полями: `da_pct` с обесценением (как databook) и
+    `da_excl_impairment_pct` без него (где МСФО раскрывает обесценение; в полугодиях
+    отчётности — то же, что `accounting.memo.da_pct`); прочие инвестиционные платежи и
+    поступления по финансовой аренде (ОДДС) — оттоком и притоком, неотрицательные."""
+    h, memo = load("history"), load("accounting")["memo"]
+    rows = h["annual"] + h["halves"]
+    for r in rows:
+        where = r.get("year") or r.get("period")
+        excl = v(r["da_excl_impairment_pct"])
+        if excl is not None:
+            assert 0 < excl <= v(r["da_pct"]), where
+        for key in ("other_investing_payments", "finance_lease_receipts"):
+            x = v(r[key])
+            assert x is None or x >= 0, (where, key)
+    halves = {r["period"]: r for r in h["halves"]}
+    for p, m in memo.items():
+        assert close(v(halves[p]["da_excl_impairment_pct"]), v(m["da_pct"]), 1e-9), p
+    assert v(halves["2026H1"]["other_investing_payments"]) > 0
+
+
+@pytest.mark.ci_only
+@pytest.mark.filterwarnings("ignore:DrawingML support is incomplete")
+def test_builder_reproduces_facts(tmp_path):
+    """Сборщик `ops/tools/build_facts.py` на первичке воспроизводит `data/facts/*.json` и
+    `data/calendar.json` байт в байт (перевод строки — LF, как их хранит git)."""
+    pytest.importorskip("openpyxl", reason="сборщику фактов нужен openpyxl")
+    spec = importlib.util.spec_from_file_location("build_facts", BUILDER)
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    src = builder.sources()
+    lost = builder.missing(src)
+    if lost:
+        pytest.skip("первички рядом с репозиторием нет: " + "; ".join(lost))
+    written = builder.write(builder.build(src), tmp_path)
+    got = {p.relative_to(tmp_path).as_posix(): p.read_bytes() for p in written}
+    want = {f"data/facts/{name}.json" for name in FILES} | {"data/calendar.json"}
+    assert set(got) == want
+    assert {p.name for p in FACTS.glob("*.json")} == {f"{name}.json" for name in FILES}
+    for rel, data in sorted(got.items()):
+        assert data == (ROOT / rel).read_bytes().replace(b"\r\n", b"\n"), f"{rel}: пересборка отличается"
 
 
 def test_peers_and_brokers():

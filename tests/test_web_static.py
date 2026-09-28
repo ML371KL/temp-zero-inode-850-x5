@@ -146,3 +146,26 @@ def test_there_are_six_screens_with_direct_links():
     assert screens == ["overview", "market", "model", "report", "debt", "book"]
     block = re.search(r"const SCREENS = \{(.*?)\};", app, re.S).group(1)
     assert re.findall(r"^\s*([a-z]+):", block, re.M) == screens
+
+
+def test_404_carries_the_same_theme_script():
+    # Страница 404 вечером тоже тёмная: тот же скрипт темы байт в байт (тот же хэш CSP).
+    page = (WEB / "404.html").read_text(encoding="utf-8")
+    match = re.search(r"<script>(.*?)</script>", page, re.S)
+    assert match, "в 404.html нет скрипта темы"
+    assert match.group(1).replace("\r\n", "\n") == _theme_script()
+    head = page.split("</head>")[0]
+    assert head.index("<script>") < head.index('rel="stylesheet"'), "тема ставится до загрузки стилей"
+
+
+def test_gap_to_market_uses_the_exact_median():
+    # Разрыв «медиана к рынку» — от точной медианы на всех экранах (108 %, а не 108/109 %).
+    app = (WEB / "app.js").read_text(encoding="utf-8")
+    assert "printed_central /" not in app and "printed_central/" not in app
+
+
+def test_free_text_is_not_parsed_as_a_date():
+    # Свободный текст («≈ начало января 2027») не превращается молча в 1 января.
+    app = (WEB / "app.js").read_text(encoding="utf-8")
+    body = re.search(r"function parseDay\(iso\) \{(.*?)\n\}", app, re.S).group(1)
+    assert r"if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(iso)) return null;" in body

@@ -81,6 +81,14 @@
   "key_avg_h1_2026": 0.1516,
   "bank_float_spread_if_fixed_as_bonds": 0.0121
  },
+ "issuance_cost": {
+  "amortised_ltm": 0.331,
+  "debt_ltm_avg": 376.5011,
+  "rate_amortised": 0.000879,
+  "incurred_h1_2026": 0.211,
+  "rate_cash_h1_2026": 0.001005,
+  "book": 0.0009
+ },
  "spreads": {
   "float_weighted_0928": 0.0118,
   "float_recent_mean": 0.012,
@@ -213,12 +221,12 @@
   "g_secondary_median": 0.0111,
   "book": {
    "spread_float": {
-    "base": 0.0135,
-    "stress": 0.015
+    "base": 0.012,
+    "stress": 0.0135
    },
    "spread_fixed": {
-    "base": 0.0125,
-    "stress": 0.0195
+    "base": 0.011,
+    "stress": 0.018
    }
   }
  },

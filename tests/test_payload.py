@@ -304,7 +304,7 @@ def test_journal_is_carried_byte_for_byte(book_release, live_release):
     assert was == now
 
 
-def test_changes_add_up_to_the_point_move(book_release, live_release):
+def test_changes_add_up_to_the_point_move(book, facts, book_release, live_release):
     payload, _ = live_release
     ch = payload["changes"]["vs_previous"]
     assert ch["previous_sha"] == book_release["meta"]["payload_sha256"]
@@ -313,7 +313,13 @@ def test_changes_add_up_to_the_point_move(book_release, live_release):
     assert math.fsum(r["rub"] for r in ch["rows"]) == pytest.approx(ch["total_rub"], abs=1e-6)
     assert ch["total_rub"] == pytest.approx(total, abs=0.02)
     assert abs(ch["rows"][0]["rub"]) < 0.02, "книга, факты и код те же — остаток нулевой"
-    assert ch["rows"][1]["rub"] == 0.0, "цена рынка в точку не входит"
+    # Цена рынка входит в точку только через казначейский пакет (продаётся по рынку):
+    # не больше доли пакета в акциях × сдвиг цены; нет пакета — ровно ноль.
+    from model.facts import core_facts
+    cf = core_facts(facts, book)
+    n = getattr(cf, "treasury_mln", 0.0) or 0.0
+    move = abs(payload["market"]["price"] - book_release["market"]["price"])
+    assert abs(ch["rows"][1]["rub"]) <= move * n / (cf.shares_mln + n) + 1e-9
 
 
 # ---------------------------------------------------------- строгая сборка
@@ -326,3 +332,109 @@ def test_strict_build_stops_on_an_unexplained_gate(book, facts):
         P.build_payload(book=tight, facts=facts, fast=True, n_workers=1, explanations={})
     assert "margin_range" in str(err.value)
     assert get_node(book, "checks.margin_range") != [0.5, 0.6]
+
+
+# ------------------------------------------- витрина: поля по аудиту 1.1
+
+
+def test_next_dividend_is_the_model_payout_of_its_pay_half(book_release, grid):
+    """Дивиденд модели «за 9 мес.» — в полугодии выплаты (отсечка в январе → 1П
+    следующего года), а не в открытом полугодии, где модель по книге не платит."""
+    from model.grid import expected_path
+
+    nxt = book_release["dividends"]["next_expected"]
+    assert nxt["record_date_est"] is None or dt.date.fromisoformat(nxt["record_date_est"])
+    day = dt.date.fromisoformat(nxt["record_date_est"])
+    assert nxt["pay_period"] == f"{day.year}H{1 if day.month <= 6 else 2}"
+    halves = {h["period"]: h for h in expected_path(grid)}
+    want = halves[nxt["pay_period"]]["dividends"] * 1000.0 / grid.ctx.facts.shares_mln
+    assert nxt["dps_model"] == pytest.approx(want, rel=1e-6)
+    assert nxt["dps_model"] > 0
+
+
+def test_dividend_history_runs_forward_in_time(book_release):
+    hist = book_release["dividends"]["history"]
+    keys = [P._dividend_order(h) for h in hist]
+    assert keys == sorted(keys) and all(h.get("label") for h in hist)
+
+
+def test_broker_median_is_the_documented_subset(book_release):
+    B = book_release["market"]["brokers"]
+    report = dt.date.fromisoformat(B["report_date"])
+    for r in B["rows"]:
+        assert r["after_report"] == (dt.date.fromisoformat(r["date"]) >= report)
+    picked = sorted(r["target"] for r in B["rows"] if r["in_median"])
+    assert B["median_n"] == len(picked) > 0
+    n = len(picked)
+    median = picked[n // 2] if n % 2 else (picked[n // 2 - 1] + picked[n // 2]) / 2
+    assert median == pytest.approx(B["median"])
+
+
+def test_market_multiples_share_a_base(book_release):
+    m, ce = book_release["market"], book_release["fair_value"]["center_ev"]
+    x5 = next(r for r in m["peers"]["rows"] if r["ticker"] == "X5")
+    assert m["ev_ebitda_ltm"] == pytest.approx(x5["ev_ebitda"])
+    assert x5["ev"] == pytest.approx(x5["market_cap"] + x5["net_debt"] + x5["dividends_after_balance"])
+    ntm = ce["ebitda_ntm"]
+    assert ce["ev_ebitda_ntm_market"] == pytest.approx(ce["v_star"] / ntm)
+    assert ce["ev_ebitda_ntm_median"] / ce["ev_ebitda_ntm_market"] == pytest.approx(1 + ce["gap_median"])
+    assert m["equity_share_of_ev"] == pytest.approx(1 - m["claims"] / m["market_ev"])
+
+
+def test_bond_outstanding_comes_from_the_register(book_release, facts):
+    reg = {b["isin"]: b for b in facts.data["debt_register"]["bonds"]}
+    debt = book_release["debt"]
+    for b in debt["bonds"]:
+        assert b["outstanding"] == P._latest_key(reg[b["isin"]], "outstanding")
+    anchor = debt["anchor"]
+    bonds = math.fsum(b["outstanding_anchor"] or 0.0 for b in debt["bonds"])
+    parts = bonds + debt["bank_loans"]["total"] + (anchor["leasing"] or 0.0)
+    assert abs(parts - anchor["total_debt"]) < 1.0, "облигации, банки и лизинг на дату якоря = общий долг"
+
+
+def test_bridge_lists_add_up(book_release):
+    br = book_release["debt"]["bridge"]
+    assert math.fsum(r["amount"] for r in br["ev_rows"]) == pytest.approx(br["v0"], abs=1e-4)
+    assert math.fsum(r["amount"] for r in br["rows_at_valuation"]) == pytest.approx(br["total"], abs=1e-4)
+    assert br["equity"] == pytest.approx(br["v0"] - br["total"], abs=1e-4)
+    assert br["v0"] == pytest.approx(book_release["layers"]["analytical"]["v0"])
+    # Капитал + строки «капитал → цена» на (акции + казначейский пакет) даёт цену слоя.
+    an, meta = book_release["layers"]["analytical"], book_release["meta"]
+    total = br["equity"] + math.fsum(r["amount"] for r in br["equity_rows"])
+    price = total * (1 - meta["governance_discount"]) * 1000 / (meta["shares_mln"] + br["treasury_mln"])
+    assert price == pytest.approx(an["price"], rel=1e-6)
+    for r in br["rows_at_valuation"]:
+        assert not re.search(r"\d{4}-\d{2}-\d{2}", r["label"]), "даты подписей — ДД.ММ.ГГГГ"
+
+
+def test_anchor_year_marks_its_forecast_only_flows(book_release, book):
+    rows = book_release["paths"]["annual"]
+    anchor_year = int(book["meta"]["anchor_period"][:4])
+    first = next(r for r in rows if r["year"] == anchor_year)
+    assert {"fcff", "ticket", "traffic", "dividends"} <= set(first["forecast_only"])
+    assert not set(first["forecast_only"]) & set(first["fact"])
+    assert all(not r["forecast_only"] for r in rows if r["year"] != anchor_year)
+
+
+def test_regime_titles_and_key_judgement_codes_follow_the_book(book_release):
+    assert book_release["regimes"]["floor"]["title"] == "Дно"
+    sections = "\n".join(p.read_text(encoding="utf-8")
+                         for p in (ROOT / "data" / "assumptions" / "sections").glob("*.md"))
+    parts = re.split(r"\n(?=### )", sections)
+    for jid, path, _, _ in P.KEY_JUDGEMENTS:
+        sec = [s for s in parts if re.match(rf"### {re.escape(jid)}[.\s]", s)]
+        assert sec, f"{jid}: нет раздела книги"
+        assert ".".join(path.split(".")[:2]) in sec[0], f"{jid}: ключ {path} не из этого раздела"
+
+
+def test_tiles_measure_change_on_the_full_series(live_release):
+    payload, live = live_release
+    tiles = {t["id"]: t for t in payload["indicators"]["tiles"]}
+    price = tiles["x5.price"]
+    closes = [r for r in live["price_history"] if r["date"] < price["date"]]
+    assert price["change_from"] == closes[-1]["date"]
+    assert price["change"] == pytest.approx(price["value"] - closes[-1]["close"])
+    assert price["min"]["value"] == min([r["close"] for r in closes] + [price["value"]])
+    key = tiles["cbr.key_rate"]
+    assert key["since"] and key["since"] == payload["live"]["key_rate"]["since"]
+    assert key["since"] <= key["date"]

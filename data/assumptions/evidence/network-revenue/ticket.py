@@ -40,7 +40,8 @@ def state_weights() -> dict:
 
 
 def by_state(center: dict, delta: dict, w: dict) -> dict:
-    """Траектории bear/base/bull: base = центр − Σ w·δ (средневзвешенное = центр), округление 0,1 п.п."""
+    """Траектории bear/base/bull: base = центр − Σ w·δ (средневзвешенное = центр), округление 0,001 п.п.
+    (при шаге 0,1 п.п. все состояния уходили в одну сторону: центр LT смещался на +0,05 п.п.)."""
     out = {}
     for key in ("near", "lt"):
         corr = -sum(w[s] * delta[s][key] for s in ("bear", "bull"))
@@ -54,7 +55,7 @@ def by_state(center: dict, delta: dict, w: dict) -> dict:
                 spec[k] = x
             else:
                 d = out[s]["lt" if k == "LT" else "near"]
-                spec[k] = round(x + d, 3)
+                spec[k] = round(x + d, 5)
         res[s] = spec
     return res
 
@@ -123,7 +124,7 @@ def main() -> None:
         R.p(f"Средний отчётный LFL-трафик {name}: {pc(sum(hp[p]['traffic'] for p in ps) / len(ps))} % (годы экспансии 8–20 % "
             "площади в год: в отчётном трафике — созревание новых магазинов, в трафике зрелых — каннибализация ими же).")
     fm = dens["forecast_mid"]
-    R.p("m по тарифу mid (density.py): " + ", ".join(f"{p} {pc(x['m'])}" for p, x in fm.items()) +
+    R.p("m по тарифу mid (density.py): " + ", ".join(f"{p} {pc(x['m'])}" for p, x in fm.items() if p <= "2028H2") +
         f"; в терминале {pc(dens['terminal']['m_lt'])} п.п.")
 
     R.h("4. Центр и состояния спроса")
@@ -140,8 +141,8 @@ def main() -> None:
     for p in years:
         for nm, spec, c in (("сдвиг", shift, CENTER_SHIFT), ("трафик", traffic, CENTER_TRAFFIC)):
             e = sum(w[s] * path_value(spec[s], p) for s in STATES)
-            assert abs(e - path_value(c, p)) < 0.0006, (nm, p, e)
-    R.p("Средневзвешенное по состояниям = центр (±0,05 п.п. округления) — проверено по всем годам.")
+            assert abs(e - path_value(c, p)) < 1e-5, (nm, p, e)
+    R.p("Средневзвешенное по состояниям = центр (до 0,001 п.п.) — проверено по всем годам.")
     fc = {W: BR["worlds"][W]["food_cpi"]["2026H2"] for W in ("N", "H", "M")}
     wp = BR["world_prob"]
     food_w = sum(wp[W] * fc[W] for W in wp)

@@ -44,6 +44,12 @@ def _copy_fixture(tmp_path):
     return root
 
 
+def _fixture_book(book, root):
+    """Книга с мостом из строк фикстуры (фикстура не обязана знать новые строки книги)."""
+    keys = [ln["key"] for ln in json.loads((root / "bridge.json").read_text(encoding="utf-8"))["lines"]]
+    return {**book, "bridge": {"include": [k for k in book["bridge"]["include"] if k in keys]}}
+
+
 def test_null_is_not_zero(book, tmp_path):
     root = _copy_fixture(tmp_path)
     path = root / "balance.json"
@@ -53,7 +59,22 @@ def test_null_is_not_zero(book, tmp_path):
     F = load_facts(root)
     assert F.data["balance"]["net_debt"] is None
     with pytest.raises(FactsError, match="null"):
-        core_facts(F, book)
+        core_facts(F, _fixture_book(book, root))
+
+
+def test_capex_history_is_required_for_the_anchor_da_runoff(book, tmp_path):
+    """База D&A якоря выбывает по когортам 2L полугодий до якоря (§4.5): нет полугодия — отказ."""
+    root = _copy_fixture(tmp_path)
+    B = _fixture_book(book, root)
+    core_facts(load_facts(root), B)
+    path = root / "history.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    L2 = int(2 * book["capex"]["asset_life_years"])
+    first_needed = [h["period"] for h in data["halves"] if h["period"] < book["meta"]["anchor_period"]][-L2]
+    data["halves"] = [h for h in data["halves"] if h["period"] != first_needed]
+    path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(FactsError, match=first_needed):
+        core_facts(load_facts(root), B)
 
 
 def test_missing_core_file_is_refused(tmp_path):
@@ -78,3 +99,10 @@ def test_core_facts_on_default(book, facts):
     assert all(line.amount is not None for line in cf.bridge if line.included)
     n = len(book["network"]["maturity_curve"]) - 1
     assert len(cf.gross_opened) == n + 2
+    # capex 2L полугодий до якоря — выручка × capex/выручку из history.json (§4.5)
+    L2 = int(2 * book["capex"]["asset_life_years"])
+    assert len(cf.capex_hist) == L2 and all(v > 0 for v in cf.capex_hist.values())
+    halves = {h["period"]: h for h in facts.data["history"]["halves"]}
+    for p, v in cf.capex_hist.items():
+        assert v == halves[p]["revenue"] * halves[p]["capex_pct"]
+    assert cf.treasury_mln == facts.data["shares"]["treasury"] > 0

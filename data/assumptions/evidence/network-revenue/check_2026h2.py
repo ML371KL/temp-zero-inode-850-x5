@@ -1,8 +1,8 @@
 """Сквозная проверка: выручка 2П2026 г/г по формуле MODEL §4.2 на книжных значениях области против прогноза
 компании (+12–16 % за 2026 г. при 1П +10,5 %) и ретро-оценки X5-indicators (3 кв. 2026: +9,4…+10,7 %).
 
-Книга для прогона = черновик (assumptions.draft.yaml) + фрагмент «маржа» (вероятности режимов и спрос) +
-этот фрагмент (оси — заменяют одноимённые оси черновика). Книга проверяется закрытой схемой ядра
+Книга для прогона — итоговая книга (data/assumptions/assumptions.yaml, она несёт этот фрагмент); для сравнения —
+та же книга со значениями черновика по сети и выручке. Книга проверяется закрытой схемой ядра
 (model.book_schema.validate_book), выручка считается ЯДРОМ (model.core.Context.revenue) на фактах
 репозитория (data/facts); параллельно — независимой реализацией §4.1–4.2 этого листа (сверка).
 
@@ -20,7 +20,8 @@ import warnings
 
 import yaml
 
-from common import HERE, Report, eff_model_rule, forward_network, halves, load, path_value, pc, r6
+from common import (HERE, Report, eff_consistent, eff_model_rule, forward_network, halves, load, network_history,
+                    path_value, pc, r6)
 
 REPO = HERE.parents[3]
 sys.path.insert(0, str(REPO))
@@ -32,34 +33,19 @@ ASSUMPTIONS = REPO / "data" / "assumptions"
 WORLDS, REGIMES, TARIFFS, DEMANDS = ("N", "H", "M"), ("stress", "floor", "partial", "full"), ("low", "mid", "high"), ("bear", "base", "bull")
 
 
-def deep_merge(base: dict, over: dict) -> dict:
-    out = copy.deepcopy(base)
-    for k, x in over.items():
-        if isinstance(x, dict) and isinstance(out.get(k), dict):
-            out[k] = deep_merge(out[k], x)
-        else:
-            out[k] = copy.deepcopy(x)
-    return out
-
-
 def build_book(with_fragment: bool = True) -> dict:
-    A = yaml.safe_load((ASSUMPTIONS / "assumptions.draft.yaml").read_text(encoding="utf-8"))
-    mg = yaml.safe_load((ASSUMPTIONS / "fragments" / "margin.yaml").read_text(encoding="utf-8"))
-    for k in ("axes_proposals", "reverse_dcf_proposals"):
-        mg.pop(k, None)
-    A = deep_merge(A, mg)
-    if not with_fragment:
+    """Итоговая книга (assumptions.yaml); with_fragment=False — та же книга со значениями черновика по сети и
+    выручке (network, revenue, joint.world_links[*].growth, joint.stress_growth)."""
+    A = yaml.safe_load((ASSUMPTIONS / "assumptions.yaml").read_text(encoding="utf-8"))
+    if with_fragment:
         return A
-    fr = yaml.safe_load((ASSUMPTIONS / "fragments" / "network-revenue.yaml").read_text(encoding="utf-8"))
-    axes, raxes = fr.pop("axes_proposals"), fr.pop("reverse_dcf_proposals")
-    A = deep_merge(A, fr)
-    replaced = {"Чистый рост площади (сдвиг всех тарифов)", "Трафик LFL (сдвиг всех состояний)",
-                "Плотность новой площади", "Продуктивность закрываемой площади"}
-    ua = [a for a in A["valuation"]["uncertainty"]["axes"] if a["name"] not in replaced | {x["name"] for x in axes}]
-    A["valuation"]["uncertainty"]["axes"] = ua + axes
-    ra = [a for a in A["valuation"]["reverse_dcf"]["axes"] if a["name"] not in replaced | {x["name"] for x in raxes}]
-    A["valuation"]["reverse_dcf"]["axes"] = ra + raxes
-    return A
+    dr = yaml.safe_load((ASSUMPTIONS / "assumptions.draft.yaml").read_text(encoding="utf-8"))
+    D = copy.deepcopy(A)
+    D["network"], D["revenue"] = copy.deepcopy(dr["network"]), copy.deepcopy(dr["revenue"])
+    for W, link in D["joint"]["world_links"].items():
+        link["growth"] = dr["joint"]["world_links"][W]["growth"]
+    D["joint"]["stress_growth"] = dr["joint"]["stress_growth"]
+    return D
 
 
 def tariff_of(A: dict, W: str, reg: str) -> str:
@@ -109,7 +95,8 @@ def main() -> None:
     acc = facts.data["accounting"]["periods"]
     r25h1, r25h2, r26h1 = acc["2025H1"]["revenue"], acc["2025H2"]["revenue"], acc["2026H1"]["revenue"]
     ctx, ctxd = Context(A, facts), Context(D, facts)
-    R.p("Книга (черновик + фрагмент «маржа» + этот фрагмент) прошла закрытую схему ядра (validate_book).")
+    R.p(f"Книга {A['meta']['version']} (assumptions.yaml) и вариант со значениями черновика по сети и выручке прошли "
+        "закрытую схему ядра (validate_book).")
 
     R.h("1. Выручка 2П2026 г/г по мирам × тарифам × спросу (ядро), %")
     rows, grid = [], {}
@@ -142,12 +129,24 @@ def main() -> None:
             parts["traffic"] += pw * pr * rv.traffic[0]
     vat = path_value(A["revenue"]["vat_effect"], "2026H2")
     oth = path_value(A["revenue"]["other_growth"], "2026H2")
-    dens = json.loads((HERE / "density_out.json").read_text(encoding="utf-8"))
-    m = dens["forecast_mid"]["2026H2"]["m"]
+    # эффективная площадь ядра = согласованный рост (NL + m, как в подборе d, density.py) + ошибка правила ядра
+    NW, Hn = A["network"], network_history()
+    cons = {}
+    for t in TARIFFS:
+        Af, Of, Cf = forward_network(Hn["A"]["2026H1"], ["2026H2"], NW["net_growth"][t], NW["close_rate"])
+        order = [p for p in Hn["A"] if p >= "2022H2"] + ["2026H2"]
+        c = eff_consistent(order, Hn["A"]["2022H2"], {**Hn["O"], **Of}, {**Hn["C"], **Cf}, NW["maturity_curve"],
+                           NW["new_space_density"], NW["closed_productivity"])["yoy"]["2026H2"]
+        G = ctx.network(t)
+        cons[t] = {"nl": c["nonlfl"], "m": c["m"], "art": G.eff_avg[0] / G.eff_avg_hist["2025H2"] - 1 - c["g"]}
+    w_t = {t: sum(pw * pr for W, pw in J["world_prob"].items() for reg, pr in J["regime_prob"].items()
+                  if tariff_of(A, W, reg) == t) for t in TARIFFS}
+    nl_e, m, art = (sum(w_t[t] * cons[t][k] for t in TARIFFS) for k in ("nl", "m", "art"))
     R.table(["составляющая", "вклад, %"],
             [["эффективная площадь (правило ядра)", pc(parts["eff"])],
-             ["  из неё вне отчётного LFL (NL, тариф mid, density.py)", pc(dens["forecast_mid"]["2026H2"]["nl"])],
+             ["  вне отчётного LFL (NL; согласованный расчёт, как в подборе d)", pc(nl_e)],
              ["  созревание, в отчётном LFL (m)", pc(m)],
+             ["  ошибка правила ядра (история на физической площади, density.py, разд. 5)", pc(art)],
              ["LFL-чек с НДС (k × прод. ИПЦ + сдвиг)", pc(parts["ticket_ex_vat"])],
              ["клин НДС", pc(vat)],
              ["LFL-трафик зрелой сети", pc(parts["traffic"])],
@@ -224,6 +223,7 @@ def main() -> None:
 
     R.data.update({"expected_2026H2_growth": r6(g_e), "expected_2026H2_revenue": r6(e_rev), "year_2026_growth": r6(g26),
               "parts": {k: r6(x) for k, x in parts.items()}, "reported_lfl_implied": r6(rep_lfl),
+              "eff_split": {"nl": r6(nl_e), "m": r6(m), "rule_error": r6(art), "tariff_weights": {t: r6(x) for t, x in w_t.items()}},
               "grid": {k: r6(x) for k, x in grid.items()}, "cells_range": [r6(lo_c), r6(hi_c)],
               "own_vs_core": r6(own / core - 1), "draft_2026H2_growth": r6(e_d / r25h2 - 1),
               "path": {str(y): r6(x) for y, x in years.items()}})

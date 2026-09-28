@@ -1,7 +1,8 @@
 // Снимки витрины X5: headless Chrome по CDP (встроенная панель
 // «Браузер» Claude Desktop роняет приложение). Шесть экранов × 1280/375 px ×
 // светлая/тёмная тема + проба ползунка λ. В JSON — горизонтальная прокрутка,
-// переносы чисел, переполнения, наложения подписей SVG, ошибки консоли и CSP.
+// переносы чисел, переполнения, наложения подписей SVG, линии и точки графиков
+// за пределами своего SVG, ошибки консоли и CSP.
 //
 //   TAG=local BASE_URL=http://127.0.0.1:8872 OUT_ROOT=../x5-850-handoff/shots node ops/tools/shots.mjs
 //   (локально: python ops/tools/devserver.py 8872 [выпуск.json]; образец — снимки Магнита 850oa)
@@ -77,6 +78,12 @@ const MEASURE = `(() => {
     if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) overlaps.push([rects[i].t, rects[j].t]);
   }
   const clipped = rects.filter(x => x.r.left < x.svg.left - 1 || x.r.right > x.svg.right + 1 || x.r.top < x.svg.top - 2 || x.r.bottom > x.svg.bottom + 2).map(x => x.t);
+  // Линии и точки графиков за пределами своего SVG (overflow: visible рисует их на соседях).
+  const marksOutside = [...document.querySelectorAll("svg path, svg circle, svg polyline")]
+    .filter(x => x.getBoundingClientRect().width > 0 || x.getBoundingClientRect().height > 0)
+    .map(x => ({ r: x.getBoundingClientRect(), svg: x.ownerSVGElement.getBoundingClientRect(), label: x.ownerSVGElement.getAttribute("aria-label") || "svg" }))
+    .filter(x => x.r.left < x.svg.left - 2 || x.r.right > x.svg.right + 2 || x.r.top < x.svg.top - 8 || x.r.bottom > x.svg.bottom + 8)
+    .map(x => x.label.slice(0, 50) + ": " + Math.round(x.r.left - x.svg.left) + "…" + Math.round(x.r.right - x.svg.left) + " из " + Math.round(x.svg.width));
   const tiny = rects.filter(x => x.fs < 12.4).map(x => x.t + " " + x.fs);
   const smallText = [...document.querySelectorAll("#app *")].filter(e => e.children.length === 0 && e.textContent.trim() && !(e instanceof SVGElement) && parseFloat(getComputedStyle(e).fontSize) < 12.4).slice(0, 5).map(e => e.textContent.slice(0, 30));
   return {
@@ -88,7 +95,8 @@ const MEASURE = `(() => {
     empties: [...document.querySelectorAll("#app .empty")].map(e => e.textContent.slice(0, 90)),
     innerWidth, docScrollWidth: de.scrollWidth, height: de.scrollHeight,
     wrappedNum: wrapped, wrappedSamples, overflow, cardOverflow,
-    svgOverlaps: overlaps.slice(0, 12), svgOverlapCount: overlaps.length, svgClipped: clipped.slice(0, 12), tiny: tiny.slice(0, 6), smallText,
+    svgOverlaps: overlaps.slice(0, 12), svgOverlapCount: overlaps.length, svgClipped: clipped.slice(0, 12),
+    marksOutside: [...new Set(marksOutside)].slice(0, 8), tiny: tiny.slice(0, 6), smallText,
     headline: t("#fv-headline"), bands: t(".bands"), verdict: t("#fv-ev"), lede: t("#fv-lede"),
     banners: [...document.querySelectorAll(".banner")].map(b => b.innerText.replace(/\\s+/g, " ").slice(0, 160)),
     chip: t("#release-chip"),
@@ -185,6 +193,7 @@ async function main() {
     overflow: shots.filter(([, v]) => v.overflow.length || v.cardOverflow.length).map(([k, v]) => `${k}: ${v.overflow.concat(v.cardOverflow).join(" ; ")}`),
     svgOverlaps: shots.filter(([, v]) => v.svgOverlapCount).map(([k, v]) => `${k}: ${v.svgOverlapCount} ${JSON.stringify(v.svgOverlaps.slice(0, 4))}`),
     svgClipped: shots.filter(([, v]) => v.svgClipped.length).map(([k, v]) => `${k}: ${v.svgClipped.join("|")}`),
+    marksOutside: shots.filter(([, v]) => v.marksOutside.length).map(([k, v]) => `${k}: ${v.marksOutside.join(" | ")}`),
     tiny: shots.filter(([, v]) => v.tiny.length || v.smallText.length).map(([k, v]) => `${k}: ${v.tiny.concat(v.smallText).join("|")}`),
     broken: shots.filter(([, v]) => v.broken).map(([k]) => k),
     console: report._console.length, csp: report._csp.length,

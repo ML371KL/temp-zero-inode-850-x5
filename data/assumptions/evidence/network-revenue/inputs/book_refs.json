@@ -6,7 +6,7 @@
  },
  "margin_fragment": {
   "file": "data/assumptions/fragments/margin.yaml",
-  "sha256": "6b42ec0e98fc159f186f2c3079c90a1a836d58af5c64ce349928158eadb95cd6"
+  "sha256": "810999a38c8207e4a7bde861147a6ced2854c24f66421ceea23ebef413725ca3"
  },
  "meta": {
   "anchor_period": "2026H1",
@@ -181,8 +181,8 @@
  },
  "regime_prob": {
   "stress": 0.415,
-  "floor": 0.3,
-  "partial": 0.235,
+  "floor": 0.305,
+  "partial": 0.23,
   "full": 0.05
  },
  "regime_demand": {

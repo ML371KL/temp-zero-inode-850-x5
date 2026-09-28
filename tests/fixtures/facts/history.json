@@ -1,0 +1,227 @@
+{
+ "unit": "выручка — млрд ₽; доли — доли единицы",
+ "note": "ФИКСТУРА ТЕСТОВ ЯДРА: полугодия выручки и capex/выручку из data/facts/history.json (databook X5) — только то, что читает ядро (когорты capex до якоря, docs/MODEL.md §4.5).",
+ "halves": [
+  {
+   "period": "2018H1",
+   "revenue": {
+    "v": 734.077,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AY6 + AZ6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.051978,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!AY33 + AZ33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!AY42 + AZ42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2018H2",
+   "revenue": {
+    "v": 798.46,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BA6 + BB6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.050863,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BA33 + BB33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BA42 + BB42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2019H1",
+   "revenue": {
+    "v": 843.175,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BC6 + BD6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.038788,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BC33 + BD33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BC42 + BD42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2019H2",
+   "revenue": {
+    "v": 891.172,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BE6 + BF6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.045789,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BE33 + BF33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BE42 + BF42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2020H1",
+   "revenue": {
+    "v": 962.625,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BG6 + BH6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.039194,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BG33 + BH33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BG42 + BH42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2020H2",
+   "revenue": {
+    "v": 1015.401,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BI6 + BJ6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.047057,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BI33 + BJ33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BI42 + BJ42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2021H1",
+   "revenue": {
+    "v": 1053.703,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BK6 + BL6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.042028,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BK33 + BL33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BK42 + BL42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2021H2",
+   "revenue": {
+    "v": 1151.116,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BM6 + BN6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.042247,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BM33 + BN33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BM42 + BN42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2022H1",
+   "revenue": {
+    "v": 1252.18,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BO6 + BP6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.030929,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BO33 + BP33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BO42 + BP42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2022H2",
+   "revenue": {
+    "v": 1353.052,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BQ6 + BR6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.026062,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BQ33 + BR33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BQ42 + BR42",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2023H1",
+   "revenue": {
+    "v": 1468.407,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!O6 + P6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.027656,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O30 + P30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!O36 + P36",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2023H2",
+   "revenue": {
+    "v": 1677.452,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Q6 + R6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.046363,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q30 + R30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q36 + R36",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2024H1",
+   "revenue": {
+    "v": 1851.711,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!S6 + T6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.03929,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S30 + T30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!S36 + T36",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2024H2",
+   "revenue": {
+    "v": 2056.336,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!U6 + V6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.041693,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U30 + V30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!U36 + V36",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2025H1",
+   "revenue": {
+    "v": 2243.992,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!W6 + X6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.045268,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W30 + X30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!W36 + X36",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2025H2",
+   "revenue": {
+    "v": 2398.042,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Y6 + Z6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.047391,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y30 + Z30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y36 + Z36",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  },
+  {
+   "period": "2026H1",
+   "revenue": {
+    "v": 2480.513,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AA6 + AB6",
+    "calc": "сумма кварталов"
+   },
+   "capex_pct": {
+    "v": 0.037357,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA30 + AB30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA36 + AB36",
+    "calc": "(ОС + НМА) / выручка"
+   }
+  }
+ ]
+}

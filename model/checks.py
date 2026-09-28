@@ -87,9 +87,13 @@ def invariants(grid) -> list[Invariant]:
             bad.append(f"capex | {r}: {total!r}")
     out.append(Invariant("probabilities", not bad, "; ".join(bad) or "суммы = 1"))
 
-    fcff_bad, debt_bad, capex_bad = [], [], []
+    fcff_bad, debt_bad, capex_bad, ev_bad = [], [], [], []
     for c in grid.cells:
         res = c.result
+        parts = (res.pv_fcff + res.pv_shield + res.pv_terminal - res.pv_issuance
+                 - res.pv_excess_spread - res.pv_buffer_carry)
+        if not _close(parts, res.ev):
+            ev_bad.append(c.key)
         nd_prev = grid.ctx.facts.net_debt + grid.ctx.facts.dividends_payable
         for r in res.rows:
             rebuilt = (r.adj_ebitda - r.lti - r.tax_unlevered - r.capex - r.nwc_change
@@ -112,6 +116,9 @@ def invariants(grid) -> list[Invariant]:
                          "; ".join(debt_bad[:5]) or "ND(p) = ND(p−1) − (FCFF + S − I) + div"))
     out.append(Invariant("capex_identity", not capex_bad,
                          "; ".join(capex_bad[:5]) or "capex = поддерживающий + рост + инфраструктура"))
+    out.append(Invariant("ev_identity", not ev_bad,
+                         "; ".join(ev_bad[:5]) or "EV = PV FCFF + PV щита + PV терминала − вычеты "
+                                                  "финансирования"))
 
     inf = []
     for c in grid.cells:

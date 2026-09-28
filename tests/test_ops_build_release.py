@@ -160,6 +160,33 @@ def test_unreadable_previous_is_a_failed_step(fake_model, inputs, capsys):
     assert last_line(capsys.readouterr()).startswith("ПРОВАЛ на шаге чтение прошлого выпуска")
 
 
+def closed(actual):
+    return {"entries": [{"id": "2026H2-x5.adj_margin", "target": "x5.adj_margin",
+                         "period": "2026H2", "actual": actual, "errors": {"forecast": 0.001}}]}
+
+
+@pytest.mark.parametrize("facts,ok", [({("x5.adj_margin", "2026H2"): 0.061}, True),
+                                      ({("x5.adj_margin", "2026H2"): 0.058}, False),
+                                      ({}, False)])
+def test_closed_journal_entry_must_match_actuals(fake_model, inputs, monkeypatch, capsys,
+                                                 facts, ok):
+    """Факт в actuals.json для закрытой записи исправили — сборка не глотает
+    это молча, а называет, что делать (переоткрыть запись)."""
+    import model.facts
+    import model.journal
+    monkeypatch.setattr(model.facts, "load_facts", lambda: None)
+    monkeypatch.setattr(model.journal, "actuals_of", lambda F: facts)
+    fake_model.result = payload(journal=closed(0.061))
+    code = build_release.main(["--book", "--out", str(inputs["out"])])
+    line = last_line(capsys.readouterr())
+    if ok:
+        assert code == 0 and line.startswith("готово:")
+    else:
+        assert code == 1 and not inputs["out"].exists()
+        assert line.startswith("ПРОВАЛ на шаге проверка журнала")
+        assert "--reopen 2026H2-x5.adj_margin" in line
+
+
 def test_live_price_failure_stops_before_the_model(fake_model, inputs, monkeypatch, capsys):
     from indicators import live
 

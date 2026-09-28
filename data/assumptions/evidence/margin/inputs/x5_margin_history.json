@@ -211,8 +211,8 @@
     "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AO6"
    },
    "adj_ebitda": {
-    "v": 19.931,
-    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AO14"
+    "v": 14.423,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!H14 − AM14 − AN14 − AP14 (год минус три квартала; столбец AO — копия 3 кв. 2016)"
    }
   },
   "2015Q4": {

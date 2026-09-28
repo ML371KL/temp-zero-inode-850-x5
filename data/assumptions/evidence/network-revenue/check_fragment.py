@@ -3,8 +3,9 @@
 Проверяет: только ключи области (joint.world_links[*].growth, joint.stress_growth, network.*, revenue.*,
 axes_proposals, reverse_dcf_proposals); те же тарифы, состояния спроса и набор ключей блоков, что в черновике;
 траектории = выходы network.py, ticket.py, other.py, vat.py; d, μ, κ = density.py; ключ полугодия на
-последнем периоде запрещён (MODEL §0.1); средневзвешенное сдвига и трафика по состояниям = центр листа;
-книга «черновик + фрагменты» проходит закрытую схему ядра (check_2026h2.build_book + validate_book).
+последнем периоде запрещён (MODEL §0.1); средневзвешенное сдвига и трафика по состояниям = центр листа
+(до 0,001 п.п.); книга (assumptions.yaml) несёт значения фрагмента (траектории — равны по всем полугодиям
+и LT, оси — те же) и проходит закрытую схему ядра (validate_book).
 
 Запуск: python -B check_fragment.py (нужен PyYAML и пакет model/ репозитория).
 """
@@ -20,6 +21,7 @@ from common import HERE, path_value
 ASSUMPTIONS = HERE.parents[1]
 FRAG = ASSUMPTIONS / "fragments" / "network-revenue.yaml"
 DRAFT = ASSUMPTIONS / "assumptions.draft.yaml"
+BOOK = ASSUMPTIONS / "assumptions.yaml"
 ALLOWED = {"joint": {"world_links", "stress_growth"},
            "network": {"net_growth", "close_rate", "maturity_curve", "new_space_density", "closed_productivity"},
            "revenue": {"ticket_k", "ticket_shift", "traffic", "other_growth", "vat_effect", "homogeneity"},
@@ -86,23 +88,48 @@ def main() -> int:
         for y in range(2026, 2037):
             p = f"{y}H2"
             e = sum(w[s] * path_value(fr["revenue"][blk][s], p) for s in w)
-            need(abs(e - path_value(center, p)) < 6e-4, f"{blk} {p}: средневзвешенное {e:.4f} ≠ центр {path_value(center, p):.4f}")
+            need(abs(e - path_value(center, p)) < 1e-5, f"{blk} {p}: средневзвешенное {e:.5f} ≠ центр {path_value(center, p):.5f}")
     for ax in fr["axes_proposals"]:
         need({"name", "kind", "paths", "low", "high"} == set(ax), f"ось {ax.get('name')}: ключи")
     for ax in fr["reverse_dcf_proposals"]:
         need({"name", "kind", "paths", "search", "range", "unit"} == set(ax), f"обратный DCF {ax.get('name')}: ключи")
 
+    # книга несёт фрагмент: траектории равны по всем полугодиям и LT, прочие ключи — буквально, оси — те же
+    bk = yaml.safe_load(BOOK.read_text(encoding="utf-8"))
+    periods = [f"{y}H{h}" for y in range(2026, int(last[:4]) + 1) for h in (1, 2) if f"{y}H{h}" >= dr["meta"]["first_period"]]
+
+    def same_traj(a, b):
+        return all(abs(path_value(a, p) - path_value(b, p)) < 1e-12 for p in periods) and a.get("LT") == b.get("LT")
+
+    for where, spec in trajs():
+        blk, key, *rest = where.split(".")
+        ref = bk[blk][key] if not rest else bk[blk][key][rest[0]]
+        need(same_traj(spec, ref), f"{where}: фрагмент ≠ книга")
+    for k in ("maturity_curve", "new_space_density", "closed_productivity"):
+        need(fr["network"][k] == bk["network"][k], f"network.{k}: фрагмент ≠ книга")
+    for k in ("ticket_k", "homogeneity"):
+        need(fr["revenue"][k] == bk["revenue"][k], f"revenue.{k}: фрагмент ≠ книга")
+    for W, link in fr["joint"]["world_links"].items():
+        need(link["growth"] == bk["joint"]["world_links"][W]["growth"], f"world_links.{W}.growth: фрагмент ≠ книга")
+    need(fr["joint"]["stress_growth"] == bk["joint"]["stress_growth"], "stress_growth: фрагмент ≠ книга")
+    book_axes = {a["name"]: a for a in bk["valuation"]["uncertainty"]["axes"]}
+    for ax in fr["axes_proposals"]:
+        need(book_axes.get(ax["name"]) == ax, f"ось «{ax['name']}»: фрагмент ≠ книга")
+    book_raxes = {a["name"]: a for a in bk["valuation"]["reverse_dcf"]["axes"]}
+    for ax in fr["reverse_dcf_proposals"]:
+        need(book_raxes.get(ax["name"]) == ax, f"обратный DCF «{ax['name']}»: фрагмент ≠ книга")
     try:
         from check_2026h2 import build_book
         from model.book_schema import validate_book
         validate_book(build_book(True))
+        validate_book(build_book(False))
     except Exception as exc:  # noqa: BLE001 — печатаем причину отказа схемы
         errs.append(f"схема ядра: {exc}")
 
     if errs:
         print("ОШИБКИ:\n  " + "\n  ".join(errs))
         return 1
-    print(f"фрагмент согласован с листом и схемой: тарифы {list(nw['net_growth'])}, d {de['d_book']}, "
+    print(f"фрагмент согласован с листом, книгой и схемой: тарифы {list(nw['net_growth'])}, d {de['d_book']}, "
           f"k {tk['k_book']}, НДС {vt['vat_effect_book']}, осей {len(fr['axes_proposals'])}")
     return 0
 

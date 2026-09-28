@@ -29,6 +29,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -80,8 +81,10 @@ GIT_TIMEOUT_S = 60
 RELEASE_NOTES = BOOK_DIR / "release_notes.yaml"
 CALENDAR = ROOT / "data" / "calendar.json"
 NOT_CONTENT_META = ("generated_at", "payload_sha256", "bytes", "previous_sha256")
+ISO_DAY = re.compile(r"\d{4}-\d{2}-\d{2}")         # дата ISO ГГГГ-ММ-ДД
+RU_DAY = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")   # дата ДД.ММ.ГГГГ в тексте
 
-REGIME_TITLES = {"stress": "Стресс", "floor": "Пол", "partial": "Частичный возврат",
+REGIME_TITLES = {"stress": "Стресс", "floor": "Дно", "partial": "Частичный возврат",
                  "full": "Полный возврат"}
 CAPEX_TITLES = {"low": "Низкий", "base": "Базовый", "high": "Высокий"}
 SECTIONS = (("worlds", "Миры ставок"), ("joint", "Сетка и вероятности"),
@@ -94,13 +97,29 @@ SECTIONS = (("worlds", "Миры ставок"), ("joint", "Сетка и вер
 KEY_JUDGEMENTS = (
     ("A-P1", "joint.world_prob.N", "Вес мира «Нормализация» в своём взгляде", "pct"),
     ("A-P1c", "joint.lambda", "Вес своего взгляда на ставки λ", "number"),
-    ("A-C1", "margin.targets.floor.LT", "Маржа далее в режиме «Пол»", "pct"),
+    ("A-C1", "margin.targets.floor.LT", "Маржа далее в режиме «Дно»", "pct"),
     ("A-K1", "capex.maintenance.base.LT", "Поддерживающий capex далее, базовый уровень", "pct"),
     ("A-K3", "capex.price_per_m2", "Стоимость открытия", "bn_per_m2"),
     ("A-V1", "valuation.beta_u", "Бета активов", "number"),
     ("A-V2", "valuation.erp", "Премия за риск акций", "pct"),
-    ("A-V3", "valuation.governance_discount", "Дисконт за управление", "pct"),
-    ("A-F5", "financing.target_leverage", "Целевой чистый долг / EBITDA", "times"))
+    ("A-V7", "valuation.governance_discount", "Дисконт за управление", "pct"),
+    ("A-F6", "financing.target_leverage", "Целевой чистый долг / EBITDA", "times"))
+# Составляющие EV слоя (LayerResult.ev_parts ядра) словами.
+EV_ROW_TITLES = {"pv_fcff": "Свободный поток прогноза (PV)",
+                 "pv_shield": "Налоговый щит процентов (PV)",
+                 "pv_terminal": "Терминальная стоимость (PV)",
+                 "pv_issuance": "Издержки размещения долга (PV)",
+                 "pv_excess_spread": "Проценты сверх справедливого спреда (PV)",
+                 "pv_buffer_carry": "Кэрри финансовой подушки (PV)"}
+# Источники входов словами (коды конвейера — indicators/*).
+SOURCE_WORDS = {"ISS TQBR": "Мосбиржа, режим TQBR", "ISS TQBR history": "Мосбиржа, закрытия TQBR",
+                "ISS TQCB": "Мосбиржа, режим TQCB", "ISS zcyc": "Мосбиржа, бескупонная кривая ОФЗ",
+                "ЦБ SOAP KeyRate": "Банк России, веб-сервис KeyRate",
+                "ЦБ hd_base/KeyRate": "Банк России, страница ключевой ставки"}
+# Строки пути, которые в году якоря покрывают только прогнозные полугодия
+# (факт якоря добавляется к строкам из `fact` года — grid.annual_path).
+FORECAST_ONLY_FIELDS = ("ticket", "traffic", "capex_maintenance", "capex_growth", "capex_infra",
+                        "nwc_change", "tax_unlevered", "fcff", "shield", "interest", "dividends")
 INVARIANT_TITLES = {"probabilities": "Вероятности клеток в сумме 1",
                     "fcff_identity": "FCFF из опубликованных строк",
                     "debt_identity": "Путь долга", "capex_identity": "Capex из трёх частей",
@@ -158,6 +177,36 @@ def _raw_src(node) -> str | None:
     if isinstance(node, dict):
         return node.get("src") or node.get("calc")
     return None
+
+
+def _words(source) -> str | None:
+    """Код источника конвейера («ISS zcyc») — словами; прочее как есть."""
+    if not source:
+        return source
+    return SOURCE_WORDS.get(str(source), str(source))
+
+
+def _ru_date(day) -> str:
+    """Дата для подписи на витрине: ДД.ММ.ГГГГ."""
+    d = _day(day)
+    return d.strftime("%d.%m.%Y") if d else str(day)
+
+
+def _iso_day(x) -> str | None:
+    """Строго дата ISO `ГГГГ-ММ-ДД` (свободный текст — None)."""
+    if isinstance(x, dt.date):
+        return x.isoformat()
+    s = str(x or "")
+    if ISO_DAY.fullmatch(s):
+        try:
+            return dt.date.fromisoformat(s).isoformat()
+        except ValueError:
+            return None
+    return None
+
+
+def _half_of(day: dt.date) -> str:
+    return f"{day.year}H{1 if day.month < 7 else 2}"
 
 
 def compact_json(payload: dict) -> str:
@@ -264,28 +313,63 @@ def _peers(F: Facts, live: dict | None, price: float, price_date: str) -> dict:
             q = quotes.get(t) or {}
             px, pd = (float(q["price"]), q.get("date")) if _num(q.get("price")) else (None, None)
         shares, nd = r.get("shares_outstanding"), r.get("net_debt")
-        nd_total = nd + (r.get("dividends_after_balance") or 0.0) if _num(nd) else None
+        div = r.get("dividends_after_balance") if _num(r.get("dividends_after_balance")) else 0.0
         cap = px * shares / 1000.0 if _num(px) and _num(shares) else None
-        ev = cap + nd_total if _num(cap) and _num(nd_total) else None
+        # EV = капитализация + чистый долг + дивиденды, объявленные до даты баланса и
+        # выплаченные после неё (у X5 — финал за 2025 г.).
+        ev = cap + nd + div if _num(cap) and _num(nd) else None
         profit = r.get("net_profit_ltm")
         rows.append({"ticker": t, "name": r.get("name"), "price": px, "price_date": pd,
-                     "market_cap": cap, "net_debt": nd_total, "ev": ev,
+                     "market_cap": cap, "net_debt": nd, "dividends_after_balance": div, "ev": ev,
                      "ebitda_ltm": r.get("ebitda_ltm"), "ev_ebitda": _div(ev, r.get("ebitda_ltm")),
                      "pe": _div(cap, profit) if _num(profit) and profit > 0 else None,
-                     "basis": P.get("basis"), "as_of": r.get("reported_on") or P.get("as_of"),
+                     "basis": P.get("basis"), "reported_on": r.get("reported_on"),
                      "src": _raw_src((raw.get(t) or {}).get("net_debt"))})
     rows.sort(key=lambda x: x["ticker"] != "X5")
     return {"rows": rows, "as_of": P.get("as_of")}
 
 
+def _report_date(B: dict) -> dt.date | None:
+    """Дата отчёта, после которого считается медиана целей: `report_date` фактов
+    или дата ДД.ММ.ГГГГ из метки `after_report`."""
+    d = _day(B.get("report_date"))
+    if d:
+        return d
+    m = RU_DAY.search(str(B.get("after_report") or ""))
+    try:
+        return dt.date(int(m.group(3)), int(m.group(2)), int(m.group(1))) if m else None
+    except ValueError:
+        return None
+
+
 def _brokers(F: Facts) -> dict:
+    """Цели инвестдомов. Медиана — по правилу фактов: цели с горизонтом 12 мес.,
+    выставленные после отчёта (`after_report`); правило и число целей идут в
+    выпуск, у строк — признаки «после отчёта» и «в медиане»."""
     B = F.data.get("brokers") or {}
+    raw = F.raw.get("brokers") or {}
     median_key = next((k for k in B if k.startswith("median")), None)
-    return {"rows": [{"broker": r.get("broker"), "date": r.get("date"), "target": r.get("target"),
-                      "rating": r.get("rating"), "horizon": r.get("horizon"), "src": r.get("src")}
-                     for r in B.get("rows") or []],
-            "median": B.get(median_key) if median_key else None,
-            "after_report": B.get("after_report"), "as_of": B.get("as_of")}
+    report = _report_date(B)
+    rows = []
+    for r in B.get("rows") or []:
+        d = _day(r.get("date"))
+        after = bool(report and d and d >= report)
+        in_median = after and _num(r.get("target")) and str(r.get("horizon") or "").startswith("12")
+        rows.append({"broker": r.get("broker"), "date": r.get("date"), "target": r.get("target"),
+                     "rating": r.get("rating"), "horizon": r.get("horizon"), "src": r.get("src"),
+                     "after_report": after, "in_median": in_median})
+    median = B.get(median_key) if median_key else None
+    picked = sorted(r["target"] for r in rows if r["in_median"])
+    n = len(picked)
+    rule_median = (picked[n // 2] if n % 2 else (picked[n // 2 - 1] + picked[n // 2]) / 2) if n else None
+    if not (_num(median) and _num(rule_median) and abs(rule_median - median) < 0.5):
+        for r in rows:            # правило фактов другое — признак «в медиане» не выдумывается
+            r["in_median"] = None
+        n = None
+    return {"rows": rows, "median": median, "median_n": n,
+            "median_basis": _raw_src(raw.get(median_key)) if median_key else None,
+            "after_report": B.get("after_report"),
+            "report_date": report.isoformat() if report else None, "as_of": B.get("as_of")}
 
 
 def market_block(A, F, cf, grid, inputs, live, previous) -> dict:
@@ -295,24 +379,35 @@ def market_block(A, F, cf, grid, inputs, live, previous) -> dict:
               {})
     cap = mp * cf.shares_mln / 1000.0
     v_star = grid.point.v_star
+    claims = grid.layers["analytical"].d
     history = [{"date": str(r["date"]), "close": float(r["close"])}
                for r in (live or {}).get("price_history") or [] if _num(r.get("close"))]
     if not history and previous:
         history = list((previous.get("market") or {}).get("price_history") or [])
+    # Минимум и максимум — по полному ряду, до прореживания для графика.
+    lo = min(history, key=lambda r: r["close"]) if history else None
+    hi = max(history, key=lambda r: r["close"]) if history else None
     history = _thin(history, PRICE_HISTORY_POINTS)
     first = history[0]["date"] if history else None
     ex_div = [r for r in _dividend_rows(F) if first and r["date"] >= first]
     profit = x5.get("net_profit_ltm")
+    peers = _peers(F, live, mp, inputs["price_date"])
+    x5_row = next((r for r in peers["rows"] if r["ticker"] == "X5"), {})
     return {"price": mp, "price_date": inputs["price_date"], "price_time": inputs["price_time"],
-            "price_source": inputs["price_source"], "price_status": inputs["status"],
+            "price_source": _words(inputs["price_source"]), "price_status": inputs["status"],
             "book_price": float(A["meta"]["market_price"]),
-            "market_cap": cap, "claims": grid.layers["analytical"].d, "market_ev": v_star,
+            "market_cap": cap, "claims": claims, "market_ev": v_star,
+            "equity_share_of_ev": _div(v_star - claims, v_star),
             "ebitda_rep_ltm": bal.get("ebitda_rep_ltm"), "adj_ebitda_ltm": bal.get("adj_ebitda_ltm"),
-            "ev_ebitda_ltm": _div(v_star, bal.get("ebitda_rep_ltm")),
+            # Рыночный EV / отчётная EBITDA LTM — на базе аналогов (капитализация + ЧД +
+            # дивиденды к выплате), как в книге (A-G1) и таблице аналогов.
+            "ev_ebitda_ltm": x5_row.get("ev_ebitda"),
             "pe_ltm": _div(cap, profit) if _num(profit) and profit > 0 else None,
             "dividend_yield_ltm": _dividend_yield(F, v, mp),
-            "peers": _peers(F, live, mp, inputs["price_date"]), "brokers": _brokers(F),
-            "price_history": history, "ex_dividend": ex_div}
+            "peers": peers, "brokers": _brokers(F),
+            "price_history": history, "ex_dividend": ex_div,
+            "price_min": lo and {"date": lo["date"], "close": lo["close"]},
+            "price_max": hi and {"date": hi["date"], "close": hi["close"]}}
 
 
 # ------------------------------------------------ блоки: заголовок, точка
@@ -342,8 +437,19 @@ def fair_value_block(A, grid, dist, headline, draws_low, draws_high, mp) -> dict
         rows.append({"lambda": lam, "point": point_of(ctx, grid.layers, lam).central,
                      "median": s["median"], "p10": s["p10"], "p25": s["p25"], "p75": s["p75"],
                      "p90": s["p90"], "mean": s["mean"], "p_below": s["p_below"]})
-    d, g, shares = grid.layers["analytical"].d, ctx.governance, ctx.facts.shares_mln
-    v0_med = v0_from_price(headline["central"], d, g, shares)
+    an = grid.layers["analytical"]
+    d, g, shares = an.d, ctx.governance, ctx.facts.shares_mln
+    # Отображение «цена → V0» и цена 1 % EV — те же, что у ядра (с казначейским
+    # пакетом, если ядро его знает).
+    if hasattr(ctx, "v0_of"):
+        v0_med = ctx.v0_of(headline["central"], d)
+    else:
+        v0_med = v0_from_price(headline["central"], d, g, shares)
+    if hasattr(ctx, "rub_per_1pct"):
+        rub_1pct = ctx.rub_per_1pct(v0_med)
+    else:
+        rub_1pct = rub_per_1pct_ev(v0_med, g, shares)
+    ntm = _ebitda_ntm(an)
     return {"low": low, "central": central, "high": high,
             "printed": {"low": round_to_step(low, step), "central": round_to_step(central, step),
                         "high": round_to_step(high, step)},
@@ -351,16 +457,25 @@ def fair_value_block(A, grid, dist, headline, draws_low, draws_high, mp) -> dict
             "by_lambda": rows, "draws_low": list(draws_low), "draws_high": list(draws_high),
             "center_ev": {"v0_median": v0_med, "v0_point": P.v0_point, "v_star": P.v_star,
                           "gap_median": v0_med / P.v_star - 1.0, "gap_point": P.gap_point,
-                          "rub_per_1pct_ev_median": rub_per_1pct_ev(v0_med, g, shares),
-                          "rub_per_1pct_ev_point": P.rub_per_1pct_ev_point},
+                          "rub_per_1pct_ev_median": rub_1pct,
+                          "rub_per_1pct_ev_point": P.rub_per_1pct_ev_point,
+                          # Пара «модель — рынок» на одной базе: скорр. EBITDA следующих
+                          # 12 мес. слоя «свой взгляд».
+                          "ebitda_ntm": ntm, "ev_ebitda_ntm_median": _div(v0_med, ntm),
+                          "ev_ebitda_ntm_market": _div(P.v_star, ntm)},
             "equity_share_of_ev": P.equity_share_of_ev}
+
+
+def _ebitda_ntm(L) -> float | None:
+    """Скорр. EBITDA следующих 12 месяцев слоя (V0 / мультипликатор вперёд)."""
+    return L.v0 / L.ev_ebitda_fwd if _num(L.ev_ebitda_fwd) and L.ev_ebitda_fwd else None
 
 
 def _layer(L) -> dict:
     return {"title": L.title, "world_weights": L.world_weights, "v0": L.v0, "d": L.d,
             "equity": L.equity, "price": L.price, "pv_fcff": L.pv_fcff, "pv_shield": L.pv_shield,
             "pv_terminal": L.pv_terminal, "terminal_share": L.terminal_share,
-            "ev_ebitda_fwd": L.ev_ebitda_fwd, "v0_to_d": L.v0_to_d}
+            "ev_ebitda_fwd": L.ev_ebitda_fwd, "ebitda_ntm": _ebitda_ntm(L), "v0_to_d": L.v0_to_d}
 
 
 def grid_block(grid) -> dict:
@@ -474,7 +589,12 @@ def paths_block(F, cf, grid) -> dict:
         weight = fsum(h["revenue"] for h in hs)
         ticket = fsum(h["revenue"] * h["ticket"] for h in hs) / weight if weight else None
         traffic = fsum(h["revenue"] * h["traffic"] for h in hs) / weight if weight else None
+        # Год якоря: факт 1П добавлен только к строкам `fact`; остальные потоки,
+        # чек и трафик — лишь прогнозные полугодия года.
+        partial = [k for k in FORECAST_ONLY_FIELDS if k not in a["fact"]] if a["fact"] else []
         rows.append({"year": a["year"], "revenue": a["revenue"],
+                     "forecast_only": partial,
+                     "forecast_periods": [h["period"] for h in hs] if partial else [],
                      "revenue_growth": _div(a["revenue"], prev_rev) - 1.0 if prev_rev else None,
                      "ticket": ticket, "traffic": traffic, "area_end": a["area_end"],
                      "area_growth": a["area_end"] / prev_area - 1.0 if _num(prev_area) else None,
@@ -505,16 +625,29 @@ def _latest_key(row: dict, prefix: str):
     return row.get(keys[-1]) if keys else None
 
 
+def _key_on(row: dict, prefix: str, day) -> Any:
+    """Значение ключа `<prefix>_ГГГГ_ММ_ДД` ровно на дату `day`."""
+    d = _day(day)
+    return row.get(f"{prefix}_{d.strftime('%Y_%m_%d')}") if d else None
+
+
 def _bonds(F: Facts, live: dict | None) -> list[dict]:
+    """Облигации X5. Остаток в обращении — из реестра фактов (он учитывает бумаги,
+    выкупленные по оферте и лежащие в группе); у ISS — размещённый объём, он
+    берётся, только если в фактах остатка нет. `outstanding_anchor` — остаток на
+    дату баланса якоря (для структуры долга на эту дату)."""
     R = F.data.get("debt_register") or {}
+    anchor_day = (F.data.get("balance") or {}).get("as_of")
     quotes = {b.get("isin"): b for b in (live or {}).get("bonds") or []}
     out = []
     for b in R.get("bonds") or []:
         q = quotes.get(b.get("isin")) or {}
         coupon = b.get("coupon_now") if b.get("coupon_now") is not None else b.get("coupon_fixed")
+        facts_now = _latest_key(b, "outstanding")
         out.append({"isin": b.get("isin"), "name": b.get("name"), "series": b.get("series"),
-                    "outstanding": q.get("outstanding") if _num(q.get("outstanding"))
-                    else _latest_key(b, "outstanding"),
+                    "outstanding": facts_now if _num(facts_now)
+                    else q.get("outstanding") if _num(q.get("outstanding")) else None,
+                    "outstanding_anchor": _key_on(b, "outstanding", anchor_day),
                     "coupon_type": b.get("coupon_type"), "coupon": coupon,
                     "spread": b.get("spread_to_key_rate"), "put_date": b.get("put_date"),
                     "maturity": b.get("maturity"),
@@ -536,15 +669,26 @@ def debt_block(A, F, cf, grid, live) -> dict:
     lines = [{"key": b.key, "label": b.label, "amount": b.amount, "included": b.included,
               "src": _raw_src((raw_lines.get(b.key) or {}).get("amount"))} for b in cf.bridge]
     v = ctx.timing.valuation_date
-    paid = [d.id for d in cf.dividends if d.in_company and d.ex_date and d.ex_date <= v]
-    rows = [{"key": "net_debt", "label": f"Чистый долг на {period_end(cf.anchor).isoformat()}",
+    names = {r.get("id"): r.get("label") for r in (F.data.get("dividends") or {}).get("register") or []}
+    paid = [str(names.get(d.id) or d.id).split(" (")[0] for d in cf.dividends
+            if d.in_company and d.ex_date and d.ex_date <= v]
+    paid = [p[0].lower() + p[1:] if len(p) > 1 and p[1].islower() else p for p in paid]
+    rows = [{"key": "net_debt", "label": f"Чистый долг на {_ru_date(period_end(cf.anchor))}",
              "amount": cf.net_debt},
             {"key": "operating_cash", "label": "Операционная касса", "amount": ctx.opcash_anchor},
             {"key": "bridge_lines", "label": "Строки моста из отчётности", "amount": ctx.bridge_total},
             {"key": "dividends", "label": "Объявленные дивиденды с отсечкой до даты оценки"
-             + (f" ({', '.join(paid)})" if paid else ""), "amount": ctx.dividends_declared},
-            {"key": "roll", "label": f"Денежный поток с {(period_end(cf.anchor) + dt.timedelta(days=1)).isoformat()} "
+             + (f": {'; '.join(paid)}" if paid else ""), "amount": ctx.dividends_declared},
+            {"key": "roll", "label": f"Денежный поток с {_ru_date(period_end(cf.anchor) + dt.timedelta(days=1))} "
              "по дату оценки", "amount": -rolled}]
+    # Разложение EV слоя: из чего складывается V0 — все составляющие, какие даёт ядро.
+    parts = getattr(an, "ev_parts", None) or (("pv_fcff", an.pv_fcff), ("pv_shield", an.pv_shield),
+                                              ("pv_terminal", an.pv_terminal))
+    ev_rows = [{"key": k, "label": EV_ROW_TITLES.get(k, k), "amount": x} for k, x in parts]
+    # Капитал → цена: выручка от продажи казначейского пакета (если ядро её считает).
+    tv = getattr(an, "treasury_value", 0.0) or 0.0
+    equity_rows = [{"key": "treasury_value", "label": "Выручка от продажи казначейского пакета",
+                    "amount": tv}] if tv else []
     return {"anchor": {"as_of": bal.get("as_of"), "total_debt": bal.get("total_debt"),
                        "cash": bal.get("cash"), "net_debt": bal.get("net_debt"),
                        "leverage": bal.get("net_debt_to_ebitda") or _div(bal.get("net_debt"),
@@ -556,14 +700,16 @@ def debt_block(A, F, cf, grid, live) -> dict:
                        "effective_rate": RA.get(f"effective_rate_{cf.anchor}"),
                        "ratings": [{k: r.get(k) for k in ("agency", "rating", "outlook", "date")}
                                    for r in R.get("ratings") or []]},
-            "bridge": {"lines": lines, "rows_at_valuation": rows, "total": an.d},
+            "bridge": {"lines": lines, "ev_rows": ev_rows, "v0": an.v0, "rows_at_valuation": rows,
+                       "total": an.d, "equity": an.equity, "equity_rows": equity_rows,
+                       "treasury_mln": getattr(ctx, "treasury_mln", 0.0) or 0.0},
             "bonds": _bonds(F, live), "bank_loans": RA.get("bank_loans") and {
                 k: RA["bank_loans"].get(k) for k in ("short", "long", "total")},
             "wall": [{"period": w.get("period"), "bonds": w.get("bonds"), "banks": w.get("banks")}
                      for w in R.get("wall") or []]}
 
 
-def dividends_block(A, F, cf, grid, paths, inputs, period) -> dict:
+def dividends_block(A, F, cf, grid, paths, inputs) -> dict:
     D = F.data.get("dividends") or {}
     pol = D.get("policy") or {}
     v = inputs["valuation_date"]
@@ -581,23 +727,40 @@ def dividends_block(A, F, cf, grid, paths, inputs, period) -> dict:
     hist = [{"period": h.get("period"), "label": h.get("label"), "dps": h.get("dps"),
              "amount": h.get("amount"), "record_date": h.get("record_date")}
             for h in D.get("history") or []]
+    hist.sort(key=_dividend_order)
     model = [{"year": a["year"], "amount": a["dividends"], "dps": a["dividends"] * 1000.0 / shares}
              for a in paths["annual"]]
     halves = expected_path(grid)
     nxt = D.get("next_expected") or {}
-    dps_model = None
-    for h in halves:
-        if period and h["period"] == period:
-            dps_model = h["dividends"] * 1000.0 / shares
+    # Ожидаемая отсечка — дата ISO (факты или календарь событий), текст — отдельно.
+    record = _iso_day(nxt.get("record_date_est_iso")) or _iso_day(nxt.get("record_date_est"))
+    if record is None:
+        ahead = [d for d in _expected_ex_dates() if d >= v]
+        record = min(ahead).isoformat() if ahead else None
+    text = nxt.get("record_date_note") or (nxt.get("record_date_est")
+                                           if not _iso_day(nxt.get("record_date_est")) else None)
+    # Дивиденд модели — в полугодии выплаты (A-F6d: за 9 мес. — 1П следующего года,
+    # финал — 2П); полугодие — из фактов или по дате отсечки.
+    pay_period = nxt.get("pay_period") or (_half_of(dt.date.fromisoformat(record)) if record else None)
+    dps_model = next((h["dividends"] * 1000.0 / shares for h in halves
+                      if h["period"] == pay_period), None)
     return {"policy": {"target_leverage": pol.get("target_leverage"),
                        "no_pay_above": pol.get("no_pay_above"), "frequency": pol.get("frequency"),
                        "text": pol.get("base")},
             "register": reg, "history": hist, "model": model,
-            "next_expected": {"label": nxt.get("label"), "record_date_est": nxt.get("record_date_est"),
+            "next_expected": {"label": nxt.get("label"), "record_date_est": record,
+                              "record_date_note": text, "pay_period": pay_period,
                               "dps_model": dps_model,
                               "note": "; ".join(x for x in (nxt.get("status"), nxt.get("board_est"))
                                                 if x)},
             "yield_ltm": _dividend_yield(F, v, inputs["market_price"])}
+
+
+def _dividend_order(h: dict) -> tuple:
+    """Порядок выплат во времени: год периода, промежуточный (9M) раньше финала (FY)."""
+    p = str(h.get("period") or "")
+    year = int(p[-4:]) if p[-4:].isdigit() else 0
+    return (year, 0 if p.upper().startswith("9M") else 1, str(h.get("record_date") or ""))
 
 
 def history_block(F) -> dict:
@@ -787,25 +950,44 @@ def _curve_z(nodes: dict, t: float) -> float:
     return pts[-1][1]
 
 
-def bond_spread_bp(live: dict | None) -> float | None:
+def bond_spread_bp(live: dict | None, weights: dict | None = None) -> float | None:
     """Спред фиксированных облигаций X5 к бескупонной кривой ОФЗ на их дюрации,
-    б.п., взвешенный по объёму (наблюдение для плитки)."""
+    б.п., взвешенный по объёму в обращении (наблюдение для плитки). `weights` —
+    остатки по ISIN из реестра фактов (у ISS — размещённый объём)."""
     curve = (live or {}).get("curve") or {}
     nodes = curve.get("nodes") if isinstance(curve, dict) else None
     if not nodes:
         return None
     parts = []
     for b in (live or {}).get("bonds") or []:
-        d, y, w = b.get("duration_years"), b.get("ytm"), b.get("outstanding")
+        d, y = b.get("duration_years"), b.get("ytm")
+        w = (weights or {}).get(b.get("isin"))
+        w = w if _num(w) else b.get("outstanding")
         if b.get("coupon_type") == "fixed" and _num(d) and _num(y) and _num(w) and d >= 0.25:
             parts.append((w, y - _curve_z(nodes, d)))
     total = fsum(w for w, _ in parts)
     return fsum(w * s for w, s in parts) / total * BP if total > 0 else None
 
 
+def _run_start(history: list[dict], value) -> str | None:
+    """Дата, с которой ряд смен держит `value` (None — так весь ряд: дата
+    изменения раньше окна)."""
+    start = None
+    for i, h in enumerate(history):
+        if h["value"] != value:
+            start = None
+        elif start is None:
+            start = i
+    return history[start]["date"] if start else None
+
+
 def _tile(tid, title, unit, value, date, history, previous_tiles,
           step_series: bool = False) -> dict | None:
-    """Плитка: история — своя (ряд источника) или копится из прошлых выпусков."""
+    """Плитка: история — своя (ряд источника) или копится из прошлых выпусков.
+
+    Изменение, минимум и максимум — по полному ряду до прореживания; `change_from` —
+    дата точки сравнения. Ряд смен (ключевая ставка): изменение — к прошлому
+    ОТЛИЧНОМУ значению, `since` — дата решения, с которой действует значение."""
     if value is None:
         return previous_tiles.get(tid)
     if history is None:
@@ -813,16 +995,23 @@ def _tile(tid, title, unit, value, date, history, previous_tiles,
         history = [h for h in history if h.get("date") != date]
         history.append({"date": date, "value": value})
         history.sort(key=lambda h: h["date"])
-    history = _thin(history, TILE_POINTS)
-    earlier = [h["value"] for h in history if h["date"] < str(date)]
+    full = sorted(history, key=lambda h: h["date"])
+    earlier = [h for h in full if h["date"] < str(date)]
+    since = None
     if step_series:
-        # Ряд смен (ключевая ставка): изменение — к прошлому ОТЛИЧНОМУ значению.
-        earlier = [x for x in earlier if x != value]
+        since = _run_start(full, value)
+        earlier = [h for h in earlier if h["value"] != value]
+    lo = min(full, key=lambda h: h["value"]) if full else None
+    hi = max(full, key=lambda h: h["value"]) if full else None
     return {"id": tid, "title": title, "unit": unit, "value": value, "date": date,
-            "change": value - earlier[-1] if earlier else None, "history": history}
+            "change": value - earlier[-1]["value"] if earlier else None,
+            "change_from": earlier[-1]["date"] if earlier else None, "since": since,
+            "min": lo and {"date": lo["date"], "value": lo["value"]},
+            "max": hi and {"date": hi["date"], "value": hi["value"]},
+            "history": _thin(full, TILE_POINTS)}
 
 
-def indicators_block(inputs, live, previous) -> dict:
+def indicators_block(inputs, live, previous, bond_weights: dict | None = None) -> dict:
     prev = {t.get("id"): t for t in ((previous or {}).get("indicators") or {}).get("tiles") or []}
     live = live or {}
     hist = [{"date": str(r["date"]), "value": float(r["close"])}
@@ -845,7 +1034,7 @@ def indicators_block(inputs, live, previous) -> dict:
         value = nodes.get(node)
         tiles.append(_tile(tid, f"ОФЗ {node} лет, бескупонная", "pct",
                            float(value) if _num(value) else None, curve.get("as_of"), None, prev))
-    spread = bond_spread_bp(live)
+    spread = bond_spread_bp(live, bond_weights)
     tiles.append(_tile("x5.bond_spread", "Спред облигаций X5 к ОФЗ", "bp", spread,
                        curve.get("as_of"), None, prev))
     return {"tiles": [t for t in tiles if t]}
@@ -858,8 +1047,12 @@ def live_block(A, live, inputs) -> dict:
     nodes = curve.get("nodes") if isinstance(curve, dict) else None
     book_curve = A["worlds"][A["joint"]["neutral_world"]]["zero_curve"]
     key = live.get("key_rate") or {}
+    changes = sorted(({"date": str(h["date"]), "value": float(h["value"])}
+                      for h in key.get("history") or [] if _num(h.get("value"))),
+                     key=lambda h: h["date"])
+    since = _run_start(changes, key.get("value")) if _num(key.get("value")) else None
     return {"price": {"value": inputs["market_price"], "date": inputs["price_date"],
-                      "time": inputs["price_time"], "source": inputs["price_source"],
+                      "time": inputs["price_time"], "source": _words(inputs["price_source"]),
                       "status": inputs["status"], "accepted": inputs["accepted"],
                       "reason": inputs["reason"], "kind": price.get("kind"),
                       "last_accepted": price.get("last_accepted")},
@@ -868,7 +1061,10 @@ def live_block(A, live, inputs) -> dict:
                        "shift_bp": {k: (float(nodes[k]) - float(book_curve[k])) * BP
                                     for k in ("5", "10") if k in nodes and k in book_curve}}
                       if nodes else None),
-            "key_rate": {"value": key.get("value"), "date": key.get("date")} if key else None,
+            # `date` — день наблюдения ряда ЦБ; `since` — дата решения, с которой
+            # действует ставка (None — раньше окна истории).
+            "key_rate": {"value": key.get("value"), "date": key.get("date"), "since": since}
+            if key else None,
             "valuation_date": inputs["valuation_date"].isoformat(),
             "fetched_at": live.get("fetched_at"), "errors": live.get("errors") or {},
             "degraded": bool(live.get("errors"))}
@@ -883,23 +1079,25 @@ def inputs_block(A, inputs, live, flags, v: dt.date) -> dict:
         return "ok" if d and (v - d).days <= STALE_DAYS else "stale"
 
     status_price = {"live": "ok", "book": "ok", "fallback": "fallback"}.get(inputs["status"], "ok")
-    src = inputs["price_source"] + (f", сделка {inputs['price_time']}" if inputs["price_time"] else "")
+    # Время сделки ISS — московское.
+    src = _words(inputs["price_source"]) + (f", сделка {inputs['price_time']} МСК"
+                                            if inputs["price_time"] else "")
     book_old = any(f["name"] == "book_update" and f["raised"] for f in flags)
     anchor = A["meta"]["anchor_period"]
     return {"rows": [
         {"name": "Цена акции", "value": inputs["market_price"], "unit": "rub",
          "as_of": inputs["price_date"], "source": src, "status": status_price},
         {"name": "Кривая ОФЗ", "value": "узлы 1, 3, 5, 10 лет" if curve else None, "unit": None,
-         "as_of": curve.get("as_of"), "source": curve.get("source") or "ISS zcyc",
+         "as_of": curve.get("as_of"), "source": _words(curve.get("source") or "ISS zcyc"),
          "status": fresh(curve.get("as_of")) if curve else "stale"},
         {"name": "Ключевая ставка", "value": key.get("value"), "unit": "pct",
-         "as_of": key.get("date"), "source": key.get("source") or "Банк России",
+         "as_of": key.get("date"), "source": _words(key.get("source")) or "Банк России",
          "status": "ok" if key else "stale"},
-        {"name": "Книга допущений", "value": str(A["meta"]["version"]), "unit": None,
-         "as_of": A["meta"]["date"], "source": "data/assumptions",
+        {"name": "Книга допущений", "value": str(A["meta"]["version"]), "unit": "version",
+         "as_of": A["meta"]["date"], "source": "репозиторий модели, тег книги",
          "status": "stale" if book_old else "ok"},
         {"name": "Факты отчётности", "value": journal_mod.half_label(anchor), "unit": None,
-         "as_of": A["meta"]["facts_date"], "source": "МСФО и databook X5 (data/facts)",
+         "as_of": A["meta"]["facts_date"], "source": "МСФО и databook X5",
          "status": "ok"}]}
 
 
@@ -986,7 +1184,7 @@ def build_payload(live: dict | None = None, previous: dict | None = None, journa
         "grid": grid_block(grid), "worlds": worlds_block(A, grid),
         "regimes": regimes_block(A, F, grid), "capex_levels": capex_block(A, F, grid),
         "paths": paths, "debt": debt_block(A, F, cf, grid, live),
-        "dividends": dividends_block(A, F, cf, grid, paths, inputs, period),
+        "dividends": dividends_block(A, F, cf, grid, paths, inputs),
         "history": history_block(F), "reverse_dcf": reverse_block(dist, mp),
         "judgements": judgements_block(dist),
         "uncertainty": uncertainty_block(A, dist, draws_low, draws_high),
@@ -997,7 +1195,9 @@ def build_payload(live: dict | None = None, previous: dict | None = None, journa
         "changes": {"vs_previous": attribution.vs_previous(
             A, cf, previous, valuation_date=v, market_price=mp, point_now=grid.point.central,
             meta_now=meta)},
-        "book": book_block(A), "indicators": indicators_block(inputs, live, previous)}
+        "book": book_block(A),
+        "indicators": indicators_block(
+            inputs, live, previous, {b["isin"]: b["outstanding"] for b in _bonds(F, live)})}
     payload = _tidy(payload)
     _seal(payload, new_ids)
 

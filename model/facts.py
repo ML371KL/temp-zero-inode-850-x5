@@ -22,7 +22,7 @@ from model.book import ROOT, period_index, prev_period
 
 FACTS_DIR = ROOT / "data" / "facts"
 FIXTURE_DIR = ROOT / "tests" / "fixtures" / "facts"
-CORE_FILES = ("accounting", "network", "balance", "bridge", "shares", "dividends")
+CORE_FILES = ("accounting", "network", "balance", "bridge", "shares", "dividends", "history")
 
 
 class FactsError(ValueError):
@@ -122,6 +122,7 @@ class CoreFacts:
     ebitda_rep: dict        # якорь → отчётная EBITDA
     da_anchor: float        # D&A якоря до МСФО 16
     capex_anchor: float     # денежный capex якоря
+    capex_hist: dict        # полугодие до якоря → capex (выручка × capex/выручку, history.json)
     lti_anchor: float | None  # расход LTI якоря (справочно, ядро его не читает)
     area_end: dict          # полугодие → площадь на конец (якорь и два предыдущих)
     gross_opened: dict      # полугодие → валовые открытия (исторические когорты)
@@ -129,7 +130,8 @@ class CoreFacts:
     dividends_payable: float
     nwc: float
     bridge: tuple           # BridgeLine
-    shares_mln: float
+    shares_mln: float       # в обращении (выпущенные − казначейские)
+    treasury_mln: float     # казначейские (с акциями у дочерних обществ)
     dividends: tuple        # DeclaredDividend
 
     @property
@@ -138,8 +140,13 @@ class CoreFacts:
         return self.adj_ebitda[self.anchor] / self.revenue[self.anchor]
 
 
-def _need(F: Facts, path: str) -> float:
-    value = F.get(path)
+_READ = object()
+
+
+def _need(F: Facts, path: str, value: Any = _READ) -> float:
+    """Число факта по пути (или уже прочитанное `value` с этим путём для сообщения)."""
+    if value is _READ:
+        value = F.get(path)
     if value is None:
         raise FactsError(f"факты: {path} не раскрыт (null) — ядро не считает его нулём")
     if isinstance(value, bool) or not isinstance(value, (int, float)):
@@ -183,6 +190,20 @@ def core_facts(F: Facts, A: dict) -> CoreFacts:
             p = prev_period(p)
         opened[p] = _need(F, f"network.gross_opened_hist.{p}")
 
+    # Капвложения 2L полугодий до якоря — база D&A якоря выбывает по когортам (§4.5):
+    # capex полугодия = выручка × (ОС + НМА)/выручка из history.json.
+    halves = {row.get("period"): (i, row) for i, row in enumerate(F.get("history.halves"))}
+    capex_hist = {}
+    p = anchor
+    for _ in range(int(round(2 * float(A["capex"]["asset_life_years"])))):
+        p = prev_period(p)
+        if p not in halves:
+            raise FactsError(f"факты: в history.halves нет {p} — база D&A якоря выбывает по "
+                             "когортам 2L полугодий до якоря (docs/MODEL.md §4.5)")
+        i, row = halves[p]
+        capex_hist[p] = (_need(F, f"history.halves.{i}.revenue", row.get("revenue"))
+                         * _need(F, f"history.halves.{i}.capex_pct", row.get("capex_pct")))
+
     include = list(A["bridge"]["include"])
     lines = []
     known = set()
@@ -219,10 +240,12 @@ def core_facts(F: Facts, A: dict) -> CoreFacts:
     return CoreFacts(
         anchor=anchor, revenue=revenue, adj_ebitda=adj, ebitda_rep=rep,
         da_anchor=_need(F, f"{acc}.{anchor}.da"), capex_anchor=_need(F, f"{acc}.{anchor}.capex"),
+        capex_hist=dict(sorted(capex_hist.items(), key=lambda kv: period_index(kv[0]))),
         lti_anchor=(_need(F, f"{acc}.{anchor}.lti")
                     if F.data["accounting"]["periods"][anchor].get("lti") is not None else None),
         area_end=area, gross_opened=dict(sorted(opened.items(), key=lambda kv: period_index(kv[0]))),
         net_debt=_need(F, "balance.net_debt"),
         dividends_payable=_need(F, "balance.dividends_payable"),
         nwc=_need(F, "balance.nwc"), bridge=tuple(lines),
-        shares_mln=_need(F, "shares.outstanding_mln"), dividends=tuple(dividends))
+        shares_mln=_need(F, "shares.outstanding_mln"), treasury_mln=_need(F, "shares.treasury"),
+        dividends=tuple(dividends))

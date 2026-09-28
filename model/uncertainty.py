@@ -15,10 +15,13 @@
 порядке, поэтому числа бит в бит не зависят от числа процессов. Рабочий —
 чистый интерпретатор (`spawn`) с кодом с диска.
 
-**Подвыборка (§11, §12).** Медиана при подмене одного суждения или новом
-наблюдении — на первых `valuation.reverse_dcf.subsample` прогонах того же
-гиперкуба (общие случайные числа) плюс сдвиг δ = медиана полной полосы −
-медиана подвыборки на книге.
+**Подвыборка и уточнение (§11, §12).** Поиск значения суждения (обратный DCF,
+нейтральная маржа) — бисекцией на первых `valuation.reverse_dcf.subsample`
+прогонах того же гиперкуба (общие случайные числа) плюс сдвиг δ = медиана
+полной полосы − медиана подвыборки на книге; затем 1–2 шага секущей на ПОЛНОЙ
+полосе (первый — по наклону подвыборки в конце бисекции). Печатается
+достигнутая невязка полной полосы. Таблица «что даст отчёт» — медианы полной
+полосы.
 
 Единицы: цена — ₽ на акцию; ставки и доли — доли единицы.
 """
@@ -50,6 +53,8 @@ QUANTILES = {"p10": 0.10, "p25": 0.25, "median": 0.50, "p75": 0.75, "p90": 0.90}
 BISECTION_STEPS = 40
 REVERSE_TOL_RUB = 5
 NEUTRAL_TOL_RUB = 2
+# Уточнение на полной полосе (§11, §12): шагов после первой проверки решения подвыборки.
+SECANT_STEPS = 2
 # Отрезок нейтральной маржи — демонстрационные значения ± 0,01 (§12).
 NEUTRAL_PAD = 0.01
 # Наклон медианы «на 0,1 п.п. маржи» (§12).
@@ -374,69 +379,113 @@ def judgements(A: dict, cf: CoreFacts, band_result: Band, *, valuation_date=None
 # ----------------------------------------------------------- бисекция
 
 
-def bisect(f: Callable[[float], float], a: float, b: float, tol: float) -> tuple[float | None, int]:
+def bisect(f: Callable[[float], float], a: float, b: float, tol: float
+           ) -> tuple[float | None, int, float | None]:
     """Корень f на [a; b]: бисекция ≤ 40 шагов, стоп при |f| ≤ tol (§11, §12).
 
-    Возвращает (корень или None — «недостижимо в поиске», число вычислений f).
+    Возвращает (корень или None — «недостижимо в поиске», число вычислений f,
+    наклон f по последней скобке — хорда (f(b) − f(a))/(b − a)).
     """
     fa, fb = f(a), f(b)
     calls = 2
+    slope = (fb - fa) / (b - a) if b != a else None
     if abs(fa) <= tol:
-        return a, calls
+        return a, calls, slope
     if abs(fb) <= tol:
-        return b, calls
+        return b, calls, slope
     if (fa > 0) == (fb > 0):
-        return None, calls
+        return None, calls, slope
     for _ in range(BISECTION_STEPS):
         m = (a + b) / 2.0
         fm = f(m)
         calls += 1
         if abs(fm) <= tol:
-            return m, calls
+            # наклон — хорда от m до конца скобки с другим знаком f
+            other, fo = (a, fa) if (fm > 0) != (fa > 0) else (b, fb)
+            return m, calls, (fm - fo) / (m - other)
         if (fm > 0) == (fa > 0):
             a, fa = m, fm
         else:
-            b = m
-    return (a + b) / 2.0, calls
+            b, fb = m, fm
+    return (a + b) / 2.0, calls, (fb - fa) / (b - a)
+
+
+def secant_refine(f: Callable[[float], float], x0: float, slope: float | None, lo: float,
+                  hi: float, tol: float) -> tuple[float, float, int]:
+    """Уточнение корня f от x0 (§11, §12): f(x0); шаг по локальному наклону `slope`;
+    затем секущая — всего не больше SECANT_STEPS шагов, стоп при |f| ≤ tol. Шаги
+    не выходят из [lo; hi]. Возвращает (лучшая точка, f в ней, вычислений f)."""
+    fx = f(x0)
+    calls, best = 1, (x0, fx)
+    if abs(fx) <= tol or not slope:
+        return best[0], best[1], calls
+    xa, fa = x0, fx
+    xb = min(hi, max(lo, x0 - fx / slope))
+    for _ in range(SECANT_STEPS):
+        if xb == xa:
+            break
+        fb = f(xb)
+        calls += 1
+        if abs(fb) < abs(best[1]):
+            best = (xb, fb)
+        if abs(fb) <= tol or fb == fa:
+            break
+        xa, fa, xb = xb, fb, min(hi, max(lo, xb - fb * (xb - xa) / (fb - fa)))
+    return best[0], best[1], calls
 
 
 # ------------------------------------------------------ медиана подвыборки
 
 
 class Subsample:
-    """Медиана центра на первых m прогонах гиперкуба полосы со сдвигом δ (§11).
+    """Медиана центра на первых m прогонах гиперкуба полосы со сдвигом δ (§11) и на
+    всех прогонах (уточнение §11, таблица и уточнение §12).
 
     `at(B, fixed)` — медиана подвыборки на книге `B`, где оси полосы с номерами
     `fixed` не разыгрываются (суждение зафиксировано подменой в `B`), плюс δ.
-    На книге без подмен `at` = медиана полной полосы.
+    На книге без подмен `at` = медиана полной полосы. `full(B, fixed)` — медиана
+    всех прогонов (низ и верх округлены, как у заголовка: `round_draws`).
     """
 
     def __init__(self, band_result: Band, full_median: float, cf: CoreFacts, *,
                  size: int, valuation_date, market_price, n_workers=None,
-                 min_parallel: int = PARALLEL_MIN_DRAWS):
+                 min_parallel: int = PARALLEL_MIN_DRAWS, round_draws: int | None = None):
         self.band = band_result
         self.m = max(1, min(int(size), band_result.n))
         self.cf = cf
         self.v, self.mp = valuation_date, market_price
         self.n_workers, self.min_parallel = n_workers, min_parallel
+        self.round_draws = round_draws
         self.base = median(centers(band_result.low[:self.m], band_result.high[:self.m],
                                    band_result.lam))
-        self.full = full_median
+        self.full_median = full_median
         self.delta = full_median - self.base
         self.evaluations = 0
+        self.full_evaluations = 0
 
-    def raw(self, B: dict, fixed: frozenset = frozenset()) -> float:
-        """Медиана подвыборки без сдвига."""
+    def _median(self, B: dict, fixed: frozenset, rows, digits: int | None) -> float:
         keep = [j for j, ax in enumerate(self.band.axes) if ax.index not in fixed]
         axes = [self.band.axes[j] for j in keep]
-        rows = [[row[j] for j in keep] for row in self.band.positions[:self.m]]
+        rows = [[row[j] for j in keep] for row in rows]
         pairs = run_draws(B, self.cf, axes, rows, valuation_date=self.v, market_price=self.mp,
                           n_workers=self.n_workers, min_parallel=self.min_parallel)
+        low, high = [p[0] for p in pairs], [p[1] for p in pairs]
+        if digits is not None:
+            low, high = [round(x, digits) for x in low], [round(x, digits) for x in high]
+        return median(centers(low, high, self.band.lam))
+
+    def raw(self, B: dict, fixed: frozenset = frozenset()) -> float:
+        """Медиана подвыборки без сдвига (прогоны не округляются, как и при расчёте δ)."""
         self.evaluations += 1
-        return median(centers([p[0] for p in pairs], [p[1] for p in pairs], self.band.lam))
+        return self._median(B, fixed, self.band.positions[:self.m], None)
 
     def at(self, B: dict, fixed: frozenset = frozenset()) -> float:
         return self.raw(B, fixed) + self.delta
+
+    def full(self, B: dict, fixed: frozenset = frozenset()) -> float:
+        """Медиана всех прогонов полосы на книге `B` (оси `fixed` не разыгрываются)."""
+        self.full_evaluations += 1
+        return self._median(B, fixed, self.band.positions, self.round_draws)
 
 
 # ---------------------------------------------------------- обратный DCF
@@ -455,8 +504,10 @@ def _point(A: dict, cf: CoreFacts, v, mp, lam: float) -> float:
 
 def reverse_dcf(A: dict, cf: CoreFacts, sub: Subsample, *, valuation_date=None,
                 market_price=None) -> list[dict]:
-    """Что заложено в цену (§11): значение одного суждения, при котором медиана
-    (подвыборка + δ) равна рыночной цене; для справки — то же для точки."""
+    """Что заложено в цену (§11): значение одного суждения, при котором медиана равна
+    рыночной цене. Поиск — бисекция на подвыборке + δ (`search_value`), затем
+    уточнение секущей на полной полосе; `gap_full` — достигнутая невязка полной
+    полосы, ₽. Для справки — то же для точки (без полосы)."""
     v = _date(valuation_date) or _date(A["meta"]["valuation_date"])
     mp = float(market_price if market_price is not None else A["meta"]["market_price"])
     lam = sub.band.lam
@@ -464,27 +515,33 @@ def reverse_dcf(A: dict, cf: CoreFacts, sub: Subsample, *, valuation_date=None,
     for raxis in A["valuation"]["reverse_dcf"]["axes"]:
         kind, paths = raxis["kind"], list(raxis["paths"])
         fixed = _matched(sub.band, raxis)
-        before = sub.evaluations
+        before, before_full = sub.evaluations, sub.full_evaluations
+        a, b = float(raxis["search"][0]), float(raxis["search"][1])
 
         def book_at(x: float, kind=kind, paths=paths) -> dict:
             return override(A, paths, kind, x)
 
-        solved, _ = bisect(lambda x: sub.at(book_at(x), fixed) - mp,
-                           float(raxis["search"][0]), float(raxis["search"][1]), REVERSE_TOL_RUB)
-        point_solved, _ = bisect(lambda x: _point(book_at(x), cf, v, mp, lam) - mp,
-                                 float(raxis["search"][0]), float(raxis["search"][1]),
-                                 REVERSE_TOL_RUB)
+        search, _, slope = bisect(lambda x: sub.at(book_at(x), fixed) - mp, a, b,
+                                  REVERSE_TOL_RUB)
+        solved = gap = None
+        if search is not None:
+            solved, gap, _ = secant_refine(lambda x: sub.full(book_at(x), fixed) - mp, search,
+                                           slope, a, b, REVERSE_TOL_RUB)
+        point_solved, _, _ = bisect(lambda x: _point(book_at(x), cf, v, mp, lam) - mp, a, b,
+                                    REVERSE_TOL_RUB)
         book = 0.0 if kind == "shift" else float(get_node(A, paths[0]))
         lo, hi = (float(x) for x in raxis["range"])
         out.append({"name": raxis["name"], "unit": raxis["unit"], "kind": kind, "paths": paths,
                     "book": book, "solved": solved,
                     "delta": None if solved is None else solved - book,
                     "in_range": solved is not None and lo <= solved <= hi,
-                    "range": [lo, hi], "search": [float(x) for x in raxis["search"]],
+                    "range": [lo, hi], "search": [a, b],
                     "status": "solved" if solved is not None else "unreachable",
+                    "search_value": search, "gap_full": gap,
                     "point_solved": point_solved,
                     "point_status": "solved" if point_solved is not None else "unreachable",
-                    "fixed_axes": sorted(fixed), "evaluations": sub.evaluations - before})
+                    "fixed_axes": sorted(fixed), "evaluations": sub.evaluations - before,
+                    "evaluations_full": sub.full_evaluations - before_full})
     return out
 
 
@@ -532,36 +589,42 @@ def ols_slope(xs, ys) -> float | None:
 
 def next_report(A: dict, cf: CoreFacts, grid: Grid, sub: Subsample, period: str | None, *,
                 valuation_date=None, market_price=None) -> dict:
-    """«Что даст отчёт» (§12): точка и медиана при факте маржи открытого
-    полугодия из `demo_values`, их изменение, вероятности режимов; нейтральная
-    маржа медианы и точки (бисекция, стоп 2 ₽)."""
+    """«Что даст отчёт» (§12): точка и медиана полной полосы при факте маржи открытого
+    полугодия из `demo_values`, их изменение, вероятности режимов; нейтральная маржа
+    медианы (бисекция на подвыборке, уточнение секущей на полной полосе, стоп 2 ₽;
+    `neutral_gap` — достигнутая невязка) и точки (бисекция, стоп 2 ₽)."""
     if period is None:
         return {"period": None, "table": [], "neutral": {"median": None, "point": None},
-                "rub_per_01pp": None}
+                "neutral_gap": {"median": None}, "rub_per_01pp": None}
     v = _date(valuation_date) or _date(A["meta"]["valuation_date"])
     mp = float(market_price if market_price is not None else A["meta"]["market_price"])
-    point0, median0 = grid.point.central, sub.full
-    before = sub.evaluations
+    point0, median0 = grid.point.central, sub.full_median
+    before, before_full = sub.evaluations, sub.full_evaluations
     values = [float(x) for x in A["valuation"]["next_report"]["demo_values"]]
     table = []
     for m in values:
         g = evaluate(with_fact(A, period, m), cf, valuation_date=v, market_price=mp)
-        med = sub.at(g.ctx.A)
+        med = sub.full(g.ctx.A)
         table.append({"margin": m, "point": g.point.central, "median": med,
                       "d_point": g.point.central - point0, "d_median": med - median0,
                       "posterior": dict(g.regime_posterior)})
     lam = sub.band.lam
-    neutral = {"median": None, "point": None}
+    neutral, gap = {"median": None, "point": None}, None
     if values:
         a, b = min(values) - NEUTRAL_PAD, max(values) + NEUTRAL_PAD
-        neutral["median"] = bisect(lambda m: sub.raw(with_fact(A, period, m)) - sub.base,
-                                   a, b, NEUTRAL_TOL_RUB)[0]
+        search, _, slope = bisect(lambda m: sub.raw(with_fact(A, period, m)) - sub.base,
+                                  a, b, NEUTRAL_TOL_RUB)
+        if search is not None:
+            neutral["median"], gap, _ = secant_refine(
+                lambda m: sub.full(with_fact(A, period, m)) - median0, search, slope, a, b,
+                NEUTRAL_TOL_RUB)
         neutral["point"] = bisect(lambda m: _point(with_fact(A, period, m), cf, v, mp, lam) - point0,
                                   a, b, NEUTRAL_TOL_RUB)[0]
     slope = ols_slope([r["margin"] for r in table], [r["median"] for r in table])
-    return {"period": period, "table": table, "neutral": neutral,
+    return {"period": period, "table": table, "neutral": neutral, "neutral_gap": {"median": gap},
             "rub_per_01pp": None if slope is None else slope * PER_TENTH_PP,
-            "evaluations": sub.evaluations - before}
+            "evaluations": sub.evaluations - before,
+            "evaluations_full": sub.full_evaluations - before_full}
 
 
 # ------------------------------------------------------------ всё вместе
@@ -608,7 +671,7 @@ def distribution(A: dict, cf: CoreFacts, grid: Grid, *, valuation_date=None, mar
         size = min(size, FAST_SUBSAMPLE)
     sub = Subsample(b, stats["median"] if full_median is None else full_median, cf, size=size,
                     valuation_date=v, market_price=mp, n_workers=n_workers,
-                    min_parallel=min_parallel)
+                    min_parallel=min_parallel, round_draws=round_draws)
     return Distribution(
         band=b, stats=stats, contributions=b.contributions(),
         judgements=judgements(A, cf, b, valuation_date=v, market_price=mp),

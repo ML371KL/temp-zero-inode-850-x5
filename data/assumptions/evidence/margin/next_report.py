@@ -14,9 +14,10 @@ import json
 import math
 import statistics as st
 
-from common import HERE, REGIMES, history, pct, regime_update, write_json
+from common import HERE, REGIMES, book_rule_params, history, pct, regime_update, write_json
 
-SIGMA, RHO, CAP = 0.0053, -0.40, 0.10
+SIGMA, RHO = book_rule_params()          # A-P2u σ и A-C4 ρ (series.py)
+CAP = 0.10
 STEP = 0.003
 N_VALUES = 7
 
@@ -58,7 +59,8 @@ def main():
         rows.append({"margin": v, "posterior": post, "e_lt": e_post, "d_e_lt": e_post - e_prior, "year_2026": year})
         print(f"  {pct(v, 1)} % → " + " / ".join(f"{post[r]*100:5.1f}" for r in REGIMES)
               + f";  E[m_LT] {pct(e_post, 3)} ({(e_post-e_prior)*100:+.3f});  год {pct(year)} %")
-    bench = {"как 2П2025": halves["2025H2"]["m"], "среднее 2П2025 и 1П2026": (halves["2025H2"]["ebitda"] + halves["2026H1"]["ebitda"]) / (halves["2025H2"]["rev"] + halves["2026H1"]["rev"]),
+    # «среднее двух полугодий» — простое среднее маржей, как в выпуске (model/journal.py, next_report.benchmarks)
+    bench = {"как 2П2025": halves["2025H2"]["m"], "среднее 2П2025 и 1П2026": (halves["2025H2"]["m"] + halves["2026H1"]["m"]) / 2,
              "как 1П2026": halves["2026H1"]["m"]}
     print("Наивные эталоны: " + ", ".join(f"{k} {pct(v)} %" for k, v in bench.items()))
     need = (0.06 * (halves["2026H1"]["rev"] + r_h2) - halves["2026H1"]["ebitda"]) / r_h2

@@ -1,26 +1,35 @@
 """Публикация выпуска X5 в орфан-ветку `data` и сверка через боевую дверь.
 
-    python ops/publish.py --release var/release/latest.json    опубликовать
+    python ops/publish.py --fetch-state var/state              скачать ветку data
+                                                               (+ её коммит в var/state/.commit)
+    python ops/publish.py --release var/release/latest.json \
+                          --expect-commit "$(cat var/state/.commit)"   опубликовать
     python ops/publish.py --verify https://tzi-850-x5.pages.dev/api/model \
                           --release var/release/latest.json    сверить
-    python ops/publish.py --fetch-state var/state              скачать ветку data
-    python ops/publish.py --rollback                           откат на previous.json
+    python ops/publish.py --rollback [--note "почему"]         откат на previous.json
+    python ops/publish.py --reopen <id записи> --note "почему" переоткрыть запись журнала
 
 Ветка `data` публичного репозитория — четыре файла:
 
 * `latest.json`   — текущий выпуск (его читает Pages-функция `/api/model`);
 * `previous.json` — прежний `latest.json` (откат — вернуть его на место);
 * `journal.json`  — блок `journal` текущего выпуска (журнал прогнозов);
-* `history.json`  — по строке заголовка на каждый выпуск и откат.
+* `history.json`  — по строке на каждый выпуск, откат и переоткрытие записи.
 
 Ветка переписывается ОДНИМ коммитом без истории (временный каталог, `git init`,
 файлы, коммит от github-actions[bot], принудительный push) — репозиторий не
-растёт. Push идёт с `--force-with-lease` на прочитанный коммит: чужую запись,
-случившуюся между чтением и публикацией (ручной откат), он не затрёт.
+растёт, коммиты ветки не хранятся: объяснение правки — строкой history.json
+(`--note`). Конвейер передаёт в публикацию коммит, прочитанный шагом
+«Состояние из ветки data» (`--expect-commit`): любая запись в ветку после
+этого шага (откат, переоткрытие) — провал, ветка не тронута. Push идёт с
+`--force-with-lease` на тот же коммит.
 
 Журнал неизменяем: каждая прошлая запись обязана остаться с теми же полями;
 меняться могут только `actual` и `errors`, и только пока `actual` был null
-(факт внесли после отчёта). Нарушение — провал, ветка не тронута.
+(факт внесли после отчёта). Нарушение — провал, ветка не тронута. Ошибочный
+факт исправляется переоткрытием записи (`--reopen`: `actual` и `errors` →
+null, строка в history.json); следующий выпуск закроет её фактом из
+`data/facts/actuals.json`.
 
 Выпуск с тем же `payload_sha256`, что уже лежит в `latest.json`, не
 публикуется повторно: иначе `previous.json` затёрся бы копией текущего.
@@ -50,9 +59,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from indicators.http import USER_AGENT, strict_json  # noqa: E402
+from indicators.runlog import report  # noqa: E402
 
 BRANCH = "data"
 FILES = ("latest.json", "previous.json", "journal.json", "history.json")
+# Коммит ветки, прочитанный --fetch-state (пусто — ветки не было).
+STATE_COMMIT = ".commit"
 BOT_NAME = "github-actions[bot]"
 BOT_EMAIL = "41898282+github-actions[bot]@users.noreply.github.com"
 DEFAULT_RELEASE = ROOT / "var" / "release" / "latest.json"
@@ -69,16 +81,6 @@ class PublishError(Exception):
     def __init__(self, step: str, reason: str):
         super().__init__(f"{step}: {reason}")
         self.step, self.reason = step, reason
-
-
-def report(line: str) -> None:
-    """Итоговая строка — в журнал прогона и в сводку GitHub Actions."""
-    sys.stdout.flush()  # шаги выше — раньше итоговой строки и при буферизации
-    print(line, file=sys.stderr if line.startswith("ПРОВАЛ") else sys.stdout, flush=True)
-    summary = os.environ.get("GITHUB_STEP_SUMMARY")
-    if summary:
-        with open(summary, "a", encoding="utf-8") as handle:
-            handle.write(f"- {line}\n")
 
 
 def now_utc() -> str:
@@ -211,9 +213,10 @@ def _get(payload: dict, *path):
     return node
 
 
-def history_row(payload: dict, *, event: str, previous_sha: str | None) -> dict:
-    """Строка заголовка выпуска для history.json."""
-    return {"published_at": now_utc(), "event": event,
+def history_row(payload: dict, *, event: str, previous_sha: str | None,
+                note: str | None = None) -> dict:
+    """Строка заголовка выпуска для history.json (`note` — объяснение оператора)."""
+    row = {"published_at": now_utc(), "event": event,
             "payload_sha256": _get(payload, "meta", "payload_sha256"),
             "previous_sha256": previous_sha,
             "generated_at": _get(payload, "meta", "generated_at"),
@@ -226,6 +229,9 @@ def history_row(payload: dict, *, event: str, previous_sha: str | None) -> dict:
             "printed_central": _get(payload, "headline", "printed_central"),
             "printed_band": _get(payload, "headline", "printed_band"),
             "bytes": _get(payload, "meta", "bytes")}
+    if note:
+        row["note"] = note
+    return row
 
 
 def dump_history(rows: list[dict]) -> bytes:
@@ -253,7 +259,11 @@ def _sha(payload) -> str | None:
 
 # ----------------------------------------------------------------- команды
 
-def publish(release: Path, remote: str, branch: str = BRANCH) -> str:
+def publish(release: Path, remote: str, branch: str = BRANCH, *,
+            expect: str | None = None) -> str:
+    """Выпуск в ветку. `expect` — коммит ветки на начало прогона (`--fetch-state`,
+    пусто — ветки не было): ветка с тех пор изменилась — провал, ветка не тронута.
+    None — без этой проверки (lease на коммит, прочитанный здесь же)."""
     step = "чтение выпуска"
     try:
         body = release.read_bytes()
@@ -267,6 +277,12 @@ def publish(release: Path, remote: str, branch: str = BRANCH) -> str:
     with tempfile.TemporaryDirectory(prefix="x5-data-", ignore_cleanup_errors=True) as tmp:
         git = Git(Path(tmp), remote)
         lease, files = read_branch(git, branch)
+        if expect is not None and (lease or "") != expect:
+            raise PublishError("чтение ветки data",
+                               f"ветка {branch} изменилась во время прогона (в начале "
+                               f"{expect[:12] or 'ветки не было'}, сейчас "
+                               f"{lease[:12] if lease else 'ветки нет'}) — выпуск не "
+                               "опубликован, следующий прогон начнёт с нового состояния")
         old = _load("чтение ветки data", "latest.json", files.get("latest.json"))
         old_sha = _sha(old)
         if old_sha == sha:
@@ -298,7 +314,7 @@ def publish(release: Path, remote: str, branch: str = BRANCH) -> str:
             f"строк истории {len(history)}")
 
 
-def rollback(remote: str, branch: str = BRANCH) -> str:
+def rollback(remote: str, branch: str = BRANCH, *, note: str | None = None) -> str:
     with tempfile.TemporaryDirectory(prefix="x5-data-", ignore_cleanup_errors=True) as tmp:
         git = Git(Path(tmp), remote)
         lease, files = read_branch(git, branch)
@@ -309,7 +325,8 @@ def rollback(remote: str, branch: str = BRANCH) -> str:
         if _sha(latest) == _sha(previous):
             return f"готово: откатывать некуда — latest.json уже равен previous.json ({_sha(latest)[:12]})"
         history = _load("откат", "history.json", files.get("history.json")) or []
-        history.append(history_row(previous, event="rollback", previous_sha=_sha(latest)))
+        history.append(history_row(previous, event="rollback", previous_sha=_sha(latest),
+                                   note=note))
         new_files = dict(files, **{"latest.json": files["previous.json"],
                                    "history.json": dump_history(history)})
         commit = write_branch(git, branch, new_files,
@@ -318,7 +335,45 @@ def rollback(remote: str, branch: str = BRANCH) -> str:
             f"снятый {_sha(latest)[:12]} остаётся в history.json")
 
 
+def reopen(entry_id: str, note: str | None, remote: str, branch: str = BRANCH) -> str:
+    """Исправление факта: закрытая запись журнала снова открыта (`actual` и
+    `errors` → null), причина — строкой в history.json. Следующий выпуск
+    закроет запись фактом из `data/facts/actuals.json` и пересчитает ошибки."""
+    step = "переоткрытие записи журнала"
+    if not (note or "").strip():
+        raise PublishError(step, "нужна причина: --note \"<почему исправляется факт>\"")
+    with tempfile.TemporaryDirectory(prefix="x5-data-", ignore_cleanup_errors=True) as tmp:
+        git = Git(Path(tmp), remote)
+        lease, files = read_branch(git, branch)
+        journal = _load(step, "journal.json", files.get("journal.json"))
+        entries = journal.get("entries") if isinstance(journal, dict) else None
+        if not isinstance(entries, list):
+            raise PublishError(step, f"в ветке {branch} нет journal.json с entries")
+        entry = next((e for e in entries if isinstance(e, dict) and e.get("id") == entry_id), None)
+        if entry is None:
+            raise PublishError(step, f"записи {entry_id} в журнале нет; есть: "
+                               + ", ".join(str(e.get("id")) for e in entries if isinstance(e, dict)))
+        if entry.get("actual") is None:
+            raise PublishError(step, f"запись {entry_id} не закрыта — переоткрывать нечего")
+        was = entry["actual"]
+        entry["actual"], entry["errors"] = None, None
+        history = _load(step, "history.json", files.get("history.json")) or []
+        if not isinstance(history, list):
+            raise PublishError(step, "history.json — не список")
+        history.append({"published_at": now_utc(), "event": "reopen", "entry": entry_id,
+                        "actual_was": was, "note": note.strip(),
+                        "payload_sha256": _sha(_load(step, "latest.json", files.get("latest.json")))})
+        new_files = dict(files, **{"journal.json": dump_json(journal),
+                                   "history.json": dump_history(history)})
+        commit = write_branch(git, branch, new_files,
+                              f"переоткрыта запись журнала {entry_id} (было {was})", lease)
+    return (f"готово: запись {entry_id} переоткрыта (actual {was} → null, коммит {commit[:12]}); "
+            "следующий выпуск закроет её фактом из data/facts/actuals.json")
+
+
 def fetch_state(target: Path, remote: str, branch: str = BRANCH) -> str:
+    """Файлы ветки в `target` и её коммит в `target/.commit` (пусто — ветки нет):
+    публикация сверит с ним голову ветки (`--expect-commit`)."""
     target.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="x5-data-", ignore_cleanup_errors=True) as tmp:
         commit, files = read_branch(Git(Path(tmp), remote), branch)
@@ -328,6 +383,7 @@ def fetch_state(target: Path, remote: str, branch: str = BRANCH) -> str:
             path.write_bytes(files[name])
         elif path.exists():
             path.unlink()
+    (target / STATE_COMMIT).write_text(commit or "", encoding="utf-8", newline="\n")
     if commit is None:
         return f"готово: ветки {branch} ещё нет — первый выпуск, состояния нет"
     return (f"готово: состояние ветки {branch} ({commit[:12]}) в {target}: "
@@ -387,6 +443,12 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--verify", metavar="URL", help="сверить боевую дверь с выпуском")
     mode.add_argument("--fetch-state", metavar="DIR", help="скачать файлы ветки data в каталог")
     mode.add_argument("--rollback", action="store_true", help="latest.json := previous.json")
+    mode.add_argument("--reopen", metavar="ID",
+                      help="переоткрыть закрытую запись журнала (исправление факта)")
+    parser.add_argument("--note", help="причина — в history.json (для --reopen обязательна)")
+    parser.add_argument("--expect-commit", metavar="COMMIT",
+                        help="коммит ветки data на начале прогона (var/state/.commit; "
+                             "пусто — ветки не было): изменилась — провал")
     parser.add_argument("--release", default=str(DEFAULT_RELEASE), help="файл выпуска")
     parser.add_argument("--remote", help="адрес репозитория (по умолчанию origin)")
     parser.add_argument("--branch", default=BRANCH)
@@ -402,9 +464,13 @@ def main(argv: list[str] | None = None) -> int:
             if args.fetch_state:
                 line = fetch_state(Path(args.fetch_state), remote, args.branch)
             elif args.rollback:
-                line = rollback(remote, args.branch)
+                line = rollback(remote, args.branch, note=args.note)
+            elif args.reopen:
+                line = reopen(args.reopen, args.note, remote, args.branch)
             else:
-                line = publish(Path(args.release), remote, args.branch)
+                line = publish(Path(args.release), remote, args.branch,
+                               expect=None if args.expect_commit is None
+                               else args.expect_commit.strip())
     except PublishError as exc:
         report(f"ПРОВАЛ на шаге {exc.step}: {exc.reason}")
         return 1

@@ -5,7 +5,8 @@
 * мок `tests/fixtures/sample_payload.json` держит контракт: все блоки, размер,
   конечные числа, длины прогонов и таблица λ;
 * правило единственного пересчёта во фронте (ползунок λ: квантиль тип 7,
-  печать половиной к чётному) на прогонах выпуска даёт заголовок выпуска — на
+  печать к шагу, половина вверх — как `checks.round_to_step` ядра) на прогонах
+  выпуска даёт заголовок выпуска — на
   моке и на выпуске ядра `var/release/sample.json`, когда он есть.
 """
 
@@ -85,7 +86,7 @@ def test_release_follows_the_contract(path):
     assert [round(r["lambda"], 2) for r in fv["by_lambda"]] == [round(i / 20, 2) for i in range(21)]
 
 
-# ── правило ползунка λ (web/app.js: centresAt, headlineAt, roundHalfEven) ──
+# ── правило ползунка λ (web/app.js: centresAt, headlineAt, roundHalfUp) ──
 
 def _q7(sorted_vals, q):
     n = len(sorted_vals)
@@ -101,7 +102,7 @@ def _front_headline(payload, lam):
     step = head["print_step"]
     market = head["market_price"]
     return {"central": _q7(c, 0.5), "band": [_q7(c, 0.1), _q7(c, 0.9)], "inner": [_q7(c, 0.25), _q7(c, 0.75)],
-            "printed_central": round(_q7(c, 0.5) / step) * step,
+            "printed_central": math.floor(_q7(c, 0.5) / step + 0.5) * step,
             "p_below": sum(1 for v in c if v < market) / len(c), "mean": sum(c) / len(c)}
 
 
@@ -132,3 +133,14 @@ def test_slider_rule_matches_the_lambda_table(path):
 def test_slider_steps_come_from_the_release():
     src = APP.read_text(encoding="utf-8")
     assert 'step: String(lambdaStep(d))' in src, "шаг ползунка — fair_value.lambda_step выпуска"
+
+
+def test_slider_prints_half_up_like_the_core():
+    """Печать при λ ≠ книги — половина вверх, как `checks.round_to_step` ядра и
+    контракт (docs/PAYLOAD.md, headline)."""
+    src = APP.read_text(encoding="utf-8")
+    assert "roundHalfEven" not in src
+    assert re.search(r"function roundHalfUp\(x\) \{\s*return Math\.floor\(x \+ 0\.5\);", src)
+    from model.checks import round_to_step
+    for v in (3725.0, 3775.0, 3724.99, 3700.0):
+        assert math.floor(v / 50 + 0.5) * 50 == round_to_step(v, 50)

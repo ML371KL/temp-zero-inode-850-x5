@@ -31,7 +31,7 @@ from model.book import BOOK_DIR, ROOT, book_warnings, default_book_path, load_bo
 from model.book_schema import REGIMES
 from model.checks import gate_masses, invariants, round_to_step
 from model.facts import Facts, core_facts, default_facts_dir, load_facts
-from model.grid import Grid, annual_path, evaluate, expected_path, rub_per_1pct_ev, v0_from_price
+from model.grid import Grid, annual_path, evaluate, expected_path
 from model.uncertainty import distribution
 
 # Прогоны полосы — до 0,1 ₽, как в выпуске (model/payload.py: DRAW_DECIMALS).
@@ -65,7 +65,9 @@ def _rel(path: Path) -> str:
 def _layer(L) -> dict:
     return dict(title=L.title, world_weights=L.world_weights, v0=L.v0, d=L.d, equity=L.equity,
                 price=L.price, pv_fcff=L.pv_fcff, pv_shield=L.pv_shield,
-                pv_terminal=L.pv_terminal, terminal_share=L.terminal_share,
+                pv_terminal=L.pv_terminal, pv_issuance=L.pv_issuance,
+                pv_excess_spread=L.pv_excess_spread, pv_buffer_carry=L.pv_buffer_carry,
+                treasury_value=L.treasury_value, terminal_share=L.terminal_share,
                 ev_ebitda_fwd=L.ev_ebitda_fwd, v0_to_d=L.v0_to_d)
 
 
@@ -75,6 +77,9 @@ def _cell(ctx, c) -> dict:
                 credit=cell.credit, demand=cell.demand, p_analytical=c.p["analytical"],
                 p_market_implied=c.p["market_implied"], p_neutral=c.p["macro_neutral"],
                 ev=r.ev, pv_fcff=r.pv_fcff, pv_shield=r.pv_shield, pv_terminal=r.pv_terminal,
+                pv_issuance=r.pv_issuance, pv_excess_spread=r.pv_excess_spread,
+                pv_buffer_carry=r.pv_buffer_carry, tv_da_transition=r.terminal.tv_da_transition,
+                terminal_debt_rate=r.terminal.debt_rate,
                 terminal_share=r.terminal_share, d=r.claims.total, equity=r.equity,
                 price=r.price, ebitda_ntm=r.ebitda_ntm, ev_ebitda_fwd=r.ev_ebitda_fwd,
                 margin_lt=ctx.regime(cell.regime).target_lt, terminal_growth=r.terminal.growth,
@@ -90,13 +95,12 @@ def band_results(A: dict, facts: Facts, grid: Grid, *, n_workers: int | None = N
     step = float(A["valuation"]["headline"]["print_step"])
     S = dist.stats
     ctx = grid.ctx
-    d, g, shares = grid.layers["analytical"].d, ctx.governance, ctx.facts.shares_mln
-    v0_med = v0_from_price(S["median"], d, g, shares)
+    v0_med = ctx.v0_of(S["median"], grid.layers["analytical"].d)
     return {"draws": dist.band.n, "seed": dist.band.seed, "lambda": dist.band.lam,
             "market_price": dist.band.market_price, "stats": S,
             "printed": {k: round_to_step(S[k], step) for k in ("p10", "p25", "median", "p75", "p90")},
             "center_ev": {"v0_median": v0_med, "gap_median": v0_med / grid.point.v_star - 1.0,
-                          "rub_per_1pct_ev_median": rub_per_1pct_ev(v0_med, g, shares)},
+                          "rub_per_1pct_ev_median": ctx.rub_per_1pct(v0_med)},
             "contributions": dist.contributions,
             "judgements": sorted(dist.judgements, key=lambda j: -j["swing"]),
             "subsample": dist.subsample, "delta": dist.delta,
@@ -130,6 +134,9 @@ def book_results(A: dict | None = None, facts: Facts | None = None, *,
                    "facts_date": A["meta"]["facts_date"], "anchor_period": ctx.anchor,
                    "closed_periods": T.closed, "elapsed": T.elapsed, "roll_years": T.roll,
                    "t_end": T.t_end, "shares_mln": ctx.facts.shares_mln,
+                   "treasury_mln": ctx.treasury_mln,
+                   "treasury_sale_price_k": float(A["valuation"]["treasury_sale_price_k"]),
+                   "treasury_value": ctx.treasury_value,
                    "governance_discount": ctx.governance, "lambda": P.lam,
                    "print_step": step},
         "warnings": book_warnings(A),
@@ -191,8 +198,10 @@ def render_run_output(res: dict) -> str:
            f"кривые миров на {I['curve_as_of']}, факты на {I['facts_date']} (якорь {I['anchor_period']})",
            f"Сетка: закрыто полугодий {I['closed_periods']}, прошло {I['elapsed']:.4f} текущего; "
            f"перекат Δ = {I['roll_years']:.4f} года; срок терминала {I['t_end']:.4f} года",
-           f"Акции в обращении {I['shares_mln']:.6f} млн; дисконт за управление "
-           f"{I['governance_discount']:.4f}; λ = {I['lambda']:.2f}; шаг печати {_f(I['print_step'], 0)} ₽",
+           f"Акции в обращении {I['shares_mln']:.6f} млн, казначейские {I['treasury_mln']:.6f} млн "
+           f"(продажа по {I['treasury_sale_price_k']:.4f} рынка = {_f(I['treasury_value'], 3)} млрд ₽); "
+           f"дисконт за управление {I['governance_discount']:.4f}; λ = {I['lambda']:.2f}; "
+           f"шаг печати {_f(I['print_step'], 0)} ₽",
            ""]
     if res["warnings"]:
         out.append("Замечания к книге (правило §0.1 читает так):")
@@ -215,6 +224,11 @@ def render_run_output(res: dict) -> str:
                    f"{_f(L['price']):>9} {_f(L['pv_fcff']):>9} {_f(L['pv_shield']):>8} "
                    f"{_f(L['pv_terminal']):>8} {_g(L['terminal_share'], '>10.4f')} "
                    f"{_f(L['ev_ebitda_fwd'], 2):>10} {_f(L['v0_to_d'], 2):>6}")
+    out.append("  вычеты из EV (PV, млрд ₽)   издержки размещения  сверх справедл. спреда"
+               "  кэрри подушки")
+    for name, L in res["layers"].items():
+        out.append(f"  {L['title']:<24} {_f(L['pv_issuance'], 2):>22} {_f(L['pv_excess_spread'], 2):>23} "
+                   f"{_f(L['pv_buffer_carry'], 2):>14}")
     P = res["point"]
     out += ["",
             f"Точка: низ {_f(P['low'])} · точка {_f(P['central'])} · верх {_f(P['high'])} ₽ "
@@ -303,12 +317,15 @@ def render_band(B: dict) -> list[str]:
         out.append(f"  {_f(j['price_low']):>8} {_f(j['price_high']):>9} {_f(j['swing']):>9}  "
                    f"{j['name']} ({_v(j['book'], j['kind'])}; {_v(j['low'], j['kind'])} … "
                    f"{_v(j['high'], j['kind'])})")
-    out += ["", f"Обратный DCF (§11): медиана = рынку {_f(B['market_price'])} ₽; подвыборка "
-                f"{B['subsample']} прогонов, сдвиг δ = {B['delta']:+.2f} ₽",
-            "  ось: решение для медианы | для точки | диапазон книги"]
+    out += ["", f"Обратный DCF (§11): медиана = рынку {_f(B['market_price'])} ₽; поиск на подвыборке "
+                f"{B['subsample']} прогонов со сдвигом δ = {B['delta']:+.2f} ₽, уточнение секущей "
+                "на полной полосе",
+            "  ось: решение для медианы (невязка полной полосы; поиск) | для точки | диапазон книги"]
     for r in B["reverse_dcf"]:
         where = "внутри диапазона" if r["in_range"] else "вне диапазона"
-        med = "недостижимо в поиске" if r["solved"] is None else f"{r['solved']:.6g} ({where})"
+        med = ("недостижимо в поиске" if r["solved"] is None else
+               f"{r['solved']:.6g} ({where}; невязка {r['gap_full']:+.1f} ₽; поиск "
+               f"{r['search_value']:.6g})")
         pt = "недостижимо" if r["point_solved"] is None else f"{r['point_solved']:.6g}"
         out.append(f"  {r['name']}: {med} | {pt} | {r['range'][0]:g} … {r['range'][1]:g} "
                    f"(книга {r['book']:g}; поиск {r['search'][0]:g} … {r['search'][1]:g})")
@@ -322,7 +339,9 @@ def render_band(B: dict) -> list[str]:
                        f"{_f(r['median']):>10} {r['d_median']:>+9.1f}   {q['stress']:.3f}  "
                        f"{q['floor']:.3f}  {q['partial']:.3f}    {q['full']:.3f}")
         nm, npnt = N["neutral"]["median"], N["neutral"]["point"]
-        out.append(f"  нейтральная маржа: медианы {_g(nm, '.5f')}, точки {_g(npnt, '.5f')}; "
+        gap = N["neutral_gap"]["median"]
+        out.append(f"  медианы — полной полосы; нейтральная маржа: медианы {_g(nm, '.5f')} "
+                   f"(невязка {_g(gap, '+.1f')} ₽), точки {_g(npnt, '.5f')}; "
                    f"медиана на 0,1 п.п. маржи {_f(N['rub_per_01pp'])} ₽")
     return out
 

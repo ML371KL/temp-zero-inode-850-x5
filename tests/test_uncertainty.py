@@ -4,7 +4,8 @@
 * треугольное распределение: медиана каждого суждения = значению книги;
 * прогон при s = 0 — книга бит в бит; концы оси — low и high книги;
 * детерминизм: числа не зависят от числа процессов и от повтора;
-* обратный DCF и нейтральная маржа попадают в свою цель на своей подвыборке.
+* обратный DCF и нейтральная маржа: поиск попадает в цель на подвыборке, уточнение
+  на полной полосе печатает свою невязку и не хуже поиска.
 """
 
 from __future__ import annotations
@@ -167,9 +168,23 @@ def test_contributions_find_the_axis_that_matters():
 
 
 def test_bisect_rules():
-    root, calls = U.bisect(lambda x: 100 * (x - 0.3), 0.0, 1.0, tol=1.0)
+    root, calls, slope = U.bisect(lambda x: 100 * (x - 0.3), 0.0, 1.0, tol=1.0)
     assert abs(root - 0.3) <= 0.01 and calls <= 2 + U.BISECTION_STEPS
+    assert slope == pytest.approx(100.0, rel=1e-12)
     assert U.bisect(lambda x: x + 5.0, 0.0, 1.0, tol=0.1)[0] is None
+
+
+def test_secant_refine_reaches_the_root_of_a_different_function():
+    """Решение «подвыборки» x0 с её наклоном уточняется на «полной» функции (§11)."""
+    full = lambda x: 80 * (x - 0.31) + 30 * (x - 0.31) ** 2      # noqa: E731
+    x, fx, calls = U.secant_refine(full, 0.30, 100.0, 0.0, 1.0, tol=0.05)
+    assert abs(fx) <= 0.05 and fx == pytest.approx(full(x), abs=1e-12)
+    assert calls <= 1 + U.SECANT_STEPS
+    # уже в допуске — одно вычисление, точка не двигается
+    assert U.secant_refine(full, 0.31, 100.0, 0.0, 1.0, tol=0.05) == (0.31, 0.0, 1)
+    # шаги не выходят из отрезка поиска; лучшая точка не хуже начальной
+    x, fx, _ = U.secant_refine(full, 0.30, 1e-6, 0.0, 0.35, tol=0.05)
+    assert 0.0 <= x <= 0.35 and abs(fx) <= abs(full(0.30))
 
 
 # ------------------------------------------------- §11, §12 на малой полосе
@@ -183,17 +198,28 @@ def test_subsample_on_the_book_is_the_full_median(book, cf, small):
 
 
 def test_reverse_dcf_hits_the_market_price(book, cf, small):
+    """Поиск попадает в цену на подвыборке + δ; уточнение печатает невязку полной полосы,
+    и она не хуже невязки полной полосы в точке поиска (§11)."""
     b = small.band
     sub = U.Subsample(b, small.stats["median"], cf, size=small.subsample,
-                      valuation_date=None, market_price=b.market_price, n_workers=1)
+                      valuation_date=None, market_price=b.market_price, n_workers=1,
+                      round_draws=None)
     mp = b.market_price
     for row in small.reverse_dcf:
         assert row["status"] in ("solved", "unreachable")
         if row["solved"] is None:
+            assert row["search_value"] is None and row["gap_full"] is None
             continue
-        B = U.override(book, row["paths"], row["kind"], row["solved"])
         fixed = frozenset(row["fixed_axes"])
-        assert abs(sub.at(B, fixed) - mp) <= U.REVERSE_TOL_RUB, row["name"]
+
+        def at(x, row=row):
+            return U.override(book, row["paths"], row["kind"], x)
+
+        assert abs(sub.at(at(row["search_value"]), fixed) - mp) <= U.REVERSE_TOL_RUB, row["name"]
+        gap = sub.full(at(row["solved"]), fixed) - mp
+        assert gap == pytest.approx(row["gap_full"], abs=1e-9)
+        assert abs(gap) <= abs(sub.full(at(row["search_value"]), fixed) - mp) + 1e-9
+        assert 1 <= row["evaluations_full"] <= 1 + U.SECANT_STEPS
         lo, hi = row["range"]
         assert row["in_range"] == (lo <= row["solved"] <= hi)
 
@@ -215,13 +241,22 @@ def test_next_report_table_and_neutral_margin(book, cf, grid, small):
         g = evaluate(U.with_fact(book, N["period"], r["margin"]), cf)
         assert r["point"] == g.point.central
         assert r["d_point"] == pytest.approx(r["point"] - grid.point.central, abs=1e-9)
-    # Медиана растёт с фактом маржи (сетка монотонна по марже).
+    # Медиана — полной полосы; растёт с фактом маржи (сетка монотонна по марже).
+    sub = U.Subsample(small.band, small.stats["median"], cf, size=small.subsample,
+                      valuation_date=None, market_price=small.band.market_price, n_workers=1)
+    for r in N["table"][:2]:
+        assert r["median"] == sub.full(U.with_fact(book, N["period"], r["margin"]))
+        assert r["d_median"] == pytest.approx(r["median"] - small.stats["median"], abs=1e-9)
     meds = [r["median"] for r in N["table"]]
     assert meds == sorted(meds)
     m = N["neutral"]["point"]
     if m is not None:
         g = evaluate(U.with_fact(book, N["period"], m), cf)
         assert abs(g.point.central - grid.point.central) <= U.NEUTRAL_TOL_RUB
+    m, gap = N["neutral"]["median"], N["neutral_gap"]["median"]
+    if m is not None:
+        full = sub.full(U.with_fact(book, N["period"], m))
+        assert full - small.stats["median"] == pytest.approx(gap, abs=1e-9)
 
 
 def test_with_fact_replaces_a_partial_observation(book):

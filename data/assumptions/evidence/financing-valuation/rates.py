@@ -188,7 +188,8 @@ tc = v(INT["tc_amortised_h1_2026"]) * 2 / (bond_days / yrs)
 R(f"  взвешенный спред флоатеров 28.09: {w_now:.4f}; размещения с 09.2025 (КС 17 → 14 %): среднее {mean(recent):.4f}; "
   f"при КС 21 % (пик 10.2024–06.2025): {[round(x, 4) for x in crunch_fl]}; все размещения при КС ≥ 16 %: "
   f"{[round(x, 4) for x in regime_fl]} → среднее "
-  f"{mean(regime_fl):.4f}; издержки размещения облигаций {tc:.4f} в год (амортизация 1П2026 × 2 / средний номинал)")
+  f"{mean(regime_fl):.4f}; амортизация издержек 1П2026 × 2 на средний номинал одних облигаций — {tc:.4f} в год "
+  f"(мера книги 1.0; по МСФО издержки относятся ко всем займам — ставка issuance_cost ниже)")
 fix_rows = []
 for b in [x for x in BONDS if x["type"] == "fixed" and x["issue_date"] >= "2024-12-01"] + \
         [dict(series=x["series"], issue_date=x["date"], coupon=x["coupon"], exit_date=x["put"], freq=x["freq"])
@@ -229,15 +230,38 @@ def step(x: float, s: float = 0.0005) -> float:
     return round(round(x / s) * s, 4)
 
 
-fl_base = step(w_now + tc)
+# Спреды книги — чистые: плата кредиторам по рыночной цене (долг в требованиях по номиналу). Издержки
+# размещения — отдельный ключ financing.issuance_cost (ниже): модель прибавляет их к ставке новой части долга
+# (щит на них законен: они вычитаются из базы налога) и вычитает их PV из EV (MODEL §4.9, §5).
+fl_base = step(w_now)
 fl_stress = step(fl_base + (mean(regime_fl) - w_now))
-fx_base = step(median(g_now + g_base) + tc)
+fx_base = step(median(g_now + g_base))
 fx_stress = step(fx_base + (mean(g_stress) - mean(g_base)))
-R(f"  КНИГА spread_float: base {fl_base} = взвешенный спред {w_now:.4f} + издержки {tc:.4f}; stress {fl_stress} = base + "
+R(f"  КНИГА spread_float (без издержек): base {fl_base} = взвешенный спред {w_now:.4f}; stress {fl_stress} = base + "
   f"(среднее размещений при КС ≥ 16 % {mean(regime_fl):.4f} − {w_now:.4f})")
-R(f"  КНИГА spread_fixed: base {fx_base} = медиана G-спредов (вторичка 25.09 и размещения с 07.2025, "
-  f"{median(g_now + g_base):.4f}) + издержки; stress {fx_stress} = base + (режим КС ≥ 16 % {mean(g_stress):.4f} − "
+R(f"  КНИГА spread_fixed (без издержек): base {fx_base} = медиана G-спредов (вторичка 25.09 и размещения с 07.2025, "
+  f"{median(g_now + g_base):.4f}); stress {fx_stress} = base + (режим КС ≥ 16 % {mean(g_stress):.4f} − "
   f"размещения с 07.2025 {mean(g_base):.4f})")
+# Издержки размещения на валовой долг: займы по МСФО — за вычетом неамортизированных издержек, относящихся ко
+# ВСЕМ кредитам и займам (не только к облигациям). Годовая ставка = амортизация LTM / средние займы LTM;
+# сверка деньгами — понесённые издержки (прирост остатка + амортизация) 1П2026 на средние займы 1П2026.
+TC = INT["transaction_costs"]
+BQ = INT["borrowings_quarter_end"]
+amort_ltm = TC["amortised"]["2025"] - TC["amortised"]["2025H1"] + TC["amortised"]["2026H1"]
+qs = ["2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31", "2026-06-30"]
+debt_ltm = (BQ[qs[0]] / 2 + sum(BQ[q] for q in qs[1:-1]) + BQ[qs[-1]] / 2) / (len(qs) - 1)
+ic_amort = amort_ltm / debt_ltm
+debt_h1 = (BQ["2025-12-31"] + BQ["2026-06-30"]) / 2
+incurred_h1 = TC["unamortised"]["2026-06-30"] - TC["unamortised"]["2025-12-31"] + TC["amortised"]["2026H1"]
+ic_cash = incurred_h1 * 2 / debt_h1
+ic_book = round(ic_amort, 4)
+R(f"  издержки размещения: амортизация LTM (2П2025 {TC['amortised']['2025'] - TC['amortised']['2025H1']:.3f} + 1П2026 "
+  f"{TC['amortised']['2026H1']:.3f}) = {amort_ltm:.3f} на средние займы LTM {debt_ltm:.1f} = {ic_amort:.5f} в год; "
+  f"деньгами 1П2026 (остаток {TC['unamortised']['2025-12-31']:.3f} → {TC['unamortised']['2026-06-30']:.3f} + "
+  f"амортизация) {incurred_h1:.3f} × 2 / {debt_h1:.1f} = {ic_cash:.5f} (с приростом долга)")
+R(f"  КНИГА issuance_cost = {ic_book} (к ставке новой части долга; старый фикс несёт свои издержки в прошлом)")
+out["issuance_cost"] = {"amortised_ltm": r4(amort_ltm), "debt_ltm_avg": r4(debt_ltm), "rate_amortised": r6(ic_amort),
+                        "incurred_h1_2026": r4(incurred_h1), "rate_cash_h1_2026": r6(ic_cash), "book": ic_book}
 R(f"  сверка со ставкой банков (п. 3): средняя ставка банков 1П2026 {bank_rate:.4f} против КС {ks_h1:.4f} — банки не "
   f"дороже облигаций; спред плавающего долга книги ({fl_base}) не занижен")
 out["spreads"] = {"float_weighted_0928": r4(w_now), "float_recent_mean": r4(mean(recent)), "float_crunch": crunch_fl,
@@ -292,8 +316,8 @@ for w, credit in (("N", "base"), ("H", "base"), ("M", "stress")):
     key = W[w]["key_rate"]["2026H2"]
     z3 = W[w]["zero_curve"]["3"]
     lw = legacy_book["2026H2"]
-    fixed = lw * legacy_book_rate + (1 - lw) * (z3 + out["spreads"]["book"]["spread_fixed"][credit])
-    rate = fixed_2026h2 * fixed + (1 - fixed_2026h2) * (key + out["spreads"]["book"]["spread_float"][credit])
+    fixed = lw * legacy_book_rate + (1 - lw) * (z3 + out["spreads"]["book"]["spread_fixed"][credit] + ic_book)
+    rate = fixed_2026h2 * fixed + (1 - fixed_2026h2) * (key + out["spreads"]["book"]["spread_float"][credit] + ic_book)
     R(f"  мир {w} ({credit}): КС {key:.4f}, фикс {fixed:.4f}, ставка долга {rate:.4f}")
 R(f"  факт: эффективная ставка по займам 1П2026 {REP['effective_rate_h1_2026_pct'] / 100:.4f} при средней КС "
   f"{ks_h1:.4f}; купон облигаций 28.09 ≈15,2 % при КС 14,00 % (X2 §3.4)")

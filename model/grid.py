@@ -5,8 +5,9 @@
 * Слой — набор весов миров на ОДНИХ И ТЕХ ЖЕ клетках (§8): «свой макро-взгляд»
   (`joint.world_prob`), «вменённые рынком» (`joint.market_implied_prob`),
   «рыночные ставки как есть» (100 % `joint.neutral_world`).
-* Цена слоя — внутренняя стоимость (§7.2): (V0 − D)(1 − g_gov)·1000/акции
-  при положительном капитале, иначе (V0 − D)·1000/акции.
+* Цена слоя — внутренняя стоимость (§7.2) с казначейским пакетом:
+  [(V0 − D) + n·k·P_рынок/1000]·(1 − g_gov)·1000/(N + n) при положительном
+  капитале с пакетом, иначе без (1 − g_gov).
 * Точка = низ + λ·(верх − низ), низ — «рыночные ставки как есть», верх —
   «свой макро-взгляд» (§8).
 """
@@ -19,7 +20,9 @@ from dataclasses import dataclass
 
 from model.book import period_index
 from model.book_schema import CAPEX_LEVELS, REGIMES, WORLDS
-from model.core import CellResult, Context, observations, price_of_equity, run_cell
+# v0_from_price и rub_per_1pct_ev живут в ядре рядом с ценой; здесь — для прежних импортов.
+from model.core import (CellResult, Context, observations, run_cell, rub_per_1pct_ev,  # noqa: F401
+                        v0_from_price)
 from model.facts import CoreFacts, Facts
 
 fsum = math.fsum
@@ -125,7 +128,12 @@ class GridCell:
 
 @dataclass(frozen=True)
 class LayerResult:
-    """Слой (§7.2, §8): V0 = Σ P·EV, D = Σ P·D, цена по внутренней стоимости."""
+    """Слой (§7.2, §8): V0 = Σ P·EV, D = Σ P·D, цена по внутренней стоимости.
+
+    Разложение EV: V0 = pv_fcff + pv_shield + pv_terminal − pv_issuance −
+    pv_excess_spread − pv_buffer_carry (`ev_parts`). Цена: капитал `equity` = V0 − D
+    плюс выручка от продажи казначейского пакета `treasury_value`.
+    """
 
     name: str
     title: str
@@ -140,6 +148,18 @@ class LayerResult:
     terminal_share: float
     ev_ebitda_fwd: float | None
     v0_to_d: float | None
+    pv_issuance: float = 0.0
+    pv_excess_spread: float = 0.0
+    pv_buffer_carry: float = 0.0
+    treasury_value: float = 0.0
+
+    @property
+    def ev_parts(self) -> tuple:
+        """Строки EV со знаком вклада (ключ, млрд ₽); сумма — V0."""
+        return (("pv_fcff", self.pv_fcff), ("pv_shield", self.pv_shield),
+                ("pv_terminal", self.pv_terminal), ("pv_issuance", -self.pv_issuance),
+                ("pv_excess_spread", -self.pv_excess_spread),
+                ("pv_buffer_carry", -self.pv_buffer_carry))
 
 
 @dataclass(frozen=True)
@@ -195,25 +215,18 @@ def layer_of(ctx: Context, name: str, weights: dict, cells: list, regime_p: dict
     v0 = mean(lambda c: c.ev)
     d = mean(lambda c: c.claims.total)
     pv_terminal = mean(lambda c: c.pv_terminal)
+    terminal_net = mean(lambda c: c.terminal_share * c.ev)
     ntm = mean(lambda c: c.ebitda_ntm)
     equity = v0 - d
     return LayerResult(
         name=name, title=LAYER_TITLES.get(name, name), world_weights=dict(weights), v0=v0, d=d,
-        equity=equity, price=price_of_equity(equity, ctx.governance, cf.shares_mln),
+        equity=equity, price=ctx.price_of(equity),
         pv_fcff=mean(lambda c: c.pv_fcff), pv_shield=mean(lambda c: c.pv_shield),
-        pv_terminal=pv_terminal, terminal_share=pv_terminal / v0 if v0 else math.inf,
-        ev_ebitda_fwd=v0 / ntm if ntm > 0 else None, v0_to_d=v0 / d if d > 0 else None)
-
-
-def v0_from_price(price: float, d: float, governance: float, shares_mln: float) -> float:
-    """V0, при котором функция «EV → цена» (§7.2) даёт `price` при требованиях `d`."""
-    equity = price * shares_mln / 1000.0
-    return (equity / (1.0 - governance) if equity > 0 else equity) + d
-
-
-def rub_per_1pct_ev(v0: float, governance: float, shares_mln: float) -> float:
-    """Цена 1 % EV (§7.3): 0,01 × V0 × (1 − g_gov) × 1000 / акции."""
-    return v0 / 100.0 * (1.0 - governance) * 1000.0 / shares_mln
+        pv_terminal=pv_terminal, terminal_share=terminal_net / v0 if v0 else math.inf,
+        ev_ebitda_fwd=v0 / ntm if ntm > 0 else None, v0_to_d=v0 / d if d > 0 else None,
+        pv_issuance=mean(lambda c: c.pv_issuance),
+        pv_excess_spread=mean(lambda c: c.pv_excess_spread),
+        pv_buffer_carry=mean(lambda c: c.pv_buffer_carry), treasury_value=ctx.treasury_value)
 
 
 def point_of(ctx: Context, layers: dict, lam: float | None = None) -> Point:
@@ -222,12 +235,11 @@ def point_of(ctx: Context, layers: dict, lam: float | None = None) -> Point:
     low, high = layers["macro_neutral"].price, layers["analytical"].price
     central = low + lam * (high - low)
     d = layers["analytical"].d
-    shares, g = ctx.facts.shares_mln, ctx.governance
-    v0_point = v0_from_price(central, d, g, shares)
-    v_star = v0_from_price(ctx.market_price, d, g, shares)
+    v0_point = ctx.v0_of(central, d)
+    v_star = ctx.v0_of(ctx.market_price, d)
     return Point(low=low, high=high, central=central, lam=lam, rates_view=high - low,
                  v0_point=v0_point, v_star=v_star, gap_point=v0_point / v_star - 1.0,
-                 rub_per_1pct_ev_point=rub_per_1pct_ev(v0_point, g, shares),
+                 rub_per_1pct_ev_point=ctx.rub_per_1pct(v0_point),
                  equity_share_of_ev=(v0_point - d) / v0_point if v0_point else math.nan)
 
 
@@ -282,11 +294,12 @@ PATH_FIELDS = ("revenue", "ticket", "traffic", "area_end", "opened", "closed", "
                "adj_ebitda", "lti", "ebitda_rep", "da", "ebit", "capex", "capex_maintenance",
                "capex_growth", "capex_infra", "nwc", "nwc_change", "opcash", "opcash_change",
                "lease", "proceeds", "tax_unlevered", "tax_actual", "shield", "fcff", "debt_rate",
-               "interest", "dividends", "net_debt", "ebitda_rep_ltm")
+               "interest", "issuance_cost", "excess_spread", "buffer_carry", "dividends",
+               "net_debt", "ebitda_rep_ltm")
 FLOW_FIELDS = ("revenue", "adj_ebitda", "lti", "ebitda_rep", "da", "capex", "capex_maintenance",
                "capex_growth", "capex_infra", "nwc_change", "opcash_change", "lease",
                "proceeds", "tax_unlevered", "tax_actual", "shield", "fcff", "interest",
-               "dividends", "opened", "closed")
+               "issuance_cost", "excess_spread", "buffer_carry", "dividends", "opened", "closed")
 
 
 def expected_path(grid: Grid, layer: str = "analytical") -> list[dict]:

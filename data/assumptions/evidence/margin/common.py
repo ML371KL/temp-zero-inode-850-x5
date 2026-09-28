@@ -24,6 +24,13 @@ def load_json(name: str) -> dict:
     return json.loads((INPUTS / name).read_text(encoding="utf-8"))
 
 
+def book_rule_params() -> tuple[float, float]:
+    """σ правила A-P2u (joint.regime_update.sigma_pp, шаг 0,01 п.п.) и ρ (margin.deviation_persistence, шаг 0,05)
+    из оценки series.py (series_out.json) — одно место для всех скриптов листа."""
+    ser = json.loads((HERE / "series_out.json").read_text(encoding="utf-8"))
+    return round(ser["rule"]["sigma_rule_pp"] / 100, 4), round(ser["base"]["rho"] * 20) / 20
+
+
 def write_json(name: str, obj: dict) -> None:
     (HERE / name).write_text(json.dumps(obj, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
 

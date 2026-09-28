@@ -126,7 +126,8 @@ def test_discount_by_hand(book, facts):
         if r.fraction:
             want = df(T.roll + r.t) / df(T.roll)
             assert r.df == pytest.approx(want, rel=1e-13)
-            pv += (r.fcff + r.shield) * r.fraction * want
-    tv = res.terminal.tv_flow + res.terminal.tv_shield
+            pv += (r.fcff + r.shield - r.issuance_cost - r.excess_spread
+                   - r.buffer_carry) * r.fraction * want
+    tv = res.terminal.tv_flow + res.terminal.tv_shield - res.terminal.tv_financing
     pv += tv * df(T.roll + T.t_end) / df(T.roll)
     assert res.ev == pytest.approx(pv, rel=1e-12)

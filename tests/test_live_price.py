@@ -56,7 +56,8 @@ def test_price_older_than_seven_days_falls_back():
 
 
 def test_seven_days_is_still_fresh():
-    price = judge_price(collected(value=1810, day="2026-09-21"), reference=REF,
+    older_ref = dict(REF, date="2026-09-18")  # эталон не новее цены: проверяется только возраст
+    price = judge_price(collected(value=1810, day="2026-09-21"), reference=older_ref,
                         history=HISTORY, today=TODAY)
     assert price["accepted"]
 
@@ -140,6 +141,24 @@ def test_missing_price_without_fallback_is_a_failure():
 def test_non_positive_price_falls_back(value):
     price = judge_price(collected(value=value), reference=REF, history=HISTORY, today=TODAY)
     assert not price["accepted"]
+
+
+def test_price_older_than_the_last_accepted_falls_back():
+    """Повторный прогон в тот же день: котировки отказали, история дала
+    закрытие прошлого дня — цена и эталон назад не откатываются."""
+    today_ref = {"value": 1796.0, "date": "2026-09-28", "origin": "последняя принятая, из прошлого выпуска"}
+    price = judge_price(collected(value=1808.5, day="2026-09-25", time=None, kind="history_close"),
+                        reference=today_ref, history=HISTORY, today=TODAY)
+    assert not price["accepted"] and price["status"] == "fallback"
+    assert (price["value"], price["date"]) == (1796.0, "2026-09-28")
+    assert price["last_accepted"] == {"value": 1796.0, "date": "2026-09-28"}
+    assert "старше последней принятой" in price["reason"]
+
+
+def test_price_of_the_same_day_as_the_reference_is_accepted():
+    same_day = {"value": 1796.0, "date": "2026-09-28", "origin": "последняя принятая, из прошлого выпуска"}
+    price = judge_price(collected(), reference=same_day, history=HISTORY, today=TODAY)
+    assert price["accepted"] and price["last_accepted"] == {"value": 1802.5, "date": "2026-09-28"}
 
 
 def test_price_from_the_future_falls_back():

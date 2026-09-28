@@ -4,7 +4,7 @@
  *  • Числа — только из выпуска `/api/model`. Своих формул у витрины нет.
  *    Единственный пересчёт — ползунок λ: центр прогона = низ + λ·(верх − низ)
  *    по `fair_value.draws_low` / `draws_high`, квантиль тип 7, шаг печати
- *    выпуска, округление половины к чётному (как `round` ядра). При λ книги
+ *    выпуска, половина — вверх (как `checks.round_to_step` ядра). При λ книги
  *    печатается выпуск как есть. Остальное — форматирование и арифметика
  *    отображения (дни до события, перевод долей в проценты).
  *  • Имя `d` в этом файле — только выпуск: тест сверяет каждое `d.<блок>` со
@@ -107,7 +107,11 @@ function numberFormat(digits) {
   return FORMATS.get(digits);
 }
 
-const TIME_FORMAT = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit" });
+// Время и дата сборки выпуска — по Москве, как время сделок ISS: иначе у зрителя
+// в другом поясе «выпуск собран» и «сделка» разошлись бы на часы.
+const MSK = "Europe/Moscow";
+const TIME_FORMAT = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: MSK });
+const DAY_MSK = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: MSK });
 const MONTHS = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа",
   "сентября", "октября", "ноября", "декабря"];
 const MONTHS_SHORT = ["янв.", "февр.", "марта", "апр.", "мая", "июня", "июля", "авг.",
@@ -118,12 +122,21 @@ const MONTHS_NOM = ["январь", "февраль", "март", "апрель"
 
 function parseDay(iso) {
   // Дата без времени — календарный день, а не полночь по Гринвичу: иначе
-  // зритель к западу от Гринвича увидел бы вчерашнее число.
+  // зритель к западу от Гринвича увидел бы вчерашнее число. Момент ISO со
+  // временем — через Date.parse; свободный текст — не дата (null), чтобы
+  // «≈ начало января» не превращалось молча в 1 января.
   if (typeof iso !== "string") return null;
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
   if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(iso)) return null;
   const t = Date.parse(iso);
   return Number.isNaN(t) ? null : new Date(t);
+}
+
+// Календарный день момента ISO по Москве («2026-09-28T21:30:00Z» → «2026-09-29»).
+function mskDay(iso) {
+  const t = parseDay(iso);
+  return t ? DAY_MSK.format(t) : null;
 }
 
 // Дней между двумя календарными датами (отсчёт до события от даты оценки).
@@ -175,10 +188,14 @@ const fmt = {
     const day = parseDay(iso);
     return day ? `${MONTHS_NOM[day.getMonth()]} ${day.getFullYear()}` : "—";
   },
-  // Время — через Intl: часы зрителя читает только правило темы в index.html.
+  // Время — через Intl, по Москве: часы зрителя читает только правило темы в index.html.
   time(iso) {
     const day = parseDay(iso);
-    return day ? TIME_FORMAT.format(day) : "—";
+    return day ? `${TIME_FORMAT.format(day)}${NBSP}МСК` : "—";
+  },
+  // Момент сборки: дата и время по Москве («28.09.2026 16:25 МСК»).
+  stamp(iso) {
+    return parseDay(iso) ? `${fmt.date(mskDay(iso))} ${fmt.time(iso)}` : "—";
   },
   days(n) { return isNum(n) ? `${fmt.num(n)}${NBSP}${plural(n, ["день", "дня", "дней"])}` : "—"; },
 };
@@ -536,9 +553,10 @@ function withTable(chartNode, makeTable) {
   return { box, button, refresh };
 }
 
+// `opts.text` — в плитке слово, а не число: переносится внутри своей колонки.
 function kpi(value, labelText, opts = {}) {
   return el("div", { class: "kpi", tip: opts.tip || null },
-    el("div", { class: "kpi-value" }, value, opts.unit ? el("span", { class: "unit" }, " " + opts.unit) : null),
+    el("div", { class: cls("kpi-value", opts.text && "is-text") }, value, opts.unit ? el("span", { class: "unit" }, " " + opts.unit) : null),
     el("div", { class: "kpi-label" }, labelText));
 }
 
@@ -585,7 +603,7 @@ const LAYER_NAMES = {
 };
 const LAYER_ORDER = ["macro_neutral", "market_implied", "analytical"];
 const CAPEX_NAMES = { low: "низкий", base: "базовый", high: "высокий" };
-const REGIME_NAMES = { stress: "стресс", floor: "пол", partial: "частичный возврат", full: "полный возврат" };
+const REGIME_NAMES = { stress: "стресс", floor: "дно", partial: "частичный возврат", full: "полный возврат" };
 const DEMAND_NAMES = { bear: "слабый спрос", base: "базовый спрос", bull: "сильный спрос" };
 const TARGET_NAMES = {
   "x5.adj_margin": "Скорр. маржа EBITDA",
@@ -645,10 +663,9 @@ function quantile7(sorted, q) {
   return sorted[lo] + (h - lo) * (sorted[hi] - sorted[lo]);
 }
 
-// Округление печати — как в ядре: Python `round` округляет половину к чётному.
-function roundHalfEven(x) {
-  const r = Math.round(x);
-  return Math.abs(x - Math.trunc(x)) === 0.5 ? 2 * Math.round(x / 2) : r;
+// Округление печати — как в ядре (`checks.round_to_step`): половина вверх.
+function roundHalfUp(x) {
+  return Math.floor(x + 0.5);
 }
 
 function hasDraws(d) {
@@ -695,7 +712,7 @@ function headlineAt(d, lam) {
   const c = centresAt(d, lam).sort((a, b) => a - b);
   const q = (p) => quantile7(c, p);
   const step = printStep(d);
-  const print = (v) => roundHalfEven(v / step) * step;
+  const print = (v) => roundHalfUp(v / step) * step;
   const market = marketPrice(d);
   const central = q(0.5);
   const band = [q(0.1), q(0.9)];
@@ -715,7 +732,7 @@ function pointAt(d, lam) {
 function printedPoint(d, lam) {
   const fv = obj(d.fair_value);
   if (lam === null || Math.abs(lam - bookLambda(d)) < 1e-9) return obj(fv.printed).central;
-  return roundHalfEven(pointAt(d, lam) / printStep(d)) * printStep(d);
+  return roundHalfUp(pointAt(d, lam) / printStep(d)) * printStep(d);
 }
 
 /* ───────────────────────────── распределение (герой) ───────────────────────────── */
@@ -852,15 +869,25 @@ function distributionChart(d) {
 /* ───────────────────────────── ряд «диапазон книги → что нужно рынку» ───────────────────────────── */
 
 // Значение оси обратного DCF в её единице: сдвиг — в п.п., доля — в %,
-// бета — числом.
-function reverseValue(row, value, bookSide = false) {
+// стоимость метра — тыс. ₽/м², бета — числом. `signed` — отклонение от книги.
+function reverseValue(row, value, bookSide = false, signed = false) {
   if (!isNum(value)) return "—";
   const u = String(row.unit || "").trim();
+  const plus = signed && value > 0 ? "+" : "";
   if (u === "п.п." || u === "pp") {
     return bookSide && value === 0 ? "без сдвига" : fmt.pp(value, bookSide ? Math.max(1, exactDigits(value * 100, 2)) : 2);
   }
-  if (u === "%" || u === "pct") return fmt.pct(value, bookSide ? exactDigits(value * 100, 2) : 2);
-  return fmt.num(value, bookSide ? exactDigits(value, 3) : 2);
+  if (u === "bn_per_m2") return plus + formatByUnit(value, u, null);
+  if (u === "%" || u === "pct") return plus + fmt.pct(value, bookSide ? exactDigits(value * 100, 2) : 2);
+  return plus + fmt.num(value, bookSide ? exactDigits(value, 3) : 2);
+}
+
+// Имя суждения на экране: единицу «млрд ₽ на тыс. м²» витрина печатает в самом
+// значении (тыс. ₽/м²), а ключ мира в имени заменяет названием мира.
+function axisLabel(d, name) {
+  return String(name || "")
+    .replace(/,\s*млрд\s*₽\s*на\s*тыс\.\s*м²/g, "")
+    .replace(/(мира|миров) ([NHM])(?![A-Za-z0-9])/g, (m, w, k) => (d && obj(d.worlds)[k] ? `${w} «${worldName(d, k)}»` : m));
 }
 
 function rangeRowChart(row) {
@@ -965,7 +992,7 @@ function columnsChart(items, opts = {}) {
         const shown = it.parts.filter((p) => isNum(p.value) && p.value > 0);
         shown.forEach((p, j) => {
           const node = bar(cx, y(run), y(run + p.value), p.color, { title: it.tipTitle || String(it.key),
-            rows: it.parts.filter((q) => isNum(q.value)).map((q) => [q.name, opts.fmt ? opts.fmt(q.value) : fmt.num(q.value, 1)]) }, j === shown.length - 1);
+            rows: [...it.parts.filter((q) => isNum(q.value)).map((q) => [q.name, opts.fmt ? opts.fmt(q.value) : fmt.num(q.value, 1)]), ...(it.extra || [])] }, j === shown.length - 1);
           if (node) svg.append(node);
           run += p.value;
         });
@@ -1027,7 +1054,9 @@ function linesChart(series, opts = {}) {
     const y = scale(y0, y1, H - m.b, m.t);
     const svg = svgBox(W, H, opts.label);
     const yMarks = ticks(y0, y1, opts.yTicks || 4);
-    const yLabel = opts.yPct ? pctTicks(yMarks) : opts.yFmt || ((t) => fmt.num(t));
+    // Знаков у подписей оси — сколько нужно делениям (5,93 % и 1,15×, а не 5,9 % дважды).
+    const yDigits = Math.max(0, ...yMarks.map((t) => exactDigits(t, 3)));
+    const yLabel = opts.yPct ? pctTicks(yMarks) : opts.yFmt ? ((t) => opts.yFmt(t, yDigits)) : ((t) => fmt.num(t));
     for (const t of yMarks) {
       svg.append(line(m.l, y(t), W - m.r, y(t), { class: "gridline" }),
         text(m.l - 8, y(t) + 4, yLabel(t), { class: "tick", "text-anchor": "end" }));
@@ -1060,15 +1089,15 @@ function linesChart(series, opts = {}) {
     }
     svg.append(line(m.l, H - m.b, W - m.r, H - m.b, { class: "axisline" }));
     // Подписи опорных линий: близкие по высоте расходятся — нижняя уходит под линию.
-    const refLabels = refs.filter((r) => r.text).map((r) => ({ r, y: y(r.value) - 6 })).sort((a, b) => a.y - b.y);
+    // `below` — подпись под линией (над ней рисуются другие ряды).
+    // `short` — подпись для узкого графика (телефон), `below` — под линией.
+    const refText = (r) => (W < 480 && r.short ? r.short : r.text);
+    const refLabels = refs.filter((r) => r.text).map((r) => ({ r, y: y(r.value) + (r.below ? 16 : -6) })).sort((a, b) => a.y - b.y);
     for (let i = 1; i < refLabels.length; i++) {
       if (refLabels[i].y - refLabels[i - 1].y < 15 && (refLabels[i].r.side || "right") === (refLabels[i - 1].r.side || "right")) refLabels[i].y += 20;
     }
     for (const ref of refs) {
       svg.append(line(m.l, y(ref.value), W - m.r, y(ref.value), { stroke: ref.color, "stroke-width": 1.5, "stroke-dasharray": ref.dash || null }));
-    }
-    for (const { r, y: ly } of refLabels) {
-      svg.append(label(r.side === "left" ? m.l + 4 : W - m.r, ly, r.text, { "text-anchor": r.side === "left" ? "start" : "end", class: "label" }));
     }
     const vItems = [];
     for (const v of opts.vlines || []) {
@@ -1083,9 +1112,31 @@ function linesChart(series, opts = {}) {
       }
     }
     stackLabels(vItems, 8);
+    // Подписи опорных линий и вертикалей раскладываются вместе: подпись опорной
+    // линии, задевающая подпись вертикали, уходит под свою линию.
+    const hits = (ly, x0, x1) => vItems.some((t) => Math.abs(m.t + 6 + t.row * 16 - ly) < 15 && t.x0 < x1 + 8 && t.x1 > x0 - 8);
+    for (const item of refLabels) {
+      const w = textWidth(refText(item.r), 12.5, 520);
+      const x1 = item.r.side === "left" ? m.l + 4 + w : W - m.r;
+      const x0 = x1 - w;
+      if (hits(item.y, x0, x1)) {
+        const below = y(item.r.value) + 16;
+        item.y = hits(below, x0, x1) || below > H - m.b - 2 ? item.y : below;
+      }
+      // Всё ещё задевает — ярусы вертикалей от задетого и ниже сдвигаются вниз целиком.
+      while (hits(item.y, x0, x1)) {
+        const hit = Math.min(...vItems.filter((t) => Math.abs(m.t + 6 + t.row * 16 - item.y) < 15 && t.x0 < x1 + 8 && t.x1 > x0 - 8).map((t) => t.row));
+        for (const t of vItems) if (t.row >= hit) t.row += 1;
+      }
+    }
+    for (const { r, y: ly } of refLabels) {
+      svg.append(label(r.side === "left" ? m.l + 4 : W - m.r, ly, refText(r), { "text-anchor": r.side === "left" ? "start" : "end", class: "label" }));
+    }
     for (const t of vItems) svg.append(label(t.x0, m.t + 6 + t.row * 16, t.text, { class: "label" }));
+    // Точки за пределами оси X не рисуются: линия не уходит на соседнюю карточку.
+    const inside = (v) => bandKeys || (v >= x.d[0] - 1e-9 && v <= x.d[1] + 1e-9);
     for (const s of series) {
-      const pts = s.points.filter((p) => isNum(p[1]) && isNum(x(p[0])));
+      const pts = s.points.filter((p) => isNum(p[1]) && isNum(x(p[0])) && inside(p[0]));
       if (s.area && s.area.length > 1) {
         const up = s.area.map((p) => `${x(p[0]).toFixed(1)},${y(p[2]).toFixed(1)}`);
         const down = s.area.slice().reverse().map((p) => `${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`);
@@ -1141,7 +1192,9 @@ function sparkline(item, valueText) {
   const pts = list(item.history).filter((p) => p && isNum(p.value));
   if (pts.length < 2) return null;
   const vals = pts.map((p) => p.value);
-  const lo = Math.min(...vals), hi = Math.max(...vals);
+  // Минимум и максимум — по полному ряду выпуска (линия — тонкая выборка).
+  const lo = Math.min(...vals, ...(isNum(obj(item.min).value) ? [item.min.value] : []));
+  const hi = Math.max(...vals, ...(isNum(obj(item.max).value) ? [item.max.value] : []));
   const plot = chart((W) => {
     const H = 40;
     const x = scale(0, pts.length - 1, 3, W - 5);
@@ -1187,7 +1240,7 @@ function hero(d) {
       ["Точка при центральных значениях", fmt.rub(pointAt(d, LAMBDA)), fmt.rub(printedPoint(d, LAMBDA))],
       ["Среднее прогонов", fmt.rub(hl.mean), "—"],
       ["Рыночная цена", fmt.rub(market), "—"],
-      ["P(справедливая цена ниже рынка)", fmt.pct(hl.p_below, 1), "—"],
+      ["P(справедливая цена ниже рынка)", fmt.pct(hl.p_below, 2), "—"],
     ];
     return dataTable([
       { title: "Величина", value: (r) => r[0], cls: "name" },
@@ -1245,9 +1298,9 @@ function hero(d) {
           el("span", { class: "range" }, `${fmt.num(hl.printed_inner[0])}–${fmt.num(hl.printed_inner[1])}${THIN}₽`))),
       el("div", { class: "verdict", id: "fv-ev" },
         el("div", { class: "verdict-top" },
-          el("span", { class: "verdict-num" }, fmt.pct(hl.p_below, 0)),
+          el("span", { class: "verdict-num" }, pBelowText(hl.p_below)),
           el("span", { class: "verdict-title" }, `вероятность, что справедливая цена ниже рыночной — ${fmt.rub(market)}`)),
-        el("div", { class: "meter", role: "img", "aria-label": `P(ниже рынка) ${fmt.pct(hl.p_below, 1)}` },
+        el("div", { class: "meter", role: "img", "aria-label": `P(ниже рынка) ${fmt.pct(hl.p_below, 2)}` },
           el("i", { style: `width:${Math.max(0, Math.min(100, (hl.p_below || 0) * 100))}%` })),
         el("span", { class: "verdict-note" }, verdictNote(d, hl, market, book ? null : lam))));
     tiles.replaceChildren(...heroTiles(d, lam));
@@ -1272,6 +1325,12 @@ function hero(d) {
   if (LAMBDA !== null) slider.value = String(LAMBDA);
   update();
   return el("div", {}, el("div", { class: "hero" }, copy, chartCard), tiles);
+}
+
+// P(ниже рынка) крупно: целыми процентами, а ненулевая доля меньше 1 % — с двумя
+// знаками (1 прогон из 2 000 — «0,05 %», а не «0 %»).
+function pBelowText(p) {
+  return fmt.pct(p, isNum(p) && p > 0 && p < 0.01 ? 2 : 0);
 }
 
 // Вывод под вероятностью — из чисел выпуска: где рынок относительно полос.
@@ -1304,8 +1363,9 @@ function heroTiles(d, lam) {
       el("span", { class: "tile-label" }, "Цена 1 % стоимости бизнеса"),
       el("span", { class: "tile-value" }, fmt.num(ce.rub_per_1pct_ev_median), el("span", { class: "unit" }, "₽ на акцию")),
       el("p", { class: "tile-note" },
-        `Капитал — ${fmt.pct(fv.equity_share_of_ev, 0)} стоимости бизнеса: капитализация ${fmt.bn(mk.market_cap, 0)} `
-        + `при рыночной стоимости бизнеса ${fmt.bn(mk.market_ev, 0)}.`)));
+        `Капитал — ${fmt.pct(fv.equity_share_of_ev, 0)} EV точки модели`
+        + (isNum(mk.equity_share_of_ev) ? `; у рынка — ${fmt.pct(mk.equity_share_of_ev, 0)}: требования ${fmt.bn(mk.claims, 0)} `
+          + `при рыночной стоимости бизнеса ${fmt.bn(mk.market_ev, 0)}.` : "."))));
   }
   const point = pointAt(d, lam);
   const median = headlineAt(d, LAMBDA).central;
@@ -1318,12 +1378,15 @@ function heroTiles(d, lam) {
       + (isNum(diff) ? `, ${diff >= 0 ? "выше" : "ниже"} медианы на ${fmt.rub(Math.abs(diff))}.` : "."))));
   const view = obj(fv.rates_view);
   if (isNum(view.rub)) {
+    // Число плитки — «верх − низ» выпуска; доля пути и вклад в точку — при текущем λ.
+    const lamNow = lam === null || lam === undefined ? bookLambda(d) : lam;
     out.push(el("section", { class: "card tile" },
       el("span", { class: "tile-label" }, "Вклад взгляда на инфляцию и ставки"),
       el("span", { class: "tile-value" }, fmt.signed(view.rub), el("span", { class: "unit" }, "₽")),
       el("p", { class: "tile-note" },
         `Рыночные ставки как есть — ${fmt.rub(obj(fv.printed).low)}, свой макро-взгляд — ${fmt.rub(obj(fv.printed).high)}; `
-        + `точка берёт ${fmt.pct(bookLambda(d), 0)} пути от первого ко второму.`)));
+        + `точка берёт ${fmt.pct(lamNow, 0)} пути от первого ко второму — ${fmt.signedRub(lamNow * view.rub)}`
+        + (book ? "." : ` (при λ книги ${fmt.num(bookLambda(d), 2)} — ${fmt.signedRub(bookLambda(d) * view.rub)}).`))));
   }
   return out;
 }
@@ -1375,7 +1438,10 @@ function heroWithoutBand(d) {
 /* ── «Что заложено в цену» (кратко) ── */
 
 function reverseRows(d) {
-  return list(obj(d.reverse_dcf).rows);
+  return list(obj(d.reverse_dcf).rows).map((r) => ({ ...r, name: axisLabel(d, r.name) }));
+}
+function judgementRows(d) {
+  return list(obj(d.judgements).rows).map((r) => ({ ...r, name: axisLabel(d, r.name) }));
 }
 function inRange(r) { return r.status !== "unreachable" && isNum(r.solved) && !!r.in_range; }
 
@@ -1423,11 +1489,11 @@ function pricedTeaser(d) {
 /* ── «Что определяет полосу» ── */
 
 function judgementByName(d) {
-  return Object.fromEntries(list(obj(d.judgements).rows).map((j) => [j.name, j]));
+  return Object.fromEntries(judgementRows(d).map((j) => [j.name, j]));
 }
 
 function bandDrivers(d) {
-  const rows = list(obj(d.uncertainty).contributions).filter((r) => isNum(r.share)).sort((a, b) => b.share - a.share);
+  const rows = list(obj(d.uncertainty).contributions).filter((r) => isNum(r.share)).map((r) => ({ ...r, axis: axisLabel(d, r.axis) })).sort((a, b) => b.share - a.share);
   if (!rows.length) return card({ title: "Что определяет полосу", span: 6 }, missing("вклад суждений в полосу"));
   const top = rows.slice(0, 6);
   const rest = rows.slice(6);
@@ -1489,7 +1555,17 @@ function reportTeaser(d) {
 
 /* ── «Дивиденды» (кратко) ── */
 
-const DIV_STATUS = { declared: ["объявлен", "warn"], recommended: ["рекомендован", "model"], paid: ["выплачен", "good"], paying: ["выплачивается", "warn"] };
+const DIV_STATUS = { declared: ["объявлен", "warn"], recommended: ["рекомендован", "model"], paid: ["выплачен", "good"],
+  paying: ["выплачивается", "warn"], unclaimed: ["не востребован", "warn"] };
+
+// Ожидаемая отсечка: дата ISO — месяцем и годом; без даты — текст оценки как есть.
+function nextRecordText(next) {
+  return parseDay(next.record_date_est) ? fmt.monthYear(next.record_date_est) : (next.record_date_note ? ruText(next.record_date_note) : "—");
+}
+// Отсечка строки реестра; у невостребованного остатка отсечки нет.
+function registerCutoff(r) {
+  return r.status === "unclaimed" ? "—" : fmt.date(r.ex_date || r.record_date);
+}
 
 function dividendsTeaser(d) {
   const dv = obj(d.dividends);
@@ -1502,19 +1578,20 @@ function dividendsTeaser(d) {
     sub: dv.policy && dv.policy.text ? sentence(dv.policy.text) : "" },
   el("div", { class: "kpis" },
     isNum(dv.yield_ltm) ? kpi(fmt.pct(dv.yield_ltm, 1), "дивидендная доходность за 12 месяцев") : null,
-    next.label ? kpi(isNum(next.dps_model) ? fmt.rub(next.dps_model) : "—", `${lowerFirst(next.label)} по модели`) : null,
-    next.record_date_est ? kpi(fmt.monthYear(next.record_date_est), "ожидаемая отсечка") : null),
+    next.label ? kpi(isNum(next.dps_model) ? fmt.rub(next.dps_model) : "—",
+      `${lowerFirst(next.label)} по модели${next.pay_period ? ` (выплата ${periodName(next.pay_period)})` : ""}`) : null,
+    next.record_date_est || next.record_date_note ? kpi(nextRecordText(next), "ожидаемая отсечка") : null),
   recent.length ? el("div", { style: "margin-top:14px" }, dataTable([
     { title: "Выплата", value: (r) => el("span", {}, r.label, el("span", { class: "cell-badge" }, divStatus(r))), cls: "name" },
     { title: "На акцию", num: true, value: (r) => fmt.rub(r.dps, isNum(r.dps) && r.dps % 1 ? 2 : 0) },
-    { title: "Отсечка", num: true, value: (r) => fmt.date(r.ex_date || r.record_date) },
+    { title: "Отсечка", num: true, value: registerCutoff },
   ], recent, { cls: "compact" })) : null,
   cal.length ? el("p", { class: "card-foot" }, sentence("В календаре: " + cal.slice(0, 3).map((e) => `${fmt.date(e.date)} — ${lowerFirst(e.title)}`).join("; "))) : null);
 }
 
 function divStatus(r) {
   const [name, kind] = DIV_STATUS[r.status] || [r.status || "—", null];
-  const share = isNum(r.paid_share) && r.paid_share < 0.99 && r.status !== "declared" ? ` · ${fmt.pct(r.paid_share, 0)}` : "";
+  const share = isNum(r.paid_share) && r.paid_share < 0.99 && (r.status === "paid" || r.status === "paying") ? ` · ${fmt.pct(r.paid_share, 0)}` : "";
   return badge(name + share, kind);
 }
 
@@ -1529,7 +1606,7 @@ function changesCard(d, span) {
   const ch = obj(obj(d.changes).vs_previous);
   const rows = list(ch.rows).filter((r) => isNum(r.rub));
   return card({ title: "Что изменилось с прошлого выпуска", span: span || 6,
-    sub: ch.previous_generated_at ? `точка при центральных значениях против выпуска ${fmt.date(ch.previous_generated_at)}` : "" },
+    sub: ch.previous_generated_at ? `точка при центральных значениях против выпуска ${fmt.date(mskDay(ch.previous_generated_at))}` : "" },
   rows.length ? el("ul", { class: "list" },
     rows.map((r) => el("li", {},
       el("span", { class: "t" }, upperFirst(CHANGE_NAMES[r.component] || r.component)),
@@ -1566,7 +1643,9 @@ function screenMarket(d) {
   const rows = reverseRows(d);
   const mk = obj(d.market);
   const head = obj(d.headline);
-  const gap = isNum(head.printed_central) && isNum(mk.price) ? head.printed_central / mk.price - 1 : null;
+  // Разрыв медианы с рынком — от точной медианы, как на «Оценке».
+  const px = marketPrice(d);
+  const gap = isNum(head.central) && isNum(px) && px > 0 ? head.central / px - 1 : null;
   const root = el("div", { class: "screen" },
     screenHead("Что заложено в цену", pricedHeadline(rows),
       `Рынок платит ${fmt.rub(mk.price)} за акцию (${fmt.date(mk.price_date)}), медиана модели — ${fmt.rub(head.printed_central)}`
@@ -1589,7 +1668,7 @@ function reverseDcfCard(d) {
     { title: "Суждение", value: (r) => r.name, cls: "name" },
     { title: "Нужно рынку", num: true, value: (r) => (reached(r) ? reverseValue(r, r.solved) : "недостижимо") },
     { title: "В книге", num: true, value: (r) => reverseValue(r, r.book, true) },
-    { title: "Отклонение", num: true, value: (r) => (reached(r) && isNum(r.delta) ? reverseValue({ unit: r.unit === "" ? "" : r.unit }, r.delta) : "—") },
+    { title: "Отклонение", num: true, value: (r) => (reached(r) && isNum(r.delta) ? reverseValue(r, r.delta, false, true) : "—") },
     { title: "Диапазон книги", num: true, value: (r) => `${reverseValue(r, list(r.range)[0], true)} … ${reverseValue(r, list(r.range)[1], true)}` },
     { title: "Для точки", num: true, value: (r) => (isNum(r.point_solved) ? reverseValue(r, r.point_solved) : "—") },
     { title: "", value: (r) => reverseBadge(r) },
@@ -1626,14 +1705,15 @@ function evCard(d) {
     { title: "Рыночная, млрд ₽", num: true, value: (r) => fmt.num(r.b, 1) },
     { title: "Разрыв", num: true, value: (r) => fmt.signedPct(r.gap, 1) },
   ], rows));
-  const an = obj(L.analytical);
   return card({ title: "Стоимость бизнеса: модель против рынка", span: 7, tools: fig.button,
     sub: `Рыночная стоимость бизнеса — ${fmt.bn(ce.v_star, 0)}: при ней модель даёт рыночную цену ${fmt.rub(mk.price)}. EV медианы — ${fmt.bn(ce.v0_median, 0)} (${fmt.signedPct(ce.gap_median, 1)}).` },
   legend([["key-dot key-model", "EV модели"], ["key-dot key-market", "рыночная стоимость бизнеса"]]),
   fig.box,
   el("div", { class: "kpis", style: "margin-top:14px" },
-    kpi(fmt.x(mk.ev_ebitda_ltm, 2), `рынок: EV / EBITDA за 12 месяцев (${fmt.num(mk.ebitda_rep_ltm, 0)} млрд ₽)`),
-    isNum(an.ev_ebitda_fwd) ? kpi(fmt.x(an.ev_ebitda_fwd, 2), "модель: EV / EBITDA следующих 12 месяцев") : null,
+    // Пара мультипликаторов — на одной базе: скорр. EBITDA следующих 12 месяцев.
+    isNum(ce.ev_ebitda_ntm_market) ? kpi(fmt.x(ce.ev_ebitda_ntm_market, 2),
+      `рынок: EV / скорр. EBITDA следующих 12 мес. (${fmt.num(ce.ebitda_ntm, 0)} млрд ₽)`) : null,
+    isNum(ce.ev_ebitda_ntm_median) ? kpi(fmt.x(ce.ev_ebitda_ntm_median, 2), "модель, медиана: EV / та же EBITDA") : null,
     kpi(fmt.rub(ce.rub_per_1pct_ev_median), "цена 1 % EV на акцию"),
     kpi(fmt.bn(mk.claims, 0), "требования на дату оценки")));
 }
@@ -1660,8 +1740,12 @@ function brokersCard(d) {
     const svg = svgBox(W, H, "Цели инвестдомов, рыночная цена и медиана модели");
     svg.append(line(x(lo), cy, x(hi), cy, { stroke: "var(--axis)", "stroke-width": 8, "stroke-linecap": "round" }));
     for (const r of rows) {
-      svg.append(sv("circle", { cx: x(r.target), cy, r: 4.5, fill: "var(--third)", stroke: "var(--surface)", "stroke-width": 1.5,
-        tip: { title: r.broker, rows: [["цель", fmt.rub(r.target)], ["дата", fmt.date(r.date)], ...(r.rating ? [["взгляд", r.rating]] : [])] } }));
+      // Цель, выставленная до отчёта, — полой точкой.
+      const before = r.after_report === false;
+      svg.append(sv("circle", { cx: x(r.target), cy, r: 4.5, fill: before ? "var(--surface)" : "var(--third)",
+        stroke: before ? "var(--third)" : "var(--surface)", "stroke-width": before ? 2 : 1.5,
+        tip: { title: r.broker, rows: [["цель", fmt.rub(r.target)], ["дата", fmt.date(r.date)], ...(r.horizon ? [["горизонт", r.horizon]] : []),
+          ...(r.rating ? [["взгляд", r.rating]] : [])], note: before ? "выставлена до отчёта" : r.in_median ? "входит в медиану" : null } }));
     }
     if (isNum(b.median)) svg.append(line(x(b.median), cy - 11, x(b.median), cy + 11, { stroke: "var(--ink)", "stroke-width": 2 }));
     for (const [v, color] of [[mk.price, "var(--market)"], [model, "var(--model)"]]) {
@@ -1676,20 +1760,28 @@ function brokersCard(d) {
     return svg;
   }, "Цели инвестдомов, рыночная цена и медиана модели");
   const fig = withTable(plot, () => dataTable([
-    { title: "Инвестдом", value: (r) => r.broker, cls: "name" },
+    { title: "Инвестдом", value: (r) => el("span", {}, r.broker, r.in_median ? el("span", { class: "hint" }, "в медиане") : null), cls: "name" },
     { title: "Дата", num: true, value: (r) => fmt.date(r.date) },
     { title: "Цель", num: true, value: (r) => fmt.rub(r.target) },
+    { title: "Горизонт", value: (r) => r.horizon || "—", cls: "txt" },
     { title: "Взгляд", value: (r) => r.rating || "—", cls: "txt" },
   ], rows, { detail: (r) => (r.src ? detailsBlock("Источник", ruText(r.src)) : null) }));
   const up = isNum(b.median) && isNum(mk.price) ? b.median / mk.price - 1 : null;
-  return card({ title: "Цели инвестдомов", span: 5, tools: fig.button,
-    sub: `${fmt.num(rows.length)} ${plural(rows.length, ["цель", "цели", "целей"])}${b.after_report ? ` после отчёта за ${b.after_report}` : ""}` },
-  legend([["key-dot key-third", "цель"], ["key-line key-ink", "медиана целей"], ["key-dot key-market", "рынок"], ["key-dot key-model", "модель"]]),
+  const after = rows.filter((r) => r.after_report === true).length;
+  const before = rows.filter((r) => r.after_report === false).length;
+  const n = (k) => `${fmt.num(k)} ${plural(k, ["цель", "цели", "целей"])}`;
+  const composition = b.after_report && after + before === rows.length
+    ? `${n(rows.length)}: ${fmt.num(after)} после отчёта за ${b.after_report}${before ? `, ${fmt.num(before)} — до него` : ""}`
+    : `${n(rows.length)}${b.after_report ? `; отчёт — ${b.after_report}` : ""}`;
+  const medianWhat = isNum(b.median_n) ? `медиана ${fmt.num(b.median_n)} ${plural(b.median_n, ["цели", "целей", "целей"])} на 12 мес. после отчёта` : "медиана целей";
+  return card({ title: "Цели инвестдомов", span: 5, tools: fig.button, sub: `${composition}; ${medianWhat}` },
+  legend([["key-dot key-third", "цель"], ...(before ? [["key-dot key-hollow key-third", "цель до отчёта"]] : []), ["key-line key-ink", "медиана целей"],
+    ["key-dot key-market", "рынок"], ["key-dot key-model", "модель"]]),
   fig.box,
   el("div", { class: "kpis", style: "margin-top:10px" },
-    kpi(fmt.rub(b.median), "медиана целей"),
-    kpi(`${fmt.num(lo)}–${fmt.num(hi)}${THIN}₽`, "размах"),
-    isNum(up) ? kpi(fmt.signedPct(up, 0), "медиана целей к рынку") : null));
+    kpi(fmt.rub(b.median), medianWhat),
+    kpi(`${fmt.num(lo)}–${fmt.num(hi)}${THIN}₽`, "размах всех целей"),
+    isNum(up) ? kpi(fmt.signedPct(up, 0), "медиана к рынку") : null));
 }
 
 function priceCard(d) {
@@ -1723,23 +1815,30 @@ function priceCard(d) {
     { title: "Закрытие", num: true, value: (p) => fmt.rub(p.close, 1) },
     { title: "Дивиденд", num: true, value: (p) => { const e = exd.find((q) => q.date === p.date); return e ? fmt.rub(e.dps) : ""; } },
   ], pts.slice().reverse()));
+  // Минимум и максимум — по полному ряду выпуска (график — тонкая выборка).
   const closes = pts.map((p) => p.close);
+  const lowPx = isNum(obj(mk.price_min).close) ? mk.price_min.close : Math.min(...closes);
+  const highPx = isNum(obj(mk.price_max).close) ? mk.price_max.close : Math.max(...closes);
   return card({ title: "Цена акции за 12 месяцев", tools: fig.button,
-    sub: `закрытия ${mk.price_source || "ISS TQBR"}; вертикали — отсечки дивидендов` },
+    sub: `дневные закрытия (${mk.price_source || "Мосбиржа"}); вертикали — отсечки дивидендов` },
   legend([["key-line key-market", "цена закрытия"], ["key-line key-model", "медиана модели"], ["key-line key-dash", "отсечка дивиденда"]]),
   fig.box,
   el("div", { class: "kpis", style: "margin-top:12px" },
-    kpi(fmt.rub(mk.price), `последняя цена · ${fmt.date(mk.price_date)}${mk.price_time ? " " + mk.price_time : ""}`),
-    kpi(`${fmt.num(Math.min(...closes))}–${fmt.num(Math.max(...closes))}${THIN}₽`, "минимум и максимум за период"),
+    kpi(fmt.rub(mk.price), `последняя цена · ${fmt.date(mk.price_date)}${mk.price_time ? ` ${mk.price_time}${NBSP}МСК` : ""}`),
+    kpi(`${fmt.num(lowPx)}–${fmt.num(highPx)}${THIN}₽`, "минимум и максимум закрытия за период"),
     isNum(mk.dividend_yield_ltm) ? kpi(fmt.pct(mk.dividend_yield_ltm, 1), "дивиденды за 12 месяцев к цене") : null,
     isNum(mk.pe_ltm) ? kpi(fmt.x(mk.pe_ltm, 1), "P/E за 12 месяцев") : null));
 }
 
 function peersCard(d) {
-  const rows = list(obj(obj(d.market).peers).rows);
+  const peers = obj(obj(d.market).peers);
+  const rows = list(peers.rows);
   if (!rows.length) return card({ title: "Аналоги на одной базе" }, empty("Аналогов в выпуске нет."));
-  const asOf = rows.map((r) => r.as_of).filter(Boolean)[0];
-  return card({ title: "Аналоги на одной базе", sub: `EV = капитализация + чистый долг; EBITDA до МСФО 16 за 12 месяцев${asOf ? `, балансы на ${fmt.date(asOf)}` : ""}` },
+  const asOf = peers.as_of;
+  const withDiv = rows.some((r) => isNum(r.dividends_after_balance) && r.dividends_after_balance > 0);
+  return card({ title: "Аналоги на одной базе",
+    sub: `EV = капитализация + чистый долг${withDiv ? " + дивиденды, объявленные до даты баланса и выплаченные после" : ""}; `
+      + `EBITDA до МСФО 16 за 12 месяцев${asOf ? `; балансы на ${fmt.date(asOf)}` : ""}` },
     dataTable([
       { title: "Компания", value: (r) => el("span", {}, r.name || r.ticker, r.ticker && r.name && r.ticker !== r.name ? el("span", { class: "hint" }, r.ticker) : null), cls: "name" },
       { title: "EV / EBITDA", num: true, value: (r) => (isNum(r.ev_ebitda) ? el("strong", {}, fmt.x(r.ev_ebitda, 2)) : "—") },
@@ -1747,6 +1846,7 @@ function peersCard(d) {
       { title: "EV, млрд ₽", num: true, value: (r) => fmt.num(r.ev, 1) },
       { title: "Капитализация", num: true, value: (r) => fmt.num(r.market_cap, 1) },
       { title: "Чистый долг", num: true, value: (r) => fmt.num(r.net_debt, 1) },
+      withDiv ? { title: "Дивиденды к выплате", num: true, value: (r) => (isNum(r.dividends_after_balance) && r.dividends_after_balance > 0 ? fmt.num(r.dividends_after_balance, 1) : "—") } : null,
       { title: "EBITDA", num: true, value: (r) => fmt.num(r.ebitda_ltm, 1) },
       { title: "Цена", num: true, value: (r) => (isNum(r.price) ? `${fmt.num(r.price, r.price < 10 ? 4 : r.price < 100 ? 2 : 1)}${THIN}₽ · ${fmt.dateShort(r.price_date)}` : "—") },
     ], rows, {
@@ -1756,13 +1856,14 @@ function peersCard(d) {
 }
 
 function tornadoCard(d) {
-  const rows = list(obj(d.judgements).rows).filter((r) => isNum(r.price_low) && isNum(r.price_high))
+  const rows = judgementRows(d).filter((r) => isNum(r.price_low) && isNum(r.price_high))
     .sort((a, b) => (b.swing || 0) - (a.swing || 0)).slice(0, 8);
   if (!rows.length) return card({ title: "Цена по одному суждению" }, missing("суждения по цене ошибки"));
   const center = obj(d.fair_value).central;
   const all = rows.flatMap((r) => [r.price_low, r.price_high]).concat(center);
   const stepR = niceStep(Math.max(...all), 4);
-  const dom = [Math.max(0, Math.floor(Math.min(...all) / stepR) * stepR), Math.ceil(Math.max(...all) / stepR) * stepR];
+  // Отметка края (14 px) не должна стоять на самой границе дорожки: запас в 2 % шага.
+  const dom = [Math.max(0, Math.floor((Math.min(...all) - stepR * 0.02) / stepR) * stepR), Math.ceil((Math.max(...all) + stepR * 0.02) / stepR) * stepR];
   const box = el("div", { class: "tornado" }, rows.map((r) => {
     const a = Math.min(r.price_low, r.price_high), b = Math.max(r.price_low, r.price_high);
     return el("div", { class: "tn-row" },
@@ -1820,7 +1921,9 @@ function flowCard(d) {
     ["Слои", v0.length ? `V0 ${fmt.num(Math.min(...v0), 0)}–${fmt.num(Math.max(...v0), 0)}` : "—",
       "Ожидаемая стоимость бизнеса при трёх наборах весов миров: рыночные ставки как есть, веса, вменённые рынком, свой макро-взгляд; млрд ₽."],
     ["Мост в цену", isNum(an.d) ? `D ${fmt.num(an.d, 0)}` : "—",
-      `Капитал = V0 − требования на дату оценки; цена = капитал × (1 − ${fmt.pct(meta.governance_discount, 0)}) на ${fmt.num(meta.shares_mln, 1)} млн акций в обращении.`],
+      bridgeParts(d).treasury > 0
+        ? `Капитал = V0 − требования на дату оценки; цена = (капитал + выручка от продажи казначейского пакета) × (1 − ${fmt.pct(meta.governance_discount, 0)}) на ${fmt.num(meta.shares_mln, 1)} + ${fmt.num(bridgeParts(d).treasury, 1)} млн акций.`
+        : `Капитал = V0 − требования на дату оценки; цена = капитал × (1 − ${fmt.pct(meta.governance_discount, 0)}) на ${fmt.num(meta.shares_mln, 1)} млн акций в обращении.`],
     ["Точка", `${fmt.num(fv.low)} → ${fmt.num(fv.central)} → ${fmt.num(fv.high)}`,
       `Все суждения в центре: рыночные ставки → λ = ${fmt.num(bookLambda(d), 2)} → свой взгляд; ₽ на акцию.`],
     ["Полоса по суждениям", isNum(head.central) ? `медиана ${fmt.num(head.central)}` : "—",
@@ -1880,14 +1983,22 @@ function regimesCard(d) {
   const annual = list(R.annual_history).filter((r) => isNum(r.adj_margin));
   const halves = list(R.history).filter((r) => isNum(r.adj_margin));
   const anchor = halves[halves.length - 1];
-  const targetYears = keys.flatMap((k) => list(R[k].target).map((t) => String(t.period))).filter((p) => /^\d{4}$/.test(p)).map(Number);
-  const lastYear = Math.max(...targetYears, 2030);
+  // Цель режима рисуется до первого полугодия, где она вышла на долгосрочный
+  // уровень; дальше ровная — её заменяет точка «далее». Ось — по годам этих точек.
+  const trimmed = (k) => {
+    const pts = list(R[k].target).filter((t) => t.period !== "LT" && isNum(periodX(t.period)) && isNum(t.value));
+    const at = pts.findIndex((t) => isNum(R[k].lt) && Math.abs(t.value - R[k].lt) < 1e-12);
+    return at >= 0 ? pts.slice(0, at + 1) : pts;
+  };
+  const drawnYears = keys.flatMap((k) => trimmed(k).map((t) => Math.floor(periodX(t.period))));
+  const lastYear = Math.max(...drawnYears, ...annual.map((r) => r.year), anchor ? Math.floor(periodX(anchor.period)) : 0);
   const series = [
     { name: "факт: скорр. маржа за год", color: "var(--ink)", width: 1.8, dots: true, r: 3, points: annual.map((r) => [r.year + 0.5, r.adj_margin]) },
   ];
   if (anchor) series.push({ name: `факт ${periodName(anchor.period)}`, color: "var(--ink)", dots: true, hollow: true, line: false, r: 4, points: [[periodX(anchor.period), anchor.adj_margin]] });
   for (const k of keys) {
-    const pts = list(R[k].target).map((t) => [periodX(t.period, lastYear), t.value]).filter((p) => isNum(p[0]) && isNum(p[1]));
+    const pts = trimmed(k).map((t) => [periodX(t.period), t.value]);
+    if (isNum(R[k].lt)) pts.push([lastYear + 1.5, R[k].lt]);
     series.push({ name: regimeName(d, k), color: REGIME_COLORS[k] || "var(--axis)", width: 1.8, dots: false, points: pts });
     const lt = pts[pts.length - 1];
     if (lt) series.push({ name: `${regimeName(d, k)}, далее`, color: REGIME_COLORS[k] || "var(--axis)", dots: true, line: false, r: 3.5, points: [lt] });
@@ -1895,12 +2006,15 @@ function regimesCard(d) {
   const minX = annual.length ? annual[0].year : 2011;
   const xTicks = [];
   for (let yr = minX; yr <= lastYear; yr += (lastYear - minX > 12 ? 3 : 2)) xTicks.push(yr + 0.5);
-  const plot = linesChart(series, { height: 260, xMin: minX, xMax: lastYear + 2, xTicks, xFmt: (v) => String(Math.floor(v)),
+  xTicks.push(lastYear + 1.5);
+  const plot = linesChart(series, { height: 260, xMin: minX, xMax: lastYear + 2, xTicks, xFmt: (v) => (v > lastYear + 1 ? "далее" : String(Math.floor(v))),
     yPct: true, tipFmt: (v) => fmt.pct(v, 2),
-    hrefs: isNum(R.expected_lt) ? [{ value: R.expected_lt, text: `ожидаемая долгосрочная ${fmt.pct(R.expected_lt, 2)}`, color: "var(--model)", dash: "2 4", side: "left" }] : [],
+    hrefs: isNum(R.expected_lt) ? [{ value: R.expected_lt, text: `ожидаемая долгосрочная ${fmt.pct(R.expected_lt, 2)}`, short: `ожидаемая ${fmt.pct(R.expected_lt, 2)}`, color: "var(--model)", dash: "2 4", side: "left", below: true }] : [],
     label: "Маржа X5: история и цели режимов" });
+  // Таблица — все периоды выпуска по времени, «далее» — последней строкой.
+  const order = (p) => (p === "LT" ? Infinity : periodX(p) ?? 1e9);
   const years = [...new Set([...annual.map((r) => String(r.year)), ...keys.flatMap((k) => list(R[k].target).map((t) => String(t.period)))])]
-    .sort((a, b) => (periodX(a, lastYear) ?? 1e9) - (periodX(b, lastYear) ?? 1e9));
+    .sort((a, b) => order(a) - order(b));
   const fig = withTable(plot, () => dataTable([
     { title: "Период", value: (p) => periodName(p), cls: "name" },
     { title: "Факт", num: true, value: (p) => { const r = annual.find((a) => String(a.year) === p) || halves.find((h) => h.period === p); return r ? fmt.pct(r.adj_margin, 2) : ""; } },
@@ -1911,14 +2025,14 @@ function regimesCard(d) {
     sub: "Скорректированная маржа EBITDA до МСФО 16; цели режимов — от якоря до долгосрочного уровня. Вероятности режимов одинаковы во всех мирах и слоях." },
   bar,
   el("div", { class: "legend" }, keys.map((k) => el("span", {}, el("i", { class: "key", style: `background:${REGIME_COLORS[k]}` }),
-    `${regimeName(d, k)} ${fmt.pct(post(k), 0)}`))),
+    `${regimeName(d, k)} ${fmt.pct(post(k), 1)}`))),
   el("div", { class: "split wide-left", style: "margin-top:16px" },
     el("div", {}, legend([["key-line key-ink", "факт X5"], ...keys.map((k) => [`key-line ${REGIME_KEYS[k] || ""}`, regimeName(d, k)])]), fig.box),
     el("div", {}, dataTable([
       { title: "Режим", value: (k) => upperFirst(regimeName(d, k)), cls: "name" },
       { title: "Маржа далее", num: true, value: (k) => fmt.pct(R[k].lt, 2) },
-      { title: "Книга", num: true, value: (k) => fmt.pct(R[k].prior, 0) },
-      { title: "После фактов", num: true, value: (k) => el("strong", {}, fmt.pct(post(k), 0)) },
+      { title: "Книга", num: true, value: (k) => fmt.pct(R[k].prior, 1) },
+      { title: "После фактов", num: true, value: (k) => el("strong", {}, fmt.pct(post(k), 1)) },
       { title: "Спрос", value: (k) => DEMAND_NAMES[R[k].demand] || R[k].demand || "—", cls: "txt" },
     ], keys, { cls: "compact" }),
     el("p", { class: "card-foot" },
@@ -2050,7 +2164,7 @@ function capexCard(d) {
   if (!levels.length && !hist.length) return card({ title: "Capex" }, missing("уровни capex"));
   const series = [
     { name: "capex / выручка, факт", color: "var(--ink)", width: 1.8, dots: true, r: 3, points: hist.map((r) => [r.year + 0.5, r.capex_pct]) },
-    { name: "D&A / выручка, факт", color: "var(--ink-2)", width: 1.4, dashed: true, points: hist.map((r) => [r.year + 0.5, r.da_pct]) },
+    { name: "D&A и обесценение / выручка, факт", color: "var(--ink-2)", width: 1.4, dashed: true, points: hist.map((r) => [r.year + 0.5, r.da_pct]) },
     ...levels.map((k) => ({ name: `поддерживающий, ${CAPEX_NAMES[k] || k}`, color: CAPEX_COLORS[k] || "var(--axis)", width: 1.8, dots: true, r: 2.5,
       points: list(C[k].maintenance).map((r) => [Number(r.year) + 0.5, r.value]).filter((p) => isNum(p[0]) && isNum(p[1])) })),
   ];
@@ -2059,19 +2173,19 @@ function capexCard(d) {
   const xTicks = [];
   for (let yr = x0; yr <= x1; yr += (x1 - x0 > 12 ? 3 : 2)) xTicks.push(yr + 0.5);
   const plot = linesChart(series, { height: 240, xMin: x0, xMax: x1, xTicks, xFmt: (v) => String(Math.floor(v)),
-    yPct: true, tipFmt: (v) => fmt.pct(v, 2), label: "Capex и амортизация к выручке: история и поддерживающий capex по уровням" });
+    yPct: true, tipFmt: (v) => fmt.pct(v, 2), label: "Capex, амортизация и обесценение к выручке: история и поддерживающий capex по уровням" });
   const years = [...new Set(xs.map((v) => Math.floor(v)))].sort((a, b) => a - b);
   const fig = withTable(plot, () => dataTable([
     { title: "Год", value: (y) => String(y), cls: "name" },
     { title: "Capex, факт", num: true, value: (y) => { const r = hist.find((h) => h.year === y); return r ? fmt.pct(r.capex_pct, 2) : ""; } },
-    { title: "D&A, факт", num: true, value: (y) => { const r = hist.find((h) => h.year === y); return r ? fmt.pct(r.da_pct, 2) : ""; } },
+    { title: "D&A и обесценение, факт", num: true, value: (y) => { const r = hist.find((h) => h.year === y); return r ? fmt.pct(r.da_pct, 2) : ""; } },
     ...levels.map((k) => ({ title: upperFirst(CAPEX_NAMES[k] || k), num: true,
       value: (y) => { const r = list(C[k].maintenance).find((m) => Number(m.year) === y); return r ? fmt.pct(r.value, 2) : ""; } })),
   ], years));
   const regimes = regimeKeys(d);
   return card({ title: "Capex: история и уровни поддерживающих вложений", tools: fig.button,
     sub: "Доли выручки. Поддерживающий capex — без открытий и инфраструктуры роста; открытия считаются от прироста площади по стоимости квадратного метра." },
-  legend([["key-line key-ink", "capex, факт"], ["key-line key-dash", "D&A, факт"], ...levels.map((k) => [`key-line ${k === "low" ? "key-third" : k === "high" ? "key-market" : "key-model"}`, `поддерживающий: ${CAPEX_NAMES[k] || k}`])]),
+  legend([["key-line key-ink", "capex, факт"], ["key-line key-dash", "D&A и обесценение, факт"], ...levels.map((k) => [`key-line ${k === "low" ? "key-third" : k === "high" ? "key-market" : "key-model"}`, `поддерживающий: ${CAPEX_NAMES[k] || k}`])]),
   el("div", { class: "split wide-left" },
     el("div", {}, fig.box),
     el("div", {},
@@ -2086,9 +2200,11 @@ function capexCard(d) {
         isNum(C.maintenance_area_share) ? kpi(fmt.pct(C.maintenance_area_share, 0), "доля поддерживающего capex, идущая за площадью") : null))));
 }
 
-const FORMAT_NAMES = { pyaterochka: "Пятёрочка", perekrestok: "Перекрёсток", chizhik: "Чижик", digital: "цифровые бизнесы", other: "прочее" };
-const FORMAT_COLORS = { pyaterochka: "var(--model)", perekrestok: "var(--third)", chizhik: "var(--market)", digital: "var(--seq-1)", other: "var(--axis)" };
-const FORMAT_KEYS = { pyaterochka: "key-model", perekrestok: "key-third", chizhik: "key-market", digital: "key-seq", other: "key-axis" };
+// Части столбика в сумме дают выручку года: форматы и прочее. Цифровые бизнесы
+// уже внутри форматов (экспресс-доставка) — в стопку не кладутся, только в подсказку.
+const FORMAT_NAMES = { pyaterochka: "Пятёрочка", perekrestok: "Перекрёсток", chizhik: "Чижик", karusel: "Карусель", other: "прочее" };
+const FORMAT_COLORS = { pyaterochka: "var(--model)", perekrestok: "var(--third)", chizhik: "var(--market)", karusel: "var(--seq-1)", other: "var(--axis)" };
+const FORMAT_KEYS = { pyaterochka: "key-model", perekrestok: "key-third", chizhik: "key-market", karusel: "key-seq", other: "key-axis" };
 
 function historyCard(d) {
   const H = obj(d.history);
@@ -2098,7 +2214,8 @@ function historyCard(d) {
   const fKeys = Object.keys(FORMAT_NAMES).filter((k) => formats.some((r) => isNum(r[k])));
   const revenue = formats.length && fKeys.length
     ? columnsChart(formats.map((r) => ({ key: r.year, label: String(r.year), tipTitle: `Выручка ${r.year}`,
-      parts: fKeys.map((k) => ({ value: r[k], color: FORMAT_COLORS[k], name: FORMAT_NAMES[k] })) })),
+      parts: fKeys.map((k) => ({ value: r[k], color: FORMAT_COLORS[k], name: FORMAT_NAMES[k] })),
+      extra: isNum(r.digital) && r.digital > 0 ? [["цифровые бизнесы (внутри форматов)", fmt.bn(r.digital, 0)]] : [] })),
     { height: 230, fmt: (v) => fmt.bn(v, 0), short: (v) => fmt.num(v, 0), label: "Выручка X5 по форматам, млрд ₽" })
     : columnsChart(annual.map((r) => ({ key: r.year, label: String(r.year), value: r.revenue, tipTitle: `Выручка ${r.year}` })),
       { height: 230, color: "var(--axis)", valueName: "млрд ₽", fmt: (v) => fmt.bn(v, 0), short: (v) => fmt.num(v, 0), label: "Выручка X5, млрд ₽" });
@@ -2121,7 +2238,7 @@ function historyCard(d) {
     { title: "Скорр. маржа", num: true, value: (r) => fmt.pct(r.adj_margin, 2) },
     { title: "Отчётная маржа", num: true, value: (r) => fmt.pct(r.rep_margin, 2) },
     { title: "Capex / выручка", num: true, value: (r) => fmt.pct(r.capex_pct, 2) },
-    { title: "D&A / выручка", num: true, value: (r) => fmt.pct(r.da_pct, 2) },
+    { title: "D&A и обесценение / выручка", num: true, value: (r) => fmt.pct(r.da_pct, 2) },
     { title: "ЧД / EBITDA", num: true, value: (r) => fmt.x(r.leverage, 2) },
     { title: "LFL", num: true, value: (r) => fmt.pct(r.lfl, 1) },
     { title: "Трафик", num: true, value: (r) => fmt.pct(r.lfl_traffic, 1) },
@@ -2252,13 +2369,18 @@ function expectationCard(d) {
     ...(isNum(g.required_h2_growth) ? [{ v: g.required_h2_growth, kind: "guide", text: `нужно компании ${fmt.signedPct(g.required_h2_growth, 1)}`,
       tip: { title: "Рост полугодия, нужный для нижней границы прогноза", rows: [["рост", fmt.signedPct(g.required_h2_growth, 1)]] } }] : []),
   ];
-  const growthBand = Array.isArray(g.revenue_growth) && g.revenue_growth.every(isNum) ? g.revenue_growth : null;
+  // Годовой прогноз компании — в тексте и таблице; на шкале полугодия — полоса
+  // роста 2П, при котором год попадает в прогноз (та же величина, что у отметок).
+  const yearBand = Array.isArray(g.revenue_growth) && g.revenue_growth.every(isNum) ? g.revenue_growth : null;
+  const growthBand = Array.isArray(g.required_h2_growth_range) && g.required_h2_growth_range.every(isNum) ? g.required_h2_growth_range : null;
+  const yearText = yearBand ? `${fmt.num(yearBand[0] * 100, 0)}–${fmt.num(yearBand[1] * 100, 0)}${THIN}%` : "—";
+  const bandText = growthBand ? `${fmt.signedPct(growthBand[0], 1)}…${fmt.signedPct(growthBand[1], 1)}` : null;
   const charts = el("div", {},
     el("span", { class: "tile-label" }, `Скорректированная маржа EBITDA, ${p}`),
     stripChart(marginMarks, { pct: true, label: "Маржа: модель, режимы, эталоны и прогноз компании" }),
     growthMarks.length ? el("span", { class: "tile-label", style: "display:block;margin-top:12px" }, `Рост выручки год к году, ${p}`) : null,
     growthMarks.length ? stripChart(growthMarks, { band: growthBand, pct: true,
-      bandTip: growthBand ? { title: "Прогноз компании на год", rows: [["рост выручки", `${fmt.num(growthBand[0] * 100, 0)}–${fmt.num(growthBand[1] * 100, 0)}${THIN}%`]] } : null,
+      bandTip: growthBand ? { title: `Рост ${p}, при котором год попадает в прогноз`, rows: [[`рост ${p}`, bandText], ["прогноз на год", yearText]] } : null,
       label: "Рост выручки: модель, эталоны и прогноз компании" }) : null);
   const fig = withTable(charts, () => dataTable([
     { title: "Кто", value: (r) => r.name, cls: "name" },
@@ -2268,9 +2390,8 @@ function expectationCard(d) {
     { name: "Ожидание модели", margin: fmt.pct(exp.margin, 2), growth: fmt.signedPct(exp.revenue_growth, 1) },
     ...list(exp.by_regime).map((r) => ({ name: `модель в режиме «${regimeName(d, r.regime)}»`, margin: fmt.pct(r.margin, 2), growth: "" })),
     ...benches.map((b) => ({ name: `Эталон: ${benchName(b.name)}`, margin: fmt.pct(b.margin, 2), growth: fmt.signedPct(b.revenue_growth, 1) })),
-    { name: "Прогноз компании на год", margin: isNum(g.margin_min) ? `≥ ${fmt.pct(g.margin_min, 1)}` : "—",
-      growth: growthBand ? `${fmt.num(growthBand[0] * 100, 0)}–${fmt.num(growthBand[1] * 100, 0)}${THIN}%` : "—" },
-    { name: `Нужно компании в ${p}`, margin: fmt.pct(g.required_h2_margin, 2), growth: fmt.signedPct(g.required_h2_growth, 1) },
+    { name: "Прогноз компании на год", margin: isNum(g.margin_min) ? `≥ ${fmt.pct(g.margin_min, 1)}` : "—", growth: yearText },
+    { name: `Нужно компании в ${p}`, margin: fmt.pct(g.required_h2_margin, 2), growth: bandText || fmt.signedPct(g.required_h2_growth, 1) },
   ]));
   return card({ title: `Ожидание модели на ${p}`, span: 7, tools: fig.button,
     sub: "против прогноза компании и наивных эталонов на одной шкале" },
@@ -2280,10 +2401,11 @@ function expectationCard(d) {
     isNum(exp.revenue) ? kpi(fmt.bn(exp.revenue, 0), "выручка полугодия") : null,
     isNum(exp.adj_ebitda) ? kpi(fmt.bn(exp.adj_ebitda, 1), "скорр. EBITDA") : null),
   el("div", { style: "margin-top:14px" }, legend([["key-dot key-model", "модель"], ["key-line key-axis", "модель по режимам"],
-    ["key-dot key-third", "наивные эталоны"], ["key-line key-market", "нужно компании для прогноза"]]), fig.box),
+    ["key-dot key-third", "наивные эталоны"], ["key-line key-market", "нужно компании для прогноза"],
+    ...(growthBand ? [["key-band", `рост ${p}, нужный для прогноза на год`]] : [])]), fig.box),
   el("p", { class: "card-foot" },
     `Прогноз компании на год: маржа ${isNum(g.margin_min) ? "не ниже " + fmt.pct(g.margin_min, 1) : "—"}`,
-    growthBand ? `, выручка ${fmt.signedPct(growthBand[0], 0)}…${fmt.signedPct(growthBand[1], 0)}` : "",
+    yearBand ? `, выручка ${fmt.signedPct(yearBand[0], 0)}…${fmt.signedPct(yearBand[1], 0)}` : "",
     Array.isArray(g.capex_pct) && g.capex_pct.every(isNum) ? `, capex ${fmt.num(g.capex_pct[0] * 100, 1)}–${fmt.num(g.capex_pct[1] * 100, 1)}${THIN}% выручки` : "",
     isNum(g.openings) ? `, открытий больше ${fmt.num(g.openings)}` : "", ".",
     g.src ? [" ", detailsBlock("Источник", ruText(g.src))] : null));
@@ -2329,7 +2451,7 @@ function impactCard(d) {
     { title: "Изменение", num: true, value: (r) => fmt.signedRub(r.d_median) },
     { title: "Точка", num: true, value: (r) => fmt.rub(r.point) },
     { title: "Изменение точки", num: true, value: (r) => fmt.signedRub(r.d_point) },
-    ...keys.map((k) => ({ title: upperFirst(regimeName(d, k)), num: true, value: (r) => fmt.pct(obj(r.posterior)[k], 0) })),
+    ...keys.map((k) => ({ title: upperFirst(regimeName(d, k)), num: true, value: (r) => fmt.pct(obj(r.posterior)[k], 1) })),
   ], rows));
   const byMargin = rows.slice().sort((a, b) => a.margin - b.margin);
   const lo = byMargin[0], hi = byMargin[byMargin.length - 1];
@@ -2374,7 +2496,12 @@ function bridgeParts(d) {
   const atVal = obj(b).rows_at_valuation !== undefined ? b.rows_at_valuation : debt.rows_at_valuation;
   const rows = Array.isArray(atVal) ? atVal : list(obj(atVal).rows);
   const total = [obj(b).total, obj(atVal).total, debt.total].find(isNum);
-  return { lines, rows: rows.filter((r) => isNum(r.amount)), total };
+  // Разложение EV (из чего складывается V0) — все строки выпуска, какие есть.
+  const evRows = list(obj(b).ev_rows).filter((r) => isNum(r.amount));
+  // Что прибавляется к капиталу в формуле цены (казначейский пакет) — тоже все строки.
+  const equityRows = list(obj(b).equity_rows).filter((r) => isNum(r.amount) && r.amount !== 0);
+  const treasury = isNum(obj(b).treasury_mln) ? b.treasury_mln : 0;
+  return { lines, rows: rows.filter((r) => isNum(r.amount)), total, evRows, equityRows, treasury };
 }
 
 function screenDebt(d) {
@@ -2421,15 +2548,30 @@ function debtKpis(d) {
 
 function bridgeCard(d) {
   const an = obj(obj(d.layers).analytical);
-  const { lines, rows, total } = bridgeParts(d);
+  const { lines, rows, total, evRows, equityRows, treasury } = bridgeParts(d);
   if (!isNum(an.v0) || !rows.length) return card({ title: "Мост: стоимость бизнеса → капитал", span: 7 }, missing("мост на дату оценки"));
-  const steps = [{ title: "Стоимость бизнеса V0", from: 0, to: an.v0, total: true, value: an.v0 }];
-  let run = an.v0;
+  // Составляющие EV прибавляются (знак — свой у каждой), требования вычитаются.
+  const steps = [];
+  let run = 0;
+  for (const r of evRows) {
+    steps.push({ title: ruText(r.label), from: run, to: run + r.amount, value: -r.amount });
+    run += r.amount;
+  }
+  steps.push({ title: "Стоимость бизнеса V0", from: 0, to: an.v0, total: true, value: an.v0 });
+  run = an.v0;
   for (const r of rows) {
-    steps.push({ title: r.label, from: run, to: run - r.amount, value: r.amount });
+    steps.push({ title: ruText(r.label), from: run, to: run - r.amount, value: r.amount });
     run -= r.amount;
   }
   steps.push({ title: "Капитал", from: 0, to: an.equity, total: true, value: an.equity });
+  if (equityRows.length) {
+    run = an.equity;
+    for (const r of equityRows) {
+      steps.push({ title: ruText(r.label), from: run, to: run + r.amount, value: -r.amount });
+      run += r.amount;
+    }
+    steps.push({ title: "Капитал с учётом казначейского пакета", from: 0, to: run, total: true, value: run });
+  }
   const lo = Math.min(0, ...steps.map((s) => Math.min(s.from, s.to)));
   const hi = Math.max(...steps.map((s) => Math.max(s.from, s.to)));
   const sign = (v) => (v < 0 ? "+" : MINUS);
@@ -2440,12 +2582,14 @@ function bridgeCard(d) {
     el("span", { class: "wf-val" }, s.total ? fmt.num(s.value, 1) : `${sign(s.value)}${NBSP}${fmt.num(Math.abs(s.value), 1)}`))));
   const meta = obj(d.meta);
   return card({ title: "Мост: стоимость бизнеса → капитал", span: 7,
-    sub: `слой «${layerName(d, "analytical")}», млрд ₽ на дату оценки ${fmt.date(meta.valuation_date)}` },
+    sub: `${evRows.length ? "из чего складывается стоимость бизнеса и что из неё вычитается до капитала; " : ""}`
+      + `слой «${layerName(d, "analytical")}», млрд ₽ на дату оценки ${fmt.date(meta.valuation_date)}` },
   box,
   el("div", { class: "kpis", style: "margin-top:16px" },
     isNum(total) ? kpi(fmt.bn(total, 1), "требования всего") : null,
     kpi(fmt.pct(meta.governance_discount, 0), "дисконт за управление"),
     kpi(`${fmt.num(meta.shares_mln, 1)} млн`, "акций в обращении"),
+    treasury > 0 ? kpi(`${fmt.num(treasury, 1)} млн`, "казначейский пакет: продаётся и входит в число акций") : null,
     kpi(fmt.rub(an.price), "цена слоя на акцию")),
   lines.length ? el("div", { class: "card-foot" }, detailsBlock(`Строки моста из отчётности · ${lines.length}`, dataTable([
     { title: "Строка", value: (r) => r.label, cls: "name" },
@@ -2464,25 +2608,32 @@ function dividendCard(d) {
     el("div", { class: "kpis" },
       tl.length === 2 ? kpi(`${fmt.num(tl[0], 1)}–${fmt.num(tl[1], 1)}×`, "целевой чистый долг / EBITDA") : null,
       isNum(pol.no_pay_above) ? kpi(`${fmt.num(pol.no_pay_above, 1)}×`, "выше — выплат нет") : null,
-      pol.frequency ? kpi(upperFirst(pol.frequency), "частота") : null,
+      // «Дважды в год: за …» — коротко в значении, пояснение — в подписи.
+      pol.frequency ? kpi(upperFirst(String(pol.frequency).split(":")[0].trim()),
+        String(pol.frequency).includes(":") ? `частота: ${String(pol.frequency).split(":").slice(1).join(":").trim()}` : "частота", { text: true }) : null,
       isNum(dv.yield_ltm) ? kpi(fmt.pct(dv.yield_ltm, 1), "доходность за 12 месяцев") : null),
     reg.length ? el("div", { style: "margin-top:14px" }, dataTable([
       { title: "Выплата", value: (r) => el("span", {}, r.label, el("span", { class: "hint" },
         [isNum(r.amount) ? fmt.bn(r.amount, 1) : "", r.pay_until ? `выплата до ${fmt.date(r.pay_until)}` : "", r.in_claims ? "в требованиях" : ""].filter(Boolean).join(" · ")),
         el("span", { class: "cell-badge" }, divStatus(r))), cls: "name" },
       { title: "На акцию", num: true, value: (r) => fmt.rub(r.dps, isNum(r.dps) && r.dps % 1 ? 2 : 0) },
-      { title: "Отсечка", num: true, value: (r) => fmt.date(r.ex_date || r.record_date) },
+      { title: "Отсечка", num: true, value: registerCutoff },
     ], reg.slice().sort((a, b) => String(b.ex_date || b.record_date).localeCompare(String(a.ex_date || a.record_date))), { cls: "compact" })) : null,
-    next.label ? el("p", { class: "card-foot" }, sentence(`Следующая выплата — ${lowerFirst(next.label)}: по модели ${fmt.rub(next.dps_model)} на акцию, ожидаемая отсечка — ${fmt.monthYear(next.record_date_est)}`
+    next.label ? el("p", { class: "card-foot" }, sentence(`Следующая выплата — ${lowerFirst(next.label)}: по модели ${fmt.rub(next.dps_model)} на акцию`
+      + `${next.pay_period ? ` (выплата в ${periodName(next.pay_period)})` : ""}, ожидаемая отсечка — ${nextRecordText(next)}`
       + (next.note ? `. ${upperFirst(ruText(next.note))}` : ""))) : null);
 }
 
 function dividendHistoryCard(d) {
   const dv = obj(d.dividends);
-  const hist = list(dv.history).filter((r) => isNum(r.dps));
+  // Выплаты — по времени (выпуск их так и отдаёт; порядок страхуется и здесь).
+  const ord = (p) => { const m = /^(9M|FY)(\d{4})$/.exec(String(p)); return m ? +m[2] * 10 + (m[1] === "FY" ? 5 : 3) : 0; };
+  const hist = list(dv.history).filter((r) => isNum(r.dps)).sort((a, b) => ord(a.period) - ord(b.period));
   const model = list(dv.model).filter((r) => isNum(r.dps) || isNum(r.amount));
   if (!hist.length && !model.length) return card({ title: "Дивиденды по годам" }, missing("история дивидендов"));
-  const past = columnsChart(hist.map((r) => ({ key: r.period, label: String(r.period).replace(/\s*\(.*\)/, ""), value: r.dps, tipTitle: r.period })),
+  // Подпись столбика: «2024» за год, «9 мес. 2025» — промежуточный.
+  const short = (r) => { const m = /^(9M|FY)(\d{4})$/.exec(String(r.period)); return m ? (m[1] === "FY" ? m[2] : `9${NBSP}мес.${NBSP}${m[2]}`) : String(r.label || r.period); };
+  const past = columnsChart(hist.map((r) => ({ key: r.period, label: short(r), value: r.dps, tipTitle: upperFirst(ruText(r.label || r.period)) })),
     { height: 210, color: "var(--market)", valueName: "₽ на акцию", fmt: (v) => fmt.rub(v), short: (v) => fmt.num(v), label: "Выплаченные дивиденды на акцию" });
   const future = columnsChart(model.map((r) => ({ key: r.year, label: String(r.year), value: r.dps, tipTitle: `Модель, ${r.year}` })),
     { height: 210, color: "var(--model)", valueName: "₽ на акцию", fmt: (v) => fmt.rub(v), short: (v) => fmt.num(v), label: "Дивиденды модели по годам" });
@@ -2491,7 +2642,7 @@ function dividendHistoryCard(d) {
     el("div", {}, el("span", { class: "tile-label" }, "Модель: ожидаемые выплаты, ₽ на акцию"), future));
   const fig = withTable(both, () => el("div", { class: "split" },
     dataTable([
-      { title: "Период", value: (r) => r.period, cls: "name" },
+      { title: "Период", value: (r) => upperFirst(ruText(r.label || r.period)), cls: "name" },
       { title: "На акцию", num: true, value: (r) => fmt.rub(r.dps) },
       { title: "Всего", num: true, value: (r) => fmt.bn(r.amount, 1) },
       { title: "Отсечка", num: true, value: (r) => fmt.date(r.record_date) },
@@ -2520,35 +2671,46 @@ function annualCard(d) {
   const A = list(P.annual);
   if (!A.length) return card({ title: "По годам" }, missing("путь по годам"));
   const yl = (r) => String(r.year);
-  const mini = (title, key, f, color) => el("div", { class: "mini" },
+  // Строка года якоря: поля `forecast_only` — только прогнозные полугодия (2П).
+  const partial = (r, key) => list(r.forecast_only).includes(key);
+  const partName = (r) => list(r.forecast_periods).map((p) => { const m = /^\d{4}H([12])$/.exec(String(p)); return m ? `${m[1]}П` : periodName(p); }).join(" + ");
+  const cell = (key, f) => (r) => (partial(r, key) ? el("span", {}, f(r[key]),
+    el("span", { class: "part-mark", tip: `только ${partName(r)} ${r.year}: факта первого полугодия в этой строке нет` }, partName(r))) : f(r[key]));
+  const mini = (title, key, opts, color) => el("div", { class: "mini" },
     el("span", { class: "tile-label" }, title),
-    linesChart([{ name: title, color, dots: true, r: 3, points: A.map((r) => [yl(r), r[key]]) }],
-      { xType: "band", categories: A.map(yl), height: 150, left: 46, yFmt: f, tipFmt: f, xFmt: (k) => `’${k.slice(2)}` }));
+    // Годовой поток года якоря без факта 1П на мини-графике не ставится.
+    linesChart([{ name: title, color, dots: true, r: 3, points: A.map((r) => [yl(r), partial(r, key) ? null : r[key]]) }],
+      { xType: "band", categories: A.map(yl), height: 150, left: 46, xFmt: (k) => `’${k.slice(2)}`, ...opts }));
   const halves = list(P.halves);
+  const anyPartial = A.some((r) => list(r.forecast_only).length);
   return card({ title: "Путь бизнеса и долга по годам",
     sub: `слой «${layerName(d, "analytical")}», ожидание по вероятностям клеток; млрд ₽` },
   el("div", { class: "minis" },
-    mini("Скорр. маржа EBITDA", "margin", (v) => fmt.num(v * 100, 1) + THIN + "%", "var(--model)"),
-    mini("Свободный поток FCFF, млрд ₽", "fcff", (v) => fmt.num(v, 0), "var(--third)"),
-    mini("Чистый долг / EBITDA", "leverage", (v) => fmt.num(v, 1) + "×", "var(--market)")),
+    mini("Скорр. маржа EBITDA", "margin", { yPct: true, tipFmt: (v) => fmt.pct(v, 2) }, "var(--model)"),
+    mini("Свободный поток FCFF, млрд ₽", "fcff", { yFmt: (v) => fmt.num(v, 0), tipFmt: (v) => fmt.num(v, 1) }, "var(--third)"),
+    mini("Чистый долг / EBITDA", "leverage", { yFmt: (v, digits) => fmt.x(v, Math.max(1, digits || 0)), tipFmt: (v) => fmt.x(v, 2) }, "var(--market)")),
   el("div", { style: "margin-top:18px" }, dataTable([
-    { title: "Год", value: (r) => el("span", {}, yl(r), isFactRow(d, r.year) ? el("span", { class: "hint nowrap" }, "факт 1П") : null), cls: "name" },
+    { title: "Год", value: (r) => el("span", {}, yl(r), list(r.fact).length ? el("span", { class: "hint nowrap" }, "факт 1П + прогноз") : null), cls: "name" },
     { title: "Выручка", num: true, value: (r) => fmt.num(r.revenue, 0) },
     { title: "Рост", num: true, value: (r) => fmt.pct(r.revenue_growth, 1) },
-    { title: "Чек", num: true, value: (r) => fmt.pct(r.ticket, 1) },
-    { title: "Трафик", num: true, value: (r) => fmt.pct(r.traffic, 1) },
+    { title: "Чек без НДС", num: true, value: cell("ticket", (v) => fmt.pct(v, 1)) },
+    { title: "Трафик зрелой сети", num: true, value: cell("traffic", (v) => fmt.pct(v, 1)) },
     { title: "Площадь, тыс. м²", num: true, value: (r) => fmt.num(r.area_end, 0) },
     { title: "Маржа", num: true, value: (r) => fmt.pct(r.margin, 2) },
     { title: "Скорр. EBITDA", num: true, value: (r) => fmt.num(r.adj_ebitda, 1) },
     { title: "Capex", num: true, value: (r) => fmt.num(r.capex, 1) },
     { title: "Capex / выручка", num: true, value: (r) => fmt.pct(r.capex_pct, 2) },
-    { title: "Налог", num: true, value: (r) => fmt.num(r.tax_unlevered, 1) },
-    { title: "FCFF", num: true, value: (r) => el("strong", {}, fmt.num(r.fcff, 1)) },
-    { title: "Проценты", num: true, value: (r) => fmt.num(r.interest, 1) },
-    { title: "Дивиденды", num: true, value: (r) => fmt.num(r.dividends, 1) },
+    { title: "Налог", num: true, value: cell("tax_unlevered", (v) => fmt.num(v, 1)) },
+    { title: "FCFF", num: true, value: cell("fcff", (v) => el("strong", {}, fmt.num(v, 1))) },
+    { title: "Проценты", num: true, value: cell("interest", (v) => fmt.num(v, 1)) },
+    { title: "Дивиденды", num: true, value: cell("dividends", (v) => fmt.num(v, 1)) },
     { title: "Чистый долг", num: true, value: (r) => fmt.num(r.net_debt, 1) },
     { title: "ЧД / EBITDA", num: true, value: (r) => fmt.x(r.leverage, 2) },
-  ], A, { rowClass: (r) => (isFactRow(d, r.year) ? "is-muted" : null) })),
+  ], A)),
+  el("p", { class: "card-foot" },
+    "Чек и трафик — LFL зрелой сети по книге: созревание новых магазинов учтено в площади, поэтому отчётный LFL X5 выше; "
+    + "чек — выручка без НДС, с поправкой книги на НДС 22 %.",
+    anyPartial ? " В году отчётного якоря выручка, EBITDA, D&A и capex — факт 1П и прогноз, потоки с пометкой «2П» — только прогноз второго полугодия; дивиденды, объявленные до якоря, учтены в чистом долге." : ""),
   halves.length ? el("div", { class: "card-foot" }, detailsBlock(`По полугодиям · ${halves.length}`, dataTable([
     { title: "Полугодие", value: (r) => el("span", {}, periodName(r.period), isFactRow(d, r.period) ? el("span", { class: "hint" }, "факт") : null), cls: "name" },
     { title: "Выручка", num: true, value: (r) => fmt.num(r.revenue, 0) },
@@ -2593,8 +2755,13 @@ function loansCard(d) {
   const debt = obj(d.debt);
   const a = obj(debt.anchor);
   const bl = obj(debt.bank_loans);
-  const bonds = list(debt.bonds);
-  const bondSum = bonds.reduce((s, b) => s + (isNum(b.outstanding) ? b.outstanding : 0), 0);
+  // Облигации — на ту же дату, что банки и лизинг (`outstanding_anchor`); выпуски
+  // с нулевым остатком в счёт не идут.
+  const all = list(debt.bonds);
+  const onAnchor = all.some((b) => b && Object.prototype.hasOwnProperty.call(b, "outstanding_anchor"));
+  const amount = (b) => (onAnchor ? b.outstanding_anchor : b.outstanding);
+  const bonds = all.filter((b) => isNum(amount(b)) && amount(b) > 0);
+  const bondSum = bonds.reduce((s, b) => s + amount(b), 0);
   return card({ title: "Из чего долг", span: 5, sub: `на ${fmt.date(a.as_of)}, млрд ₽` },
     el("div", { class: "kpis" },
       bonds.length ? kpi(fmt.num(bondSum, 1), `облигации в обращении · ${fmt.num(bonds.length)} ${plural(bonds.length, ["выпуск", "выпуска", "выпусков"])}`) : null,
@@ -2607,12 +2774,13 @@ function loansCard(d) {
 }
 
 function bondsCard(d) {
-  const bonds = list(obj(d.debt).bonds);
+  // В обращении сейчас: погашенный выпуск (остаток 0) в таблицу не идёт.
+  const bonds = list(obj(d.debt).bonds).filter((b) => !(isNum(b.outstanding) && b.outstanding <= 0));
   if (!bonds.length) return card({ title: "Облигации" }, empty("Облигаций в выпуске нет."));
   const coupon = (b) => (b.coupon_type === "floating"
     ? `ключевая + ${fmt.num((b.spread || 0) * 100, 2)}${NBSP}п.п.`
     : fmt.pct(b.coupon, 2));
-  return card({ title: "Облигации X5", sub: `${fmt.num(bonds.length)} ${plural(bonds.length, ["выпуск", "выпуска", "выпусков"])}; цены и доходности — на дату снимка` },
+  return card({ title: "Облигации X5", sub: `${fmt.num(bonds.length)} ${plural(bonds.length, ["выпуск", "выпуска", "выпусков"])}; остаток — за вычетом выкупленного по офертам; цены и доходности — на дату снимка` },
     dataTable([
       { title: "Выпуск", value: (b) => el("span", {}, b.name || b.isin, b.name ? el("span", { class: "hint" }, b.isin) : null), cls: "name" },
       { title: "В обращении, млрд ₽", num: true, value: (b) => fmt.num(b.outstanding, 1) },
@@ -2632,7 +2800,7 @@ let ALL_JUDGEMENTS = false;
 function screenBook(d) {
   const book = obj(d.book);
   const meta = obj(d.meta);
-  const rows = list(obj(d.judgements).rows);
+  const rows = judgementRows(d);
   const gates = list(obj(d.checks).gates);
   const fired = gates.filter((g) => g.fired);
   const lede = [
@@ -2663,7 +2831,7 @@ function bookMetaCard(d) {
       kpi(fmt.date(m.valuation_date), "дата оценки"),
       kpi(fmt.date(book.facts_date || m.facts_date), `отчётные факты · ${periodName(m.anchor_period)}`),
       kpi(fmt.date(m.curve_as_of), "кривая миров"),
-      kpi(`${fmt.date(m.generated_at)} ${fmt.time(m.generated_at)}`, "выпуск собран"),
+      kpi(fmt.stamp(m.generated_at), "выпуск собран", { text: true }),
       kpi(String(m.engine_commit || "—").slice(0, 7), "код модели"),
       kpi(isNum(m.bytes) ? `${fmt.num(m.bytes / 1000, 0)} КБ` : "—", "размер выпуска")),
     el("div", { class: "card-foot" },
@@ -2674,12 +2842,13 @@ function bookMetaCard(d) {
 }
 
 function judgementsCard(d) {
-  const rows = list(obj(d.judgements).rows).slice().sort((a, b) => (b.swing || 0) - (a.swing || 0));
+  const rows = judgementRows(d).slice().sort((a, b) => (b.swing || 0) - (a.swing || 0));
   if (!rows.length) return card({ title: "Суждения книги" }, missing("суждения по цене ошибки"));
   const center = obj(d.fair_value).central;
   const prices = rows.flatMap((r) => [r.price_low, r.price_high]).filter(isNum);
   const stepR = niceStep(Math.max(center, ...prices), 4);
-  const dom = [Math.max(0, Math.floor(Math.min(center, ...prices) / stepR) * stepR), Math.ceil(Math.max(center, ...prices) / stepR) * stepR];
+  const dom = [Math.max(0, Math.floor((Math.min(center, ...prices) - stepR * 0.02) / stepR) * stepR),
+    Math.ceil((Math.max(center, ...prices) + stepR * 0.02) / stepR) * stepR];
   const body = el("div");
   const draw = () => {
     const shown = ALL_JUDGEMENTS ? rows : rows.slice(0, 12);
@@ -2768,7 +2937,7 @@ function freshnessCard(d) {
   return card({ title: "Свежесть входов", span: 5, sub: `дата оценки ${fmt.date(live.valuation_date || obj(d.meta).valuation_date)}` },
     rows.length ? dataTable([
       { title: "Вход", value: (r) => el("span", {}, r.name, r.source ? el("span", { class: "hint" }, ruText(r.source)) : null), cls: "name" },
-      { title: "Значение", num: true, value: (r) => (typeof r.value === "number" ? formatByUnit(r.value, r.unit, d) : ruText(r.value)) },
+      { title: "Значение", num: true, value: (r) => (typeof r.value === "number" ? formatByUnit(r.value, r.unit, d) : r.unit === "version" ? String(r.value) : ruText(r.value)) },
       { title: "На дату", num: true, value: (r) => fmt.date(r.as_of) },
       { title: "", value: (r) => { const [t, k] = INPUT_STATUS[r.status] || [r.status || "—", null]; return badge(t, k); } },
     ], rows, { cls: "compact" }) : missing("входы"),
@@ -2796,6 +2965,14 @@ function tileChange(item) {
   return fmt.signed(c, 2);
 }
 
+// Дата значения и изменение с периодом: у ставки — дата решения ЦБ, у прочих —
+// к какой дате считается изменение.
+function tileWhen(i) {
+  const ch = tileChange(i);
+  if (i.since) return `с ${fmt.date(i.since)}${ch ? ` · изменение ${ch}` : ""}${i.date && i.date !== i.since ? ` · на ${fmt.date(i.date)}` : ""}`;
+  return [fmt.date(i.date), ch ? `изменение ${ch}${i.change_from ? ` к ${fmt.date(i.change_from)}` : ""}` : ""].filter(Boolean).join(" · ");
+}
+
 function marketTilesCard(d) {
   const tiles = list(obj(d.indicators).tiles);
   if (!tiles.length) return card({ title: "Рынок и ставки", span: 7 }, empty("Плиток в выпуске нет."));
@@ -2803,7 +2980,7 @@ function marketTilesCard(d) {
     el("div", { class: "ind-tiles" }, tiles.map((i) => el("div", { class: "ind-tile" },
       el("span", { class: "tile-label" }, i.title),
       el("span", { class: "ind-value" }, tileValue(i, i.value)),
-      el("span", { class: "muted small" }, [fmt.date(i.date), tileChange(i) ? `изменение ${tileChange(i)}` : ""].filter(Boolean).join(" · ")),
+      el("span", { class: "muted small" }, tileWhen(i)),
       sparkline(i, (v) => tileValue(i, v))))));
 }
 
@@ -2831,7 +3008,8 @@ function curveCard(d) {
   fig.box,
   Object.keys(shift).length ? el("div", { class: "kpis", style: "margin-top:12px" },
     Object.entries(shift).map(([t, v]) => kpi(fmt.signedBp(v), `сдвиг ${t}-летнего узла к книге`)),
-    isNum(obj(obj(d.live).key_rate).value) ? kpi(fmt.pct(d.live.key_rate.value, 2), `ключевая ставка с ${fmt.date(d.live.key_rate.date)}`) : null) : null);
+    isNum(obj(obj(d.live).key_rate).value) ? kpi(fmt.pct(d.live.key_rate.value, 2),
+      d.live.key_rate.since ? `ключевая ставка с ${fmt.date(d.live.key_rate.since)}` : `ключевая ставка на ${fmt.date(d.live.key_rate.date)}`) : null) : null);
 }
 
 /* ───────────────────────────── пояс плашек ───────────────────────────── */
@@ -2843,7 +3021,7 @@ function banners(d) {
   const meta = obj(d.meta);
   const ageHours = (Date.now() - Date.parse(meta.generated_at)) / 3.6e6;
   if (ageHours > STALE_HOURS) {
-    out.push(plain("banner-stale", `Выпуску ${fmt.days(Math.floor(ageHours / 24))}: собран ${fmt.date(meta.generated_at)} в ${fmt.time(meta.generated_at)}, а конвейер обновляет панель каждый будний день.`));
+    out.push(plain("banner-stale", `Выпуску ${fmt.days(Math.floor(ageHours / 24))}: собран ${fmt.stamp(meta.generated_at)}, а конвейер обновляет панель каждый будний день.`));
   }
   const flags = list(obj(d.checks).flags).filter((f) => f.raised);
   for (const f of flags) {
@@ -2961,7 +3139,7 @@ function releaseChip(d) {
   const flagged = list(obj(d.checks).flags).some((f) => f.raised) || obj(d.market).price_status === "fallback";
   chip.dataset.state = ageHours > STALE_HOURS ? "stale" : flagged ? "warn" : "ok";
   $(".chip-text", chip).replaceChildren(
-    el("span", {}, `Выпуск ${fmt.dateShort(meta.generated_at)}, ${fmt.time(meta.generated_at)}`),
+    el("span", {}, `Выпуск ${fmt.dateShort(mskDay(meta.generated_at))}, ${fmt.time(meta.generated_at)}`),
     el("span", { class: "chip-extra" }, ` · книга ${meta.book_version || ""}`));
   chip.title = ageHours > STALE_HOURS ? "Выпуск старше 96 часов" : flagged ? "Есть предупреждения — см. плашки" : "Выпуск свежий";
 }

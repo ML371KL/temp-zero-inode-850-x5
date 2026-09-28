@@ -19,10 +19,9 @@ import math
 import random
 import statistics as st
 
-from common import HERE, REGIMES, half_index, half_name, history, path_value, regime_update, write_json
+from common import HERE, REGIMES, book_rule_params, half_index, half_name, history, path_value, regime_update, write_json
 
-SIGMA = 0.0053          # A-P2u: joint.regime_update.sigma_pp (series.py, п. 5)
-RHO = -0.40             # A-C4 = joint.regime_update.rho
+SIGMA, RHO = book_rule_params()   # A-P2u: joint.regime_update.sigma_pp (series.py, п. 5); ρ — A-C4 = margin.deviation_persistence
 CAP = 0.10              # предел сдвига за наблюдение
 MC_N, MC_SEED = 20000, 20260928
 

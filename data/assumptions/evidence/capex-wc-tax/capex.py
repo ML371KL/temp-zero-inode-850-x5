@@ -9,7 +9,7 @@ IT и автопарк — доля выручки), числа — X5. Чита
 """
 from __future__ import annotations
 
-from common import (BOOK, FACTS, LEVEL, PRIM, Report, an, avg_level, half, hy, net_q,
+from common import (BOOK, CFI, FACTS, LEVEL, PRIM, Report, an, avg_level, half, hy, net_q,
                     period_months, r6, to_anchor)
 
 R = Report()
@@ -107,6 +107,47 @@ for p in ["2024H1", "2024H2", "2025H1", "2025H2", "2026H1"]:
 R.table(["период", "выручка", "capex", "capex/выр.", "capex компании", "D&A/выр."], rows)
 R.data["history"] = {k: {kk: (r6(vv) if isinstance(vv, float) else vv) for kk, vv in d.items()}
                      for k, d in hist.items()}
+
+# 1б. Прочие инвестиционные платежи (ОДДС стр. 42) и поступления по чистым инвестициям в аренду
+# (стр. 41) — вне capex компании (CF30 + CF36); строки появились в 4К2023. Решение A-K1: нетто
+# (стр. 42 − стр. 41) — поток капитального характера, входит в тождество и в поддерживающий.
+CFQ = CFI["cash_flow"]
+HALF_Q = {"2024H1": ("2024Q1", "2024Q2"), "2024H2": ("2024Q3", "2024Q4"),
+          "2025H1": ("2025Q1", "2025Q2"), "2025H2": ("2025Q3", "2025Q4"),
+          "2026H1": ("2026Q1", "2026Q2")}
+
+
+def cfi(p: str, key: str) -> float:
+    """Строка ОДДС за год или полугодие (сумма кварталов); знак ОДДС."""
+    if p in HALF_Q:
+        return sum(CFQ[q][key]["v"] for q in HALF_Q[p])
+    return CFQ[p][key]["v"]
+
+
+def other_net(p: str) -> float:
+    """Прочие инвестиционные платежи нетто поступлений по аренде, млрд ₽ оттока."""
+    return -cfi(p, "other_investing_payments") - cfi(p, "finance_lease_principal_receipts")
+
+
+R.h("1б. Прочие платежи по инвестиционной деятельности (ОДДС стр. 42) и тело чистых инвестиций в аренду "
+    "(стр. 41), млрд ₽")
+rows = []
+for p in ["2023", "2024", "2025", "2024H1", "2024H2", "2025H1", "2025H2", "2026H1"]:
+    rev = an(p, "revenue") if len(p) == 4 else hy(p, "revenue")
+    rows.append([p, -cfi(p, "other_investing_payments"), cfi(p, "finance_lease_principal_receipts"),
+                 other_net(p), 100 * other_net(p) / rev])
+R.table(["период", "прочие платежи", "тело аренды", "нетто", "% выручки"], rows)
+ONCA = CFI["other_noncurrent_assets"]
+R.p("Прочие внеоборотные активы (Financial Position стр. 14):",
+    {d: round(x["v"], 3) for d, x in ONCA.items() if d >= "2023-12-31"})
+cum_net = sum(other_net(p) for p in ("2024", "2025", "2026H1"))
+d_onca = ONCA["2026-06-30"]["v"] - ONCA["2023-12-31"]["v"]
+R.p(f"2024–1П2026: прочие платежи нетто {cum_net:.2f} млрд ₽; прочие внеоборотные активы выросли на "
+    f"{d_onca:.2f} ({100 * d_onca / cum_net:.0f} % оттока); других поступлений по этим вложениям в ОДДС нет")
+R.data["other_investing"] = {p: {"payments": r6(-cfi(p, "other_investing_payments")),
+                                 "lease_receipts": r6(cfi(p, "finance_lease_principal_receipts")),
+                                 "net": r6(other_net(p))} for p in [r[0] for r in rows]}
+R.data["other_investing_onca"] = {"cum_net_2024_1h26": r6(cum_net), "d_other_nca": r6(d_onca)}
 
 # ============================================================ 2. сеть: валовые открытия
 R.h("2. Валовое открытие площади (тыс. м²): чистый прирост + закрытия × средний магазин")
@@ -236,34 +277,46 @@ for p in ["2024", "2024H1", "2024H2", "2025", "2025H1", "2025H2", "2026H1"]:
     g_cap = flows[p]["gross_area"] * price_center / f
     i_cap = flows[p]["net_area"] * infra_center / f
     m = cap - g_cap - i_cap
-    resid[p] = {"capex": cap, "revenue": rev, "openings": g_cap, "infra": i_cap, "maint": m,
-                "maint_pct": m / rev}
-    rows.append([p, cap, g_cap, i_cap, m, 100 * m / rev])
+    on = other_net(p)
+    resid[p] = {"capex": cap, "revenue": rev, "openings": g_cap, "infra": i_cap, "maint_company": m,
+                "other_net": on, "maint": m + on, "maint_pct": (m + on) / rev}
+    rows.append([p, cap, g_cap, i_cap, m, on, m + on, 100 * (m + on) / rev])
 # 2024 в определении компании (без M&A): 166,4 × (1 − 0,03)
 cap_c = CC["total"]["2024"] * (1 - CC["structure_2024"]["mna"])
 m_c = cap_c - resid["2024"]["openings"] - resid["2024"]["infra"]
 rows.append(["2024 (компания, без M&A)", cap_c, resid["2024"]["openings"], resid["2024"]["infra"],
-             m_c, 100 * m_c / hist["2024"]["revenue"]])
-R.table(["период", "capex", "открытия", "инфраструктура", "поддерж.", "% выручки"], rows)
+             m_c, other_net("2024"), m_c + other_net("2024"),
+             100 * (m_c + other_net("2024")) / hist["2024"]["revenue"]])
+R.table(["период", "capex", "открытия", "инфраструктура", "остаток", "прочие нетто", "поддерж.",
+         "% выручки"], rows)
 ltm_m = resid["2025H2"]["maint"] + resid["2026H1"]["maint"]
-ltm_r = resid["2025H2"]["revenue"] + resid["2026H1"]["revenue"]
+ltm_r = resid["2025H2"]["revenue"] + resid["2026H1"]["revenue"]      # выручка якоря LTM
 maint_ltm = ltm_m / ltm_r
+other_ltm = (resid["2025H2"]["other_net"] + resid["2026H1"]["other_net"]) / ltm_r
 seas = {y: (resid[f"{y}H1"]["maint_pct"] / resid[y]["maint_pct"],
             resid[f"{y}H2"]["maint_pct"] / resid[y]["maint_pct"]) for y in ("2024", "2025")}
-R.p(f"LTM 2П2025 + 1П2026: поддерживающий {ltm_m:.1f} млрд ₽ = {100 * maint_ltm:.2f} % выручки")
+R.p(f"LTM 2П2025 + 1П2026: поддерживающий {ltm_m:.1f} млрд ₽ = {100 * maint_ltm:.2f} % выручки "
+    f"(из них прочие инвестиционные платежи нетто {100 * other_ltm:.2f} %; без них "
+    f"{100 * (maint_ltm - other_ltm):.2f} %)")
 R.p("Сезонность поддерживающего (доля в выручке полугодия к году, 1П / 2П):",
     {y: (round(a, 3), round(b, 3)) for y, (a, b) in seas.items()})
 R.data["identity"] = {p: {k: r6(v_) for k, v_ in d.items()} for p, d in resid.items()}
-R.data["identity"]["2024_company_ex_mna"] = {"capex": r6(cap_c), "maint": r6(m_c),
-                                             "maint_pct": r6(m_c / hist["2024"]["revenue"])}
+R.data["identity"]["2024_company_ex_mna"] = {
+    "capex": r6(cap_c), "maint_company": r6(m_c), "other_net": r6(other_net("2024")),
+    "maint": r6(m_c + other_net("2024")), "maint_pct": r6((m_c + other_net("2024")) / hist["2024"]["revenue"])}
 R.data["maint_ltm_pct"] = r6(maint_ltm)
+R.data["other_net_ltm_pct"] = r6(other_ltm)
 R.data["maint_seasonality"] = {y: {"h1": r6(a), "h2": r6(b)} for y, (a, b) in seas.items()}
 
 # ============================================================ 7. A-K1 снизу вверх
-R.h("7. A-K1. Стационарный поддерживающий capex снизу вверх (цены якоря, выручка 2026E)")
+# База — якорь: рубли в ценах якоря (средний ИПЦ 1П2026) при площади и парке на 30.06.2026 делятся на
+# выручку якоря LTM (2П2025 + 1П2026) — это база физической части в ядре (MODEL §4.5: φ × mnt × R_ann(якорь) —
+# годовые рубли в площади A(якорь) и ценах якоря) и база ближнего участка (остаток тождества LTM, раздел 6).
+R.h("7. A-K1. Стационарный поддерживающий capex снизу вверх (цены и площадь якоря, выручка якоря LTM)")
 g_1h = hy("2026H1", "revenue") / hy("2025H1", "revenue") - 1.0
 rev_2h26 = hy("2025H2", "revenue") * (1.0 + g_1h)
-R26 = hy("2026H1", "revenue") + rev_2h26
+R26 = hy("2026H1", "revenue") + rev_2h26            # выручка 2026E — только для проверки раздела 9.1
+RA = ltm_r                                          # выручка якоря LTM — база уровней
 close = BOOK["network"]["close_rate"]["LT"]
 area = {f: net_q("2026Q2", f"space_{f}") for f in FORMATS}
 stores = {f: net_q("2026Q2", f"stores_{f}") for f in FORMATS}
@@ -284,8 +337,11 @@ cpi_2015 = avg_level(period_months("2026H1")) / avg_level(period_months("2015"))
 unit = {"low": J["refurb_low_2015_rub_m2"] * cpi_2015 / 1e6,       # млрд ₽ на тыс. м²
         "high": J["magnit_refurb_to_new"] * price_center}
 unit["base"] = 0.5 * (unit["low"] + unit["high"])
-R.p(f"Выручка 2026E = 1П2026 {hy('2026H1', 'revenue'):.1f} + 2П2025 × (1 + {100 * g_1h:.2f} %) "
-    f"= {R26:.1f} млрд ₽; закрытия (книга) {close:.3f}; площадь 30.06.2026 {area_now:.1f} тыс. м²")
+R.p(f"Выручка якоря LTM = 2П2025 {hy('2025H2', 'revenue'):.1f} + 1П2026 {hy('2026H1', 'revenue'):.1f} "
+    f"= {RA:.1f} млрд ₽; закрытия (книга, LT) {close:.3f}; площадь 30.06.2026 {area_now:.1f} тыс. м²")
+# прочие инвестиционные платежи нетто (раздел 1б) в стационаре — факт с выхода программы на масштаб
+# (2025–1П2026), один для трёх уровней; ближний участок берёт их LTM через тождество (раздел 6)
+other_ss = (other_net("2025") + other_net("2026H1")) / (an("2025", "revenue") + hy("2026H1", "revenue"))
 R.p(f"Реконструкции 2025: {ref25:.1f} тыс. м²-экв. (П {qsum(TU['pyaterochka_refurbished'], q25):.0f}"
     f" + Пер {qsum(TU['perekrestok_refurbished'], q25):.0f} полных + "
     f"{qsum(TU['perekrestok_restyled'], q25):.0f} рестайлингов); статья «поддержание магазинов и "
@@ -300,16 +356,20 @@ for L in ("low", "base", "high"):
     ref_ss = (1.0 / J["cycle"][L] - close) * area_eq
     store = store25_now + (ref_ss - ref25) * unit[L]
     fleet = trucks_now * truck_price / J["fleet_life"][L]
-    dc, it, cvp = (J[k][L] * R26 for k in ("dc_upkeep", "it", "cvp"))
-    tot = store + fleet + dc + it + cvp
+    dc, it, cvp, oth = (x * RA for x in (J["dc_upkeep"][L], J["it"][L], J["cvp"][L], other_ss))
+    tot = store + fleet + dc + it + cvp + oth
     phys = store + dc + cvp
     levels[L] = {"refurb_m2eq": ref_ss, "store": store, "fleet": fleet, "dc": dc, "it": it,
-                 "cvp": cvp, "total": tot, "pct": tot / R26, "phys_share": phys / tot}
-    rows.append([L, J["cycle"][L], ref_ss, 100 * store / R26, 100 * fleet / R26, 100 * dc / R26,
-                 100 * it / R26, 100 * cvp / R26, 100 * tot / R26, phys / tot])
+                 "cvp": cvp, "other_net": oth, "total": tot, "pct": tot / RA, "phys_share": phys / tot}
+    rows.append([L, J["cycle"][L], ref_ss, 100 * store / RA, 100 * fleet / RA, 100 * dc / RA,
+                 100 * it / RA, 100 * cvp / RA, 100 * oth / RA, 100 * tot / RA, phys / tot])
 R.table(["уровень", "цикл", "реконстр. тыс.м²", "магазины %", "автопарк %", "РЦ %", "IT %",
-         "CVP %", "итого %", "физ. доля"], rows)
-R.data["bottom_up"] = {"R26": r6(R26), "g_1h26": r6(g_1h), "close_rate": close,
+         "CVP %", "прочие нетто %", "итого %", "физ. доля"], rows)
+R.p(f"Прочие инвестиционные платежи нетто в стационаре — 2025–1П2026: {100 * other_ss:.3f} % выручки "
+    "(один для трёх уровней); статьи без них (определение capex компании): "
+    + ", ".join(f"{L} {100 * (levels[L]['pct'] - other_ss):.2f} %" for L in levels))
+R.data["bottom_up"] = {"R_anchor_ltm": r6(RA), "R26": r6(R26), "g_1h26": r6(g_1h), "close_rate": close,
+                       "other_net_ss": r6(other_ss),
                        "area_eq": r6(area_eq), "refurb_2025_m2eq": r6(ref25),
                        "store_2025": r6(store25), "store_2025_now": r6(store25_now),
                        "unit_refurb": {k: r6(v_) for k, v_ in unit.items()},
@@ -333,31 +393,42 @@ R.data["phi"] = phi
 
 # ============================================================ 9. проверки
 R.h("9. Проверки")
-# 9.1 capex 2026 года при сети книги (2П2026) и уровнях
+# 9.1 capex 2026 года при сети итоговой книги (рост и закрытия 2П2026) и уровнях — в определении
+# компании (ОС + НМА, без прочих инвестиционных платежей): с ним сравнимы факт 1П и прогноз компании
 A0 = area_now
 idx = 1.0 + half(BOOK["cpi_2026H2"]["N"])
-chk26 = {}
+close_2h = BOOK["network"]["close_rate"]["2026H2"]
+chk26, cap2h_c = {}, {}
 for tariff in ("low", "mid", "high"):
     gn = BOOK["network"]["net_growth"][tariff]["2026H2"]
     net2h = A0 * gn / 2.0
-    opened = net2h + A0 * close / 2.0
+    opened = net2h + A0 * close_2h / 2.0
     for L in ("low", "base", "high"):
-        cap2h = (paths[L]["2026H2"] * rev_2h26 + opened * price_center * idx
+        cap2h = ((paths[L]["2026H2"] - other_ltm) * rev_2h26 + opened * price_center * idx
                  + net2h * infra_center * idx)
+        cap2h_c[f"{tariff}/{L}"] = cap2h
         chk26[f"{tariff}/{L}"] = (-hy("2026H1", "capex_total") + cap2h) / R26
-R.p("capex 2026 / выручка 2026E (1П факт + 2П модель; тариф роста / уровень):",
+R.p(f"Выручка 2026E = 1П2026 {hy('2026H1', 'revenue'):.1f} + 2П2025 × (1 + {100 * g_1h:.2f} %) = "
+    f"{R26:.1f} млрд ₽; сеть 2П2026 — книга (рост {BOOK['network']['net_growth']['mid']['2026H2']}"
+    f" в среднем тарифе, закрытия {close_2h})")
+R.p("capex 2026 / выручка 2026E (1П факт + 2П модель, определение компании; тариф роста / уровень):",
     {k: round(100 * v_, 2) for k, v_ in chk26.items()})
 run_rate = -hy("2026H1", "capex_total") / hy("2026H1", "revenue")
 R.p(f"Ориентиры: факт 1П2026 {100 * run_rate:.2f} %; прогноз компании "
-    f"{100 * CC['guidance_2026_pct_revenue']['low']:.1f}–{100 * CC['guidance_2026_pct_revenue']['high']:.1f} %")
-p_draft = {"low": 0.2225, "base": 0.5875, "high": 0.19}   # безусловные P(уровня), раздел 12
-exp26 = sum(p_draft[L] * chk26[f"mid/{L}"] for L in p_draft)
-cap2h_mid = chk26["mid/base"] * R26 + hy("2026H1", "capex_total")
+    f"{100 * CC['guidance_2026_pct_revenue']['low']:.1f}–{100 * CC['guidance_2026_pct_revenue']['high']:.1f} %"
+    f" (за 2П2026 это {CC['guidance_2026_pct_revenue']['low'] * R26 + hy('2026H1', 'capex_total'):.0f}–"
+    f"{CC['guidance_2026_pct_revenue']['high'] * R26 + hy('2026H1', 'capex_total'):.0f} млрд ₽)")
+rp, cp = BOOK["regime_prob"], BOOK["capex_prob_given_regime"]
+p_lvl = {L: sum(rp[r] * cp[r][L] for r in rp) for L in ("low", "base", "high")}   # как в разделе 12
+exp26 = sum(p_lvl[L] * chk26[f"mid/{L}"] for L in p_lvl)
+cap2h_mid = cap2h_c["mid/base"]
 ratio_2h = (cap2h_mid / rev_2h26) / run_rate
-R.p(f"Ожидание по уровням (средний тариф): {100 * exp26:.2f} %; 2П2026 модели "
-    f"{100 * cap2h_mid / rev_2h26:.2f} % выручки полугодия — в {ratio_2h:.2f} раза выше 1П")
+R.p(f"Ожидание по уровням (средний тариф): {100 * exp26:.2f} %; 2П2026 модели {cap2h_mid:.1f} млрд ₽ = "
+    f"{100 * cap2h_mid / rev_2h26:.2f} % выручки полугодия — в {ratio_2h:.2f} раза выше 1П; с прочими "
+    f"инвестиционными платежами нетто — {100 * (cap2h_mid / rev_2h26 + other_ltm):.2f} %")
 R.data["checks_2026"] = {"expected_mid": r6(exp26), "h2_pct": r6(cap2h_mid / rev_2h26),
-                         "h2_to_h1": r6(ratio_2h)}
+                         "h2_bn": r6(cap2h_mid), "h2_to_h1": r6(ratio_2h),
+                         "p_levels": {k: r6(v_) for k, v_ in p_lvl.items()}}
 # 9.2 стоимость замещения по классам ОС
 cls = ["buildings_land", "machinery_equipment", "refrigeration", "transport", "other"]
 yrs7 = [(LEVEL[f"{y}-12"] / LEVEL[f"{y - 1}-12"]) for y in range(2019, 2026)]
@@ -380,13 +451,14 @@ repl += rc_sw
 rows.append(["software", SW["software_amortization"]["2025"], a_sw, rc_sw])
 R.table(["класс", "D&A 2025", "ср. возраст, лет", "замещение, цены конца 2025"], rows)
 to_anc = avg_level(period_months("2026H1")) / lvl_dec25
-repl_hi = repl * to_anc / R26
+repl_hi = repl * to_anc / RA
 repl_lo = repl_hi / J["economic_life_mult"]
-model_ss = levels["base"]["pct"] + close * A0 * price_center / R26
+# ОС и ПО: поддерживающий база без прочих инвестиционных платежей (они не ОС и не НМА X5)
+model_ss = levels["base"]["pct"] - other_ss + close * A0 * price_center / RA
 R.p(f"Стоимость замещения (учётные сроки / экономические ×{J['economic_life_mult']}): "
-    f"{100 * repl_hi:.2f} % / {100 * repl_lo:.2f} % выручки 2026E; модель в стационаре "
-    f"(поддерживающий база + замещающие открытия {100 * close * A0 * price_center / R26:.2f} %): "
-    f"{100 * model_ss:.2f} %")
+    f"{100 * repl_hi:.2f} % / {100 * repl_lo:.2f} % выручки якоря LTM; модель в стационаре "
+    f"(поддерживающий база без прочих платежей {100 * (levels['base']['pct'] - other_ss):.2f} % + "
+    f"замещающие открытия {100 * close * A0 * price_center / RA:.2f} %): {100 * model_ss:.2f} %")
 imp25 = PPE["impairment_net_2025"] + PRIM["intangibles_2025"]["impairment"]["2025"]
 da25 = (an("2025", "da_ias17") - imp25) / an("2025", "revenue")
 R.p(f"D&A 2025 без обесценения ({imp25:.3f}): {100 * da25:.2f} % выручки → стационарный capex / D&A "
@@ -475,23 +547,34 @@ windows = {"2011–2025": [str(y) for y in range(2011, 2026)],
            "2021–1П2026": [str(y) for y in range(2021, 2026)] + ["2026H1"],
            "2024–1П2026": ["2024", "2025", "2026H1"]}
 R.p("Взвешенно по выручке:", {k: round(100 * wavg(v_), 3) for k, v_ in windows.items()})
-R.data["disposal"] = {k: r6(wavg(v_)) for k, v_ in windows.items()}
+# Прибыль от выбытия (ОДДС стр. 9, до МСФО 16: неденежная корректировка, «−» — прибыль) уже в EBITDA
+# до МСФО 16; денежный вклад сверх EBITDA — остаточная стоимость = поступления − прибыль.
+gain = {p: -cfi(p, "ppe_disposal_gain_noncash") for p in ("2021", "2022", "2023", "2024", "2025", "2026H1")}
+proc = {p: cfi(p, "ppe_disposal_proceeds") for p in gain}
+R.table(["период", "поступления (стр. 35)", "прибыль от выбытия (стр. 9)", "остаточная стоимость",
+         "прибыль / поступления"],
+        [[p, proc[p], gain[p], proc[p] - gain[p], gain[p] / proc[p]] for p in gain])
+w24 = ("2024", "2025", "2026H1")
+gain_share = sum(gain[p] for p in w24) / sum(proc[p] for p in w24)
+nbv_pct = sum(proc[p] - gain[p] for p in w24) / sum(disp[p][1] for p in w24)
+book_gross = 0.0006          # решение книги 1.0 о поступлениях (0,057 % 2024–1П2026 вверх до 0,06 %)
+disposal_key = round(book_gross * (1.0 - gain_share), 5)
+R.p(f"2024–1П2026: прибыль — {100 * gain_share:.1f} % поступлений; остаточная стоимость "
+    f"{100 * nbv_pct:.3f} % выручки; ключ = 0,06 % × (1 − {gain_share:.3f}) = {100 * disposal_key:.3f} %")
+R.data["disposal_nbv"] = {"gain_share_2024_1h26": r6(gain_share), "nbv_pct_2024_1h26": r6(nbv_pct),
+                          "key": disposal_key}
 
 # ============================================================ 12. A-P3
 R.h("12. A-P3. Вероятности уровней capex по режимам")
-cond = {"stress": {"low": 0.30, "base": 0.55, "high": 0.15},
-        "floor": {"low": 0.20, "base": 0.60, "high": 0.20},
-        "partial": {"low": 0.20, "base": 0.60, "high": 0.20},
-        "full": {"low": 0.15, "base": 0.60, "high": 0.25}}
+cond = BOOK["capex_prob_given_regime"]
 R.data["capex_prob"] = {"conditional": cond}
-for tag, rp in (("draft", BOOK["regime_prob"]),
-                ("margin_fragment", BOOK["regime_prob_margin_fragment"]["values"])):
-    unc = {L: sum(rp[r] * cond[r][L] for r in rp) for L in ("low", "base", "high")}
-    exp_ss = sum(unc[L] * levels[L]["pct"] for L in unc)
-    R.p(f"Безусловно (режимы: {tag} {rp}):", {k: round(v_, 4) for k, v_ in unc.items()},
-        f"→ ожидаемый стационар {100 * exp_ss:.2f} % против базового {100 * base_ss:.2f} %")
-    R.data["capex_prob"][tag] = {"unconditional": {k: r6(v_) for k, v_ in unc.items()},
-                                 "expected_ss": r6(exp_ss)}
+rp = BOOK["regime_prob"]
+unc = {L: sum(rp[r] * cond[r][L] for r in rp) for L in ("low", "base", "high")}
+exp_ss = sum(unc[L] * levels[L]["pct"] for L in unc)
+R.p(f"Безусловно (режимы книги {rp}):", {k: round(v_, 4) for k, v_ in unc.items()},
+    f"→ ожидаемый стационар {100 * exp_ss:.2f} % против базового {100 * base_ss:.2f} %")
+R.data["capex_prob"]["book"] = {"unconditional": {k: r6(v_) for k, v_ in unc.items()},
+                                "expected_ss": r6(exp_ss)}
 
 R.save("capex")
 print("\n".join(R.lines))

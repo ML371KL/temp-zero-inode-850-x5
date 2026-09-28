@@ -124,14 +124,18 @@
     "d": 0.5
    }
   ],
-  "treasury": 0.0083,
+  "treasury_sale_price_k": 0.9116,
+  "k_extremes_rub": {
+   "0.5": -68.7436,
+   "1.0": 14.7642
+  },
   "liquidity": 0.005,
   "opacity": 0.015,
-  "sum": 0.0283,
-  "book": 0.03,
+  "sum": 0.02,
+  "book": 0.02,
   "axis": [
    0.0,
-   0.1
+   0.05
   ],
   "magnit": 0.1
  },

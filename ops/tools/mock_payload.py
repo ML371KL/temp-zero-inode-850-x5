@@ -7,7 +7,7 @@ REQUIRED_TOP_LEVEL и все поля. Числа мока НИЧЕГО не з�
 цели инвестдомов, дивиденды, миры книги), взяты её числа — так графики похожи
 на настоящие. Самосогласованы только правила витрины: заголовок, полосы,
 P(ниже рынка) и таблица by_lambda посчитаны из тех же прогонов, что лежат в
-выпуске (квантиль тип 7, печать половиной к чётному), — это проверка ползунка λ.
+выпуске (квантиль тип 7, печать к шагу, половина вверх), — это проверка ползунка λ.
 
     python ops/tools/mock_payload.py [выход.json]
 
@@ -51,12 +51,12 @@ def r(x, k=4):
     return None if x is None else round(float(x), k)
 
 
-def half_even(x):
-    return round(x)
+def half_up(x):
+    return math.floor(x + 0.5)
 
 
 def printed(x):
-    return half_even(x / STEP) * STEP
+    return half_up(x / STEP) * STEP
 
 
 def q7(sorted_vals, q):
@@ -122,7 +122,7 @@ def main(out: Path) -> None:
         return {"title": titles[name], "world_weights": wts, "v0": r(v0, 2), "d": CLAIMS, "equity": r(eq, 2),
                 "price": r(price_of(eq), 1), "pv_fcff": r(v0 - pv_terminal - pv_shield, 2), "pv_shield": r(pv_shield, 2),
                 "pv_terminal": r(pv_terminal, 2), "terminal_share": r(pv_terminal / v0, 3), "ev_ebitda_fwd": r(v0 / 300.0, 2),
-                "v0_to_d": r(v0 / CLAIMS, 2)}
+                "ebitda_ntm": 300.0, "v0_to_d": r(v0 / CLAIMS, 2)}
 
     layers = {k: layer(k) for k in ("analytical", "market_implied", "macro_neutral")}
     low, high = layers["macro_neutral"]["price"], layers["analytical"]["price"]
@@ -164,7 +164,8 @@ def main(out: Path) -> None:
         "center_ev": {"v0_median": r(v0_med, 2), "v0_point": r(v0_pt, 2), "v_star": r(v_star, 2),
                       "gap_median": r(v0_med / v_star - 1, 4), "gap_point": r(v0_pt / v_star - 1, 4),
                       "rub_per_1pct_ev_median": r(0.01 * v0_med * (1 - GOV) * 1000 / SHARES, 1),
-                      "rub_per_1pct_ev_point": r(0.01 * v0_pt * (1 - GOV) * 1000 / SHARES, 1)},
+                      "rub_per_1pct_ev_point": r(0.01 * v0_pt * (1 - GOV) * 1000 / SHARES, 1),
+                      "ebitda_ntm": 300.0, "ev_ebitda_ntm_median": r(v0_med / 300.0, 3), "ev_ebitda_ntm_market": r(v_star / 300.0, 3)},
         "equity_share_of_ev": r((v0_pt - CLAIMS) / v0_pt, 4),
     }
 
@@ -237,7 +238,7 @@ def main(out: Path) -> None:
             continue
         p5, pk, ch, tot = gv("nrs_pyaterochka"), gv("nrs_perekrestok"), gv("nrs_chizhik"), gv("revenue_total")
         formats.append({"year": y, "pyaterochka": r(p5, 1), "perekrestok": r(pk, 1), "chizhik": r(ch, 1) if ch else None,
-                        "digital": None, "other": r(tot - p5 - pk - ch, 1)})
+                        "karusel": None, "digital": None, "other": r(tot - p5 - pk - ch, 1)})
     format_area = []
     for y in range(2017, 2026):
         op = ((ob or {}).get("data", {}).get("annual", {}).get(f"FY{y}", {}) or {}).get("as_reported", {})
@@ -247,7 +248,7 @@ def main(out: Path) -> None:
                                 "chizhik": gv("space_chizhik"), "digital": None, "other": None})
 
     # ── режимы маржи ──
-    titles = {"stress": "Стресс", "floor": "Пол", "partial": "Частичный возврат", "full": "Полный возврат"}
+    titles = {"stress": "Стресс", "floor": "Дно", "partial": "Частичный возврат", "full": "Полный возврат"}
     regimes = {}
     for g in REG:
         t = book["margin"]["targets"][g]
@@ -307,7 +308,11 @@ def main(out: Path) -> None:
                      "lti": r(lti, 2), "da": r(da, 1), "capex": r(capex, 1), "capex_maintenance": r(maint, 1),
                      "capex_growth": r(grow, 1), "capex_infra": r(infra, 1), "capex_pct": r(capex_pct, 4),
                      "nwc_change": r(nwc, 1), "tax_unlevered": r(tax, 1), "fcff": r(fcff, 1), "shield": r(shield, 1),
-                     "interest": r(interest, 1), "dividends": r(div, 1), "net_debt": r(nd, 1), "leverage": r(nd / (ebitda - lti), 2)})
+                     "interest": r(interest, 1), "dividends": r(div, 1), "net_debt": r(nd, 1), "leverage": r(nd / (ebitda - lti), 2),
+                     "fact": ["revenue", "adj_ebitda", "ebitda_rep", "da", "capex", "lti"] if y == 2026 else [],
+                     "forecast_only": ["ticket", "traffic", "capex_maintenance", "capex_growth", "capex_infra", "nwc_change",
+                                       "tax_unlevered", "fcff", "shield", "interest", "dividends"] if y == 2026 else [],
+                     "forecast_periods": ["2026H2"] if y == 2026 else []})
         rev_prev = rev
     halves = []
     for a in rows:
@@ -330,6 +335,7 @@ def main(out: Path) -> None:
         cp = b.get("coupon") or {}
         fixed = b.get("coupon_type") != "floating"
         bonds.append({"isin": b["isin"], "name": f"X5 {b['series']}", "outstanding": b.get("outstanding_2026_09_28_rub_bn"),
+                      "outstanding_anchor": b.get("outstanding_2026_09_28_rub_bn"),
                       "coupon_type": "fixed" if fixed else "floating",
                       "coupon": r((cp.get("rate_pct") or b.get("coupon_now_pct_est") or 0) / 100, 4) if fixed else None,
                       "spread": None if fixed else r((cp.get("spread_pp") or 0) / 100, 4),
@@ -351,7 +357,7 @@ def main(out: Path) -> None:
         {"key": "net_debt", "label": "Чистый долг на 30.06.2026", "amount": 310.647},
         {"key": "operating_cash", "label": "Операционная касса", "amount": 19.5},
         {"key": "bridge_lines", "label": "Строки моста из отчётности", "amount": r(lines_sum, 3)},
-        {"key": "dividends", "label": "Дивиденды к выплате (отсечка 07.07.2026)", "amount": 60.269},
+        {"key": "dividends", "label": "Объявленные дивиденды с отсечкой до даты оценки: финальный за 2025 г.", "amount": 60.269},
     ]
     at_val.append({"key": "roll", "label": "Денежный поток с 01.07.2026 по дату оценки", "amount": r(CLAIMS - sum(x["amount"] for x in at_val), 3)})
     debt = {
@@ -362,7 +368,12 @@ def main(out: Path) -> None:
                    "credit_lines_unused": rep.get("undrawn_credit_lines", 804.643), "floating_share": 0.55, "effective_rate": 0.1654,
                    "ratings": [{"agency": "АКРА", "rating": "AAA(RU)", "outlook": "стабильный", "date": None},
                                {"agency": "Эксперт РА", "rating": "ruAAA", "outlook": "стабильный", "date": None}]},
-        "bridge": {"lines": bridge_lines, "rows_at_valuation": at_val, "total": CLAIMS},
+        "bridge": {"lines": bridge_lines,
+                   "ev_rows": [{"key": k, "label": t, "amount": layers["analytical"][k]} for k, t in
+                               (("pv_fcff", "Свободный поток прогноза (PV)"), ("pv_shield", "Налоговый щит процентов (PV)"),
+                                ("pv_terminal", "Терминальная стоимость (PV)"))],
+                   "v0": layers["analytical"]["v0"], "rows_at_valuation": at_val, "total": CLAIMS,
+                   "equity": layers["analytical"]["equity"], "equity_rows": [], "treasury_mln": 0.0},
         "bonds": bonds,
         "bank_loans": {"short": 41.913, "long": 173.501, "total": 215.414},
         "wall": wall,
@@ -370,7 +381,8 @@ def main(out: Path) -> None:
 
     # ── дивиденды ──
     dividends = {
-        "policy": {"target_leverage": [1.2, 1.4], "no_pay_above": 2.0, "frequency": "дважды в год",
+        "policy": {"target_leverage": [1.2, 1.4], "no_pay_above": 2.0,
+                   "frequency": "дважды в год: за предыдущий год и за 9 месяцев текущего",
                    "text": "Распределяется свободный денежный поток при чистом долге 1,2–1,4× EBITDA до МСФО 16 на конец года выплаты"},
         "register": [
             {"id": "FY2024", "label": "За 2024 год", "dps": 648.0, "amount": 158.848, "record_date": "2025-07-09", "ex_date": "2025-07-09",
@@ -379,12 +391,16 @@ def main(out: Path) -> None:
              "pay_until": "2026-02-13", "status": "paid", "paid_share": 0.9993, "in_claims": False},
             {"id": "FY2025-final", "label": "Финальный за 2025 год", "dps": 245.0, "amount": 60.269, "record_date": "2026-07-07", "ex_date": "2026-07-07",
              "pay_until": "2026-08-11", "status": "paid", "paid_share": 0.761, "in_claims": True},
+            {"id": "unclaimed-old", "label": "Невостребованные дивиденды прошлых выплат", "dps": None, "amount": 0.16,
+             "record_date": "2026-01-06", "ex_date": "2026-01-06", "pay_until": None, "status": "unclaimed", "paid_share": None,
+             "in_claims": True},
         ],
-        "history": [{"period": "2024 год", "dps": 648.0, "amount": 158.848, "record_date": "2025-07-09"},
-                    {"period": "9М 2025", "dps": 368.0, "amount": 90.21, "record_date": "2026-01-06"},
-                    {"period": "2025 год", "dps": 245.0, "amount": 60.269, "record_date": "2026-07-07"}],
+        "history": [{"period": "FY2024", "label": "за 2024 г.", "dps": 648.0, "amount": 158.848, "record_date": "2025-07-09"},
+                    {"period": "9M2025", "label": "за 9 мес. 2025 г.", "dps": 368.0, "amount": 90.21, "record_date": "2026-01-06"},
+                    {"period": "FY2025", "label": "финальный за 2025 г.", "dps": 245.0, "amount": 60.269, "record_date": "2026-07-07"}],
         "model": [{"year": a["year"], "amount": a["dividends"], "dps": r(a["dividends"] * 1000 / SHARES, 0)} for a in rows],
-        "next_expected": {"label": "За 9 месяцев 2026 года", "record_date_est": "2027-01-06", "dps_model": 190.0,
+        "next_expected": {"label": "за 9 мес. 2026 г.", "record_date_est": "2027-01-06",
+                          "record_date_note": "≈ начало января 2027 (прецедент: 06.01.2026)", "pay_period": "2027H1", "dps_model": 190.0,
                           "note": "результаты 9 месяцев — 29.10.2026, рекомендация совета — в ноябре"},
         "yield_ltm": r(613.0 / PRICE, 4),
     }
@@ -400,9 +416,10 @@ def main(out: Path) -> None:
                 closes.append({"date": row["tradedate"], "close": float(row["legalcloseprice"] or row["close"])})
     closes.append({"date": "2026-09-28", "close": PRICE})
     peers = [
-        {"ticker": "X5", "name": "X5", "price": PRICE, "price_date": "2026-09-28", "market_cap": r(PRICE * SHARES / 1000, 1), "net_debt": 370.9,
-         "ev": r(PRICE * SHARES / 1000 + 370.9, 1), "ebitda_ltm": 287.0, "ev_ebitda": r((PRICE * SHARES / 1000 + 370.9) / 287.0, 2), "pe": 6.7,
-         "basis": "чистый долг до МСФО 16 на 30.06.2026 плюс дивиденд, объявленный до даты баланса; EBITDA до МСФО 16 за 12 месяцев", "as_of": "2026-06-30"},
+        {"ticker": "X5", "name": "X5", "price": PRICE, "price_date": "2026-09-28", "market_cap": r(PRICE * SHARES / 1000, 1), "net_debt": 310.6,
+         "dividends_after_balance": 60.3, "ev": r(PRICE * SHARES / 1000 + 370.9, 1), "ebitda_ltm": 287.0,
+         "ev_ebitda": r((PRICE * SHARES / 1000 + 370.9) / 287.0, 2), "pe": 6.7,
+         "basis": "чистый долг до МСФО 16 на 30.06.2026 плюс дивиденд, объявленный до даты баланса; EBITDA до МСФО 16 за 12 месяцев", "reported_on": "2026-08-13"},
         {"ticker": "MGNT", "name": "Магнит", "price": 1640.0, "price_date": "2026-09-25", "market_cap": 111.3, "net_debt": 518.1, "ev": 629.4,
          "ebitda_ltm": 179.6, "ev_ebitda": 3.50, "pe": None, "basis": "чистый долг до МСФО 16 на 30.06.2026; прибыль за 12 месяцев отрицательная", "as_of": "2026-06-30"},
         {"ticker": "LENT", "name": "Лента", "price": 1746.0, "price_date": "2026-09-25", "market_cap": 202.5, "net_debt": 117.4, "ev": 319.9,
@@ -415,15 +432,22 @@ def main(out: Path) -> None:
         ("Эйлер", "2026-09-11", 2600, "покупать", "Финмаркет 6704753"),
         ("БКС Мир инвестиций", "2026-08-14", 2500, "позитивно", "Финмаркет 6685670"),
         ("Т-Инвестиции", "2026-08-13", 2250, "держать", "Финмаркет 6685040"),
+        ("ВТБ Мои инвестиции", "2026-04-30", 3485, "позитивно", "Финмаркет 6611561"),
     ]
     market = {
-        "price": PRICE, "price_date": "2026-09-28", "price_time": "11:38", "price_source": "ISS TQBR", "price_status": "live", "book_price": BOOK_PRICE,
+        "price": PRICE, "price_date": "2026-09-28", "price_time": "11:38", "price_source": "Мосбиржа, режим TQBR", "price_status": "live", "book_price": BOOK_PRICE,
         "market_cap": r(PRICE * SHARES / 1000, 2), "claims": CLAIMS, "market_ev": r(v_star, 2), "ebitda_rep_ltm": 287.0,
-        "adj_ebitda_ltm": 293.1, "ev_ebitda_ltm": r(v_star / 287.0, 2), "pe_ltm": 6.7, "dividend_yield_ltm": r(613.0 / PRICE, 4),
-        "peers": {"rows": peers},
-        "brokers": {"rows": [{"broker": b, "date": dt, "target": t, "rating": rt, "src": src} for b, dt, t, rt, src in brokers],
-                    "median": statistics.median([b[2] for b in brokers]), "after_report": "2 кв. 2026"},
+        "adj_ebitda_ltm": 293.1, "ev_ebitda_ltm": peers[0]["ev_ebitda"], "pe_ltm": 6.7, "dividend_yield_ltm": r(613.0 / PRICE, 4),
+        "equity_share_of_ev": r(1 - CLAIMS / v_star, 4),
+        "peers": {"rows": peers, "as_of": "2026-06-30"},
+        "brokers": {"rows": [{"broker": b, "date": dt, "target": t, "rating": rt, "horizon": "12 мес.", "src": src,
+                              "after_report": dt >= "2026-08-13", "in_median": dt >= "2026-08-13"} for b, dt, t, rt, src in brokers],
+                    "median": statistics.median([b[2] for b in brokers if b[1] >= "2026-08-13"]), "median_n": 4,
+                    "median_basis": "медиана 12-месячных целей после отчёта за 2 кв. 2026: 2250 / 2500 / 2510 / 2600",
+                    "after_report": "МСФО 2 кв. 2026 (13.08.2026)", "report_date": "2026-08-13"},
         "price_history": closes,
+        "price_min": min(closes, key=lambda c: c["close"]) if closes else None,
+        "price_max": max(closes, key=lambda c: c["close"]) if closes else None,
         "ex_dividend": [{"date": "2026-01-06", "dps": 368.0}, {"date": "2026-07-07", "dps": 245.0}],
     }
 
@@ -493,7 +517,7 @@ def main(out: Path) -> None:
                         "by_regime": [{"regime": "stress", "margin": 0.0594}, {"regime": "floor", "margin": 0.0612},
                                       {"regime": "partial", "margin": 0.0621}, {"regime": "full", "margin": 0.0630}]},
         "guidance": {"revenue_growth": [0.12, 0.16], "margin_min": 0.06, "capex_pct": [0.045, 0.047], "openings": 2000,
-                     "required_h2_margin": 0.0628, "required_h2_growth": 0.135,
+                     "required_h2_margin": 0.0628, "required_h2_growth": 0.135, "required_h2_growth_range": [0.1337, 0.2111],
                      "src": "прогноз X5 на 2026 год от 20.03.2026 (x5.ru), факт 1П 2026 — пресс-релиз 2 кв. 2026"},
         "benchmarks": [{"name": "то же полугодие год назад", "margin": 0.0648, "revenue_growth": 0.166, "note": "2П 2025"},
                        {"name": "среднее двух последних полугодий", "margin": 0.0609, "revenue_growth": 0.137, "note": "2П 2025 и 1П 2026"},
@@ -546,10 +570,10 @@ def main(out: Path) -> None:
         ],
     }
     inputs = {"rows": [
-        {"name": "Цена акции", "value": PRICE, "unit": "rub", "as_of": "2026-09-28", "source": "ISS TQBR, последняя сделка 11:38", "status": "ok"},
-        {"name": "Кривая ОФЗ", "value": "узлы 1, 3, 5, 10 лет", "unit": None, "as_of": "2026-09-25", "source": "ISS, бескупонная кривая", "status": "ok"},
-        {"name": "Ключевая ставка", "value": 0.14, "unit": "pct", "as_of": "2026-07-27", "source": "Банк России", "status": "ok"},
-        {"name": "Книга допущений", "value": "1.0", "unit": None, "as_of": "2026-09-28", "source": "data/assumptions", "status": "ok"},
+        {"name": "Цена акции", "value": PRICE, "unit": "rub", "as_of": "2026-09-28", "source": "Мосбиржа, режим TQBR, сделка 11:38 МСК", "status": "ok"},
+        {"name": "Кривая ОФЗ", "value": "узлы 1, 3, 5, 10 лет", "unit": None, "as_of": "2026-09-25", "source": "Мосбиржа, бескупонная кривая ОФЗ", "status": "ok"},
+        {"name": "Ключевая ставка", "value": 0.14, "unit": "pct", "as_of": "2026-09-28", "source": "Банк России, веб-сервис KeyRate", "status": "ok"},
+        {"name": "Книга допущений", "value": "1.0", "unit": "version", "as_of": "2026-09-28", "source": "репозиторий модели, тег book-1.0", "status": "ok"},
         {"name": "Факты отчётности", "value": "1П 2026", "unit": None, "as_of": "2026-06-30", "source": "МСФО и databook X5", "status": "ok"},
     ]}
     live_nodes = {"1": 0.1318, "3": 0.1161, "5": 0.1067, "10": 0.1006}
@@ -557,7 +581,7 @@ def main(out: Path) -> None:
     live = {"price": {"value": PRICE, "date": "2026-09-28", "accepted": True, "reason": None},
             "curve": {"as_of": "2026-09-25", "nodes": live_nodes, "book_nodes": book_nodes,
                       "shift_bp": {"5": r((live_nodes["5"] - book_nodes["5"]) * 1e4, 0), "10": r((live_nodes["10"] - book_nodes["10"]) * 1e4, 0)}},
-            "key_rate": {"value": 0.14, "date": "2026-07-27"}, "valuation_date": "2026-09-28"}
+            "key_rate": {"value": 0.14, "date": "2026-09-28", "since": "2026-07-27"}, "valuation_date": "2026-09-28"}
     changes = {"vs_previous": {"previous_sha": "a" * 64, "previous_generated_at": "2026-09-25T16:58:00Z",
                                "rows": [{"component": "valuation_date", "rub": 1.9}, {"component": "market_price", "rub": 0.0},
                                         {"component": "residual", "rub": -12.4}], "total_rub": -10.5}}
@@ -572,12 +596,12 @@ def main(out: Path) -> None:
                   "key_judgements": [
                       {"id": "A-P1", "name": "Вес мира «Нормализация» в своём взгляде", "value": 0.35, "unit": "pct"},
                       {"id": "A-P1c", "name": "Вес своего взгляда на ставки λ", "value": 0.5, "unit": "number"},
-                      {"id": "A-C1", "name": "Маржа далее в режиме «Пол»", "value": 0.059, "unit": "pct"},
+                      {"id": "A-C1", "name": "Маржа далее в режиме «Дно»", "value": 0.059, "unit": "pct"},
                       {"id": "A-K1", "name": "Поддерживающий capex далее, базовый уровень", "value": 0.025, "unit": "pct"},
                       {"id": "A-V1", "name": "Бета активов", "value": 0.60, "unit": "number"},
                       {"id": "A-V2", "name": "Премия за риск акций", "value": 0.0557, "unit": "pct"},
-                      {"id": "A-V3", "name": "Дисконт за управление", "value": 0.05, "unit": "pct"},
-                      {"id": "A-F5", "name": "Целевой чистый долг / EBITDA", "value": 1.3, "unit": "times"},
+                      {"id": "A-V7", "name": "Дисконт за управление", "value": 0.05, "unit": "pct"},
+                      {"id": "A-F6", "name": "Целевой чистый долг / EBITDA", "value": 1.3, "unit": "times"},
                       {"id": "A-K3", "name": "Стоимость открытия", "value": 0.055, "unit": "bn_per_m2"}]}
 
     def series(start, n, v0, drift, noise, end, step_days=7):
@@ -593,8 +617,10 @@ def main(out: Path) -> None:
 
     price_tiles = [{"date": c["date"], "value": c["close"]} for c in closes][-60:]
     indicators = {"tiles": [
-        {"id": "x5.price", "title": "Акция X5", "unit": "rub", "value": PRICE, "date": "2026-09-28", "change": r(PRICE - 1808.5, 1), "history": price_tiles},
-        {"id": "cbr.key_rate", "title": "Ключевая ставка", "unit": "pct", "value": 0.14, "date": "2026-07-27", "change": -0.005,
+        {"id": "x5.price", "title": "Акция X5", "unit": "rub", "value": PRICE, "date": "2026-09-28", "change": r(PRICE - 1808.5, 1),
+         "change_from": "2026-09-25", "since": None, "min": None, "max": None, "history": price_tiles},
+        {"id": "cbr.key_rate", "title": "Ключевая ставка", "unit": "pct", "value": 0.14, "date": "2026-09-28", "change": -0.005,
+         "change_from": "2026-06-05", "since": "2026-07-27", "min": None, "max": None,
          "history": [{"date": "2026-01-01", "value": 0.16}, {"date": "2026-03-20", "value": 0.155}, {"date": "2026-04-24", "value": 0.15},
                      {"date": "2026-06-05", "value": 0.145}, {"date": "2026-07-27", "value": 0.14}, {"date": "2026-09-28", "value": 0.14}]},
         {"id": "ofz.5y", "title": "ОФЗ 5 лет, бескупонная", "unit": "pct", "value": 0.1067, "date": "2026-09-25", "change": 0.0006,

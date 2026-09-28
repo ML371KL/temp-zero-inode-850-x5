@@ -17,12 +17,12 @@ from __future__ import annotations
 import json
 import math
 
-from common import HERE, REGIMES, history, path_value, pct, write_json
+from common import HERE, REGIMES, book_rule_params, history, path_value, pct, write_json
 
 KEYS = [("2026H2", 1.0), ("2027", 2.5), ("2028", 4.5), ("2029", 6.5), ("2030", 8.5)]   # ключ книги → h (середина)
 LT_FROM = 2031
 H_LT = 10.0
-RHO_BOOK = -0.40          # A-C4: margin.deviation_persistence (оценка series.py, округлена до 0,05)
+RHO_BOOK = book_rule_params()[1]   # A-C4: margin.deviation_persistence (оценка series.py, округлена до 0,05)
 
 
 def load(name):

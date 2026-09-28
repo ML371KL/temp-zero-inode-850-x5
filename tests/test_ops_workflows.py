@@ -31,9 +31,12 @@ def run_index(all_steps: list[dict], needle: str) -> int:
     return found[0]
 
 
+ALL = ("ci.yml", "docs.yml", "pipeline.yml")
+
+
 def test_probe_workflow_is_gone():
     assert not (WORKFLOWS / "probe.yml").exists()
-    assert sorted(p.name for p in WORKFLOWS.glob("*.yml")) == ["ci.yml", "pipeline.yml"]
+    assert sorted(p.name for p in WORKFLOWS.glob("*.yml")) == list(ALL)
 
 
 def test_pipeline_triggers():
@@ -83,12 +86,40 @@ def test_keepalive_runs_always_with_the_job_token():
     s = steps("pipeline.yml")
     keep = s[run_index(s, "pipeline.yml/enable")]
     assert keep["if"] == "always()"
-    assert keep["run"].startswith("gh api -X PUT")
     assert keep["env"]["GH_TOKEN"] == "${{ github.token }}"
 
 
-def test_no_secrets_and_pinned_actions():
+def test_keepalive_never_reenables_a_disabled_workflow():
+    """Отключённый владельцем (или GitHub) workflow шаг не включает: сначала
+    читает состояние, PUT …/enable — только при state = active."""
+    run = steps("pipeline.yml")[run_index(steps("pipeline.yml"), "pipeline.yml/enable")]["run"]
+    lines = [line.strip() for line in run.splitlines() if line.strip()]
+    assert lines[0].startswith("state=$(gh api") and lines[0].endswith("--jq .state)")
+    assert lines[1] == 'if [ "$state" = active ]; then'
+    assert lines[2].startswith("gh api -X PUT") and lines[2].endswith('pipeline.yml/enable"')
+    assert run.count("-X PUT") == 1
+
+
+def test_pipeline_publishes_only_from_main():
+    job = load("pipeline.yml")["jobs"]["pipeline"]
+    assert job["if"] == "github.ref == 'refs/heads/main'"
+
+
+def test_publication_expects_the_commit_read_at_the_start():
+    """Откат или правка ветки data во время прогона — провал публикации, а не
+    тихая перезапись: публикация сверяет голову ветки с коммитом шага состояния."""
+    s = steps("pipeline.yml")
+    assert "--fetch-state var/state" in s[run_index(s, "publish.py --fetch-state")]["run"]
+    assert '--expect-commit "$(cat var/state/.commit)"' in s[run_index(s, "publish.py --release")]["run"]
+
+
+def test_one_today_moscow_day():
     for name in ("pipeline.yml", "ci.yml"):
+        assert load(name)["env"]["TZ"] == "Europe/Moscow", name
+
+
+def test_no_secrets_and_pinned_actions():
+    for name in ALL:
         text = (WORKFLOWS / name).read_text(encoding="utf-8")
         assert "secrets." not in text
         for step in steps(name):
@@ -97,7 +128,7 @@ def test_no_secrets_and_pinned_actions():
 
 
 def test_scripts_named_in_workflows_exist():
-    for name in ("pipeline.yml", "ci.yml"):
+    for name in ALL:
         text = (WORKFLOWS / name).read_text(encoding="utf-8")
         for script in re.findall(r"python ((?:ops|indicators)/[\w/]+\.py)", text):
             assert (ROOT / script).exists(), script
@@ -118,4 +149,32 @@ def test_ci_workflow():
     assert '-m "not network"' in s[run_index(s, "pytest")]["run"]
     build = run_index(s, "build_release.py --book --fast")
     assert run_index(s, "build_release.py --check") > build
+
+
+def test_requirements_are_pinned_exactly():
+    """Конвейер ставит зависимости в каждом прогоне: точные версии всего дерева,
+    иначе новая версия pytest может уронить такт без правки кода. Файл — ASCII:
+    старый pip на Windows читает его в кодировке системы."""
+    raw = (ROOT / "requirements.txt").read_bytes()
+    assert raw.isascii()
+    lines = [line for line in raw.decode().splitlines() if line.strip()]
+    names = set()
+    for line in lines:
+        spec = line.split(";")[0].strip()
+        assert re.fullmatch(r"[A-Za-z0-9_.-]+==[0-9][0-9A-Za-z.]*", spec), line
+        names.add(spec.split("==")[0].lower())
+    assert {"pyyaml", "pytest", "pluggy", "iniconfig", "packaging", "pygments"} <= names
+
+
+def test_docs_workflow_checks_md_only_commits():
+    """Коммит из одних *.md ci.yml пропускает — его проверяют тесты docs здесь."""
+    flow = load("docs.yml")
+    for event in ("push", "pull_request"):
+        assert flow["on"][event]["branches"] == ["main"]
+        assert flow["on"][event]["paths"] == ["**/*.md"]
+    assert "workflow_dispatch" in flow["on"]
+    assert flow["permissions"] == {"contents": "read"}
+    s = steps("docs.yml")
+    assert any(re.search(r"pip install .*-r requirements\.txt", st.get("run") or "") for st in s)
+    assert '-m "docs and not network"' in s[run_index(s, "pytest")]["run"]
 

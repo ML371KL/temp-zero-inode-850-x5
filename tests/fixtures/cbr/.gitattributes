@@ -1,0 +1,3 @@
+# Сырые ответы ЦБ — байт в байт как пришли (sha256 в tests/fixtures/live_sources.json):
+# без нормализации переводов строк корневого `* text=auto eol=lf`.
+* -text

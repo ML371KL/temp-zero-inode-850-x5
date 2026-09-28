@@ -3,7 +3,9 @@
 Что делает:
   * кварталы 2011Q1–2017Q4 — выручка и скорр. EBITDA до МСФО 16 из старого databook X5
     (financial_and_operating_results_q1_2024.xlsx, листы «Profit and Loss» стр. 6 и «EBITDA» стр. 14);
-    xlsx читается стандартной библиотекой (zipfile + xml);
+    xlsx читается стандартной библиотекой (zipfile + xml); 3 кв. 2015 — год минус три квартала
+    (столбец AO листа EBITDA в databook — копия 3 кв. 2016);
+  * контроль: сумма кварталов = году по выручке и скорр. EBITDA для каждого года, где оба из одного databook;
   * кварталы 2018Q1–2026Q2 — из research/facts/history_quarterly.json (сборка X1 по двум databook);
   * LTI по кварталам 2023Q1–2026Q2 и по годам 2021–2025 — оттуда же и из history_annual.json;
   * пишет inputs/x5_margin_history.json: у каждого числа — ссылка на ячейку (src), полугодия и годы — calc;
@@ -182,9 +184,24 @@ def main() -> None:
 
     # контроль: квартал старого databook 2019Q1 совпадает с JSON X1 (та же ячейка)
     assert abs(quarters["2019Q1"]["adj_ebitda"]["v"] - 29.473) < 1e-9
-    # контроль склейки: сумма кварталов 2011 = году 2011 (старый databook)
-    s = sum(quarters[f"2011Q{q}"]["revenue"]["v"] for q in range(1, 5))
-    assert abs(s - years["2011"]["revenue"]["v"]) < 0.01, s
+    # Ошибка старого databook: столбец 3 кв. 2015 (EBITDA!AO) — копия 3 кв. 2016 (AS) в строках 8–18
+    # (SG&A −44 396, аренда 1 773, скорр. EBITDA 19 931, LTI −68 — до рубля, при другой валовой прибыли:
+    # AO6 48 990 против AS6 62 554; 48 990 − 44 396 + 1 773 ≠ 19 931). Кварталы 2015 г. давали 64,921 против
+    # года H14 59,413. Квартал восстанавливается из года: H14 − AM14 − AN14 − AP14 (ранее отмечено в
+    # research/M5-indicators.md, п. 3 папки передачи).
+    eb15 = read_sheet(db24, "EBITDA", {14})
+    q3_2015 = (eb15["H14"] - eb15["AM14"] - eb15["AN14"] - eb15["AP14"]) / 1000.0
+    quarters["2015Q3"]["adj_ebitda"] = {
+        "v": round(q3_2015, 6),
+        "src": f"{DB24} › EBITDA!H14 − AM14 − AN14 − AP14 (год минус три квартала; столбец AO — копия 3 кв. 2016)"}
+    # контроль склейки: сумма кварталов = году для каждого года, где кварталы и год из одного databook
+    # (≤2020 — старый, ≥2023 — новый; 2021–2022 — кварталы старого, годы нового databook по правилу X1)
+    for y in sorted(years, key=int):
+        if 2021 <= int(y) <= 2022:
+            continue
+        for key in ("revenue", "adj_ebitda"):
+            s = sum(quarters[f"{y}Q{q}"][key]["v"] for q in range(1, 5))
+            assert abs(s - years[y][key]["v"]) < 0.002, (y, key, s, years[y][key]["v"])
 
     out = {
         "schema": "x5-margin-history-v1",

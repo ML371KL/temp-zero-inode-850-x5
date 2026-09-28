@@ -1,0 +1,45 @@
+name: docs
+
+# Лёгкий прогон для документов: коммит из одних *.md не будит ci.yml
+# (paths-ignore), а документы сверяют с кодом и выпуском тесты с меткой docs
+# (числа книги в README и docs/, ops/README.md против конвейера, свежесть
+# docs/CONTROL-MODEL.md). Здесь идут только они — на push и PR в main, где
+# менялся хоть один *.md.
+on:
+  push:
+    branches: [main]
+    paths: ["**/*.md"]
+  pull_request:
+    branches: [main]
+    paths: ["**/*.md"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PYTHONIOENCODING: utf-8
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Зависимости
+        run: python -m pip install --quiet -r requirements.txt
+
+      - name: Тесты документов
+        run: python -m pytest -q -m "docs and not network"

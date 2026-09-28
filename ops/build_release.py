@@ -11,7 +11,8 @@
 изменилось»); `--journal PATH` — журнал прогнозов из ветки `data`.
 
 Шаги: чтение входов → импорт ядра → `model.payload.build_payload` →
-`model.payload.validate` → строгий JSON и потолок размера → запись. Последняя
+`model.payload.validate` → строгий JSON и потолок размера → закрытые записи
+журнала против `data/facts/actuals.json` → запись. Последняя
 строка — «готово: …» (код 0) или «ПРОВАЛ на шаге …: причина» (код 1): любой
 провал — выпуск не записан, на витрине остаётся прежний.
 """
@@ -22,7 +23,6 @@ import argparse
 import importlib
 import inspect
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -31,6 +31,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from indicators.http import FetchError, read_json_source, strict_json  # noqa: E402
+from indicators.runlog import report  # noqa: E402
 
 MODEL_MODULE = "model.payload"
 # Потолок контракта x5-v1: 500 000 байт компактного JSON (docs/PAYLOAD.md).
@@ -43,16 +44,6 @@ class StepFailed(Exception):
     def __init__(self, step: str, reason: str):
         super().__init__(f"{step}: {reason}")
         self.step, self.reason = step, reason
-
-
-def report(line: str) -> None:
-    """Итоговая строка — в журнал прогона и в сводку GitHub Actions."""
-    sys.stdout.flush()  # шаги выше — раньше итоговой строки и при буферизации
-    print(line, file=sys.stderr if line.startswith("ПРОВАЛ") else sys.stdout, flush=True)
-    summary = os.environ.get("GITHUB_STEP_SUMMARY")
-    if summary:
-        with open(summary, "a", encoding="utf-8") as handle:
-            handle.write(f"- {line}\n")
 
 
 def load_model():
@@ -117,6 +108,34 @@ def contract_problems(validate, payload) -> list[str]:
     return [f"validate() вернул {type(result).__name__}: {result!r}"[:300]]
 
 
+def fact_problems(payload) -> list[str]:
+    """Закрытые записи журнала и `data/facts/actuals.json` говорят одно.
+
+    Журнал закрывает запись фактом один раз и дальше несёт её как есть: факт,
+    исправленный потом в actuals.json, в запись сам не попадёт, а эталоны
+    следующих полугодий уже возьмут новое значение. Расхождение — провал;
+    исправление — переоткрыть запись (`python ops/publish.py --reopen`).
+    """
+    journal = payload.get("journal") if isinstance(payload, dict) else None
+    entries = (journal.get("entries") if isinstance(journal, dict) else None) or []
+    closed = [e for e in entries if isinstance(e, dict) and e.get("actual") is not None]
+    if not closed:
+        return []
+    from model.facts import load_facts
+    from model.journal import actuals_of
+    actuals = actuals_of(load_facts())
+    out = []
+    for entry in closed:
+        fact = actuals.get((entry.get("target"), entry.get("period")))
+        if fact is None or abs(fact - entry["actual"]) > 1e-12:
+            now = "факта нет" if fact is None else f"факт {fact:g}"
+            out.append(f"запись {entry.get('id')} закрыта фактом {entry['actual']:g}, а в "
+                       f"data/facts/actuals.json {now} — исправление факта: "
+                       f"python ops/publish.py --reopen {entry.get('id')} --note \"<почему>\" "
+                       "(ops/README.md, «Исправить факт»)")
+    return out
+
+
 def serialize(payload) -> str:
     """Компактный строгий JSON; нарушения — `StepFailed`."""
     try:
@@ -168,14 +187,13 @@ def build(args) -> str:
 
     live = None
     if args.live:
-        from indicators.live import PriceUnavailable, collect_live, describe, write_live
+        from indicators.live import PriceUnavailable, collect_live, log_live, write_live
         print("шаг: сбор живых входов")
         try:
             live = collect_live(previous)
         except PriceUnavailable as exc:
             raise StepFailed("сбор живых входов", str(exc)) from exc
-        for line in describe(live):
-            print(f"  {line}")
+        log_live(live, indent="  ")
         write_live(live, DEFAULT_LIVE_OUT)
     elif args.live_file:
         live = _read("чтение живых входов", args.live_file, url_ok=False)
@@ -198,6 +216,13 @@ def build(args) -> str:
     if problems:
         raise StepFailed("проверка контракта", f"нарушений {len(problems)}: {problems[0]}")
     compact = serialize(payload)
+
+    print("шаг: журнал против фактов")
+    problems = fact_problems(payload)
+    for problem in problems:
+        print(f"  ЖУРНАЛ: {problem}", file=sys.stderr)
+    if problems:
+        raise StepFailed("проверка журнала", f"нарушений {len(problems)}: {problems[0]}")
 
     print("шаг: запись")
     out = Path(args.out)

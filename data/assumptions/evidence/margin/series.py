@@ -55,23 +55,46 @@ def ma_dev(y, w):
     return [y[i] - st.mean(y[i - w:i + w + 1]) for i in range(w, len(y) - w)]
 
 
-def simulate(n_rep=40, seed=20260928):
-    """Смещение оценки ρ на рядах той же длины: уровень — блуждание q = 0,24, σ = 0,46 п.п."""
+def sim_series(rng, n, rho0, sig, q):
+    """Ряд модели п. 1: уровень — блуждание с шагом q, отклонение — AR(1) (ρ, стационарное σ), п.п."""
+    L, d, y = 6.0, rng.gauss(0, sig), []
+    for t in range(n):
+        if t:
+            L += rng.gauss(0, q)
+            d = rho0 * d + rng.gauss(0, sig * math.sqrt(1 - rho0 * rho0))
+        y.append(L + d)
+    return y
+
+
+def ma_calibration(n, w, sig, q, obs, rho_hat, n_rep=5000, seed=20260928):
+    """Ожидание ACF(1) отклонения от скользящего среднего окна 2w+1 на рядах модели п. 1 (σ, q оценки):
+    при ρ = 0 и ρ = ρ̂; ρ, при котором средняя статистика равна наблюдённой (сетка 0,05, 1 000 рядов на узел)."""
+    rng = random.Random(seed + w)
+
+    def stats(rho0, k):
+        return [acf1(ma_dev(sim_series(rng, n, rho0, sig, q), w)) for _ in range(k)]
+    s0, sh = stats(0.0, n_rep), stats(rho_hat, n_rep)
+    grid = {r: st.mean(stats(r, 1000)) for r in frange(-0.90, 0.60, 0.05)}
+    ks = sorted(grid)
+    implied = None
+    for a, b in zip(ks, ks[1:]):
+        if (grid[a] - obs) * (grid[b] - obs) <= 0:
+            implied = a + (obs - grid[a]) * (b - a) / (grid[b] - grid[a])
+            break
+    return {"mean_rho0": st.mean(s0), "sd_rho0": st.stdev(s0), "p_le_obs_rho0": sum(x <= obs for x in s0) / n_rep,
+            "mean_rho_hat": st.mean(sh), "sd_rho_hat": st.stdev(sh), "rho_hat": rho_hat,
+            "rho_implied": implied, "n_rep": n_rep}
+
+
+def simulate(sig, q, rho_hat, n_rep=40, seed=20260928):
+    """Смещение оценки ρ на рядах той же длины при σ и q оценки п. 1 (истинное ρ: +0,3; 0; ρ̂)."""
     rng = random.Random(seed)
     rh, sg, qq = frange(-0.9, 0.9, 0.1), frange(0.2, 1.0, 0.05), frange(0.0, 0.4, 0.04)
     out = {}
-    for rho0 in (0.3, 0.0, -0.4):
-        est = []
-        for _ in range(n_rep):
-            L, d, y = 6.0, rng.gauss(0, 0.46), []
-            for t in range(31):
-                if t:
-                    L += rng.gauss(0, 0.24)
-                    d = rho0 * d + rng.gauss(0, 0.46 * math.sqrt(1 - rho0 * rho0))
-                y.append(L + d)
-            est.append(fit_level_ar1(y, rh, sg, qq)[0][1])
-        out[f"{rho0:+.1f}"] = {"mean": st.mean(est), "median": st.median(est), "sd": st.stdev(est)}
-        print(f"  истинное ρ {rho0:+.1f}: средняя оценка {st.mean(est):+.3f}, медиана {st.median(est):+.3f}, sd {st.stdev(est):.3f} ({n_rep} рядов)")
+    for rho0 in (0.3, 0.0, rho_hat):
+        est = [fit_level_ar1(sim_series(rng, 31, rho0, sig, q), rh, sg, qq)[0][1] for _ in range(n_rep)]
+        out[f"{rho0:+.2f}"] = {"mean": st.mean(est), "median": st.median(est), "sd": st.stdev(est)}
+        print(f"  истинное ρ {rho0:+.2f}: средняя оценка {st.mean(est):+.3f}, медиана {st.median(est):+.3f}, sd {st.stdev(est):.3f} ({n_rep} рядов)")
     return out
 
 
@@ -106,10 +129,6 @@ def main():
     print(f"{'сезон свободен (+s в 1П, −s во 2П)':<44} s {best_s[1]:+.2f} п.п. (95 %: {s_lo:+.2f}…{s_hi:+.2f}), ρ {best_s[2]:+.2f}, σ {best_s[3]:.2f}, прирост ll {best_s[0]-res['base']['ll']:.2f}")
     i17 = per.index("2017H1")
     res["from_2017"] = fit(y[i17:], "2017H1–2026H1 (как лист Магнита)")
-    y2 = y[:]
-    j = per.index("2015H2")
-    y2[j] = (y[j - 1] + y[j + 1]) / 2
-    res["no_2015H2"] = fit(y2, "2015H2 (8,78 %) заменён средним соседей")
     y3 = y[:]
     for p in ("2022H1", "2022H2"):
         k = per.index(p)
@@ -117,11 +136,18 @@ def main():
     res["no_2022"] = fit(y3, "2022H1 и 2022H2 заменены средним соседей")
 
     print("\n2. Проверка без фильтра: отклонение от центрированного скользящего среднего:")
+    print("   (статистика смещена к минусу по построению: у белого шума ACF(1) отклонения от центрированного "
+          "среднего окна 5 — −0,30, окна 7 — −0,19; её ожидание — симуляцией модели п. 1)")
+    b0 = res["base"]
     res["ma"] = {}
     for w in (2, 3):
         dv = ma_dev(y, w)
-        res["ma"][f"window_{2*w+1}"] = {"sd_pp": st.pstdev(dv), "acf1": acf1(dv), "n": len(dv)}
-        print(f"  окно {2*w+1} полугодий: sd {st.pstdev(dv):.2f} п.п., автокорреляция 1-го порядка {acf1(dv):+.2f} (n = {len(dv)})")
+        obs = acf1(dv)
+        cal = ma_calibration(len(y), w, b0["sigma_pp"], b0["q_pp"], obs, b0["rho"])
+        res["ma"][f"window_{2*w+1}"] = {"sd_pp": st.pstdev(dv), "acf1": obs, "n": len(dv), "calibration": cal}
+        print(f"  окно {2*w+1} полугодий: sd {st.pstdev(dv):.2f} п.п., автокорреляция 1-го порядка {obs:+.2f} (n = {len(dv)}); "
+              f"ожидание статистики при ρ = 0: {cal['mean_rho0']:+.2f} (sd {cal['sd_rho0']:.2f}, P(≤ наблюдённой) {cal['p_le_obs_rho0']:.2f}), "
+              f"при ρ = {b0['rho']:+.2f}: {cal['mean_rho_hat']:+.2f}; откалиброванная оценка ρ {cal['rho_implied']:+.2f}")
 
     print("\n3. Сезонность «2П − 1П», п.п.:")
     diffs = {yy: (halves[f'{yy}H2']['m'] - halves[f'{yy}H1']['m']) * 100 for yy in range(2011, 2026)}
@@ -163,7 +189,7 @@ def main():
 
     if a.sim:
         print("\n6. Смещение оценки ρ (симуляция, та же длина ряда):")
-        res["sim_bias"] = simulate()
+        res["sim_bias"] = simulate(res["base"]["sigma_pp"], res["base"]["q_pp"], res["base"]["rho"])
     write_json("series_out.json", res)
     print("\nЗаписано: series_out.json")
 

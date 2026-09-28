@@ -28,21 +28,33 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 каждая пересборка на тех же входах — новый выпуск. Числа выпуска — 9 значащих цифр.
 
 ## market
-* `price`, `price_date`, `price_time`, `price_source` ("ISS TQBR"), `price_status`
-  ("live" | "fallback" | "book" — сборка на входах книги), `book_price` (цена книги).
+* `price`, `price_date`, `price_time` (время сделки ISS, МСК), `price_source` (словами:
+  «Мосбиржа, режим TQBR»), `price_status` ("live" | "fallback" | "book" — сборка на входах
+  книги), `book_price` (цена книги).
 * `market_cap` (по акциям в обращении), `claims` (D слоя «свой взгляд» на дату оценки),
-  `market_ev` (= V\*), `ebitda_rep_ltm`, `adj_ebitda_ltm`, `ev_ebitda_ltm`,
-  `pe_ltm` (или null), `dividend_yield_ltm`.
-* `peers`: `rows` [{`ticker`, `name`, `price`, `price_date`, `market_cap`, `net_debt`,
-  `ev`, `ebitda_ltm`, `ev_ebitda`, `pe`, `basis`, `as_of`}] — X5 первой строкой.
-* `brokers`: `rows` [{`broker`, `date`, `target`, `rating`, `src`}], `median`,
-  `after_report` (метка отчёта).
+  `market_ev` (= V\*), `equity_share_of_ev` ((V\* − D) / V\* — доля капитала до дисконта за
+  управление, как `fair_value.equity_share_of_ev` у модели), `ebitda_rep_ltm`,
+  `adj_ebitda_ltm`, `ev_ebitda_ltm` (рыночный EV X5 на базе аналогов — капитализация +
+  чистый долг + дивиденды к выплате — к отчётной EBITDA до МСФО 16 за 12 мес.; = строка X5
+  в `peers`, книга A-G1), `pe_ltm` (или null), `dividend_yield_ltm`.
+* `peers`: `rows` [{`ticker`, `name`, `price`, `price_date`, `market_cap`, `net_debt`
+  (чистый долг баланса), `dividends_after_balance` (объявлены до даты баланса, выплачены
+  после), `ev` (= капитализация + `net_debt` + `dividends_after_balance`), `ebitda_ltm`,
+  `ev_ebitda`, `pe`, `basis`, `reported_on` (дата отчёта компании), `src`}] — X5 первой
+  строкой; `as_of` — дата балансов.
+* `brokers`: `rows` [{`broker`, `date`, `target`, `rating`, `horizon`, `src`,
+  `after_report` (цель выставлена в день отчёта или позже), `in_median` (цель входит в
+  медиану; null — правило фактов не воспроизводится)}], `median`, `median_n` (число целей
+  в медиане), `median_basis` (правило медианы словами из фактов), `after_report` (метка
+  отчёта), `report_date`.
 * `price_history`: [{`date`, `close`}] — дневные закрытия за 12 мес. (тонкая выборка
-  для графика), `ex_dividend`: [{`date`, `dps`}].
+  для графика), `price_min`, `price_max` ({`date`, `close`} по полному ряду),
+  `ex_dividend`: [{`date`, `dps`}].
 
 ## headline
 `central` (медиана, точная), `printed_central`, `band` [P10, P90], `printed_band`,
-`inner` [P25, P75], `printed_inner`, `mean`, `p_central_below_market`,
+`inner` [P25, P75], `printed_inner`, `mean`, `p_central_below_market` (витрина печатает
+с двумя знаками при значении меньше 1 %),
 `market_price`, `print_step`, `draws`, `lambda`. Статистики считаются по прогонам
 выпуска, округлённым до 0,1 ₽ (так же, как их пересчитает фронт); печать — к шагу,
 половина вверх.
@@ -56,13 +68,15 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
   прогонам, таблица — сверка).
 * `draws_low`, `draws_high`: массивы длины `headline.draws` (цены ₽, округление до 0,1).
 * `center_ev`: {`v0_median`, `v0_point`, `v_star`, `gap_median`, `gap_point`,
-  `rub_per_1pct_ev_median`, `rub_per_1pct_ev_point`}.
+  `rub_per_1pct_ev_median`, `rub_per_1pct_ev_point`, `ebitda_ntm` (скорр. EBITDA
+  следующих 12 мес. слоя «свой взгляд»), `ev_ebitda_ntm_median` (EV медианы / `ebitda_ntm`),
+  `ev_ebitda_ntm_market` (V\* / `ebitda_ntm`)} — пара «модель — рынок» на одной базе.
 * `equity_share_of_ev` (капитал / V0 точки).
 
 ## layers
 `analytical`, `market_implied`, `macro_neutral` — у каждого: `title`, `world_weights`,
 `v0`, `d`, `equity`, `price`, `pv_fcff`, `pv_shield`, `pv_terminal`, `terminal_share`,
-`ev_ebitda_fwd`, `v0_to_d`.
+`ev_ebitda_fwd`, `ebitda_ntm` (скорр. EBITDA следующих 12 мес.), `v0_to_d`.
 
 ## grid
 `cells`: 36 × {`world`, `regime`, `capex`, `p_analytical`, `p_market_implied`,
@@ -77,23 +91,33 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 происхождение миров (книга Магнита 1.6, дата кривой).
 
 ## regimes
-По stress, floor, partial, full: `title`, `target` [{period, value}] (якорь…LT),
+По stress, floor, partial, full: `title` («Стресс», «Дно», «Частичный возврат», «Полный
+возврат» — слова книги), `target` [{period, value}] (якорь…LT),
 `lt`, `prior`, `posterior`, `demand`. `history`: [{period, adj_margin, rep_margin}]
 полугодия 2018H1–якорь; `annual_history`: [{year, adj_margin}] 2011–последний год.
 `expected_lt` (Σ posterior × LT). `update`: {sigma_pp, rho, cap_pp, observations}.
 
 ## capex_levels
 По low, base, high: `maintenance` [{year, value}], `lt`, `p_given_regime`
-{stress, floor, partial, full}. `history`: [{year, capex_pct, da_pct}].
+{stress, floor, partial, full}. `history`: [{year, capex_pct, da_pct}] (`da_pct` —
+амортизация **и обесценение** внеоборотных активов к выручке, как в databook; модель
+считает D&A без обесценения).
 `price_per_m2`, `infra_per_m2`, `maintenance_area_share`.
 
 ## paths
 Ожидаемый путь слоя «свой взгляд» (взвешенный по вероятностям клеток), по годам
-2026–2036 (2026 = факт 1П + прогноз 2П) и отдельно полугодия:
+2026–2036 и отдельно полугодия. Год якоря (2026) — факт 1П + прогноз 2П только в строках
+из `fact` (выручка, скорр. и отчётная EBITDA, D&A, capex, LTI); строки из
+`forecast_only` (чек, трафик, разбивка capex, ΔNWC, налог, FCFF, щит, проценты,
+дивиденды) — только прогнозные полугодия `forecast_periods` (2П). Запасы (площадь,
+чистый долг, рычаг) — на конец года.
 `annual`: [{`year`, `revenue`, `revenue_growth`, `ticket`, `traffic`, `area_end`,
 `area_growth`, `margin`, `adj_ebitda`, `lti`, `da`, `capex`, `capex_maintenance`,
 `capex_growth`, `capex_infra`, `capex_pct`, `nwc_change`, `tax_unlevered`, `fcff`,
-`shield`, `interest`, `dividends`, `net_debt`, `leverage`}],
+`shield`, `interest`, `dividends`, `net_debt`, `leverage`, `fact`, `forecast_only`,
+`forecast_periods`}]. `ticket`, `traffic` — рост г/г чека (выручка без НДС, с клином
+`revenue.vat_effect`) и трафика **зрелой сети** (созревание новых магазинов — в площади,
+поэтому отчётный LFL X5 выше), взвешенные по выручке прогнозных полугодий года;
 `halves`: [{`period`, `revenue`, `margin`, `adj_ebitda`, `capex`, `fcff`, `net_debt`}],
 `fact_marks`: какие строки — факт.
 
@@ -101,19 +125,32 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 * `anchor`: {`as_of`, `total_debt`, `cash`, `net_debt`, `leverage`, `leasing`,
   `lease_liabilities_ifrs16`, `credit_lines_unused`, `floating_share`,
   `effective_rate`, `ratings` [{agency, rating, outlook, date}]}.
-* `bridge`: [{`key`, `label`, `amount`, `included`, `src`}] + `rows_at_valuation`:
-  разложение D на дату оценки (ЧД факт, операционная касса, строки, перекат,
-  дивиденды к выплате) и `total`.
-* `bonds`: [{`isin`, `name`, `outstanding`, `coupon_type`, `coupon`, `spread`,
+* `bridge`: {`lines` [{`key`, `label`, `amount`, `included`, `src`}] — строки моста из
+  отчётности; `ev_rows` [{`key`, `label`, `amount`}] — из чего складывается V0 слоя «свой
+  взгляд» (сумма = `v0`); `v0`; `rows_at_valuation` [{`key`, `label`, `amount`}] —
+  разложение D на дату оценки (ЧД факт, операционная касса, строки, дивиденды к выплате,
+  перекат; сумма = `total`); `total`; `equity` (= `v0` − `total`); `equity_rows`
+  [{`key`, `label`, `amount`}] — что прибавляется к капиталу в формуле цены (выручка от
+  продажи казначейского пакета; пусто — ничего); `treasury_mln` (казначейский пакет, млн
+  акций: цена = (`equity` + Σ `equity_rows`) × (1 − g) / (акции в обращении +
+  `treasury_mln`))}. Витрина рисует все строки всех списков, какие есть: новая
+  составляющая EV или требований — новая строка.
+* `bonds`: [{`isin`, `name`, `outstanding` (в обращении — из реестра фактов: он учитывает
+  бумаги, выкупленные по оферте; размещённый объём ISS — только без факта),
+  `outstanding_anchor` (на дату баланса якоря), `coupon_type`, `coupon`, `spread`,
   `put_date`, `maturity`, `price`, `ytm`, `as_of`}]; `bank_loans` {short, long, total}.
 * `wall`: [{`period` (квартал/год), `bonds`, `banks`}] — график погашений/оферт.
 
 ## dividends
 `policy` {target_leverage [lo, hi], no_pay_above, frequency, text}; `register`
-[{id, label, dps, amount, record_date, ex_date, pay_until, status, paid_share,
-in_claims}]; `history` [{period, dps, amount, record_date}]; `model` [{year,
-amount, dps}] — ожидаемые выплаты модели по годам (слой «свой взгляд»);
-`next_expected` {label, record_date_est, dps_model, note}; `yield_ltm`.
+[{id, label, dps, amount, record_date, ex_date, pay_until, status (declared | paying |
+paid | unclaimed), paid_share, in_claims}]; `history` [{period, label, dps, amount,
+record_date}] — по времени, от старых к новым (9M раньше FY того же года); `model`
+[{year, amount, dps}] — ожидаемые выплаты модели по годам (слой «свой взгляд»);
+`next_expected` {label, record_date_est (дата ISO или null: из фактов, иначе ближайшая
+отсечка календаря), record_date_note (текст оценки), pay_period (полугодие выплаты:
+за 9 мес. — 1П следующего года, финал — 2П), dps_model (дивиденд модели в `pay_period`,
+₽ на акцию), note}; `yield_ltm`.
 
 ## history
 `annual` [{year, revenue, growth, adj_margin, rep_margin, capex_pct, da_pct,
@@ -163,12 +200,14 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 `raised`, `detail`}].
 
 ## inputs
-`rows`: [{`name`, `value`, `unit`, `as_of`, `source`, `status` ("ok" | "stale" |
-"fallback")}] — цена, кривая, ключевая, книга, факты.
+`rows`: [{`name`, `value`, `unit` (`version` — версия книги, печатается как есть),
+`as_of`, `source` (словами), `status` ("ok" | "stale" | "fallback")}] — цена, кривая,
+ключевая, книга, факты.
 
 ## live
 `price` {value, date, accepted, reason}, `curve` {as_of, nodes {1,3,5,10},
-book_nodes, shift_bp {5, 10}}, `key_rate` {value, date}, `valuation_date`.
+book_nodes, shift_bp {5, 10}}, `key_rate` {value, date (день наблюдения), since (дата
+решения, с которой действует ставка; null — раньше окна истории)}, `valuation_date`.
 
 ## changes
 `vs_previous`: {`previous_sha`, `previous_generated_at`, `rows` [{`component`,
@@ -181,9 +220,12 @@ book_nodes, shift_bp {5, 10}}, `key_rate` {value, date}, `valuation_date`.
 `facts_date`, `key_judgements`: [{id, name, value, unit}].
 
 ## indicators
-`tiles`: [{`id`, `title`, `unit`, `value`, `date`, `change`, `history`
-[{date, value}] (≤ 60 точек)}] — X5 (цена), ключевая ставка, ОФЗ 5 и 10 лет
-(бескупонная кривая), спред облигаций X5 к ОФЗ.
+`tiles`: [{`id`, `title`, `unit`, `value`, `date`, `change` (к точке `change_from`
+полного ряда: у цены — к прошлому закрытию; у ключевой — к прошлому отличному
+значению), `change_from`, `since` (у ключевой — дата решения), `min`, `max` ({date,
+value} по полному ряду), `history` [{date, value}] (≤ 60 точек, тонкая выборка)}] — X5
+(цена), ключевая ставка, ОФЗ 5 и 10 лет (бескупонная кривая), спред облигаций X5 к ОФЗ
+(веса — остатки в обращении из реестра фактов).
 
 ## Дополнительные поля (не ломают витрину)
 

@@ -30,7 +30,19 @@
    "da_pct": {
     "v": 0.02771,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!D8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!D47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!D46)"
    },
    "leverage": {
     "v": 3.126114,
@@ -88,7 +100,19 @@
    "da_pct": {
     "v": 0.059032,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!E8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!E47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!E46)"
    },
    "leverage": {
     "v": 3.145946,
@@ -146,7 +170,19 @@
    "da_pct": {
     "v": 0.024421,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!F8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!F47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!F46)"
    },
    "leverage": {
     "v": 2.683449,
@@ -204,7 +240,19 @@
    "da_pct": {
     "v": 0.02772,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!G8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!G47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!G46)"
    },
    "leverage": {
     "v": 2.297542,
@@ -262,7 +310,19 @@
    "da_pct": {
     "v": 0.025697,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!H8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!H47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!H46)"
    },
    "leverage": {
     "v": 2.448844,
@@ -320,7 +380,19 @@
    "da_pct": {
     "v": 0.029638,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!I8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!I47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!I46)"
    },
    "leverage": {
     "v": 1.807374,
@@ -378,7 +450,19 @@
    "da_pct": {
     "v": 0.02968,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!J8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!J47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!J46)"
    },
    "leverage": {
     "v": 1.732,
@@ -436,7 +520,19 @@
    "da_pct": {
     "v": 0.032283,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!K8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!K47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!K46)"
    },
    "leverage": {
     "v": 1.703,
@@ -494,7 +590,19 @@
    "da_pct": {
     "v": 0.035941,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!L8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!L47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!L46)"
    },
    "leverage": {
     "v": 1.71,
@@ -552,7 +660,19 @@
    "da_pct": {
     "v": 0.034556,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!M8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!M47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!M46)"
    },
    "leverage": {
     "v": 1.66,
@@ -610,7 +730,21 @@
    "da_pct": {
     "v": 0.034769,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!D8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!D42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!D41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "leverage": {
     "v": 1.664645,
@@ -668,7 +802,21 @@
    "da_pct": {
     "v": 0.03422,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!E8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!E42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!E41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "leverage": {
     "v": 1.027195,
@@ -726,7 +874,22 @@
    "da_pct": {
     "v": 0.026911,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!F8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.026219,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!F8; ifrs-fy2024_godovaya-konsolidirovannaya-finansovaya-otchetnost.pdf прим. 3, сравн. данные за 2023 г. (ОС, с. 31: чистый убыток 1 149; инвест. недвижимость, с. 32: 231; НМА, с. 33: 548), прим. 13 (гудвил, с. 49: 247, сегмент «dark kitchen»)",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 2,175"
+   },
+   "other_investing_payments": {
+    "v": 0.208,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!F42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.054,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!F41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "leverage": {
     "v": 0.885656,
@@ -782,7 +945,22 @@
    "da_pct": {
     "v": 0.025031,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!G8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.024237,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!G8; ifrs-fy2024_godovaya-konsolidirovannaya-finansovaya-otchetnost.pdf прим. 10 (ОС, с. 44: 4 251 − 926), прим. 14 (НМА, с. 49: 442), прим. 12 (инвест. недвижимость, с. 47: 96 − 762); гудвил — нет (прим. 13, с. 49)",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 3,101"
+   },
+   "other_investing_payments": {
+    "v": 3.181,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!G42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.233,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!G41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "leverage": {
     "v": 0.876996,
@@ -838,7 +1016,22 @@
    "da_pct": {
     "v": 0.024189,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!H8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.023273,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!H8; auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf прим. 10 (ОС, с. 28: убыток 5 207, восстановление 1 756), прим. 13 (НМА, с. 34: 925), прим. 12 (инвест. недвижимость, с. 33: 27 − 150); гудвил не обесценивался (с. 25)",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 4,253"
+   },
+   "other_investing_payments": {
+    "v": 8.424,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!H42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.488,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!H41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "leverage": {
     "v": 0.836692,
@@ -897,7 +1090,19 @@
    "da_pct": {
     "v": 0.030878,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!AY8 + AZ8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!AY47 + AZ47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!AY46 + AZ46)"
    },
    "area_end": {
     "v": 5944.98411,
@@ -938,7 +1143,19 @@
    "da_pct": {
     "v": 0.033575,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BA8 + BB8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BA47 + BB47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BA46 + BB46)"
    },
    "area_end": {
     "v": 6451.88081,
@@ -979,7 +1196,19 @@
    "da_pct": {
     "v": 0.031206,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BC8 + BD8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BC47 + BD47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BC46 + BD46)"
    },
    "area_end": {
     "v": 6774.21041,
@@ -1020,7 +1249,19 @@
    "da_pct": {
     "v": 0.040421,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BE8 + BF8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BE47 + BF47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BE46 + BF46)"
    },
    "area_end": {
     "v": 7217.98101,
@@ -1061,7 +1302,19 @@
    "da_pct": {
     "v": 0.032572,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BG8 + BH8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BG47 + BH47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BG46 + BH46)"
    },
    "area_end": {
     "v": 7510.26123,
@@ -1102,7 +1355,19 @@
    "da_pct": {
     "v": 0.036436,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BI8 + BJ8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BI47 + BJ47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BI46 + BJ46)"
    },
    "area_end": {
     "v": 7840.05523,
@@ -1143,7 +1408,19 @@
    "da_pct": {
     "v": 0.034959,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BK8 + BL8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BK47 + BL47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BK46 + BL46)"
    },
    "area_end": {
     "v": 8062.90271,
@@ -1184,7 +1461,19 @@
    "da_pct": {
     "v": 0.0346,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BM8 + BN8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BM47 + BN47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BM46 + BN46)"
    },
    "area_end": {
     "v": 8409.75705,
@@ -1225,7 +1514,19 @@
    "da_pct": {
     "v": 0.035777,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BO8 + BP8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BO47 + BP47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BO46 + BP46)"
    },
    "area_end": {
     "v": 8643.579,
@@ -1266,7 +1567,19 @@
    "da_pct": {
     "v": 0.032783,
     "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BQ8 + BR8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BQ47 + BR47)"
+   },
+   "finance_lease_receipts": {
+    "v": null,
+    "calc": "строки в ОДДС за период нет — появилась в 4 кв. 2023 г. (financial_and_operating_results_q1_2024.xlsx › Cash Flow!BQ46 + BR46)"
    },
    "area_end": {
     "v": 9107.479,
@@ -1307,7 +1620,21 @@
    "da_pct": {
     "v": 0.027153,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!O8 + P8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O42 + P42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O41 + P41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "area_end": {
     "v": 9541.02,
@@ -1348,7 +1675,21 @@
    "da_pct": {
     "v": 0.026698,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Q8 + R8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": null,
+    "calc": "обесценение за период в собранной первичке не раскрыто (МСФО есть с 2023 г.)"
+   },
+   "other_investing_payments": {
+    "v": 0.208,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q42 + R42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.054,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q41 + R41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "area_end": {
     "v": 10108.94106,
@@ -1388,7 +1729,22 @@
    "da_pct": {
     "v": 0.024488,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!S8 + T8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.023671,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!S8 + T8; finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: за 6 мес. 2024 г. чистый убыток от обесценения 1 544, восстановление 31",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 1,513"
+   },
+   "other_investing_payments": {
+    "v": 0.231,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S42 + T42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.09,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S41 + T41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "area_end": {
     "v": 10439.32906,
@@ -1428,7 +1784,22 @@
    "da_pct": {
     "v": 0.02552,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!U8 + V8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.024747,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!U8 + V8; ifrs-fy2024_godovaya-konsolidirovannaya-finansovaya-otchetnost.pdf прим. 10 (ОС, с. 44: 4 251 − 926), прим. 14 (НМА, с. 49: 442), прим. 12 (инвест. недвижимость, с. 47: 96 − 762); гудвил — нет (прим. 13, с. 49); finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: за 6 мес. 2024 г. чистый убыток от обесценения 1 544, восстановление 31",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 1,588 (2024 г. − 1П2024)"
+   },
+   "other_investing_payments": {
+    "v": 2.95,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U42 + V42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.143,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U41 + V41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "area_end": {
     "v": 10961.011,
@@ -1468,7 +1839,22 @@
    "da_pct": {
     "v": 0.022424,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!W8 + X8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.021819,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!W8 + X8; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17 (сравн. данные): ОС 1 036 + НМА 323; finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: «убыток от обесценения 1 359»",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 1,359"
+   },
+   "other_investing_payments": {
+    "v": 1.816,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W42 + X42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.16,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W41 + X41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "area_end": {
     "v": 11376.156,
@@ -1508,7 +1894,22 @@
    "da_pct": {
     "v": 0.02584,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Y8 + Z8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.024633,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Y8 + Z8; auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf прим. 10 (ОС, с. 28: убыток 5 207, восстановление 1 756), прим. 13 (НМА, с. 34: 925), прим. 12 (инвест. недвижимость, с. 33: 27 − 150); гудвил не обесценивался (с. 25); finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17 (сравн. данные): ОС 1 036 + НМА 323; finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: «убыток от обесценения 1 359»",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 2,894 (2025 г. − 1П2025)"
+   },
+   "other_investing_payments": {
+    "v": 6.608,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y42 + Z42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.328,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y41 + Z41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "area_end": {
     "v": 11912.101,
@@ -1548,7 +1949,22 @@
    "da_pct": {
     "v": 0.023354,
     "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!AA8 + AB8",
-    "calc": "D&A и обесценение до МСФО 16 / выручка"
+    "calc": "D&A и обесценение внеоборотных активов до МСФО 16 (databook, SG&A стр. 8) / выручка — с обесценением"
+   },
+   "da_excl_impairment_pct": {
+    "v": 0.022603,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!AA8 + AB8; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17: убыток от обесценения ОС 1 737 + НМА 161 − восстановление 33 (с. 11: убыток 1 898, восстановление 33; ППИ и инвест. недвижимость в 1П2026 не обесценивались)",
+    "calc": "(D&A и обесценение − обесценение внеоборотных активов нетто по МСФО) / выручка — без обесценения: обесценение 1,865"
+   },
+   "other_investing_payments": {
+    "v": 4.227,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA42 + AB42",
+    "calc": "«Прочие платежи по инвестиционной деятельности» (ОДДС), отток — положительным; в capex (ОС + НМА), M&A и мост не входят"
+   },
+   "finance_lease_receipts": {
+    "v": 0.644,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA41 + AB41",
+    "calc": "«Поступления от основной суммы чистых инвестиций в аренду» (ОДДС: финансовая аренда франчайзи)"
    },
    "area_end": {
     "v": 12157.24,
@@ -1933,7 +2349,7 @@
    },
    "karusel": {
     "v": 0.0,
-    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E8 (формат закрыт в 2023 г.)"
+    "src": "формат закрыт в 2023 г."
    },
    "other": {
     "v": 53.438,
@@ -1961,7 +2377,7 @@
    },
    "karusel": {
     "v": 0.0,
-    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F8 (формат закрыт в 2023 г.)"
+    "src": "формат закрыт в 2023 г."
    },
    "other": {
     "v": 79.853,

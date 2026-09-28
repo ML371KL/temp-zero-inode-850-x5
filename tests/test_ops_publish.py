@@ -12,6 +12,10 @@ from pathlib import Path
 
 import pytest
 
+# Публикация — git-операции в песочнице (секунды–десятки секунд на тест): обвязка, а не число
+# выпуска; такт её не гоняет, CI — да.
+pytestmark = pytest.mark.ci_only
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))

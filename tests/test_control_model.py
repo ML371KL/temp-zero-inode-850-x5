@@ -165,6 +165,9 @@ def base_core_v0(core_api):
     return res["layers"]["analytical"]["v0"]
 
 
+# Сценарии — по 15–45 с на изменённой книге: проверка мощности контрольной модели, а не
+# числа выпуска; такт их не гоняет (CI — да).
+@pytest.mark.ci_only
 @pytest.mark.parametrize("scenario", cm.SCENARIOS, ids=[s["key"] for s in cm.SCENARIOS])
 def test_control_matches_core_on_scenario(scenario, core_api, base_core_v0, tmp_path):
     load_book, book_results, load_facts = core_api

@@ -130,8 +130,41 @@ def test_benchmarks_come_from_reported_facts(book, facts):
 
 def test_actuals_file_feeds_the_journal(facts):
     """Формат `data/facts/actuals.json`: {"actuals": [{target, period, value: {v, src}}]}."""
-    rows = facts.data.get("actuals", {}).get("actuals", [])
+    rows = facts.raw.get("actuals", {}).get("actuals", [])
     got = J.actuals_of(facts)
-    assert len(got) == sum(1 for r in rows if r.get("target") in J.TARGETS)
+    assert len(got) == len(rows)
+    for r in rows:
+        assert got[(r["target"], r["period"])] == r["value"]["v"]
     raw = json.dumps(facts.raw.get("actuals", {}), ensure_ascii=False)
     assert "actuals" in raw
+
+
+def _facts_with(rows):
+    from pathlib import Path
+
+    from model.facts import Facts
+    return Facts(root=Path("."), fixture=False, raw={"actuals": {"actuals": rows}},
+                 data={"actuals": {"actuals": rows}})
+
+
+def test_actual_is_a_fact_node_with_source():
+    """Факт журнала — узел фактов проекта {"v": число, "src"|"calc"}; число без узла (без
+    источника), узел без числа или без источника, чужая цель, не полугодие, повтор — отказ."""
+    from model.facts import FactsError
+
+    good = {"target": "x5.adj_margin", "period": "2026H2", "reported_on": "2027-03-19",
+            "value": {"v": 0.061, "src": "пресс-релиз 4 кв. 2026, с. 3"}}
+    calc = {**good, "target": "x5.revenue_growth", "value": {"v": 0.09, "calc": "R / R(p − 2) − 1"}}
+    assert J.actuals_of(_facts_with([good, calc])) == {("x5.adj_margin", "2026H2"): 0.061,
+                                                       ("x5.revenue_growth", "2026H2"): 0.09}
+    bad = [({**good, "value": 0.061}, "без источника"),
+           ({**good, "value": {"v": 0.061}}, "без src и без calc"),
+           ({**good, "value": {"v": None, "src": "x"}}, "ожидается число"),
+           ({**good, "value": {"v": "0,061", "src": "x"}}, "ожидается число"),
+           ({**good, "target": "x5.margin"}, "цель журнала"),
+           ({**good, "period": "2026-H2"}, "полугодие")]
+    for row, words in bad:
+        with pytest.raises(FactsError, match=words):
+            J.actuals_of(_facts_with([row]))
+    with pytest.raises(FactsError, match="повтор"):
+        J.actuals_of(_facts_with([good, good]))

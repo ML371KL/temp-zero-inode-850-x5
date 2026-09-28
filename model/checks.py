@@ -360,7 +360,12 @@ def flag_dividend_register(expected_ex_dates: Iterable[dt.date], register: Itera
                 bool(missed), ", ".join(d.isoformat() for d in sorted(missed)) or "реестр полон")
 
 
+# Статус цены рынка словами (деталь флага `price_fallback` идёт на витрину как есть).
+PRICE_STATUS_WORDS = {"live": "живая цена", "book": "цена книги", "fallback": "запасная цена"}
+
+
 def flag_price_fallback(status: str) -> Flag:
-    """`price_fallback`: живая цена не принята, взята последняя принятая."""
+    """`price_fallback`: живая цена не принята, взята последняя принятая (запасная)."""
+    words = PRICE_STATUS_WORDS.get(status)
     return Flag("price_fallback", "цена — последняя принятая", status == "fallback",
-                f"статус цены: {status}")
+                f"цена рынка: {words}" if words else f"цена рынка: статус «{status}» не известен")

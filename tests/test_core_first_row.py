@@ -11,7 +11,7 @@ import datetime as dt
 
 import pytest
 
-from model.book import half_rate, interp_curve, path_value, period_start, prev_period
+from model.book import half_rate, interp_curve, next_period, path_value, period_start, prev_period
 from model.core import Context, run_cell
 from model.facts import core_facts
 
@@ -33,27 +33,33 @@ def test_first_half_year_by_hand(book, facts, world):
     credit = J["world_links"][WORLD]["credit"]
     demand = J["regime_demand"][REGIME]
 
-    # §4.1 сеть
+    # §4.1 сеть: индекс от конца S — площадь минус незрелая часть последних n когорт
+    # (плотность d), дальше рекурсия с закрытиями (κ) по историческим полугодиям до якоря
     mu = NW["maturity_curve"]
     n = len(mu) - 1
     O = cf.gross_opened
+    d, kappa = NW["new_space_density"], NW["closed_productivity"]
 
     def back(q, a):
         for _ in range(a):
             q = prev_period(q)
         return q
 
-    def eff_hist(q):
-        return cf.area_end[q] - sum(O[back(q, a)] * (1 - mu[a]) for a in range(n))
+    S = cf.eff_start
+    eff_hist = {S: cf.area_end[S] - sum(O[back(S, a)] * d * (1 - mu[a]) for a in range(n))}
+    q = S
+    while q != anchor:
+        q = next_period(q)
+        mat = sum(O[back(q, a)] * d * (mu[a] - mu[a - 1]) for a in range(1, n + 1))
+        eff_hist[q] = eff_hist[prev_period(q)] - cf.closed_area[q] * kappa + O[q] * d * mu[0] + mat
 
     a0 = cf.area_end[anchor]
     closed = a0 * path_value(NW["close_rate"], p1) / 2
     opened = a0 * path_value(NW["net_growth"][tariff], p1) / 2 + closed
-    d, kappa = NW["new_space_density"], NW["closed_productivity"]
-    maturing = sum(O[back(anchor, a - 1)] * (mu[a] - mu[a - 1]) for a in range(1, n + 1))
-    eff1 = eff_hist(anchor) - closed * kappa + opened * d * mu[0] + maturing
-    avg1 = (eff_hist(anchor) + eff1) / 2
-    avg_base = (eff_hist(back2) + eff_hist(back1)) / 2
+    maturing = sum(O[back(anchor, a - 1)] * d * (mu[a] - mu[a - 1]) for a in range(1, n + 1))
+    eff1 = eff_hist[anchor] - closed * kappa + opened * d * mu[0] + maturing
+    avg1 = (eff_hist[anchor] + eff1) / 2
+    avg_base = (eff_hist[back2] + eff_hist[back1]) / 2
 
     # §4.2 выручка
     k = R["ticket_k"][demand]
@@ -138,19 +144,52 @@ def test_first_half_year_by_hand(book, facts, world):
         assert getattr(row, name) == pytest.approx(value, rel=1e-12, abs=1e-12), name
 
 
-def test_immature_space_matures_to_physical(book, facts):
-    """Без роста и закрытий эффективная площадь за n полугодий дозревает до физической."""
+def test_immature_space_matures_with_density_d(book, facts):
+    """Без роста и закрытий эффективный индекс за n полугодий дозревает: к индексу якоря
+    добавляется незрелая часть последних n исторических когорт с плотностью d, дальше
+    индекс стоит."""
     B = copy.deepcopy(book)
     for t in B["network"]["net_growth"]:
         B["network"]["net_growth"][t] = {"LT": 0.0}
     B["network"]["close_rate"] = {"LT": 0.0}
     ctx = Context(B, facts)
     net = ctx.network("mid")
-    n = len(B["network"]["maturity_curve"]) - 1
+    NW = B["network"]
+    mu, d = NW["maturity_curve"], NW["new_space_density"]
+    n = len(mu) - 1
     area = ctx.facts.area_end[ctx.anchor]
     assert all(a == area for a in net.area_end)
-    assert net.eff_avg[n] == pytest.approx(area, rel=1e-14)
-    assert net.eff_avg[0] < area
+    O = list(ctx.facts.gross_opened.values())
+    mature = net.eff_hist[ctx.anchor] + sum(O[-1 - a] * d * (1 - mu[a]) for a in range(n))
+    assert net.eff_avg[n] == pytest.approx(mature, rel=1e-14)
+    assert net.eff_avg[n + 1] == pytest.approx(mature, rel=1e-14)
+    assert net.eff_avg[0] < mature < area
+
+
+def test_history_index_at_unit_density_is_area_minus_immature(book, facts):
+    """При d = κ = 1 рекурсия §4.1 по истории (площадь S, открытия, закрытия) даёт в каждом
+    полугодии площадь минус незрелую часть последних n когорт: факты сети согласованы
+    (открытия = чистый прирост + закрытия), индекс — та же площадь в других единицах."""
+    B = copy.deepcopy(book)
+    B["network"]["new_space_density"] = 1.0
+    B["network"]["closed_productivity"] = 1.0
+    ctx = Context(B, facts)
+    net = ctx.network("mid")
+    mu = B["network"]["maturity_curve"]
+    n = len(mu) - 1
+    O = ctx.facts.gross_opened
+    area = {**facts.data["network"].get("area_end_est", {}), **facts.data["network"]["area_end"]}
+
+    def back(q, a):
+        for _ in range(a):
+            q = prev_period(q)
+        return q
+
+    assert list(net.eff_hist) == sorted(net.eff_hist)
+    assert next(iter(net.eff_hist)) == ctx.facts.eff_start
+    for q, eff in net.eff_hist.items():
+        assert eff == pytest.approx(area[q] - sum(O[back(q, a)] * (1 - mu[a]) for a in range(n)),
+                                    abs=1e-5), q
 
 
 def test_terminal_by_hand(book, facts):

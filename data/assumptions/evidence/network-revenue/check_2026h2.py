@@ -20,8 +20,8 @@ import warnings
 
 import yaml
 
-from common import (HERE, Report, eff_consistent, eff_model_rule, forward_network, halves, load, network_history,
-                    path_value, pc, r6)
+from common import (HERE, Report, eff_consistent, forward_network, halves, load, network_history, path_value, pc,
+                    r6)
 
 REPO = HERE.parents[3]
 sys.path.insert(0, str(REPO))
@@ -64,14 +64,15 @@ def expected(ctx: Context, A: dict, i: int, attr: str = "revenue") -> float:
 
 
 def own_revenue(A: dict, facts, W: str, t: str, s: str) -> float:
-    """Независимая реализация §4.1–4.2 (правило ядра для истории) — выручка 2П2026, млрд ₽."""
-    nf = load("network_facts.json")
-    Ah = {p: x["v"] for p, x in nf["area_end"].items()}
-    Oh = {p: x["v"] for p, x in nf["gross_opened_hist"].items()}
+    """Независимая реализация §4.1–4.2 на истории сети листа (network_history, индекс от 2022H2) — выручка
+    2П2026, млрд ₽."""
+    H = network_history()
     NW, RV = A["network"], A["revenue"]
     P = ["2026H2"]
-    Af, Of, Cf = forward_network(Ah["2026H1"], P, NW["net_growth"][t], NW["close_rate"])
-    eff = eff_model_rule("2026H1", P, Ah, Oh, Of, Cf, NW["maturity_curve"], NW["new_space_density"], NW["closed_productivity"])
+    Af, Of, Cf = forward_network(H["A"]["2026H1"], P, NW["net_growth"][t], NW["close_rate"])
+    order = [p for p in H["A"] if p >= "2022H2"] + P
+    eff = eff_consistent(order, H["A"]["2022H2"], {**H["O"], **Of}, {**H["C"], **Cf}, NW["maturity_curve"],
+                         NW["new_space_density"], NW["closed_productivity"])
     k = RV["ticket_k"][s]
     hom = RV["homogeneity"]
     wgt = min(1.0, max(0.0, (2026 - hom["ramp_from"]) / (hom["ramp_to"] - hom["ramp_from"])))
@@ -79,7 +80,7 @@ def own_revenue(A: dict, facts, W: str, t: str, s: str) -> float:
               + path_value(RV["vat_effect"], "2026H2")
               + (1 - k) * (A["worlds"][W]["lt"]["inflation"] - A["worlds"][hom["reference_world"]]["lt"]["inflation"]) * wgt)
     base = facts.data["accounting"]["periods"]["2025H2"]["revenue"]
-    return base * (1 + eff["yoy"]["2026H2"]) * (1 + ticket) * (1 + path_value(RV["traffic"][s], "2026H2")) \
+    return base * (1 + eff["yoy"]["2026H2"]["g"]) * (1 + ticket) * (1 + path_value(RV["traffic"][s], "2026H2")) \
         * (1 + path_value(RV["other_growth"], "2026H2"))
 
 
@@ -129,7 +130,7 @@ def main() -> None:
             parts["traffic"] += pw * pr * rv.traffic[0]
     vat = path_value(A["revenue"]["vat_effect"], "2026H2")
     oth = path_value(A["revenue"]["other_growth"], "2026H2")
-    # эффективная площадь ядра = согласованный рост (NL + m, как в подборе d, density.py) + ошибка правила ядра
+    # эффективная площадь ядра = рост индекса §4.1 (как в подборе d, density.py) = NL + m
     NW, Hn = A["network"], network_history()
     cons = {}
     for t in TARIFFS:
@@ -138,20 +139,21 @@ def main() -> None:
         c = eff_consistent(order, Hn["A"]["2022H2"], {**Hn["O"], **Of}, {**Hn["C"], **Cf}, NW["maturity_curve"],
                            NW["new_space_density"], NW["closed_productivity"])["yoy"]["2026H2"]
         G = ctx.network(t)
-        cons[t] = {"nl": c["nonlfl"], "m": c["m"], "art": G.eff_avg[0] / G.eff_avg_hist["2025H2"] - 1 - c["g"]}
+        cons[t] = {"nl": c["nonlfl"], "m": c["m"], "gap": G.eff_avg[0] / G.eff_avg_hist["2025H2"] - 1 - c["g"]}
     w_t = {t: sum(pw * pr for W, pw in J["world_prob"].items() for reg, pr in J["regime_prob"].items()
                   if tariff_of(A, W, reg) == t) for t in TARIFFS}
-    nl_e, m, art = (sum(w_t[t] * cons[t][k] for t in TARIFFS) for k in ("nl", "m", "art"))
+    nl_e, m, gap = (sum(w_t[t] * cons[t][k] for t in TARIFFS) for k in ("nl", "m", "gap"))
     R.table(["составляющая", "вклад, %"],
-            [["эффективная площадь (правило ядра)", pc(parts["eff"])],
-             ["  вне отчётного LFL (NL; согласованный расчёт, как в подборе d)", pc(nl_e)],
+            [["эффективная площадь", pc(parts["eff"])],
+             ["  вне отчётного LFL (NL)", pc(nl_e)],
              ["  созревание, в отчётном LFL (m)", pc(m)],
-             ["  ошибка правила ядра (история на физической площади, density.py, разд. 5)", pc(art)],
              ["LFL-чек с НДС (k × прод. ИПЦ + сдвиг)", pc(parts["ticket_ex_vat"])],
              ["клин НДС", pc(vat)],
              ["LFL-трафик зрелой сети", pc(parts["traffic"])],
              ["прочая выручка", pc(oth)],
              ["итого рост выручки 2П2026", pc(g_e)]])
+    R.p(f"Эффективная площадь ядра = NL + m (индекс листа от 2022H2 на его истории сети): расхождение "
+        f"{100 * gap:+.4f} п.п.")
     rep_lfl = (1 + parts["ticket_ex_vat"]) * (1 + parts["traffic"] + m) - 1
     R.p(f"Отчётный LFL (с НДС), который даёт книга: ≈ {pc(rep_lfl)} % (чек + трафик зрелой сети + m); "
         f"вклад не-LFL в отчётном смысле ≈ {pc((1 + g_e) / ((1 + rep_lfl) * (1 + vat)) - 1)} %.")
@@ -223,7 +225,8 @@ def main() -> None:
 
     R.data.update({"expected_2026H2_growth": r6(g_e), "expected_2026H2_revenue": r6(e_rev), "year_2026_growth": r6(g26),
               "parts": {k: r6(x) for k, x in parts.items()}, "reported_lfl_implied": r6(rep_lfl),
-              "eff_split": {"nl": r6(nl_e), "m": r6(m), "rule_error": r6(art), "tariff_weights": {t: r6(x) for t, x in w_t.items()}},
+              "eff_split": {"nl": r6(nl_e), "m": r6(m), "core_minus_sheet": r6(gap),
+                            "tariff_weights": {t: r6(x) for t, x in w_t.items()}},
               "grid": {k: r6(x) for k, x in grid.items()}, "cells_range": [r6(lo_c), r6(hi_c)],
               "own_vs_core": r6(own / core - 1), "draft_2026H2_growth": r6(e_d / r25h2 - 1),
               "path": {str(y): r6(x) for y, x in years.items()}})

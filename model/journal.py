@@ -10,8 +10,8 @@
 * **Неизменяемость** — прошлые записи переносятся как есть и сверяются
   побайтово (канонический JSON); меняться могут только `actual` и `errors` и
   только один раз, пока `actual` был `null`.
-* **Факт** — `data/facts/actuals.json` (вносит человек после отчёта): `actual`
-  и ошибки (прогноз − факт, эталон − факт).
+* **Факт** — `data/facts/actuals.json` (вносит человек после отчёта; значение —
+  узел факта `{"v", "src"|"calc"}`): `actual` и ошибки (прогноз − факт, эталон − факт).
 
 Журнал к цене ничего не подключает; правило допуска печатается для владельца.
 """
@@ -20,12 +20,15 @@ from __future__ import annotations
 
 import json
 import math
+import re
 
 from model.book import prev_period, prev_same_half
+from model.facts import FactsError
 
 fsum = math.fsum
 
 TARGETS = ("x5.adj_margin", "x5.revenue_growth")
+HALF_RE = re.compile(r"\d{4}H[12]")
 TARGET_FIELD = {"x5.adj_margin": "margin", "x5.revenue_growth": "revenue_growth"}
 BENCHMARKS = ("same_half_last_year", "mean_two_halves", "last_half")
 BENCHMARK_TITLES = {"same_half_last_year": "то же полугодие год назад",
@@ -78,15 +81,42 @@ def entries_of(journal) -> list[dict]:
 # ------------------------------------------------------ факты и эталоны
 
 
+def _is_number(x) -> bool:
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
+
+
 def actuals_of(facts) -> dict:
-    """Факты по целям: {(цель, полугодие): значение} из `actuals.json`."""
-    rows = ((facts.data.get("actuals") or {}).get("actuals") or []) if facts is not None else []
+    """Факты по целям: {(цель, полугодие): значение} из `actuals.json`.
+
+    Запись — в формате фактов проекта (`data/facts/SCHEMA.md`): `value` — узел
+    `{"v": число, "src": …}` или `{"v": число, "calc": …}`. Читается исходный файл
+    (`facts.raw`), а не раскрытые значения: число без узла — это число без источника,
+    и такой факт — отказ `FactsError`, как и незнакомая цель, полугодие не вида
+    ГГГГH1/ГГГГH2 и повтор (цель, полугодие). Молча пропущенный факт не закрыл бы
+    запись журнала."""
+    if facts is None:
+        return {}
+    rows = (facts.raw.get("actuals") or {}).get("actuals") or []
     out = {}
-    for row in rows:
-        value = row.get("value")
-        if row.get("target") in TARGETS and row.get("period") and isinstance(value, (int, float)) \
-                and not isinstance(value, bool):
-            out[(row["target"], row["period"])] = float(value)
+    for i, row in enumerate(rows):
+        where = f"actuals.actuals[{i}]"
+        target, period, node = row.get("target"), row.get("period"), row.get("value")
+        if target not in TARGETS:
+            raise FactsError(f"факты: {where}.target {target!r} — цель журнала не из "
+                             f"{', '.join(TARGETS)}")
+        if not (isinstance(period, str) and HALF_RE.fullmatch(period)):
+            raise FactsError(f"факты: {where}.period {period!r} — нужно полугодие ГГГГH1 "
+                             "или ГГГГH2")
+        if not isinstance(node, dict):
+            raise FactsError(f"факты: {where}.value — число без источника: нужен узел "
+                             '{"v": число, "src": …} (или "calc")')
+        if not _is_number(node.get("v")):
+            raise FactsError(f"факты: {where}.value.v = {node.get('v')!r} — ожидается число")
+        if not (node.get("src") or node.get("calc")):
+            raise FactsError(f"факты: {where}.value — значение без src и без calc")
+        if (target, period) in out:
+            raise FactsError(f"факты: {where} — повтор ({target}, {period})")
+        out[(target, period)] = float(node["v"])
     return out
 
 

@@ -822,10 +822,13 @@ function distributionChart(d) {
     svg.append(sv("path", { d: `M${px},${base - 6} L${px + 6},${base} L${px},${base + 6} L${px - 6},${base} Z`,
       fill: "var(--surface)", stroke: "var(--ink)", "stroke-width": 1.6 }));
 
-    // Подписи сверху: медиана и рынок, ярусами без наездов.
+    // Подписи сверху: медиана и рынок, ярусами без наездов; каждая — с внешней стороны своей
+    // линии (рынок ниже медианы — его подпись слева, подпись медианы справа), чтобы подпись не
+    // оказалась у чужой линии.
+    const marketLeft = market < hl.central;
     const tops = [
-      { x: x(hl.central), text: `медиана ${fmt.rub(hl.printed_central)}`, pref: "left" },
-      { x: x(market), text: `рынок ${fmt.rub(market)}`, pref: "right" },
+      { x: x(hl.central), text: `медиана ${fmt.rub(hl.printed_central)}`, pref: marketLeft ? "right" : "left" },
+      { x: x(market), text: `рынок ${fmt.rub(market)}`, pref: marketLeft ? "left" : "right" },
     ].map((t) => {
       const w = textWidth(t.text, 13, 640);
       let x0 = t.pref === "left" ? t.x - w - 6 : t.x + 6;
@@ -1051,7 +1054,14 @@ function linesChart(series, opts = {}) {
     const pad = (y1 - y0) * 0.1 || Math.abs(y1) * 0.1 || 1;
     if (opts.yMin === undefined) y0 -= pad;
     if (opts.yMax === undefined) y1 += pad;
-    const y = scale(y0, y1, H - m.b, m.t);
+    // Подписи вертикалей стоят ярусами у верхнего края; при двух и больше ярусах верх
+    // шкалы опускается под них — иначе линии серий у верхнего края идут по нижней подписи.
+    const vRows = stackLabels((opts.vlines || []).filter((v) => v.text && isNum(x(v.x))).map((v) => {
+      const vx = x(v.x), w = textWidth(v.text, 12.5, 520);
+      const x0 = vx + 5 + w > W - m.r ? vx - 5 - w : vx + 5;
+      return { x0, x1: x0 + w };
+    }), 8);
+    const y = scale(y0, y1, H - m.b, m.t + Math.max(0, vRows - 1) * 16);
     const svg = svgBox(W, H, opts.label);
     const yMarks = ticks(y0, y1, opts.yTicks || 4);
     // Знаков у подписей оси — сколько нужно делениям (5,93 % и 1,15×, а не 5,9 % дважды).
@@ -1950,12 +1960,15 @@ function layersCard(d) {
     { title: "PV потока", num: true, value: (k) => fmt.num(L[k].pv_fcff, 1) },
     { title: "PV щита", num: true, value: (k) => fmt.num(L[k].pv_shield, 1) },
     { title: "PV терминала", num: true, value: (k) => fmt.num(L[k].pv_terminal, 1) },
+    ...(order.some((k) => isNum(L[k].pv_financing)) ? [{ title: "Вычеты", num: true,
+      value: (k) => (isNum(L[k].pv_financing) ? fmt.num(-L[k].pv_financing, 1) : "—") }] : []),
     { title: "Доля терминала", num: true, value: (k) => fmt.pct(L[k].terminal_share, 0) },
     { title: "EV / EBITDA вперёд", num: true, value: (k) => fmt.x(L[k].ev_ebitda_fwd, 2) },
     { title: "V0 / D", num: true, value: (k) => fmt.x(L[k].v0_to_d, 2) },
   ], order, { rowClass: (k) => (k === "analytical" ? "is-pick" : null),
     caption: `Веса миров по порядку: ${weightsNames(d, obj(L[order[0]]).world_weights)}.` }),
-  el("p", { class: "card-foot" }, `Точка при λ = ${fmt.num(bookLambda(d), 2)}: ${fmt.rub(fv.central)} — между ${fmt.rub(fv.low)} (рыночные ставки как есть) и ${fmt.rub(fv.high)} (свой макро-взгляд).`));
+  el("p", { class: "card-foot" }, `Точка при λ = ${fmt.num(bookLambda(d), 2)}: ${fmt.rub(fv.central)} — между ${fmt.rub(fv.low)} (рыночные ставки как есть) и ${fmt.rub(fv.high)} (свой макро-взгляд).`,
+    order.some((k) => isNum(L[k].pv_financing)) ? " V0 = PV потока + PV щита + PV терминала − вычеты финансирования: издержки размещения долга, проценты сверх справедливого спреда и кэрри финансовой подушки (PV)." : ""));
 }
 
 const REGIME_COLORS = { stress: "var(--neg)", floor: "var(--axis)", partial: "var(--third)", full: "var(--model)" };

@@ -96,6 +96,8 @@ def test_kernel_sha256_is_checked(book):
     msg = _refused(book, lambda B: B["worlds"]["H"]["zero_curve"].update({"LT": 0.12}),
                    "kernel_sha256")
     assert "не совпадает" in msg
+    # хэш сверяет только собственные миры книги; происхождение — отдельная проверка
+    assert "без пересчёта хэша" in msg and "ops/tools/check_worlds.py" in msg
 
 
 def test_probabilities_sum_to_one(book):

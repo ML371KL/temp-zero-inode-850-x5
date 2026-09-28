@@ -147,6 +147,11 @@ def test_flag_dividend_register(book_date):
 def test_flag_price_fallback():
     assert flag_price_fallback("fallback").raised
     assert not flag_price_fallback("live").raised
+    assert not flag_price_fallback("book").raised
+    # деталь идёт на витрину — словами, а не ключом статуса
+    assert flag_price_fallback("live").detail == "цена рынка: живая цена"
+    assert flag_price_fallback("book").detail == "цена рынка: цена книги"
+    assert flag_price_fallback("fallback").detail == "цена рынка: запасная цена"
 
 
 def test_printing_rounds_half_up():

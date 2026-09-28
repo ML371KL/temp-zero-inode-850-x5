@@ -131,3 +131,20 @@ def test_discount_by_hand(book, facts):
     tv = res.terminal.tv_flow + res.terminal.tv_shield - res.terminal.tv_financing
     pv += tv * df(T.roll + T.t_end) / df(T.roll)
     assert res.ev == pytest.approx(pv, rel=1e-12)
+
+
+def test_today_is_moscow_date(monkeypatch):
+    """«Сегодня» ядра — дата по Москве (UTC+3 круглый год), та же, что у сборщиков живых
+    входов, при любом поясе машины; `FAKE_TODAY` подменяет её."""
+    from model import book as bk
+    from indicators.live import msk_today
+
+    monkeypatch.delenv("FAKE_TODAY", raising=False)
+    before = (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=3)).date()
+    got = bk.today()
+    after = (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=3)).date()
+    assert got in (before, after)
+    assert got in (msk_today(), after)
+    assert bk.MOSCOW.utcoffset(None) == dt.timedelta(hours=3)
+    monkeypatch.setenv("FAKE_TODAY", "2031-02-28")
+    assert bk.today() == dt.date(2031, 2, 28)

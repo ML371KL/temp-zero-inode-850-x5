@@ -301,8 +301,8 @@
  "margin_range": {
   "x5_min": 0.057,
   "x5_min_half": "2026H1",
-  "x5_max": 0.0878,
-  "x5_max_half": "2015H2",
+  "x5_max": 0.0845,
+  "x5_max_half": "2017H1",
   "book": [
    0.045,
    0.09

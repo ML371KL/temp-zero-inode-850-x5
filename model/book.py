@@ -37,6 +37,8 @@ DRAFT_YAML = BOOK_DIR / "assumptions.draft.yaml"
 
 # Месяц начала второго полугодия (календарь, не допущение).
 H2_START_MONTH = 7
+# Московское время — UTC+3 круглый год (перехода на летнее время нет с 2014 г.).
+MOSCOW = dt.timezone(dt.timedelta(hours=3), "MSK")
 # Срок, к которому бескупонная кривая сходится к LT после последнего узла,
 # лет (docs/MODEL.md §0.2: «за 10 лет — линейный сход к LT к 15 годам»).
 CURVE_LT_TENOR = 15
@@ -64,9 +66,13 @@ def load_book(path: Path | str | None = None) -> dict:
 
 
 def today() -> dt.date:
-    """Сегодняшний день; `FAKE_TODAY=ГГГГ-ММ-ДД` подменяет его (прогон «в будущем»)."""
+    """Сегодняшний день по Москве (UTC+3 без перехода на летнее время — фиксированное
+    смещение, без базы часовых поясов): дата не зависит от пояса машины, на которой идёт
+    выпуск. `FAKE_TODAY=ГГГГ-ММ-ДД` подменяет его (прогон «в будущем»)."""
     fake = os.environ.get("FAKE_TODAY")
-    return dt.date.fromisoformat(fake) if fake else dt.date.today()
+    if fake:
+        return dt.date.fromisoformat(fake)
+    return dt.datetime.now(MOSCOW).date()
 
 
 # ------------------------------------------------------------ линейка полугодий

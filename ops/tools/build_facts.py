@@ -156,6 +156,120 @@ def missing(src: dict) -> list:
     return [str(p) for p in need if not p.exists()]
 
 
+# ------------------------------------------------------------------ история сети до 31.12.2023
+
+NETWORK_SHEET = "data/assumptions/evidence/network-revenue"
+TU_2022_2023 = REPO / NETWORK_SHEET / "inputs" / "tu_2022_2023.json"
+
+
+def network_history_est(b24, orq: dict, area_end: dict, area_by_fmt: dict):
+    """Оценки листа «Сеть и выручка» для индекса эффективной площади (docs/MODEL.md §4.1):
+    площадь на конец 2022H2 и 2023H1, валовые открытия и закрытия площади 2022H1–2023H2.
+
+    Правило — `data/assumptions/evidence/network-revenue/common.py::network_history`, числа те же
+    (сверка — до 1e-6 тыс. м²): databook «как отчитано» (`Operating Results_Q`, три формата) плюс
+    площадь «Красного Яра»/«Слаты» (в сопоставимом базисе они внутри «Пятёрочки»); магазины,
+    открытые и закрытые по кварталам, — ручная выписка трейдинг-апдейтов 4 кв. 2022 – 4 кв. 2023
+    листа (`inputs/tu_2022_2023.json`, со строками текстов первички). Возвращает три словаря
+    узлов: площадь, открытия, закрытия (полугодие → узел)."""
+    OQ = "Operating Results_Q"
+    space_row = {"pyaterochka": 70, "perekrestok": 71, "chizhik": 73}
+    stores_row = {"pyaterochka": 62, "perekrestok": 63, "chizhik": 65}
+    name = {"pyaterochka": "П", "perekrestok": "Пер", "chizhik": "Ч"}
+    fmts3 = ("pyaterochka", "perekrestok", "chizhik")
+    sheet = f"оценка листа {NETWORK_SHEET}, common.py::network_history"
+    tu = json.loads(TU_2022_2023.read_text(encoding="utf-8"))
+    T = tu["quarters"]
+
+    def cell(q, row):
+        col = orq[q_old(int(q[-1]), int(q[:4]))]
+        return b24.val(OQ, f"{col}{row}"), f"{col}{row}"
+
+    def space(q, f):
+        return cell(q, space_row[f])[0]
+
+    def refs(q, rows):
+        return b24.ref(OQ, *(cell(q, r)[1] for r in rows))
+
+    def avg_store(q, f):
+        return space(q, f) / cell(q, stores_row[f])[0]
+
+    def tv(q, key):
+        return T[q][key]["v"]
+
+    def ts(qs, key):
+        return "; ".join(T[q][key]["src"] for q in qs)
+
+    def m2(x):
+        return f"{x * 1000:,.0f}".replace(",", " ")
+
+    # «Красный Яр»/«Слата»: площадь 31.12.2023 = «Пятёрочка» сопоставимая − «как отчитано»;
+    # назад — чистым приростом их магазинов по кварталам × средний магазин КЯ/Слаты
+    py_comp = area_by_fmt["2023H2"]["pyaterochka"]["v"]
+    ky_end23 = py_comp - space("2023Q4", "pyaterochka")
+    ky_n23 = tu["ky_slata_stores_2023_end"]["v"]
+    ky_per_store = ky_end23 / ky_n23
+    ky_h2 = tv("2023Q3", "ky_slata_net") + tv("2023Q4", "ky_slata_net")
+    ky_h1 = tv("2023Q1", "ky_slata_net") + tv("2023Q2", "ky_slata_net")
+    ky = {"2023H1": ky_end23 - ky_h2 * ky_per_store, "2022H2": ky_end23 - (ky_h2 + ky_h1) * ky_per_store}
+    ky_net = {"2023H1": ky_h2, "2022H2": ky_h2 + ky_h1}
+    ky_qs = {"2023H1": ("2023Q3", "2023Q4"), "2022H2": ("2023Q1", "2023Q2", "2023Q3", "2023Q4")}
+    ky_src = f"{b24.ref(OQ, cell('2023Q4', space_row['pyaterochka'])[1])}; {tu['ky_slata_stores_2023_end']['src']}"
+    A, area_est = {}, {}
+    for p, q in (("2022H2", "2022Q4"), ("2023H1", "2023Q2")):
+        A[p] = space(q, "pyaterochka") + space(q, "perekrestok") + space(q, "chizhik") + ky[p]
+        area_est[p] = V(
+            r6(A[p]), f"{refs(q, space_row.values())}; {ky_src}; {ts(ky_qs[p], 'ky_slata_net')}",
+            f"{sheet}; сопоставимый базис: databook «как отчитано» на конец полугодия "
+            + " + ".join(f"{name[f]} {ru(space(q, f))}" for f in fmts3)
+            + f" + «Красный Яр»/«Слата» {ru(ky[p])} (их площадь 31.12.2023 {ru(ky_end23)} = «Пятёрочка» "
+              f"сопоставимая {ru(py_comp)} (network.area_end_by_format[2023H2]) − «как отчитано» "
+              f"{ru(space('2023Q4', 'pyaterochka'))}; минус чистый прирост их магазинов с конца полугодия до "
+              f"31.12.2023 ({ky_net[p]} маг.) × средний магазин КЯ/Слаты {m2(ky_per_store)} м² "
+              f"({ru(ky_end23)} / {ky_n23} маг.))")
+    A["2023H2"] = area_end["2023H2"]["v"]
+
+    C, closed_est = {}, {}
+    for p, qs, q0 in (("2023H1", ("2023Q1", "2023Q2"), "2022Q4"), ("2023H2", ("2023Q3", "2023Q4"), "2023Q2")):
+        n_p = sum(tv(q, "pyaterochka_closed") for q in qs)
+        n_e = sum(tv(q, "perekrestok_closed") for q in qs)
+        C[p] = n_p * avg_store(q0, "pyaterochka") + n_e * avg_store(q0, "perekrestok")
+        closed_est[p] = V(
+            r6(C[p]), f"{ts(qs, 'pyaterochka_closed')}; {ts(qs, 'perekrestok_closed')}; "
+                      f"{refs(q0, (70, 62, 71, 63))}",
+            f"{sheet}: закрытые магазины (трейдинг-апдейты) × средняя площадь магазина формата на "
+            f"начало полугодия (databook «как отчитано»): П {n_p} маг. × {m2(avg_store(q0, 'pyaterochka'))} м² + "
+            f"Пер {n_e} маг. × {m2(avg_store(q0, 'perekrestok'))} м²; «Чижик» закрытий не раскрывал — 0")
+    # 2022: 3 кв. 2022 не раскрыт (трейдинг-апдейта на x5.ru нет) — закрытия каждого полугодия = 2 × 4 кв. 2022
+    n_p22, n_e22 = tv("2022Q4", "pyaterochka_closed"), tv("2022Q4", "perekrestok_closed")
+    c22 = 2 * (n_p22 * avg_store("2022Q2", "pyaterochka") + n_e22 * avg_store("2022Q2", "perekrestok"))
+    c22_text = (f"{sheet}: 3 кв. 2022 не раскрыт — закрытия полугодия = 2 × закрытия 4 кв. 2022: "
+                f"2 × (П {n_p22} маг. × {m2(avg_store('2022Q2', 'pyaterochka'))} м² + Пер {n_e22} маг. × "
+                f"{m2(avg_store('2022Q2', 'perekrestok'))} м²), средний магазин на 30.06.2022 (databook «как "
+                f"отчитано»); «Чижик» закрытий не раскрывал — 0")
+    c22_src = (f"{ts(('2022Q4',), 'pyaterochka_closed')}; {ts(('2022Q4',), 'perekrestok_closed')}; "
+               f"{refs('2022Q2', (70, 62, 71, 63))}")
+    gross_est = {}
+    for p, q1, q0 in (("2022H1", "2022Q2", "2021Q4"), ("2022H2", "2022Q4", "2022Q2")):
+        net = sum(space(q1, f) - space(q0, f) for f in fmts3)
+        closed_est[p] = V(r6(c22), c22_src, c22_text)
+        gross_est[p] = V(
+            r6(net + c22), f"{refs(q1, space_row.values())}; {refs(q0, space_row.values())}",
+            f"{sheet}: органический чистый прирост площади трёх форматов (databook «как отчитано», "
+            f"без «Карусели» и без покупки «Красного Яра»/«Слаты») {ru(net)} + закрытая площадь {ru(c22)} "
+            f"(network.closed_area_est[{p}])")
+    prev = {"2023H1": ("2022H2", "area_end_est"), "2023H2": ("2023H1", "area_end_est")}
+    for p in ("2023H1", "2023H2"):
+        q, where = prev[p]
+        here = "area_end_est" if p in area_est else "area_end"
+        gross_est[p] = V(
+            r6(A[p] - A[q] + C[p]),
+            calc=f"{sheet}: {here}[{p}] − {where}[{q}] + closed_area_est[{p}] = {ru(A[p])} − "
+                 f"{ru(A[q])} + {ru(C[p])}")
+    order = ("2022H1", "2022H2", "2023H1", "2023H2")
+    return (area_est, {p: gross_est[p] for p in order}, {p: closed_est[p] for p in order})
+
+
 # ------------------------------------------------------------------ сборка
 
 def build(src: dict):
@@ -452,6 +566,11 @@ def build(src: dict):
         p, q = order[i], order[i - 1]
         close_rate[p] = V(r6(closed_area[p]["v"] / area_end[q]["v"] * 2),
                           calc=f"closed_area_est[{p}] / area_end[{q}] × 2 (годовая доля закрываемой площади)")
+    # история индекса эффективной площади до 31.12.2023 (docs/MODEL.md §4.1) — оценки листа сети
+    area_est, gross_early, closed_early = network_history_est(b24, c24["Operating Results_Q"], area_end,
+                                                              area_by_fmt)
+    gross = {**gross_early, **gross}
+    closed_area = {**closed_early, **closed_area}
 
     by_fmt = {f: {"area": area_by_fmt["2026H1"][f], "stores": stores_by_fmt["2026H1"][f]} for f in fmts}
     out["network"] = {
@@ -461,6 +580,7 @@ def build(src: dict):
                  "Vprok.ru, совместных дарксторов и «тёмных» кухонь «Много лосося» (они были в итоге databook "
                  "со 2 кв. 2024 по 3 кв. 2025)",
         "area_end": area_end,
+        "area_end_est": area_est,
         "net_added": net_added,
         "gross_opened_hist": gross,
         "closed_area_est": closed_area,
@@ -667,9 +787,9 @@ def build(src: dict):
             "target_leverage": [1.2, 1.4],
             "no_pay_above": 2.0,
             "frequency": "дважды в год: за предыдущий год и за 9 месяцев текущего",
-            "base": "свободный денежный поток при целевом чистый долг / EBITDA до МСФО 16 = 1,2–1,4х на конец года, "
-                    "в котором планируется выплата; при текущем или прогнозном показателе выше 2,0х дивиденды не "
-                    "выплачиваются",
+            "base": "свободный денежный поток при целевом значении чистый долг / EBITDA до МСФО 16 = 1,2–1,4× на конец "
+                    "года, в котором планируется выплата; при текущем или прогнозном показателе выше 2,0× дивиденды "
+                    "не выплачиваются",
             "approved": "Наблюдательный совет 20.03.2025, на четыре года",
             "src": "x5-ar25.pdf, с. 224 (раздел «Дивиденды»); x5-investor-presentation_rus.pdf, с. 27; "
                    "x5_q4_2024_financial_results_rus.pdf, с. 2",
@@ -1223,8 +1343,11 @@ def build(src: dict):
         "description": "Факты по целям журнала после отчётов; вносятся человеком после публикации отчёта X5. "
                        "Формат записи: {\"target\": \"x5.adj_margin\" | \"x5.revenue_growth\", \"period\": "
                        "\"2026H2\", \"value\": {\"v\": 0.061, \"src\": \"пресс-релиз 4 кв. 2026, с. 3\"}, "
-                       "\"reported_on\": \"2027-03-19\"}. adj_margin — скорр. EBITDA до МСФО 16 / выручка "
-                       "полугодия; revenue_growth — рост выручки полугодия г/г.",
+                       "\"reported_on\": \"2027-03-19\"}. value — узел факта, как во всех файлах фактов: "
+                       "{\"v\": доля единицы, \"src\": \"файл первички › место\"} (или \"calc\" вместо "
+                       "\"src\"); число без узла — число без источника, журнал его не принимает (отказ "
+                       "сборки). Одна запись на цель и полугодие. adj_margin — скорр. EBITDA до МСФО 16 / "
+                       "выручка полугодия; revenue_growth — рост выручки полугодия г/г.",
         "actuals": [],
     }
 
@@ -1321,6 +1444,9 @@ def write(out: dict, root: Path) -> list:
     out = dict(out)
     out.pop("_stores_check", None)
     cal = out.pop("_calendar")
+    # actuals.json ведёт человек после отчётов (docs/INDICATORS.md): сборщик задаёт только
+    # формат и не перезаписывает внесённые факты. Пишем его, лишь если файла ещё нет.
+    actuals = out.pop("actuals")
     facts = root / "data" / "facts"
     facts.mkdir(parents=True, exist_ok=True)
     paths = []
@@ -1329,6 +1455,9 @@ def write(out: dict, root: Path) -> list:
         paths[-1].write_bytes(dump(data))
     paths.append(root / "data" / "calendar.json")
     paths[-1].write_bytes(dump(cal))
+    manual = facts / "actuals.json"
+    if not manual.exists():
+        manual.write_bytes(dump(actuals))
     return paths
 
 

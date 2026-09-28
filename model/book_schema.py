@@ -13,7 +13,9 @@
   прочёл бы его как LT); ключи — строки полугодий, годов, `LT`, `LT_from`;
 * траектории миров — ровно полугодия от `first_period` до `last_period`;
 * вероятности — в сумме 1; периоды мета согласованы;
-* `worlds.source.kernel_sha256` — хэш содержимого миров (`kernel_sha256`);
+* `worlds.source.kernel_sha256` — целостность миров самой книги: хэш их содержимого
+  (`kernel_sha256`); происхождение миров (книга Магнита на теге `worlds.source`) сверяет
+  `ops/tools/check_worlds.py`, не схема;
 * пути осей полосы и обратного DCF существуют в книге и подходят к `kind`.
 
 Числа книги здесь не встречаются: только имена ключей и форма значений.
@@ -356,7 +358,11 @@ def _walk(spec: Any, node: Any, where: str, out: list[str]) -> None:
 
 def kernel_sha256(worlds: dict) -> str:
     """Хэш содержимого миров (без `source`): JSON с сортировкой ключей,
-    без пробелов, UTF-8 — так он записан в `worlds.source.kernel_sha256`."""
+    без пробелов, UTF-8 — так он записан в `worlds.source.kernel_sha256`.
+
+    Схема сверяет его только с собственными мирами книги: хэш ловит правку миров без
+    пересчёта хэша. Совпадение миров с книгой Магнита на теге `worlds.source` (общая
+    макро-основа) хэш не доказывает — это проверяет `ops/tools/check_worlds.py`."""
     kernel = {k: v for k, v in worlds.items() if k != "source"}
     text = json.dumps(kernel, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -437,7 +443,8 @@ def _semantic(A: dict, out: list[str]) -> None:
     got, stated = kernel_sha256(A["worlds"]), A["worlds"]["source"]["kernel_sha256"]
     if got != stated:
         out.append(f"worlds.source.kernel_sha256 {stated[:12]}… не совпадает с содержимым "
-                   f"миров ({got[:12]}…): миры правлены мимо общей макро-основы")
+                   f"миров книги ({got[:12]}…): миры правлены без пересчёта хэша (происхождение "
+                   "миров из книги Магнита сверяет ops/tools/check_worlds.py)")
 
     for where, node in company_trajectories(A):
         if last in node:

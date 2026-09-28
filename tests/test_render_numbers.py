@@ -44,9 +44,10 @@ def test_documents_show_the_numbers_of_the_book_results(tool):
     assert not problems, (f"документы разошлись с results.json — `{FIX}`:\n"
                           + "\n".join(problems[:40]))
     # Сторож от тихой потери разметки: эти документы печатают числа результатов книги.
-    # Текст книги (data/assumptions/ASSUMPTIONS-BOOK.md) встаёт в список, когда в нём появятся метки.
+    # Журналы версий (docs/CHANGELOG.md, data/assumptions/V<версия>-CHANGES.md) держат метки только
+    # до следующей версии книги — тогда их числа замораживаются текстом, поэтому их здесь нет.
     assert {"README.md", "docs/MANUAL.md", "docs/MODEL.md", "docs/DASHBOARD.md",
-            "docs/INDICATORS.md"} <= marked, sorted(marked)
+            "docs/INDICATORS.md", "data/assumptions/ASSUMPTIONS-BOOK.md"} <= marked, sorted(marked)
 
 
 RESULTS = {"headline": {"printed_central": 1350.0}, "cells": {"N|stress": 7.5},

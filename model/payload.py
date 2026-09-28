@@ -103,6 +103,8 @@ KEY_JUDGEMENTS = (
     ("A-V1", "valuation.beta_u", "Бета активов", "number"),
     ("A-V2", "valuation.erp", "Премия за риск акций", "pct"),
     ("A-V7", "valuation.governance_discount", "Дисконт за управление", "pct"),
+    ("A-V7", "valuation.treasury_sale_price_k", "Цена продажи казначейского пакета к рыночной", "pct"),
+    ("A-F1c", "financing.issuance_cost", "Издержки размещения долга, в год", "pct"),
     ("A-F6", "financing.target_leverage", "Целевой чистый долг / EBITDA", "times"))
 # Составляющие EV слоя (LayerResult.ev_parts ядра) словами.
 EV_ROW_TITLES = {"pv_fcff": "Свободный поток прогноза (PV)",
@@ -472,9 +474,14 @@ def _ebitda_ntm(L) -> float | None:
 
 
 def _layer(L) -> dict:
+    # Вычеты финансирования (§5): издержки размещения, проценты сверх справедливого спреда,
+    # кэрри подушки — V0 = PV потока + PV щита + PV терминала − их сумма.
+    financing = math.fsum(getattr(L, k, 0.0) or 0.0
+                          for k in ("pv_issuance", "pv_excess_spread", "pv_buffer_carry"))
     return {"title": L.title, "world_weights": L.world_weights, "v0": L.v0, "d": L.d,
             "equity": L.equity, "price": L.price, "pv_fcff": L.pv_fcff, "pv_shield": L.pv_shield,
-            "pv_terminal": L.pv_terminal, "terminal_share": L.terminal_share,
+            "pv_terminal": L.pv_terminal, "pv_financing": financing,
+            "terminal_share": L.terminal_share,
             "ev_ebitda_fwd": L.ev_ebitda_fwd, "ebitda_ntm": _ebitda_ntm(L), "v0_to_d": L.v0_to_d}
 
 
@@ -825,11 +832,12 @@ def uncertainty_block(A, dist, draws_low, draws_high) -> dict:
 
 
 def reverse_block(dist, mp) -> dict:
-    rows = [{k: r[k] for k in ("name", "unit", "kind", "paths", "book", "solved", "delta",
-                               "in_range", "range", "search", "status", "point_solved",
-                               "point_status")} for r in dist.reverse_dcf]
+    rows = [{k: r.get(k) for k in ("name", "unit", "kind", "paths", "book", "solved", "delta",
+                                   "in_range", "range", "search", "status", "point_solved",
+                                   "point_status", "search_value", "gap_full")} for r in dist.reverse_dcf]
     return {"rows": rows, "target": mp,
-            "method": f"медиана на подвыборке {dist.subsample} + сдвиг"}
+            "method": f"поиск на подвыборке {dist.subsample} прогонов со сдвигом к полной полосе, "
+                      "уточнение секущей на полной полосе"}
 
 
 def _events(v: dt.date, until: dt.date | None = None) -> list[dict]:
@@ -875,7 +883,7 @@ def next_report_block(A, F, cf, grid, dist, period, inputs) -> tuple[dict, dict]
     if period is None:
         return ({"period": None, "events": _events(v), "expectation": None, "guidance": _guidance(F, None),
                  "benchmarks": [], "table": [], "neutral": {"median": None, "point": None},
-                 "rub_per_01pp": None}, {})
+                 "neutral_gap": {"median": None}, "rub_per_01pp": None}, {})
     exp = expectation(grid, period)
     halves = journal_mod.reported_halves(F)
     same = prev_same_half(period)
@@ -896,7 +904,8 @@ def next_report_block(A, F, cf, grid, dist, period, inputs) -> tuple[dict, dict]
              "benchmarks": [{"key": k, "name": journal_mod.BENCHMARK_TITLES[k],
                              "margin": bench[k]["margin"], "revenue_growth": bench[k]["revenue_growth"],
                              "note": bench[k]["note"]} for k in journal_mod.BENCHMARKS],
-             "table": NR["table"], "neutral": NR["neutral"], "rub_per_01pp": NR["rub_per_01pp"],
+             "table": NR["table"], "neutral": NR["neutral"],
+             "neutral_gap": NR.get("neutral_gap") or {"median": None}, "rub_per_01pp": NR["rub_per_01pp"],
              "book_period": A["valuation"]["next_report"]["period"]}
     return block, {"forecasts": {"x5.adj_margin": exp["margin"], "x5.revenue_growth": growth},
                    "bench": bench}

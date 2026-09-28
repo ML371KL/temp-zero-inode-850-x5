@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from model.book import ROOT, period_index, prev_period
+from model.book import ROOT, next_period, period_index, periods, prev_period
 
 FACTS_DIR = ROOT / "data" / "facts"
 FIXTURE_DIR = ROOT / "tests" / "fixtures" / "facts"
@@ -124,8 +124,10 @@ class CoreFacts:
     capex_anchor: float     # денежный capex якоря
     capex_hist: dict        # полугодие до якоря → capex (выручка × capex/выручку, history.json)
     lti_anchor: float | None  # расход LTI якоря (справочно, ядро его не читает)
-    area_end: dict          # полугодие → площадь на конец (якорь и два предыдущих)
-    gross_opened: dict      # полугодие → валовые открытия (исторические когорты)
+    eff_start: str          # S — первое полугодие индекса эффективной площади (§4.1)
+    area_end: dict          # полугодие → площадь на конец (S и якорь)
+    gross_opened: dict      # полугодие → валовые открытия (исторические когорты S − n + 1 … якорь)
+    closed_area: dict       # полугодие → закрытая площадь (S + 1 … якорь)
     net_debt: float
     dividends_payable: float
     nwc: float
@@ -179,16 +181,30 @@ def core_facts(F: Facts, A: dict) -> CoreFacts:
     revenue = {p: _need(F, f"{acc}.{p}.revenue") for p in (back1, anchor)}
     adj = {anchor: _need(F, f"{acc}.{anchor}.adj_ebitda")}
     rep = {anchor: _need(F, f"{acc}.{anchor}.ebitda_rep")}
-    area = {p: _need(F, f"network.area_end.{p}") for p in (back2, back1, anchor)}
-    # Исторические когорты: для индекса якоря и двух полугодий до него нужны
-    # открытия от якоря − (n + 1) до якоря, n = длина кривой созревания − 1.
+    # Индекс эффективной площади (§4.1) ведётся рекурсией от первого полугодия S, на конец
+    # которого в фактах есть площадь (факт network.area_end или оценка листа сети
+    # network.area_end_est), — так же, как при подборе плотности d. Нужны площадь на конец S
+    # и якоря, валовые открытия S − n + 1 … якорь (n = длина кривой созревания − 1) и
+    # закрытия S + 1 … якорь; S — не позже якоря − 2 (база «год к году» двух первых полугодий).
+    net = F.get("network")
+    fact_area, est_area = net.get("area_end") or {}, net.get("area_end_est") or {}
+    known = sorted({*fact_area, *est_area}, key=period_index)
+    if not known:
+        raise FactsError("факты: network.area_end пуст — индекс эффективной площади не начать")
+    start = known[0]
+    if period_index(start) > period_index(back2):
+        raise FactsError(f"факты: площади на конец {back2} нет (network.area_end, "
+                         "network.area_end_est) — индекс эффективной площади начинается не позже "
+                         "якоря − 2 (docs/MODEL.md §4.1)")
+    area = {p: _need(F, f"network.{'area_end' if p in fact_area else 'area_end_est'}.{p}")
+            for p in (start, anchor)}
     n = len(A["network"]["maturity_curve"]) - 1
-    opened = {}
-    for back in range(n + 2):
-        p = anchor
-        for _ in range(back):
-            p = prev_period(p)
-        opened[p] = _need(F, f"network.gross_opened_hist.{p}")
+    first_cohort = next_period(start)                   # S − n + 1
+    for _ in range(n):
+        first_cohort = prev_period(first_cohort)
+    opened = {p: _need(F, f"network.gross_opened_hist.{p}") for p in periods(first_cohort, anchor)}
+    closed = {p: _need(F, f"network.closed_area_est.{p}")
+              for p in periods(next_period(start), anchor)}
 
     # Капвложения 2L полугодий до якоря — база D&A якоря выбывает по когортам (§4.5):
     # capex полугодия = выручка × (ОС + НМА)/выручка из history.json.
@@ -243,7 +259,7 @@ def core_facts(F: Facts, A: dict) -> CoreFacts:
         capex_hist=dict(sorted(capex_hist.items(), key=lambda kv: period_index(kv[0]))),
         lti_anchor=(_need(F, f"{acc}.{anchor}.lti")
                     if F.data["accounting"]["periods"][anchor].get("lti") is not None else None),
-        area_end=area, gross_opened=dict(sorted(opened.items(), key=lambda kv: period_index(kv[0]))),
+        eff_start=start, area_end=area, gross_opened=opened, closed_area=closed,
         net_debt=_need(F, "balance.net_debt"),
         dividends_payable=_need(F, "balance.dividends_payable"),
         nwc=_need(F, "balance.nwc"), bridge=tuple(lines),

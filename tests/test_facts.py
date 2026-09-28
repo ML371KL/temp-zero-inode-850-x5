@@ -264,7 +264,9 @@ def test_builder_reproduces_facts(tmp_path):
         pytest.skip("первички рядом с репозиторием нет: " + "; ".join(lost))
     written = builder.write(builder.build(src), tmp_path)
     got = {p.relative_to(tmp_path).as_posix(): p.read_bytes() for p in written}
-    want = {f"data/facts/{name}.json" for name in FILES} | {"data/calendar.json"}
+    # actuals.json ведёт человек (факты отчётов); сборщик его не перезаписывает
+    built = [name for name in FILES if name != "actuals"]
+    want = {f"data/facts/{name}.json" for name in built} | {"data/calendar.json"}
     assert set(got) == want
     assert {p.name for p in FACTS.glob("*.json")} == {f"{name}.json" for name in FILES}
     for rel, data in sorted(got.items()):

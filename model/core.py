@@ -211,6 +211,7 @@ class NetworkPaths:
     area_end: tuple
     area_mid: tuple
     eff_avg: tuple              # Ā_eff(p)
+    eff_hist: dict              # A_eff на конец исторических полугодий S … якорь
     eff_avg_hist: dict          # Ā_eff исторических p − 2 первых двух полугодий
     close_lt: float
 
@@ -457,29 +458,28 @@ class Context:
         d = float(NW["new_space_density"])
         kappa = float(NW["closed_productivity"])
         growth = trajectory(NW["net_growth"][tariff], P)
-
-        def immature(q: str) -> float:
-            # Незрелая часть последних n исторических когорт на конец q (d = 1).
-            out, p = [], q
-            for a in range(n):
-                out.append(cf.gross_opened[p] * (1.0 - mu[a]))
-                p = prev_period(p)
-            return fsum(out)
-
+        # Все когорты — исторические (S − n + 1 … якорь) и прогнозные — созревают с плотностью d,
+        # закрытия — с κ; индекс ведётся от конца S, как при подборе d (§4.1): площадь минус
+        # незрелая часть последних n когорт, дальше одна рекурсия для истории и прогноза.
+        cohorts = list(cf.gross_opened.values())    # от S − n + 1; S — позиция n − 1
+        start = cf.eff_start
+        eff = cf.area_end[start] - fsum(cohorts[n - 1 - a] * d * (1.0 - mu[a]) for a in range(n))
+        eff_hist = {start: eff}
+        for j, q in enumerate(periods(next_period(start), self.anchor)):
+            i = n + j                                # позиция когорты q
+            maturing = fsum(cohorts[i - a] * d * (mu[a] - mu[a - 1]) for a in range(1, n + 1))
+            eff = eff - cf.closed_area[q] * kappa + cohorts[i] * d * mu[0] + maturing
+            eff_hist[q] = eff
         back1 = prev_period(self.anchor)
         back2 = prev_period(back1)
-        eff_hist = {q: cf.area_end[q] - immature(q) for q in (back2, back1, self.anchor)}
         eff_avg_hist = {back1: (eff_hist[back2] + eff_hist[back1]) / 2.0,
                         self.anchor: (eff_hist[back1] + eff_hist[self.anchor]) / 2.0}
-        # Когорты: исторические (плотность 1) и прогнозные (плотность d), от старых к новым.
-        cohorts = [(cf.gross_opened[q], 1.0) for q in cf.gross_opened]
-        area, eff = cf.area_end[self.anchor], eff_hist[self.anchor]
+        area = cf.area_end[self.anchor]
         opened_l, closed_l, end_l, mid_l, avg_l = [], [], [], [], []
         for i in range(len(P)):
             closed = area * self.close[i] / 2.0
             opened = area * growth[i] / 2.0 + closed
-            maturing = fsum(cohorts[-a][0] * cohorts[-a][1] * (mu[a] - mu[a - 1])
-                            for a in range(1, min(n, len(cohorts)) + 1))
+            maturing = fsum(cohorts[-a] * d * (mu[a] - mu[a - 1]) for a in range(1, n + 1))
             eff_new = eff - closed * kappa + opened * d * mu[0] + maturing
             new_area = area + opened - closed
             opened_l.append(opened)
@@ -487,11 +487,12 @@ class Context:
             end_l.append(new_area)
             mid_l.append((area + new_area) / 2.0)
             avg_l.append((eff + eff_new) / 2.0)
-            cohorts.append((opened, d))
+            cohorts.append(opened)
             area, eff = new_area, eff_new
         return NetworkPaths(tariff=tariff, opened=tuple(opened_l), closed=tuple(closed_l),
                             area_end=tuple(end_l), area_mid=tuple(mid_l), eff_avg=tuple(avg_l),
-                            eff_avg_hist=eff_avg_hist, close_lt=self.close[-1])
+                            eff_hist=eff_hist, eff_avg_hist=eff_avg_hist,
+                            close_lt=self.close[-1])
 
     # -------------------------------------------------------------- выручка
     def revenue(self, world: str, tariff: str, demand: str) -> RevenuePaths:

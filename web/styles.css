@@ -631,8 +631,12 @@ table.heat td:hover, table.heat td:focus-visible { outline: 2px solid var(--ink)
   table.data th:first-child, table.data td:first-child {
     position: sticky; left: 0; z-index: 1; background: var(--surface); max-width: 42vw;
   }
-  table.data tr.is-pick td:first-child { background: var(--surface); }
+  /* закреплённая ячейка выделенной строки — тот же оттенок, но непрозрачный: под ней едут числа */
+  table.data tr.is-pick td:first-child { background: linear-gradient(var(--model-wash-1), var(--model-wash-1)), var(--surface); }
   table.data tr.detail td:first-child { position: static; max-width: none; }
+  /* ссылка карточки уходит под подзаголовок: иначе подзаголовок сжат в узкую колонку рядом с ней */
+  .card-head:has(> .card-link) { flex-wrap: wrap; row-gap: 6px; }
+  .card-head:has(> .card-link) > div { flex-basis: 100%; }
   .rrow { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .rrow-name { grid-column: auto; }
   .tab { padding: 10px 10px 12px; font-size: 14px; }

@@ -12,7 +12,8 @@
   * копирует inputs/episodes_magnit_book15.json (референс-класс книги Магнита 1.5, только чтение).
 
 Первичку в репозиторий не кладём: в выходе — путь и sha256 исходных файлов.
-Запуск (нужна папка передачи): python -B extract_inputs.py [--handoff ПУТЬ] [--magnit ПУТЬ]
+Запуск (нужна папка передачи): python -B extract_inputs.py [--handoff ПУТЬ] [--magnit ПУТЬ];
+по умолчанию обе папки ищутся рядом с репозиторием (../x5-850-handoff, ../magnit-850oa).
 Остальные скрипты листа читают только inputs/ и сети/первички не требуют.
 """
 from __future__ import annotations
@@ -34,6 +35,8 @@ except Exception:  # pragma: no cover
 
 HERE = Path(__file__).resolve().parent
 INPUTS = HERE / "inputs"
+# Рабочая папка над репозиторием: в ней рядом лежат папка передачи и репозиторий Магнита.
+WORKSPACE = HERE.parents[4]
 NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
       "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
       "pr": "http://schemas.openxmlformats.org/package/2006/relationships"}
@@ -157,8 +160,10 @@ def mln_to_bln(item: dict) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--handoff", default="C:/Users/rodio/Desktop/Claude/x5-850-handoff")
-    ap.add_argument("--magnit", default="C:/Users/rodio/Desktop/Claude/magnit-850oa")
+    ap.add_argument("--handoff", default=str(WORKSPACE / "x5-850-handoff"),
+                    help="папка передачи (по умолчанию — рядом с репозиторием)")
+    ap.add_argument("--magnit", default=str(WORKSPACE / "magnit-850oa"),
+                    help="репозиторий Магнита 850oa (по умолчанию — рядом с репозиторием)")
     a = ap.parse_args()
     handoff = Path(a.handoff)
     db24 = handoff / "reference/primary" / DB24

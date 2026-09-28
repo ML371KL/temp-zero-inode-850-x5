@@ -20,13 +20,14 @@
 | `interp_curve(curve, t)`, `half_rate(r)` | кривая §0.2; (1 + r)^0,5 − 1 |
 | `periods`, `prev_period`, `next_period`, `prev_same_half`, `period_index`, `period_start`, `period_end`, `period_of` | линейка полугодий |
 | `book_warnings(A) -> list[str]` | несмертельные замечания (например, траектория без `LT`, которую §0.1 продлевает навсегда) |
-| `today() -> date` | сегодня; `FAKE_TODAY=ГГГГ-ММ-ДД` подменяет |
+| `today() -> date` | сегодня по Москве (UTC+3, фиксированное смещение `MOSCOW`); `FAKE_TODAY=ГГГГ-ММ-ДД` подменяет |
 
 Книга после загрузки — только для чтения: словари не правят на месте (память
 траекторий и копии `override` делят блоки). Правка — только `override`/`add_observation`.
 
 `model/book_schema.py`: `validate_book(A)`, `kernel_sha256(worlds)` (хэш миров
-без `source`: JSON `sort_keys`, без пробелов, UTF-8), `get_node(A, path)`,
+без `source`: JSON `sort_keys`, без пробелов, UTF-8; схема сверяет его только с мирами
+самой книги, происхождение — `ops/tools/check_worlds.py`), `get_node(A, path)`,
 имена осей `WORLDS`, `REGIMES`, `CAPEX_LEVELS`, `DEMANDS`, `TARIFFS`, `CREDITS`.
 
 ### Факты — `model/facts.py`
@@ -35,7 +36,7 @@
 |---|---|
 | `default_facts_dir() -> Path` | `data/facts`, если там есть `accounting.json`, иначе фикстура `tests/fixtures/facts` (предупреждение `FactsFallbackWarning`) |
 | `load_facts(path=None) -> Facts` | все `*.json` каталога; узлы `{"v", "src"\|"calc"}` раскрываются в значения; число без `src` и `calc` — `FactsError`; `null` → `None` (не 0). `Facts.raw` — JSON как есть (с источниками, для выпуска), `Facts.data` — раскрытый, `Facts.get("файл.ключ…")`, `Facts.fixture` |
-| `core_facts(F, A) -> CoreFacts` | проверенные факты прохода клетки: выручка, скорр. и отчётная EBITDA, D&A и capex якоря, capex 2L полугодий до якоря (`capex_hist`: выручка × capex/выручку из `history.json` — выбывание базы D&A якоря), площадь, исторические открытия (якорь − (n+1) … якорь), ЧД, дивиденды к выплате, NWC, строки моста (`BridgeLine`: key, label, amount, included), акции в обращении (`shares_mln`) и казначейские (`treasury_mln`), реестр (`DeclaredDividend`: id, amount, ex_date, in_company). `None` там, где значение нужно, — `FactsError` с путём |
+| `core_facts(F, A) -> CoreFacts` | проверенные факты прохода клетки: выручка, скорр. и отчётная EBITDA, D&A и capex якоря, capex 2L полугодий до якоря (`capex_hist`: выручка × capex/выручку из `history.json` — выбывание базы D&A якоря), история индекса эффективной площади (§4.1: `eff_start` = S — первое полугодие с площадью в фактах, `area_end` на конец S и якоря, открытия `gross_opened` S − n + 1 … якорь, закрытия `closed_area` S + 1 … якорь), ЧД, дивиденды к выплате, NWC, строки моста (`BridgeLine`: key, label, amount, included), акции в обращении (`shares_mln`) и казначейские (`treasury_mln`), реестр (`DeclaredDividend`: id, amount, ex_date, in_company). `None` там, где значение нужно, — `FactsError` с путём |
 
 ## Расчёт
 
@@ -56,7 +57,7 @@ res = run_cell(ctx, ctx.cell("H", "floor", "base"))
 `world(w) -> WorldPaths` (key, cpi, food, index, pi_lt, z_fix — трёхлетний
 форвард на начало полугодия, z_lt, r_terminal, df, df_end), `regime(r) ->
 RegimePaths` (target, season, deviation по полугодиям; значения на якоре;
-target_lt), `network(tariff) -> NetworkPaths`, `revenue(w, tariff, demand) ->
+target_lt), `network(tariff) -> NetworkPaths` (открытия, закрытия, площадь, Ā_eff по полугодиям; `eff_hist` — A_eff на конец S … якорь, `eff_avg_hist` — Ā_eff якоря − 1 и якоря), `revenue(w, tariff, demand) ->
 RevenuePaths` (выручка, чек, трафик, ticket_lt, traffic_lt), `rates(w, credit)
 -> RatePaths` (debt, half_debt, half_clean — без издержек размещения, half_fair —
 со спредами base, half_yield, half_key; индекс N — терминал), `maintenance(level)`.
@@ -138,7 +139,8 @@ rub_per_1pct_ev_point, equity_share_of_ev), `grid.cell(w, r, c)`.
   `blocking_reasons(invariants, gates) -> [str]` — пусто, значит сборка выходит.
 * Флаги §13.3: `flag_book_update(A, live_nodes {"5","10"} | None, today)`,
   `flag_dividend_register(expected_ex_dates, register_rows, facts_date, today)`,
-  `flag_price_fallback(status)` → `Flag(name, title, raised, detail)`.
+  `flag_price_fallback(status)` → `Flag(name, title, raised, detail)` (деталь словами: живая цена /
+  цена книги / запасная цена).
   `stale_release` — забота витрины.
 
 ### Таблицы книги — `model/book_results.py`
@@ -213,7 +215,8 @@ recorded_at=, actuals=actuals_of(F))` → (журнал, id новых запи�
 `x5.revenue_growth`; эталоны `same_half_last_year`, `mean_two_halves`, `last_half`
 (`reported_halves(F)`: actuals → accounting → history). Прошлые записи переносятся как есть;
 `actual`/`errors` заполняются один раз из `data/facts/actuals.json`; после факта прогноз не
-пишется. `immutability_problems(old, new)` — побайтовая сверка канонического JSON.
+пишется. `actuals_of(F)` читает исходный файл: `value` — узел `{"v": число, "src"|"calc"}`;
+число без узла (без источника), чужая цель, не полугодие, повтор — `FactsError`. `immutability_problems(old, new)` — побайтовая сверка канонического JSON.
 
 ### Выпуск — `model/payload.py`
 

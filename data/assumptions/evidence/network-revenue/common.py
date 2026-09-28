@@ -156,6 +156,9 @@ def network_history() -> dict:
     листа тем же правилом по трейдинг-апдейтам 4 кв. 2022 – 4 кв. 2023 (inputs/tu_2022_2023.json) и
     остаткам databook «как отчитано» + площадь «Красного Яра» и «Слаты» (в сопоставимом базисе они
     внутри «Пятёрочки»). Открытия 2022H1 и 2022H2 нужны только для незрелой части стартового индекса.
+    Те же оценки (тем же правилом) лежат в фактах — data/facts/network.json: area_end_est, ранние
+    gross_opened_hist и closed_area_est (сборщик ops/tools/build_facts.py::network_history_est); по ним ядро
+    ведёт индекс от 2022H2.
     """
     nf, oq, tu = load("network_facts.json"), load("operating_q.json")["quarterly"], load("tu_2022_2023.json")
     A = {p: v(x) for p, x in nf["area_end"].items()}
@@ -220,7 +223,8 @@ def mu_avg(mu: list[float], age: int) -> float:
 
 def eff_consistent(order: list[str], A0: float, O: dict, C: dict, mu: list[float], d: float,
                    kappa: float) -> dict:
-    """Индекс эффективной площади, когда ВСЕ когорты (и до старта) созревают до плотности d.
+    """Индекс эффективной площади MODEL §4.1 (так же его ведёт ядро, model/core.py): все когорты
+    созревают с плотностью d, закрытия уходят с κ.
 
     Старт — конец order[0]: A_eff = A − Σ незрелой части последних когорт (с плотностью d);
     дальше рекурсия §4.1. Возвращает концы, средние и разложение роста г/г на части «вне LFL»
@@ -256,30 +260,6 @@ def eff_consistent(order: list[str], A0: float, O: dict, C: dict, mu: list[float
         clo = -kappa * (C[p] / 2.0 + C[older(p, 1)] + C[older(p, 2)] / 2.0)
         out[p] = {"g": g, "nonlfl": (new + clo) / base, "m": lfl / base}
     return {"eff": eff, "avg": avg, "yoy": out}
-
-
-def eff_model_rule(anchor: str, P: list[str], A_hist: dict, O_hist: dict, O: dict, C: dict,
-                   mu: list[float], d: float, kappa: float) -> dict:
-    """Правило ядра (MODEL §4.1, core._make_network): история — площадь минус незрелость последних
-    n когорт с d = 1; прогнозные когорты — с плотностью d. Возвращает средние и рост г/г."""
-    n = len(mu) - 1
-
-    def immature(q):
-        return sum(O_hist[half_name(half_index(q) - a)] * (1.0 - mu[a]) for a in range(n))
-
-    b1, b2 = shift_half(anchor, -1), shift_half(anchor, -2)
-    eh = {q: A_hist[q] - immature(q) for q in (b2, b1, anchor)}
-    avg = {b1: (eh[b2] + eh[b1]) / 2.0, anchor: (eh[b1] + eh[anchor]) / 2.0}
-    cohorts = [(O_hist[q], 1.0) for q in sorted(O_hist, key=half_index) if half_index(q) <= half_index(anchor)]
-    eff = eh[anchor]
-    for p in P:
-        mat = sum(cohorts[-a][0] * cohorts[-a][1] * (mu[a] - mu[a - 1]) for a in range(1, min(n, len(cohorts)) + 1))
-        new = eff - C[p] * kappa + O[p] * d * mu[0] + mat
-        avg[p] = (eff + new) / 2.0
-        cohorts.append((O[p], d))
-        eff = new
-    yoy = {p: avg[p] / avg[shift_half(p, -2)] - 1.0 for p in P}
-    return {"avg": avg, "yoy": yoy}
 
 
 def forward_network(A0: float, P: list[str], growth: dict, close: dict) -> tuple[dict, dict, dict]:

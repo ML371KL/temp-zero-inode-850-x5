@@ -8,9 +8,9 @@
 
 На входах книги (версия и дата оценки — `data/assumptions/results.json`, блоки `book` и `inputs`; рынок <!--=inputs.market_price r1-->1 808,5<!--/--> ₽):
 
-- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 750<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 900<!--/-->–<!--=band.printed.p90 r0-->4 600<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->3 250<!--/-->–<!--=band.printed.p75 r0-->4 200<!--/--> ₽;
-- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 850<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->0,05<!--/--> %;
-- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+55,7<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
+- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 150<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 400<!--/-->–<!--=band.printed.p90 r0-->3 900<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->2 750<!--/-->–<!--=band.printed.p75 r0-->3 600<!--/--> ₽;
+- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 250<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->0,75<!--/--> %;
+- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+42,6<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
 
 Живой выпуск считает на сегодняшней цене и печатает свои числа — экран «Оценка» и `/api/model`. Числа выше стоят в метках и перерисовываются из `data/assumptions/results.json` (`python -B ops/tools/render_numbers.py`).
 
@@ -21,7 +21,7 @@
 | Файл | Что |
 |---|---|
 | `README.md` | этот обзор |
-| `requirements.txt` | зависимости Python: PyYAML, pytest |
+| `requirements.txt` | зависимости Python — точные версии всего дерева (PyYAML, pytest и его зависимости), только ASCII |
 | `pytest.ini` | корень тестов, `pythonpath`, метки `network`, `ci_only`, `docs`, `slow` (`--strict-markers`) |
 | `.gitattributes` | текст — LF (`* text=auto eol=lf`), PNG, PDF, XLSX — двоичные |
 | `.gitignore` | `.venv/`, `var/`, `.wrangler/`, кэши Python и pytest |
@@ -30,22 +30,23 @@
 
 | Файл | Что |
 |---|---|
-| `pipeline.yml` | конвейер: по будням 16:50 UTC, при push кода и книги в `main`, вручную — сбор живых входов → тесты такта → сборка → контракт → публикация в ветку `data` → сверка через `/api/model` → артефакт → keepalive расписания (`ops/README.md`) |
+| `pipeline.yml` | конвейер: по будням 16:50 UTC, при push кода и книги в `main`, вручную (только с `main`) — сбор живых входов → тесты такта → сборка → контракт → публикация в ветку `data` → сверка через `/api/model` → артефакт → keepalive расписания (`ops/README.md`) |
 | `ci.yml` | push и PR в `main` (кроме коммитов из одних `*.md`): тесты `-m "not network"`, сборка на входах книги `--book --fast`, проверка контракта |
+| `docs.yml` | push и PR в `main`, где менялся `*.md`: тесты документов `-m "docs and not network"` |
 
 `model/` — ядро (методика — `docs/MODEL.md`, API — `model/README.md`):
 
 | Файл | Что |
 |---|---|
-| `book.py` | книга: загрузка и схема, линейка полугодий, траектории §0.1, кривая §0.2, подмены `override`, наблюдения `add_observation`, открытое полугодие `open_period`, `today()` с `FAKE_TODAY` |
-| `book_schema.py` | закрытая схема книги: незнакомый ключ, пропуск, неверный тип — `BookError`; хэш миров `kernel_sha256` |
+| `book.py` | книга: загрузка и схема, линейка полугодий, траектории §0.1, кривая §0.2, подмены `override`, наблюдения `add_observation`, открытое полугодие `open_period`, `today()` — день по Москве, подмена `FAKE_TODAY` |
+| `book_schema.py` | закрытая схема книги: незнакомый ключ, пропуск, неверный тип — `BookError`; хэш миров `kernel_sha256` (целостность миров книги) |
 | `facts.py` | факты `data/facts/*.json`: узлы `{v, src\|calc}`, `null` → `None`, проверенные факты прохода клетки `core_facts` |
-| `core.py` | проход клетки: сеть, выручка, маржа, capex, оборотный капитал, налог, долг и дивиденды, терминал, требования на дату оценки |
-| `grid.py` | сетка 36 клеток, A-P2u, слои, точка, V\*, цена 1 % EV, ожидаемый путь |
+| `core.py` | проход клетки: сеть, выручка, маржа, capex, оборотный капитал, налог, долг и дивиденды, вычеты финансирования, терминал, требования на дату оценки |
+| `grid.py` | сетка 36 клеток, A-P2u, слои, точка, цена с казначейским пакетом, V\*, цена 1 % EV, ожидаемый путь |
 | `checks.py` | инварианты, гейты с массой и объяснениями, флаги, округление печати |
 | `uncertainty.py` | полоса A-V9, вклады осей, суждения по цене ошибки, обратный DCF, «что даст отчёт», ожидание модели |
 | `attribution.py` | «что изменилось с прошлого выпуска» и опорные числа защиты заголовка |
-| `journal.py` | журнал прогнозов: запись, факт, неизменяемость, эталоны, правило допуска |
+| `journal.py` | журнал прогнозов: запись, факт (узел с источником), неизменяемость, эталоны, правило допуска |
 | `payload.py` | выпуск `x5-v1`: `build_payload`, `validate`, хэш содержания |
 | `book_results.py` | таблицы книги `results.json` и `run_output.txt` |
 | `sample_release.py` | образец выпуска `var/release/sample.json` на входах книги |
@@ -58,14 +59,17 @@
 | `iss.py` | MOEX ISS: цена X5 и аналогов, история закрытий, бескупонная кривая, облигации ООО «ИКС 5 ФИНАНС» |
 | `cbr.py` | ключевая ставка ЦБ: SOAP `KeyRate`, запасной путь — страница `hd_base/KeyRate` |
 | `live.py` | `python -m indicators.live`: живые входы `x5-live-v1`, правила годности цены, запасная цена |
+| `runlog.py` | итоговые строки шагов в журнал и в сводку прогона GitHub |
 
 `ops/` — сборка, публикация, эксплуатация (`ops/README.md`):
 
 | Файл | Что |
 |---|---|
 | `build_release.py` | сборка выпуска: `--live`, `--live-file`, `--book`, `--check`, `--fast`; итог — «готово: …» или «ПРОВАЛ на шаге …» |
-| `publish.py` | публикация в ветку `data`, проверка неизменяемости журнала, `--verify`, `--fetch-state`, `--rollback` |
+| `publish.py` | публикация в ветку `data` (`--expect-commit` — ветка не изменилась с начала прогона), проверка неизменяемости журнала, `--verify`, `--fetch-state`, `--rollback --note`, `--reopen <id> --note` |
 | `tools/render_numbers.py` | числа результатов книги в документах по меткам; `--check` |
+| `tools/build_facts.py` | сборщик фактов `data/facts/*.json` и `data/calendar.json` из первички (нужен openpyxl) |
+| `tools/check_worlds.py` | сверка миров книги с книгой Магнита на теге (соседний репозиторий, только чтение) |
 | `tools/devserver.py` | локальный предпросмотр витрины с выпуском из файла |
 | `tools/shots.mjs` | снимки витрины headless-Chrome по CDP с замерами вёрстки |
 | `tools/mock_payload.py` | мок выпуска `tests/fixtures/sample_payload.json` для проверки вёрстки |
@@ -86,8 +90,8 @@
 
 | Путь | Что |
 |---|---|
-| `assumptions/` | книга допущений — единственный экземпляр; состав и порядок новой версии — `data/assumptions/README.md` |
-| `facts/` | отчётные факты на якорь книги, у каждого числа источник: `accounting`, `network`, `balance`, `bridge`, `shares`, `dividends` (читает ядро), `debt_register`, `history`, `peers`, `brokers`, `guidance` (читает выпуск), `actuals` (факты журнала); поля — `data/facts/SCHEMA.md`, первичка и сверка — `docs/FACTS.md` |
+| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журнал версии — `V1.1-CHANGES.md`; состав и порядок новой версии — `data/assumptions/README.md` |
+| `facts/` | отчётные факты на якорь книги, у каждого числа источник: `accounting`, `network`, `balance`, `bridge`, `shares`, `dividends` (читает ядро), `debt_register`, `history`, `peers`, `brokers`, `guidance` (читает выпуск), `actuals` (факты журнала); поля — `data/facts/SCHEMA.md`, первичка и сверка — `docs/FACTS.md`; собирает `ops/tools/build_facts.py` |
 | `calendar.json` | события на 12 месяцев: отчёты X5, дивиденды, заседания ЦБ; `confirmed` и прецедент в `note` |
 
 `tests/`:
@@ -97,9 +101,9 @@
 | `conftest.py` | метки, пропуск без метки — ошибка, `FAKE_TODAY`, фикстуры книги, фактов и сетки |
 | `test_book_paths.py`, `test_book_schema.py`, `test_core_*.py`, `test_checks.py`, `test_uncertainty.py` | траектории и схема книги, проход клетки вручную по формулам, тождества, монотонности, режимы, время, гейты, полоса и обратный DCF |
 | `test_book_results.py` | регрессия таблиц книги (полоса — `ci_only`) |
-| `independent_model.py`, `test_control_model.py` | контрольная модель по тексту книги и `docs/MODEL.md`; сверка с ядром, сценарии (`ci_only`), свежесть `docs/CONTROL-MODEL.md` |
+| `independent_model.py`, `test_control_model.py` | контрольная модель по тексту книги и `docs/MODEL.md`; сверка с ядром, сценарии (и в такте), свежесть `docs/CONTROL-MODEL.md` |
 | `test_no_literals.py` | в коде ядра нет чисел книги и фактов |
-| `test_facts.py`, `test_core_facts.py` | факты и календарь: источники, даты, согласованность |
+| `test_facts.py`, `test_core_facts.py` | факты и календарь: источники, даты, согласованность; пересборка фактов байт в байт (`ci_only`) |
 | `test_payload.py`, `test_journal.py`, `test_time_travel.py` | выпуск и контракт, журнал, прогон «в будущем» (`ci_only`) |
 | `test_live_*.py` | сборщики на сохранённых ответах ISS и ЦБ; `test_live_network.py` — живые источники (`network`) |
 | `test_ops_*.py` | сборка, публикация на локальном «удалённом» репозитории (`ci_only`), workflow, `ops/README.md` |
@@ -137,6 +141,8 @@ $env:X5_NETWORK=1; python -m pytest -q -m network                    # живы�
 python -B -m model.book_results                      # results.json и run_output.txt на входах книги (--no-band — без полосы)
 python -B ops/tools/render_numbers.py                # числа результатов книги в *.md (--check — только проверить)
 python -B -m tests.independent_model --report        # docs/CONTROL-MODEL.md
+python -B ops/tools/build_facts.py                   # факты из первички (../x5-850-handoff/reference/primary)
+python ops/tools/check_worlds.py                     # миры книги = книга Магнита на теге (../magnit-850oa)
 ```
 
 Выпуск:
@@ -156,13 +162,13 @@ python ops/tools/devserver.py 8872 [выпуск.json]     # http://127.0.0.1:88
 TAG=<метка> BASE_URL=http://127.0.0.1:8872 OUT_ROOT=../x5-850-handoff/shots node ops/tools/shots.mjs
 ```
 
-Эксплуатация (ручной запуск конвейера, журнал прогона, откат, факт отчёта, выкладка витрины) — `ops/README.md`.
+Эксплуатация (ручной запуск конвейера, журнал прогона, откат, факт отчёта и его исправление, выкладка витрины) — `ops/README.md`.
 
 ## Документы
 
 - `docs/MANUAL.md` — справочник владельца: с него начинать.
 - `docs/MODEL.md` — методика; `docs/PAYLOAD.md` — контракт выпуска `x5-v1`; `model/README.md` — API ядра.
-- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
+- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md` — что изменилось в книге 1.1 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
 - `docs/FACTS.md` — факты и первичка; `data/facts/SCHEMA.md` — поля фактов.
 - `docs/DASHBOARD.md` — витрина; `docs/INDICATORS.md` — ближайший отчёт и журнал прогнозов.
 - `docs/CONTROL-MODEL.md` — сверка контрольной модели с ядром (генерируется).

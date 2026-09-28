@@ -75,8 +75,11 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 
 ## layers
 `analytical`, `market_implied`, `macro_neutral` — у каждого: `title`, `world_weights`,
-`v0`, `d`, `equity`, `price`, `pv_fcff`, `pv_shield`, `pv_terminal`, `terminal_share`,
-`ev_ebitda_fwd`, `ebitda_ntm` (скорр. EBITDA следующих 12 мес.), `v0_to_d`.
+`v0`, `d`, `equity`, `price`, `pv_fcff`, `pv_shield`, `pv_terminal`, `pv_financing`
+(PV вычетов финансирования — издержки размещения, проценты сверх справедливого спреда,
+кэрри подушки, положительным числом: `v0` = `pv_fcff` + `pv_shield` + `pv_terminal` −
+`pv_financing`), `terminal_share`, `ev_ebitda_fwd`, `ebitda_ntm` (скорр. EBITDA следующих
+12 мес.), `v0_to_d`.
 
 ## grid
 `cells`: 36 × {`world`, `regime`, `capex`, `p_analytical`, `p_market_implied`,
@@ -154,14 +157,18 @@ record_date}] — по времени, от старых к новым (9M ра�
 
 ## history
 `annual` [{year, revenue, growth, adj_margin, rep_margin, capex_pct, da_pct,
-leverage, lfl, lfl_traffic, lfl_ticket, area_end, stores_end}], `halves`
+da_excl_impairment_pct (D&A без обесценения, с 2023 г.), other_investing_payments
+(прочие платежи по инвестиционной деятельности, млрд ₽), finance_lease_receipts
+(тело чистых инвестиций в аренду, млрд ₽), leverage, lfl, lfl_traffic, lfl_ticket,
+area_end, stores_end}], `halves`
 [{period, revenue, growth, adj_margin, capex_pct}], `formats` [{year, pyaterochka,
 perekrestok, chizhik, digital, other}] (выручка), `format_area` (то же для площади).
 
 ## reverse_dcf
 `rows`: [{`name`, `unit`, `book`, `solved`, `delta`, `in_range`, `range`, `status`
 ("solved" | "unreachable"), `point_solved`}]; `target` (рыночная цена);
-`method` ("медиана на подвыборке 200 + сдвиг").
+`method` (словами: поиск на подвыборке 200 прогонов со сдвигом к полной полосе,
+уточнение секущей на полной полосе — `docs/MODEL.md` §11).
 
 ## judgements
 `rows`: [{`id`, `name`, `unit`, `book`, `low`, `high`, `price_low`, `price_high`,
@@ -183,7 +190,9 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 * `benchmarks`: [{`name`, `margin`, `revenue_growth`, `note`}] — наивные эталоны
   («то же полугодие год назад», «среднее двух полугодий», «как прошлое полугодие»).
 * `table`: [{`margin`, `point`, `median`, `d_point`, `d_median`, `posterior`
-  {stress…full}}]; `neutral` {`median`, `point`}; `rub_per_01pp` (медиана на 0,1 п.п.).
+  {stress…full}}] (медианы — полной полосы); `neutral` {`median`, `point`};
+  `neutral_gap` {`median`} (невязка медианы полной полосы при нейтральной марже, ₽);
+  `rub_per_01pp` (медиана на 0,1 п.п.).
 
 ## journal
 `entries`: [{`id`, `target` ("x5.adj_margin" | "x5.revenue_growth"), `period`,
@@ -229,7 +238,8 @@ value} по полному ряду), `history` [{date, value}] (≤ 60 точе
 
 ## Дополнительные поля (не ломают витрину)
 
-`judgements.rows[].kind/paths`, `reverse_dcf.rows[].kind/paths/search/point_status`,
+`judgements.rows[].kind/paths`, `reverse_dcf.rows[].kind/paths/search/point_status/search_value/gap_full`
+(решение поиска на подвыборке и невязка медианы полной полосы в решении, ₽),
 `uncertainty.subsample/delta`, `uncertainty.contributions[].rank_corr`,
 `checks.gates[].status/blocking/cells/detail`, `checks.invariants[].title`,
 `live.errors/degraded/fetched_at`, `grid.cells[].growth/credit/demand`,

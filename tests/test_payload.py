@@ -67,7 +67,9 @@ def _doc_blocks() -> list[str]:
 # --------------------------------------------------------------- контракт
 
 
+@pytest.mark.docs
 def test_required_blocks_are_the_documented_ones():
+    """Сверка документа: блоки контракта в docs/PAYLOAD.md — те же, что REQUIRED_TOP_LEVEL."""
     assert list(P.REQUIRED_TOP_LEVEL) == _doc_blocks()
 
 
@@ -418,9 +420,9 @@ def test_anchor_year_marks_its_forecast_only_flows(book_release, book):
 
 def test_regime_titles_and_key_judgement_codes_follow_the_book(book_release):
     assert book_release["regimes"]["floor"]["title"] == "Дно"
-    sections = "\n".join(p.read_text(encoding="utf-8")
-                         for p in (ROOT / "data" / "assumptions" / "sections").glob("*.md"))
-    parts = re.split(r"\n(?=### )", sections)
+    # Канон текста книги — ASSUMPTIONS-BOOK.md (sections/ — материал сборки).
+    text = (ROOT / "data" / "assumptions" / "ASSUMPTIONS-BOOK.md").read_text(encoding="utf-8")
+    parts = re.split(r"\n(?=### )", text)
     for jid, path, _, _ in P.KEY_JUDGEMENTS:
         sec = [s for s in parts if re.match(rf"### {re.escape(jid)}[.\s]", s)]
         assert sec, f"{jid}: нет раздела книги"

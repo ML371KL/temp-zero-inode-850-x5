@@ -1,0 +1,90 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млрд ₽",
+ "sign": "как у требования: обязательство положительное, актив отрицательный",
+ "lines": [
+  {
+   "key": "accrued_interest",
+   "label": "Начисленные проценты",
+   "amount": {
+    "v": 1.719,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R51",
+    "calc": "не входят в «общий долг» и чистый долг компании"
+   }
+  },
+  {
+   "key": "nci_put",
+   "label": "Пут на неконтролирующую долю",
+   "amount": {
+    "v": 0.698,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 13, с. 19: «Обязательства по покупке неконтролирующих долей участия» 698 (долгосрочные; краткосрочных — «–»)"
+   }
+  },
+  {
+   "key": "lti_liability",
+   "label": "Обязательство LTI",
+   "amount": {
+    "v": 7.896,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 13, с. 19: «Обязательства по долгосрочным программам премирования ключевых сотрудников» 7 896",
+    "calc": "только долгосрочная часть; краткосрочная внутри «обязательств перед персоналом» 44 994 отдельно не раскрыта"
+   }
+  },
+  {
+   "key": "tax_provisions_net",
+   "label": "Резервы по налоговым позициям (нетто)",
+   "amount": {
+    "v": 7.599,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 13, с. 19: «Резервы и обязательства по неопределённостям в отношении правил исчисления налогов» 10 167; financial_and_operating_results_q2_2026.xlsx › Financial Position!R20 («Компенсирующий актив»)",
+    "calc": "10 167 − компенсирующий актив 2 568 (возмещения продавцов купленных бизнесов)"
+   }
+  },
+  {
+   "key": "st_investments",
+   "label": "Краткосрочные финансовые вложения",
+   "amount": {
+    "v": -0.204,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R22",
+    "calc": "актив — со знаком минус"
+   }
+  },
+  {
+   "key": "associates",
+   "label": "Инвестиции в ассоциированные и СП",
+   "amount": {
+    "v": -0.969,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R12",
+    "calc": "балансовая стоимость; актив — со знаком минус"
+   }
+  }
+ ],
+ "outside_bridge": {
+  "lease_liabilities_ifrs16": {
+   "v": 742.991,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R13",
+   "calc": "базис до МСФО 16: аренда внутри EBITDA, вне моста"
+  },
+  "capital_commitments": {
+   "v": 29.882,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 26, с. 26",
+   "calc": "обязательства по капвложениям — это capex прогноза, не мост"
+  },
+  "treasury_shares_mln": {
+   "v": 25.591692,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21",
+   "calc": "не актив моста; знаменатель — акции в обращении"
+  },
+  "deferred_consideration": {
+   "v": null,
+   "calc": "остаток отложенных платежей по сделкам не раскрыт (внутри кредиторки за ОС, НМА и бизнесы 24 917)"
+  },
+  "gorod77_consideration": {
+   "v": null,
+   "calc": "цена «Города 77» (20.07.2026) не раскрыта; после отчётной даты"
+  },
+  "obligation_to_x5_retail_group_nv": {
+   "v": 0.0,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 22; ОДДС с. 7 (выплачено 4 638 во 2 кв. 2026)",
+   "calc": "обязательств перед бывшей материнской нет"
+  }
+ }
+}

@@ -1,0 +1,74 @@
+# Фрагмент книги X5 — область «СЕТЬ И ВЫРУЧКА» (network-revenue). Только ключи своей области в структуре
+# assumptions.draft.yaml. Обоснования — data/assumptions/sections/network-revenue.md, расчёты —
+# data/assumptions/evidence/network-revenue/ (README.md). Доли — годовые, доли единицы.
+# LFL книги (чек и трафик) — LFL зрелой сети: созревание новых магазинов сидит в эффективной площади (§4.1);
+# отчётный LFL X5 выше на m ≈ 1,4 п.п. (2П2026) → 0,9 (2028) → 0,27 п.п. (терминал) — density.py, ticket.py.
+
+joint:
+  # A-P4w/A-P4g: рост сети привязан к миру ставок; в режиме stress — low во всех мирах (как у Магнита).
+  # Только ключ growth; credit — область финансирования.
+  world_links:
+    N: {growth: high}
+    H: {growth: mid}
+    M: {growth: low}
+  stress_growth: low
+
+network:
+  # A-R7: чистый рост площади, годовой; 2П2026 — план/темп компании, 2027–2028 high — стратегия-2028
+  # (29 500+ «Пятёрочек», 5 000 «Чижиков»), low — сокращение как у Магнита (−65 % к темпу 2025 г.);
+  # 2031–2035 — линейный сход к нулю, с 2036 г. — ноль (терминал без чистого прироста). network.py
+  net_growth:
+    low:  {"2026H2": 0.042, "2027": 0.030, "2028": 0.025, "2029": 0.020, "2030": 0.016, "LT": 0.0, "LT_from": 2036}
+    mid:  {"2026H2": 0.048, "2027": 0.044, "2028": 0.039, "2029": 0.033, "2030": 0.027, "LT": 0.0, "LT_from": 2036}
+    high: {"2026H2": 0.055, "2027": 0.050, "2028": 0.048, "2029": 0.040, "2030": 0.034, "LT": 0.0, "LT_from": 2036}
+  # A-R7c: доля закрываемой площади (закрытые магазины × средний магазин формата, как в фактах и листе capex):
+  # 2П2025–1П2026 2,3–2,6 %, среднее 2024–2026 гг. 1,92 %
+  close_rate: {"2026H2": 0.025, "2027": 0.022, "LT": 0.020, "LT_from": 2028}
+  # A-R5: созревание по полугодиям возраста (как в черновике; форма — суждение, отчётность её не различает)
+  maturity_curve: [0.75, 0.90, 1.0]
+  # A-R5d: зрелая плотность новой площади — подбор по вкладу не-LFL 2024H1–2026H1 (RMSE 0,6 п.п., СО 0,04). density.py
+  new_space_density: 0.84
+  # A-R6: продуктивность закрываемой площади к средней — не раскрыта (суждение, как у Магнита)
+  closed_productivity: 0.6
+
+revenue:
+  # A-R1: МНК по кварталам 2011–2К2026 без 2020–2021: k = 0,626 (СО 0,065); одинаков во всех состояниях. ticket.py
+  ticket_k: {bear: 0.63, base: 0.63, bull: 0.63}
+  # A-R2: сдвиг чека (с НДС); центр 1,7 → 1,5 → 1,3 п.п. (LT: реальный чек ≈ 0); средневзвешенное по
+  # состояниям (bear 41,5 %, base 53,5 %, bull 5 %) = центр
+  ticket_shift:
+    bear: {"2026H2": 0.012, "2027": 0.010, "LT": 0.011, "LT_from": 2029}
+    base: {"2026H2": 0.020, "2027": 0.018, "LT": 0.015, "LT_from": 2029}
+    bull: {"2026H2": 0.027, "2027": 0.025, "LT": 0.018, "LT_from": 2029}
+  # A-R4: LFL-трафик зрелой сети (= отчётный − созревание новых магазинов); центр −1,1 → −0,8 → −0,5 %
+  traffic:
+    bear: {"2026H2": -0.015, "2027": -0.012, "LT": -0.007, "LT_from": 2030}
+    base: {"2026H2": -0.009, "2027": -0.006, "LT": -0.004, "LT_from": 2030}
+    bull: {"2026H2": -0.004, "2027": -0.001, "LT": -0.001, "LT_from": 2030}
+  # A-R8: прочая (нерозничная) выручка сверх площади и LFL: опт «ОКОЛО», 5Post, «ВКТ», «Город 77»… other.py
+  other_growth: {"2026H2": 0.003, "2027": 0.0015, "LT": 0.0, "LT_from": 2029}
+  # A-R3: клин НДС 22 % (продажи с НДС / ЧРВ без НДС: +0,72 % в 1–2 кв. 2026 г/г); с 2027 г. — 0. vat.py
+  vat_effect: {"2026H2": -0.0072, "LT": 0.0}
+  # A-R1h: однородность номинального чека между мирами (как в черновике и у Магнита)
+  homogeneity: {ramp_from: 2027, ramp_to: 2031, reference_world: N}
+
+axes_proposals:
+  - {name: "Чистый рост площади 2027–2030 (сдвиг всех тарифов)", kind: shift,
+     paths: [network.net_growth.low.2027, network.net_growth.low.2028, network.net_growth.low.2029, network.net_growth.low.2030,
+             network.net_growth.mid.2027, network.net_growth.mid.2028, network.net_growth.mid.2029, network.net_growth.mid.2030,
+             network.net_growth.high.2027, network.net_growth.high.2028, network.net_growth.high.2029, network.net_growth.high.2030],
+     low: -0.010, high: 0.008}
+  - {name: "Трафик LFL (сдвиг всех состояний)", kind: shift,
+     paths: [revenue.traffic.bear, revenue.traffic.base, revenue.traffic.bull], low: -0.008, high: 0.004}
+  - {name: "Плотность новой площади", kind: value, paths: [network.new_space_density], low: 0.74, high: 0.94}
+  - {name: "Продуктивность закрываемой площади", kind: value, paths: [network.closed_productivity], low: 0.4, high: 0.8}
+
+reverse_dcf_proposals:
+  - {name: "Чистый рост площади 2027–2030 (сдвиг всех тарифов)", kind: shift,
+     paths: [network.net_growth.low.2027, network.net_growth.low.2028, network.net_growth.low.2029, network.net_growth.low.2030,
+             network.net_growth.mid.2027, network.net_growth.mid.2028, network.net_growth.mid.2029, network.net_growth.mid.2030,
+             network.net_growth.high.2027, network.net_growth.high.2028, network.net_growth.high.2029, network.net_growth.high.2030],
+     search: [-0.05, 0.04], range: [-0.010, 0.008], unit: "п.п."}
+  - {name: "Трафик LFL (сдвиг всех состояний)", kind: shift,
+     paths: [revenue.traffic.bear, revenue.traffic.base, revenue.traffic.bull],
+     search: [-0.04, 0.03], range: [-0.008, 0.004], unit: "п.п."}

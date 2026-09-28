@@ -1,0 +1,147 @@
+{
+ "_about": "Числа, перенесённые вручную из первички X5 (PDF в репозиторий не кладутся). Деньги — млрд ₽, площадь — тыс. м², штуки — шт. У каждого блока — файл, страница (номер страницы PDF) и sha256 файла; файлы reference/primary/ — папка передачи x5-850-handoff (SHA256SUMS там же); торговые релизы 2023–2026 скачаны 28.09.2026 с www.x5.ru (URL и sha256 указаны).",
+ "documents": {
+  "ifrs_2025": {"file": "reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf", "sha256": "daed087423aadb8a4c5cab93808a8aa52cf418a998d6ee5eba4cc634566e7fcb", "what": "МСФО 2025, ПАО «КЦ ИКС 5»"},
+  "ifrs_2024": {"file": "reference/primary/ifrs-fy2024_godovaya-konsolidirovannaya-finansovaya-otchetnost.pdf", "sha256": "47b73723e85d47a8828547b353b4f2f4b9b7172373a8d426da7233ece503cc15", "what": "МСФО 2024 (сравнительные 2023)"},
+  "ifrs_6m2026": {"file": "reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf", "sha256": "f8cdf6790982ff5c270f553859e37cca2bc7e510ced146916df649873ca972fd", "what": "МСФО 1П2026 (сокращённая)"},
+  "ifrs_6m2025": {"file": "reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf", "sha256": "6d4d67ddfd32c1afb9bf26d05eb20a6f95bf75b1bbc613a408511521a9391de3", "what": "МСФО 1П2025 (сокращённая)"},
+  "webcast_q4_2025": {"file": "reference/primary/q4-2025-financial-results-webcast.pdf", "sha256": "fdf805be6e37f42b91a5d630405b85368a7218be30454c86aec4e9b42e98818c", "what": "вебкаст результатов 2025 (20.03.2026)"},
+  "investor_day_2025": {"file": "reference/primary/x5_investor_day_2025.pdf", "sha256": "e9790ec961a335bcec577596b4522ae89dd13b47558dc8a7d8dcfce676619045", "what": "День инвестора 20.03.2025"},
+  "ar_2025_html": {"file": "reference/primary/x5-ar25-strategic-report.html", "sha256": "c5c5949e3b0d35e30acc5f14437f0acf314d38883bd4a5a7950613b983b7eb06", "what": "годовой отчёт 2025, стратегический раздел (текст: reference/primary/text/x5-ar25-strategic-report.txt)"},
+  "press_q2_2026": {"file": "reference/primary/x5_q2_2026_financial_results_rus.pdf", "sha256": "ef20fdc30d9ae6b4ac19513896238b68efe6c245bbbcf574cf53bd5bde137e4f", "what": "пресс-релиз 2 кв. 2026 (13.08.2026)"},
+  "press_q4_2025": {"file": "reference/primary/x5_q4_2025_financial_results_rus.pdf", "sha256": "80554e7cffa17036491e56101f1a68f93d8868d15c6ed061a9cff1a105b4a4a0", "what": "пресс-релиз 4 кв. 2025 (20.03.2026)"},
+  "tu_q4_2023": {"url": "https://www.x5.ru/wp-content/uploads/2024/01/q4_2023_trading_update_eng.pdf", "sha256": "05a8e72267e51e9fa3875ed44dbccd54a84d58519941694fd9ad7b1db0d62883"},
+  "tu_q1_2024": {"url": "https://www.x5.ru/wp-content/uploads/2024/04/q1-2024_trading_update_eng.pdf", "sha256": "8a7471dbb2c64108f075d7fb8a4055fc96923b8c45d1a5f60d2d9a064672ce8a"},
+  "tu_q2_2024": {"url": "https://www.x5.ru/wp-content/uploads/2024/07/q2_2024_trading_update_eng.pdf", "sha256": "fd123b1298b74bf485783552ff531c511799c6378744da962255bc2158f87241"},
+  "tu_q3_2024": {"url": "https://www.x5.ru/wp-content/uploads/2024/10/q3-2024_trading_update_eng.pdf", "sha256": "848518c75b901d5f83de45c6e16d911496f2d973e886f3a880fecad355667185"},
+  "tu_q4_2024": {"url": "https://www.x5.ru/wp-content/uploads/2025/01/q4_2024_trading_update_eng.pdf", "sha256": "470693fef17bd97bf9ce3bb94e66fb0b09cb41dcea8d8d244d03a40e13a7cde3"},
+  "tu_q1_2025": {"url": "https://www.x5.ru/wp-content/uploads/2025/04/q1_2025_trading_update_eng.pdf", "sha256": "0f3b7127209402719ab631b9554773d839a7cab23185c10cece7126de4469f89"},
+  "tu_q2_2025": {"url": "https://www.x5.ru/wp-content/uploads/2025/07/q2_2025_trading_update_eng.pdf", "sha256": "782e0ebf12be05b744ef35a3ec367f4d7dc2a0ddd018cb8add1125950f22a843"},
+  "tu_q3_2025": {"url": "https://www.x5.ru/wp-content/uploads/2025/10/q3_2025_trading_update_eng.pdf", "sha256": "0e12ee329aecaa56d3c00ca99891c4e954b896da8902a6ab95488b12168001af"},
+  "tu_q4_2025": {"url": "https://www.x5.ru/wp-content/uploads/2026/01/q4_2025_trading_update_eng.pdf", "sha256": "17cf0fca2ff3ba6b3340a8eb1153ca069b39932fa7f38d22f4eff3c97c94d168"},
+  "tu_q1_2026": {"url": "https://www.x5.ru/wp-content/uploads/2026/04/q1_2026_trading_update_eng.pdf", "sha256": "59ce6bb7e690434f37608ccfe1b90ca259688754938b2f02bd4e2f845dbd7bf7"},
+  "tu_q2_2026": {"url": "https://www.x5.ru/wp-content/uploads/2026/07/q2_2026_trading_update_eng.pdf", "sha256": "1283b43cae286773e2fecefa4c799ff065b0cbe1911831a4f7abf1749a2cb518", "also": "русская версия — reference/primary/q2_2026_trading_update_rus.pdf, стр. 70–101 текста"}
+ },
+
+ "capex_company": {
+  "_src": "webcast_q4_2025, слайд 17 «Капитальные затраты — поддержание реализации стратегии 2028» (столбцы 2020–2025, млрд ₽); доли 2025 — там же; доли 2024 — investor_day_2025, слайд 34 «Структура капитальных затрат»",
+  "total": {"2020": 89.9, "2021": 97.9, "2022": 82.0, "2023": 148.4, "2024": 166.4, "2025": 215.2},
+  "structure_2025": {"openings": 0.27, "infra_transport": 0.26, "store_maintenance_reconstruction": 0.26, "innovation_efficiency": 0.14, "cvp_rte_online": 0.07, "mna": 0.01},
+  "structure_2024": {"openings": 0.31, "store_maintenance_reconstruction": 0.34, "logistics_transport": 0.19, "innovation_efficiency": 0.11, "mna": 0.03, "other": 0.02},
+  "guidance_2026_pct_revenue": {"low": 0.045, "high": 0.047, "src": "webcast_q4_2025, слайд 20 «Финансовые цели 2026»: «4,5 – 4,7 % Капитальные затраты, % выручки»"}
+ },
+
+ "segment_capex": {
+  "_src": "Скорректированные капитальные затраты сегментов: ifrs_2025 прим. 6, стр. 21 (2025 и 2024 в определениях 2025 г.); ifrs_6m2026 прим. 5, стр. 12–13 (1П2026 и 1П2025)",
+  "2024": {"pyaterochka": 96.628, "perekrestok": 14.517, "chizhik": 18.187, "other": 37.039, "adjustments": 0.0, "total": 166.371},
+  "2025": {"pyaterochka": 119.592, "perekrestok": 22.463, "chizhik": 19.374, "other": 54.711, "adjustments": -0.971, "total": 215.169},
+  "2025H1": {"pyaterochka": 60.431, "perekrestok": 9.559, "chizhik": 8.337, "other": 21.457, "adjustments": -0.436, "total": 99.348},
+  "2026H1": {"pyaterochka": 49.120, "perekrestok": 6.091, "chizhik": 6.638, "other": 31.218, "adjustments": 0.337, "total": 93.404}
+ },
+
+ "capital_commitments": {"2025-12-31": 40.286, "2026-06-30": 29.882, "_src": "ifrs_2025 стр. 54 («Обязательства капитального характера»); ifrs_6m2026 прим. 26, стр. 26"},
+
+ "ppe_2025": {
+  "_src": "ifrs_2025 прим. 10 «Основные средства», стр. 27 (сроки), стр. 28 (движение)",
+  "useful_lives_years": {"buildings_frame": [40, 45], "buildings_other_components_incl_leasehold_improvements": [7, 8], "machinery_equipment": [1, 10], "refrigeration": [7, 10], "transport": [4, 7], "other": [4, 8]},
+  "classes": ["buildings_land", "machinery_equipment", "refrigeration", "transport", "other"],
+  "gross_2023_12_31": {"buildings_land": 371.990, "machinery_equipment": 109.176, "refrigeration": 92.145, "transport": 41.628, "other": 90.295, "cip": 36.197},
+  "gross_2024_12_31": {"buildings_land": 405.333, "machinery_equipment": 142.651, "refrigeration": 104.034, "transport": 67.403, "other": 109.986, "cip": 16.949},
+  "gross_2025_12_31": {"buildings_land": 464.017, "machinery_equipment": 176.809, "refrigeration": 118.406, "transport": 76.042, "other": 134.228, "cip": 27.490},
+  "commissioned_2024": {"buildings_land": 52.874, "machinery_equipment": 39.835, "refrigeration": 15.551, "transport": 28.941, "other": 23.833},
+  "commissioned_2025": {"buildings_land": 72.091, "machinery_equipment": 42.027, "refrigeration": 19.623, "transport": 11.906, "other": 28.382},
+  "disposals_gross_2024": {"buildings_land": 19.584, "machinery_equipment": 6.456, "refrigeration": 3.679, "transport": 3.169, "other": 4.145},
+  "disposals_gross_2025": {"buildings_land": 12.755, "machinery_equipment": 7.869, "refrigeration": 5.251, "transport": 3.267, "other": 4.140},
+  "depreciation_2024": {"buildings_land": 29.995, "machinery_equipment": 17.350, "refrigeration": 10.673, "transport": 6.866, "other": 13.826},
+  "depreciation_2025": {"buildings_land": 31.079, "machinery_equipment": 22.193, "refrigeration": 11.523, "transport": 8.673, "other": 13.630},
+  "impairment_net_2024": 3.325,
+  "impairment_net_2025": 3.451,
+  "accumulated_2025_12_31": {"buildings_land": 219.981, "machinery_equipment": 82.631, "refrigeration": 67.982, "transport": 30.668, "other": 81.859},
+  "cip_additions": {"2024": 141.821, "2025": 184.634}
+ },
+
+ "intangibles_2025": {
+  "_src": "ifrs_2025 прим. 13, стр. 34 (ПО: срок 1–10 лет, в среднем 5 лет)",
+  "software_gross": {"2023-12-31": 79.199, "2024-12-31": 96.867, "2025-12-31": 123.882},
+  "software_additions": {"2024": 17.669, "2025": 27.251},
+  "software_amortization": {"2024": 10.873, "2025": 15.087},
+  "software_accumulated_2025_12_31": 70.913,
+  "impairment": {"2024": 0.442, "2025": 0.925},
+  "software_life_avg_years": 5
+ },
+
+ "ppe_intangibles_6m2026": {
+  "_src": "ifrs_6m2026 прим. 10, стр. 17",
+  "additions": {"ppe": 75.783, "intangibles": 15.449},
+  "depreciation": {"ppe": 48.066, "intangibles": 8.082},
+  "impairment": {"ppe": 1.737, "intangibles": 0.161, "reversal_ppe": 0.033},
+  "disposals_gross": {"ppe": 19.255, "intangibles": 0.529}
+ },
+
+ "impairment_net_1h": {
+  "_src": "обесценение ОС и НМА за вычетом восстановления, первые полугодия: ifrs_6m2025 прим. 9, стр. 18 (1П2025 и 1П2024: 1,284 + 0,253 − 0,027); ifrs_6m2026 прим. 10, стр. 17 (1П2026: 1,737 + 0,161 − 0,033; 1П2025: 1,036 + 0,323)",
+  "2024H1": 1.510,
+  "2025H1": 1.359,
+  "2026H1": 1.865
+ },
+
+ "cash_notes": {
+  "_src": "прим. «Денежные средства и их эквиваленты»: ifrs_2024 прим. 9, стр. 43 (31.12.2024, 31.12.2023); ifrs_6m2025 прим. 7, стр. 18 (30.06.2025); ifrs_2025 прим. 14, стр. 35 (31.12.2025); ifrs_6m2026 прим. 8, стр. 15 (30.06.2026). ifrs_2024: «Денежные средства в пути – это денежные средства, переводимые из объектов розничной торговли на банковские счета, а также платежи по банковским картам в процессе обработки».",
+  "2023-12-31": {"weekday": "вс", "current_rub": 8.015, "current_fx": 0.046, "in_transit": 17.480, "in_stores": 13.130, "deposits": 0.433, "total": 39.104, "st_investments": 116.076},
+  "2024-12-31": {"weekday": "вт", "current_rub": 33.774, "current_fx": 0.084, "in_transit": 21.865, "in_stores": 11.944, "deposits": 0.266, "total": 67.933, "st_investments": 192.670},
+  "2025-06-30": {"weekday": "пн", "current_rub": 28.975, "current_fx": 0.123, "in_transit": 13.850, "in_stores": 10.693, "deposits": 2.299, "total": 55.940, "st_investments": 158.807},
+  "2025-12-31": {"weekday": "ср", "banks_transit_stores_rub": 85.672, "banks_stores_fx": 21.552, "deposits": 71.230, "total": 178.454, "st_investments": 0.0},
+  "2026-06-30": {"weekday": "вт", "banks_transit_stores_rub": 58.280, "banks_stores_fx": 20.257, "deposits": 46.673, "total": 125.210, "st_investments": 0.204},
+  "credit_lines_unused_2025_12_31": {"v": 772.6, "src": "webcast_q4_2025, слайд 18 «Доступные кредитные лимиты, млрд руб. 772,6»"}
+ },
+
+ "other_st_liabilities": {
+  "_src": "«Резервы и прочие краткосрочные обязательства»: ifrs_2024 прим. 19, стр. 53 (31.12.2024, 31.12.2023); ifrs_6m2025 прим. 13, стр. 22 (30.06.2025); ifrs_2025 прим. 18, стр. 40 (31.12.2025; 31.12.2024 в новой группировке: «прочая кредиторка и начисления» 74,914 = 71,664 + кредиторка перед арендодателями 3,250); ifrs_6m2026 прим. 13, стр. 19 (30.06.2026). Строка баланса — Financial Position!R54 databook.",
+  "2023-12-31": {"nci_purchase": 0.0, "other_payables_accruals": 42.021, "payables_lessors": 2.438, "personnel": 38.583, "dividends_payable": 0.0, "capex_payables": 27.896, "other_taxes": 37.350, "tax_uncertainty": 6.663, "advances_received": 2.080, "other_nonfin": 0.0, "total": 157.031},
+  "2024-12-31": {"nci_purchase": 6.178, "other_payables_accruals": 71.664, "payables_lessors": 3.250, "personnel": 39.916, "dividends_payable": 0.0, "capex_payables": 30.254, "other_taxes": 35.497, "tax_uncertainty": 7.878, "advances_received": 2.521, "other_nonfin": 16.691, "total": 213.849},
+  "2025-06-30": {"nci_purchase": 0.924, "other_payables_accruals": 46.514, "payables_lessors": 0.0, "personnel": 37.904, "dividends_payable": 158.838, "capex_payables": 24.636, "other_taxes": 45.533, "tax_uncertainty": 7.654, "advances_received": 2.967, "other_nonfin": 3.889, "total": 328.859},
+  "2025-12-31": {"nci_purchase": 0.023, "other_payables_accruals": 57.594, "payables_lessors": 0.0, "personnel": 48.931, "dividends_payable": 90.311, "capex_payables": 24.486, "other_taxes": 37.851, "tax_uncertainty": 9.558, "advances_received": 3.022, "other_nonfin": 4.323, "total": 276.099},
+  "2026-06-30": {"nci_purchase": 0.0, "other_payables_accruals": 51.449, "payables_lessors": 0.0, "personnel": 44.994, "dividends_payable": 60.425, "capex_payables": 24.917, "other_taxes": 53.115, "tax_uncertainty": 10.167, "advances_received": 2.982, "other_nonfin": 3.915, "total": 251.964}
+ },
+
+ "former_parent_liability": {
+  "_src": "Требование X5 Retail Group N.V. о компенсации за нераспределённые акции (470-ФЗ) признано 01.11.2024 в «Прочих долгосрочных обязательствах» и «Резервах и прочих обязательствах» (ifrs_2024 прим. 22, стр. 55); компенсация и подошедшие платежи выплачены во 2 кв. 2025 (ifrs_6m2025 стр. 24; ifrs_2025 стр. 43) — отток 45,372 (databook Cash Flow!H54); оставшиеся «прочие платежи и взносы» 4,638 выплачены во 2 кв. 2026 (ifrs_6m2026 прим. 17, стр. 22; databook Cash Flow!AA54+AB54). Долгосрочная часть «прочих долгосрочных нефинансовых обязательств»: 4,826 (31.12.2024), 3,536 (31.12.2025), 0 (30.06.2026) — ifrs_2025 стр. 39, ifrs_6m2026 стр. 19.",
+  "paid_2025H1": 45.372,
+  "paid_2026H1": 4.638,
+  "lt_nonfin_2024_12_31": 4.826,
+  "lt_nonfin_2025_12_31": 3.536
+ },
+
+ "tax_reconciliation": {
+  "_src": "«Расчётная и эффективная налоговые ставки»: ifrs_2024 прим. 29, стр. 57 (2024, 2023); ifrs_2025 прим. 29, стр. 48 (2025, 2024); МСФО 16, млн → млрд ₽. Промежуточная ifrs_6m2026 прим. 22, стр. 23 даёт только текущий 10,280 и отложенный 0,418 налог; эффективная ставка 1П2026 до МСФО 16 28,3 % — press_q2_2026, стр. 9 («увеличившись с 25,7 % в 1 пол. 2025 г.»); 2025 — 23,8 % (press_q4_2025, стр. 9: рост налога в 4 кв. «в связи с ростом налогооблагаемой прибыли, ростом номинальной ставки … и разовым эффектом»).",
+  "2023": {"statutory_rate": 0.20, "pbt": 103.916, "tax_at_statutory": 20.783, "inventory_shortages": 0.475, "other_rates": -0.471, "dta_writeoff": 0.206, "windfall_tax": 1.689, "rate_change": 0.0, "other_nondeductible": 2.623, "total": 25.305},
+  "2024": {"statutory_rate": 0.20, "pbt": 127.475, "tax_at_statutory": 25.495, "inventory_shortages": 0.559, "other_rates": 0.074, "dta_writeoff": 0.0, "windfall_tax": 0.0, "rate_change": -3.995, "other_nondeductible": 1.278, "total": 23.411},
+  "2025": {"statutory_rate": 0.25, "pbt": 108.788, "tax_at_statutory": 27.197, "inventory_shortages": 0.520, "other_rates": -1.043, "dta_writeoff": 0.0, "windfall_tax": 0.0, "rate_change": 0.0, "other_nondeductible": -1.025, "total": 25.649},
+  "2026H1": {"current": 10.280, "deferred": 0.418, "total": 10.698}
+ },
+
+ "trading_updates": {
+  "_src": "торговые релизы X5 (tu_*), раздел «Expansion and retail portfolio development» / «Development of retail chains» и справка в конце (DCs, trucks); валовые открытия — «on a gross basis» / «gross new-concept»; закрытия — абзац «rationalisation programme» (2024 – 1 кв. 2025)",
+  "pyaterochka_opened_gross": {"2023Q4": 630, "2024Q1": 399, "2024Q2": 468, "2024Q3": 448, "2024Q4": 717, "2025Q1": 420, "2025Q2": 603, "2025Q3": 628, "2025Q4": 672, "2026Q1": 381, "2026Q2": 450},
+  "pyaterochka_refurbished": {"2023Q4": 135, "2024Q1": 450, "2024Q2": 220, "2024Q3": 192, "2024Q4": 151, "2025Q1": 430, "2025Q2": 354, "2025Q3": 205, "2025Q4": 86, "2026Q1": 634, "2026Q2": 626},
+  "pyaterochka_modern_concept_stores": {"2023Q4": 8706, "2024Q1": 9532, "2024Q2": 10204, "2024Q3": 10822, "2024Q4": 11669, "2025Q1": 12500, "2025Q2": 13445, "2025Q3": 14174, "2025Q4": 14869, "2026Q1": 15824, "2026Q2": 16784},
+  "pyaterochka_closed_rationalisation": {"2023Q4": 83, "2024Q1": 114, "2024Q2": 66, "2024Q3": 89, "2024Q4": 102, "2025Q1": 53, "2025Q2": 65},
+  "perekrestok_opened_gross": {"2023Q4": 17, "2024Q1": 12, "2024Q2": 14, "2024Q3": 10, "2024Q4": 1, "2025Q1": 5, "2025Q2": 17, "2025Q3": 12, "2025Q4": 11, "2026Q1": 3, "2026Q2": 11},
+  "perekrestok_refurbished": {"2023Q4": 4, "2024Q1": 1, "2024Q2": 1, "2024Q3": 1, "2024Q4": 1, "2025Q1": 0, "2025Q2": 9, "2025Q3": 15, "2025Q4": 3, "2026Q1": 1, "2026Q2": 0},
+  "perekrestok_restyled": {"2023Q4": 0, "2024Q1": 0, "2024Q2": 0, "2024Q3": 12, "2024Q4": 61, "2025Q1": 10, "2025Q2": 22, "2025Q3": 8, "2025Q4": 0, "2026Q1": 2, "2026Q2": 6},
+  "trucks_owned": {"2023Q4": 5344, "2024Q1": 5504, "2024Q2": 5992, "2024Q3": 6674, "2024Q4": 6982, "2025Q1": 6800, "2025Q2": 6984, "2025Q3": 7210, "2025Q4": 7258, "2026Q1": 7438, "2026Q2": 7465},
+  "dcs": {"2023Q4": 62, "2024Q1": 61, "2024Q2": 63, "2024Q3": 69, "2024Q4": 72, "2025Q1": 72, "2025Q2": 75, "2025Q3": 80, "2025Q4": 86, "2026Q1": 83, "2026Q2": 85}
+ },
+
+ "plans_2026": {
+  "_src": "ar_2025_html, раздел «Пятёрочка», «Планы на 2026 год» (text стр. 2357–2358); раздел «Логистика «Пятёрочки»» (стр. 3280–3334); обращение (стр. 1334); press_q4_2025 стр. 2",
+  "pyaterochka_openings_gross": 1300,
+  "pyaterochka_reverse_franchise_openings": 200,
+  "pyaterochka_reconstructions": 2000,
+  "dcs_launched_2025": 11,
+  "pyaterochka_dcs_under_construction_for_2026_2027": 10,
+  "pyaterochka_dcs_to_complete_2026": 5,
+  "trucks_2025_12_31": 7258,
+  "dcs_2025_12_31_ar": 83
+ }
+}

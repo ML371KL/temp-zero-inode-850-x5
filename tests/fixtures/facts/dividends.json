@@ -1,0 +1,62 @@
+{
+ "note": "ФИКСТУРА ТЕСТОВ ЯДРА: перенос из x5-850-handoff/research/facts (агент X1) с источниками; не выверена агентом фактов. Рабочие факты — data/facts/.",
+ "policy": {
+  "target_leverage": [
+   1.2,
+   1.4
+  ],
+  "no_pay_above": 2.0,
+  "frequency": "дважды в год: за предыдущий год и за 9 месяцев текущего",
+  "src": "Годовой отчёт 2025 (reference/primary/x5-ar25.pdf; text/x5-ar25.txt) с. 224 (печатн.); презентация для инвесторов (x5-investor-presentation_rus.pdf) с. 27; День инвестора 2025 с. 36; пресс-релиз 4 кв. 2024 с. 2"
+ },
+ "register": [
+  {
+   "id": "FY2025-final",
+   "label": "Финальный за 2025 г.",
+   "dps": 245.0,
+   "amount": {
+    "v": 60.265,
+    "src": "https://www.x5.ru/ru/investors/dividends/ (копия reference/primary/x5-investors-dividends-2026-09-28.html, доступ 2026-09-28); Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4, с. 39–42; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 22, с. 43; МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, ОДДС с. 7"
+   },
+   "decided_on": "2026-06-26",
+   "record_date": "2026-07-07",
+   "ex_date": "2026-07-07",
+   "pay_until": null,
+   "status": "declared",
+   "paid_share_on": {
+    "2026-08-13": 0.761119
+   },
+   "cash_in_company_at_facts_date": true,
+   "src": "https://www.x5.ru/ru/investors/dividends/ (копия reference/primary/x5-investors-dividends-2026-09-28.html, доступ 2026-09-28); Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4, с. 39–42; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 22, с. 43; МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, ОДДС с. 7"
+  },
+  {
+   "id": "unclaimed-old",
+   "label": "Невостребованные дивиденды прошлых выплат",
+   "dps": null,
+   "amount": {
+    "v": 0.16,
+    "src": "https://www.x5.ru/ru/investors/dividends/ (копия reference/primary/x5-investors-dividends-2026-09-28.html, доступ 2026-09-28); Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4, с. 39–42; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 22, с. 43; МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, ОДДС с. 7",
+    "calc": "дивиденды к выплате 30.06.2026 60,425 − финальные за 2025 г. 60,265 (0,101 за 2024 + 0,059 за 9М2025)"
+   },
+   "record_date": "2026-01-06",
+   "ex_date": "2026-01-06",
+   "status": "declared",
+   "cash_in_company_at_facts_date": true,
+   "src": "https://www.x5.ru/ru/investors/dividends/ (копия reference/primary/x5-investors-dividends-2026-09-28.html, доступ 2026-09-28); Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4, с. 39–42; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 22, с. 43; МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, ОДДС с. 7"
+  },
+  {
+   "id": "9M2025",
+   "label": "За 9 месяцев 2025 г.",
+   "dps": 368.0,
+   "amount": {
+    "v": 90.209,
+    "src": "https://www.x5.ru/ru/investors/dividends/ (копия reference/primary/x5-investors-dividends-2026-09-28.html, доступ 2026-09-28); Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4, с. 39–42; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 22, с. 43; МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, ОДДС с. 7"
+   },
+   "record_date": "2026-01-06",
+   "ex_date": "2026-01-06",
+   "status": "paid",
+   "cash_in_company_at_facts_date": false,
+   "src": "https://www.x5.ru/ru/investors/dividends/ (копия reference/primary/x5-investors-dividends-2026-09-28.html, доступ 2026-09-28); Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4, с. 39–42; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 22, с. 43; МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, ОДДС с. 7"
+  }
+ ]
+}

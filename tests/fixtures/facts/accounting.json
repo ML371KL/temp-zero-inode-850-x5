@@ -1,0 +1,136 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млрд ₽",
+ "basis": "до МСФО 16 (IAS 17)",
+ "note": "ФИКСТУРА ТЕСТОВ ЯДРА: перенос из x5-850-handoff/research/facts (агент X1) с источниками; не выверена агентом фактов. Рабочие факты — data/facts/.",
+ "periods": {
+  "2024H2": {
+   "revenue": {
+    "v": 2056.336,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!U6 + financial_and_operating_results_q2_2026.xlsx › Profit and Loss!V6",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 126.928,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U14 + financial_and_operating_results_q2_2026.xlsx › EBITDA!V14",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "lti": {
+    "v": 2.716,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U16 + financial_and_operating_results_q2_2026.xlsx › EBITDA!V16",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; знак: расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 124.212,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U22 + financial_and_operating_results_q2_2026.xlsx › EBITDA!V22",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; EBITDA до МСФО 16 (= скорр. − LTI − разовые)"
+   },
+   "da": {
+    "v": 52.477,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!U8 + financial_and_operating_results_q2_2026.xlsx › SG&A!V8",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; D&A до МСФО 16 (строка SG&A; обесценение отдельно не выделено)"
+   },
+   "capex": {
+    "v": 85.734,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!U36 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!V30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!V36",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; ОС + НМА (capex_ppe + capex_intangibles), знак: положительным"
+   }
+  },
+  "2025H1": {
+   "revenue": {
+    "v": 2243.992,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!W6 + financial_and_operating_results_q2_2026.xlsx › Profit and Loss!X6",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 130.069,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W14 + financial_and_operating_results_q2_2026.xlsx › EBITDA!X14",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "lti": {
+    "v": 3.188,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W16 + financial_and_operating_results_q2_2026.xlsx › EBITDA!X16",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; знак: расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 122.754,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W22 + financial_and_operating_results_q2_2026.xlsx › EBITDA!X22",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; EBITDA до МСФО 16 (= скорр. − LTI − разовые)"
+   },
+   "da": {
+    "v": 50.32,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!W8 + financial_and_operating_results_q2_2026.xlsx › SG&A!X8",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; D&A до МСФО 16 (строка SG&A; обесценение отдельно не выделено)"
+   },
+   "capex": {
+    "v": 101.58,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!W36 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!X30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!X36",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; ОС + НМА (capex_ppe + capex_intangibles), знак: положительным"
+   }
+  },
+  "2025H2": {
+   "revenue": {
+    "v": 2398.042,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Y6 + financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Z6",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 155.399,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y14 + financial_and_operating_results_q2_2026.xlsx › EBITDA!Z14",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "lti": {
+    "v": 5.044,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y16 + financial_and_operating_results_q2_2026.xlsx › EBITDA!Z16",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; знак: расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 150.355,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y22 + financial_and_operating_results_q2_2026.xlsx › EBITDA!Z22",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; EBITDA до МСФО 16 (= скорр. − LTI − разовые)"
+   },
+   "da": {
+    "v": 61.966,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Y8 + financial_and_operating_results_q2_2026.xlsx › SG&A!Z8",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; D&A до МСФО 16 (строка SG&A; обесценение отдельно не выделено)"
+   },
+   "capex": {
+    "v": 113.645,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y36 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!Z30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!Z36",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; ОС + НМА (capex_ppe + capex_intangibles), знак: положительным"
+   }
+  },
+  "2026H1": {
+   "revenue": {
+    "v": 2480.513,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AA6 + financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AB6",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 141.341,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA14 + financial_and_operating_results_q2_2026.xlsx › EBITDA!AB14",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000"
+   },
+   "lti": {
+    "v": 4.675,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA16 + financial_and_operating_results_q2_2026.xlsx › EBITDA!AB16",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; знак: расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 136.666,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA22 + financial_and_operating_results_q2_2026.xlsx › EBITDA!AB22",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; EBITDA до МСФО 16 (= скорр. − LTI − разовые)"
+   },
+   "da": {
+    "v": 57.931,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!AA8 + financial_and_operating_results_q2_2026.xlsx › SG&A!AB8",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; D&A до МСФО 16 (строка SG&A; обесценение отдельно не выделено)"
+   },
+   "capex": {
+    "v": 92.664,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA36 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB30 + financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB36",
+    "calc": "сумма двух кварталов полугодия; млн ₽ / 1000; ОС + НМА (capex_ppe + capex_intangibles), знак: положительным"
+   }
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млрд ₽",
+ "note": "ФИКСТУРА ТЕСТОВ ЯДРА: перенос из x5-850-handoff/research/facts (агент X1) с источниками; не выверена агентом фактов. Рабочие факты — data/facts/.",
+ "net_debt": {
+  "v": 310.647,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R11",
+  "calc": "чистый долг компании до МСФО 16 (общий долг с лизингом − денежные средства); млн ₽ / 1000"
+ },
+ "total_debt": {
+  "v": 435.857,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R6",
+  "calc": "млн ₽ / 1000"
+ },
+ "cash": {
+  "v": 125.21,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R26",
+  "calc": "млн ₽ / 1000"
+ },
+ "leasing": {
+  "v": 1.148,
+  "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) баланс с. 5, прим. 15 с. 20, прим. 25 с. 25; пресс-релиз 2 кв. 2026 с. 12",
+  "calc": "общий долг 435,857 − кредиты и займы 434,709"
+ },
+ "dividends_payable": {
+  "v": 60.425,
+  "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, прим. 27 с. 26; Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4 с. 41–42"
+ },
+ "nwc": {
+  "v": -78.512,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R19, R23, R48; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, прим. 13 «Резервы и прочие краткосрочные обязательства»",
+  "calc": "nwc_trade − налоги, кроме налога на прибыль − налог на прибыль к уплате − краткосрочные обязательства по договорам (определение A-W0 книги Магнита); млн ₽ / 1000"
+ },
+ "revenue_ltm": {
+  "v": 4878.555,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AB6 + financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AA6 + financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Z6 + financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Y6",
+  "calc": "выручка LTM = сумма 4 кварталов 2025Q3…2026Q2; млн ₽ / 1000"
+ },
+ "ebitda_rep_ltm": {
+  "v": 287.021,
+  "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AB22 + financial_and_operating_results_q2_2026.xlsx › EBITDA!AA22 + financial_and_operating_results_q2_2026.xlsx › EBITDA!Z22 + financial_and_operating_results_q2_2026.xlsx › EBITDA!Y22",
+  "calc": "EBITDA до МСФО 16 LTM; млн ₽ / 1000"
+ },
+ "adj_ebitda_ltm": {
+  "v": 296.74,
+  "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y14 + financial_and_operating_results_q2_2026.xlsx › EBITDA!Z14 + financial_and_operating_results_q2_2026.xlsx › EBITDA!AA14 + financial_and_operating_results_q2_2026.xlsx › EBITDA!AB14",
+  "calc": "скорр. EBITDA 2025H2 + 2026H1; млн ₽ / 1000"
+ },
+ "lease_liabilities_ifrs16": {
+  "v": 742.991,
+  "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 11 с. 18, прим. 24 с. 24"
+ },
+ "credit_lines_unused": {
+  "v": null,
+  "src": "в research/facts/bridge_items.json не собрано"
+ }
+}

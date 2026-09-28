@@ -1,0 +1,24 @@
+{
+ "_about": "Планы и цели компании по сети, рынок и внешние ориентиры (ручная выписка со ссылками на строки текстов reference/primary/text/ или на исследования X3). Класс: A — первичка X5, B — вторичка.",
+ "sha256": {
+  "x5-ar25-strategic-report.html": "c5c5949e3b0d35e30acc5f14437f0acf314d38883bd4a5a7950613b983b7eb06",
+  "x5_investor_day_2025.pdf": "e9790ec961a335bcec577596b4522ae89dd13b47558dc8a7d8dcfce676619045",
+  "x5_q2_2026_financial_results_rus.pdf": "ef20fdc30d9ae6b4ac19513896238b68efe6c245bbbcf574cf53bd5bde137e4f",
+  "x5-ar25.pdf": "45697eb36749f8895d8343b6776a14f4f8ed9a373ffb485784076999a1bbb6a2"
+ },
+ "openings_2026_min": {"v": 2000, "cls": "A", "src": "x5_q2_2026_financial_results_rus.txt, стр. 45 («сохраняет план по открытию более 2 000 магазинов в 2026 году»; 13.08.2026)"},
+ "pyaterochka_openings_2026_plan": {"v": 1300, "cls": "A", "src": "x5-ar25-strategic-report.txt, стр. 2357 («Открыть более 1,3 тыс. магазинов и более 200 магазинов обратного франчайзинга (без учёта закрытий)»)"},
+ "pyaterochka_reverse_franchise_2026_plan": {"v": 200, "cls": "A", "src": "x5-ar25-strategic-report.txt, стр. 2357"},
+ "reverse_franchise_2025": {"new": 233, "total_end_2025": 693, "cls": "A", "src": "x5-ar25-strategic-report.txt, стр. 2256–2266"},
+ "chizhik_openings_2026_plan": {"v": 800, "cls": "A", "src": "x5-ar25-strategic-report.txt, стр. 2714 («открытия около 800 новых магазинов»)"},
+ "chizhik_2025": {"opened_gross": 926, "net": 907, "cls": "A", "src": "x5-ar25-strategic-report.txt, стр. 2652 и 1331"},
+ "target_2028_pyaterochka_stores": {"v": 29500, "cls": "A", "src": "x5_investor_day_2025.txt, стр. 327–329 («29 500+ магазинов к 2028 году»)"},
+ "target_2028_perekrestok_stores": {"v": 1000, "cls": "A", "src": "x5_investor_day_2025.txt, стр. 327–329 («1 000+ магазинов к 2028 году»)"},
+ "target_2028_chizhik_stores": {"v": 5000, "cls": "A", "src": "x5_investor_day_2025.txt, стр. 327–329 и 361 («5 000 магазинов в 2028 году»)"},
+ "market_share_x5": {"2024": 0.156, "2025": 0.166, "cls": "A", "src": "x5-ar25.txt, стр. 897 и 1257 (INFOLine в годовом отчёте X5)"},
+ "grocery_market_trn_rub": {"2025": 29.6, "2026": 32.1, "2027": 34.6, "2028": 37.0, "2029": 39.4, "cls": "B", "src": "x5-ar25.txt, стр. 1198 (INFOLine и оценка X5; 2026–2029 — прогноз)"},
+ "magnit_openings_1h2026_yoy": {"v": -0.65, "cls": "B", "src": "research/X3-strategy.md §2.7 (dvizhenie.ru, 10.09.2026: открытия Магнита в 1П2026 −65 % г/г, капвложения −46 %)"},
+ "municipal_share_cap": {"v": 0.25, "cls": "B", "src": "research/X3-strategy.md §5 (ФЗ-381 «О торговле», ст. 14: сеть с долей > 25 % продовольственной розницы в муниципальном образовании не может приобретать/арендовать дополнительную площадь; редакция не проверялась)"},
+ "guidance_2026_revenue_growth": {"v": [0.12, 0.16], "cls": "A", "src": "data/facts/guidance.json (x5-news-2026-03-20-guidance-2026.html)"},
+ "retro_q3_2026_revenue_growth": {"v": [0.0938, 0.1068], "cls": "B", "src": "research/X5-indicators.md §4 («Применение к 3 кв. 2026»: F4s +9,38 %, F4 +10,68 %; RMSE метода 2,5 п.п.)"}
+}

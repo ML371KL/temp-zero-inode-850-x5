@@ -1,0 +1,858 @@
+{
+ "_about": "Индекс потребительских цен на продовольственные товары, к предыдущему месяцу, % (Росстат).",
+ "source": {
+  "file": "x5-850-handoff/reference/primary/rosstat_ipc_mes_08-2026.xlsx",
+  "sheet": "02",
+  "sha256": "4ef8b1d7a70d3b3e40260d4374b063a176b6fd628d7bf7289a7343ab621f6ebf"
+ },
+ "mom_pct": {
+  "2009-01": {
+   "v": 101.4,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T6"
+  },
+  "2009-02": {
+   "v": 101.85,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T7"
+  },
+  "2009-03": {
+   "v": 101.69,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T8"
+  },
+  "2009-04": {
+   "v": 100.69,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T9"
+  },
+  "2009-05": {
+   "v": 100.66,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T10"
+  },
+  "2009-06": {
+   "v": 100.51,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T11"
+  },
+  "2009-07": {
+   "v": 100.55,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T12"
+  },
+  "2009-08": {
+   "v": 99.11,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T13"
+  },
+  "2009-09": {
+   "v": 99.21,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T14"
+  },
+  "2009-10": {
+   "v": 99.47,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T15"
+  },
+  "2009-11": {
+   "v": 100.27,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T16"
+  },
+  "2009-12": {
+   "v": 100.55,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!T17"
+  },
+  "2010-01": {
+   "v": 101.42,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U6"
+  },
+  "2010-02": {
+   "v": 101.26,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U7"
+  },
+  "2010-03": {
+   "v": 101.03,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U8"
+  },
+  "2010-04": {
+   "v": 100.3,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U9"
+  },
+  "2010-05": {
+   "v": 100.69,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U10"
+  },
+  "2010-06": {
+   "v": 100.54,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U11"
+  },
+  "2010-07": {
+   "v": 100.31,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U12"
+  },
+  "2010-08": {
+   "v": 100.9,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U13"
+  },
+  "2010-09": {
+   "v": 101.62,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U14"
+  },
+  "2010-10": {
+   "v": 100.7,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U15"
+  },
+  "2010-11": {
+   "v": 101.35,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U16"
+  },
+  "2010-12": {
+   "v": 102.07,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!U17"
+  },
+  "2011-01": {
+   "v": 102.6,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V6"
+  },
+  "2011-02": {
+   "v": 101.22,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V7"
+  },
+  "2011-03": {
+   "v": 100.94,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V8"
+  },
+  "2011-04": {
+   "v": 100.36,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V9"
+  },
+  "2011-05": {
+   "v": 100.03,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V10"
+  },
+  "2011-06": {
+   "v": 99.75,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V11"
+  },
+  "2011-07": {
+   "v": 99.29,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V12"
+  },
+  "2011-08": {
+   "v": 98.63,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V13"
+  },
+  "2011-09": {
+   "v": 99.35,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V14"
+  },
+  "2011-10": {
+   "v": 100.51,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V15"
+  },
+  "2011-11": {
+   "v": 100.52,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V16"
+  },
+  "2011-12": {
+   "v": 100.67,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!V17"
+  },
+  "2012-01": {
+   "v": 100.76,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W6"
+  },
+  "2012-02": {
+   "v": 100.68,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W7"
+  },
+  "2012-03": {
+   "v": 100.81,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W8"
+  },
+  "2012-04": {
+   "v": 100.23,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W9"
+  },
+  "2012-05": {
+   "v": 100.56,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W10"
+  },
+  "2012-06": {
+   "v": 101.61,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W11"
+  },
+  "2012-07": {
+   "v": 101.11,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W12"
+  },
+  "2012-08": {
+   "v": 99.48,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W13"
+  },
+  "2012-09": {
+   "v": 100.14,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W14"
+  },
+  "2012-10": {
+   "v": 100.53,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W15"
+  },
+  "2012-11": {
+   "v": 100.45,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W16"
+  },
+  "2012-12": {
+   "v": 100.88,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!W17"
+  },
+  "2013-01": {
+   "v": 101.76,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X6"
+  },
+  "2013-02": {
+   "v": 100.81,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X7"
+  },
+  "2013-03": {
+   "v": 100.41,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X8"
+  },
+  "2013-04": {
+   "v": 100.7,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X9"
+  },
+  "2013-05": {
+   "v": 100.95,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X10"
+  },
+  "2013-06": {
+   "v": 100.5,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X11"
+  },
+  "2013-07": {
+   "v": 99.95,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X12"
+  },
+  "2013-08": {
+   "v": 99.25,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X13"
+  },
+  "2013-09": {
+   "v": 99.98,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X14"
+  },
+  "2013-10": {
+   "v": 101.11,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X15"
+  },
+  "2013-11": {
+   "v": 100.94,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X16"
+  },
+  "2013-12": {
+   "v": 100.75,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!X17"
+  },
+  "2014-01": {
+   "v": 101.02,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y6"
+  },
+  "2014-02": {
+   "v": 101.18,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y7"
+  },
+  "2014-03": {
+   "v": 101.76,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y8"
+  },
+  "2014-04": {
+   "v": 101.29,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y9"
+  },
+  "2014-05": {
+   "v": 101.45,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y10"
+  },
+  "2014-06": {
+   "v": 100.69,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y11"
+  },
+  "2014-07": {
+   "v": 99.94,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y12"
+  },
+  "2014-08": {
+   "v": 99.74,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y13"
+  },
+  "2014-09": {
+   "v": 101.0,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y14"
+  },
+  "2014-10": {
+   "v": 101.17,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y15"
+  },
+  "2014-11": {
+   "v": 101.99,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y16"
+  },
+  "2014-12": {
+   "v": 103.25,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Y17"
+  },
+  "2015-01": {
+   "v": 105.66,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z6"
+  },
+  "2015-02": {
+   "v": 103.29,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z7"
+  },
+  "2015-03": {
+   "v": 101.57,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z8"
+  },
+  "2015-04": {
+   "v": 100.33,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z9"
+  },
+  "2015-05": {
+   "v": 100.07,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z10"
+  },
+  "2015-06": {
+   "v": 99.55,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z11"
+  },
+  "2015-07": {
+   "v": 99.73,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z12"
+  },
+  "2015-08": {
+   "v": 99.34,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z13"
+  },
+  "2015-09": {
+   "v": 100.42,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z14"
+  },
+  "2015-10": {
+   "v": 101.04,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z15"
+  },
+  "2015-11": {
+   "v": 101.16,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z16"
+  },
+  "2015-12": {
+   "v": 101.18,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!Z17"
+  },
+  "2016-01": {
+   "v": 101.19,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA6"
+  },
+  "2016-02": {
+   "v": 100.68,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA7"
+  },
+  "2016-03": {
+   "v": 100.4,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA8"
+  },
+  "2016-04": {
+   "v": 100.42,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA9"
+  },
+  "2016-05": {
+   "v": 100.37,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA10"
+  },
+  "2016-06": {
+   "v": 100.12,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA11"
+  },
+  "2016-07": {
+   "v": 99.96,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA12"
+  },
+  "2016-08": {
+   "v": 99.41,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA13"
+  },
+  "2016-09": {
+   "v": 99.86,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA14"
+  },
+  "2016-10": {
+   "v": 100.78,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA15"
+  },
+  "2016-11": {
+   "v": 100.72,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA16"
+  },
+  "2016-12": {
+   "v": 100.58,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AA17"
+  },
+  "2017-01": {
+   "v": 100.85,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB6"
+  },
+  "2017-02": {
+   "v": 100.2,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB7"
+  },
+  "2017-03": {
+   "v": 100.14,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB8"
+  },
+  "2017-04": {
+   "v": 100.6,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB9"
+  },
+  "2017-05": {
+   "v": 100.59,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB10"
+  },
+  "2017-06": {
+   "v": 101.02,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB11"
+  },
+  "2017-07": {
+   "v": 99.03,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB12"
+  },
+  "2017-08": {
+   "v": 98.2,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB13"
+  },
+  "2017-09": {
+   "v": 99.29,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB14"
+  },
+  "2017-10": {
+   "v": 100.38,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB15"
+  },
+  "2017-11": {
+   "v": 100.2,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB16"
+  },
+  "2017-12": {
+   "v": 100.6,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AB17"
+  },
+  "2018-01": {
+   "v": 100.5,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC6"
+  },
+  "2018-02": {
+   "v": 100.35,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC7"
+  },
+  "2018-03": {
+   "v": 100.53,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC8"
+  },
+  "2018-04": {
+   "v": 100.43,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC9"
+  },
+  "2018-05": {
+   "v": 99.94,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC10"
+  },
+  "2018-06": {
+   "v": 100.38,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC11"
+  },
+  "2018-07": {
+   "v": 99.67,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC12"
+  },
+  "2018-08": {
+   "v": 99.62,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC13"
+  },
+  "2018-09": {
+   "v": 99.92,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC14"
+  },
+  "2018-10": {
+   "v": 100.55,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC15"
+  },
+  "2018-11": {
+   "v": 100.99,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC16"
+  },
+  "2018-12": {
+   "v": 101.7,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AC17"
+  },
+  "2019-01": {
+   "v": 101.27,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD6"
+  },
+  "2019-02": {
+   "v": 100.79,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD7"
+  },
+  "2019-03": {
+   "v": 100.53,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD8"
+  },
+  "2019-04": {
+   "v": 100.43,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD9"
+  },
+  "2019-05": {
+   "v": 100.41,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD10"
+  },
+  "2019-06": {
+   "v": 99.52,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD11"
+  },
+  "2019-07": {
+   "v": 99.7,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD12"
+  },
+  "2019-08": {
+   "v": 99.09,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD13"
+  },
+  "2019-09": {
+   "v": 99.56,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD14"
+  },
+  "2019-10": {
+   "v": 100.18,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD15"
+  },
+  "2019-11": {
+   "v": 100.45,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD16"
+  },
+  "2019-12": {
+   "v": 100.65,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AD17"
+  },
+  "2020-01": {
+   "v": 100.69,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE6"
+  },
+  "2020-02": {
+   "v": 100.57,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE7"
+  },
+  "2020-03": {
+   "v": 100.96,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE8"
+  },
+  "2020-04": {
+   "v": 101.72,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE9"
+  },
+  "2020-05": {
+   "v": 100.16,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE10"
+  },
+  "2020-06": {
+   "v": 100.17,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE11"
+  },
+  "2020-07": {
+   "v": 99.93,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE12"
+  },
+  "2020-08": {
+   "v": 99.23,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE13"
+  },
+  "2020-09": {
+   "v": 99.59,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE14"
+  },
+  "2020-10": {
+   "v": 100.62,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE15"
+  },
+  "2020-11": {
+   "v": 101.34,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE16"
+  },
+  "2020-12": {
+   "v": 101.53,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AE17"
+  },
+  "2021-01": {
+   "v": 101.01,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF6"
+  },
+  "2021-02": {
+   "v": 101.22,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF7"
+  },
+  "2021-03": {
+   "v": 100.82,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF8"
+  },
+  "2021-04": {
+   "v": 100.75,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF9"
+  },
+  "2021-05": {
+   "v": 100.96,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF10"
+  },
+  "2021-06": {
+   "v": 100.64,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF11"
+  },
+  "2021-07": {
+   "v": 99.5,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF12"
+  },
+  "2021-08": {
+   "v": 99.49,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF13"
+  },
+  "2021-09": {
+   "v": 100.99,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF14"
+  },
+  "2021-10": {
+   "v": 102.17,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF15"
+  },
+  "2021-11": {
+   "v": 101.27,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF16"
+  },
+  "2021-12": {
+   "v": 101.36,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AF17"
+  },
+  "2022-01": {
+   "v": 101.44,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG6"
+  },
+  "2022-02": {
+   "v": 101.56,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG7"
+  },
+  "2022-03": {
+   "v": 106.73,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG8"
+  },
+  "2022-04": {
+   "v": 102.87,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG9"
+  },
+  "2022-05": {
+   "v": 100.6,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG10"
+  },
+  "2022-06": {
+   "v": 98.9,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG11"
+  },
+  "2022-07": {
+   "v": 98.47,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG12"
+  },
+  "2022-08": {
+   "v": 98.64,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG13"
+  },
+  "2022-09": {
+   "v": 99.62,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG14"
+  },
+  "2022-10": {
+   "v": 100.28,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG15"
+  },
+  "2022-11": {
+   "v": 100.4,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG16"
+  },
+  "2022-12": {
+   "v": 100.6,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AG17"
+  },
+  "2023-01": {
+   "v": 101.32,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH6"
+  },
+  "2023-02": {
+   "v": 100.79,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH7"
+  },
+  "2023-03": {
+   "v": 100.13,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH8"
+  },
+  "2023-04": {
+   "v": 100.29,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH9"
+  },
+  "2023-05": {
+   "v": 99.69,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH10"
+  },
+  "2023-06": {
+   "v": 99.99,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH11"
+  },
+  "2023-07": {
+   "v": 100.49,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH12"
+  },
+  "2023-08": {
+   "v": 99.94,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH13"
+  },
+  "2023-09": {
+   "v": 100.86,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH14"
+  },
+  "2023-10": {
+   "v": 101.35,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH15"
+  },
+  "2023-11": {
+   "v": 101.55,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH16"
+  },
+  "2023-12": {
+   "v": 101.49,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AH17"
+  },
+  "2024-01": {
+   "v": 101.26,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI6"
+  },
+  "2024-02": {
+   "v": 100.77,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI7"
+  },
+  "2024-03": {
+   "v": 100.17,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI8"
+  },
+  "2024-04": {
+   "v": 100.49,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI9"
+  },
+  "2024-05": {
+   "v": 100.41,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI10"
+  },
+  "2024-06": {
+   "v": 100.63,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI11"
+  },
+  "2024-07": {
+   "v": 100.36,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI12"
+  },
+  "2024-08": {
+   "v": 99.99,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI13"
+  },
+  "2024-09": {
+   "v": 100.34,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI14"
+  },
+  "2024-10": {
+   "v": 101.23,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI15"
+  },
+  "2024-11": {
+   "v": 102.33,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI16"
+  },
+  "2024-12": {
+   "v": 102.6,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AI17"
+  },
+  "2025-01": {
+   "v": 101.33,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ6"
+  },
+  "2025-02": {
+   "v": 101.27,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ7"
+  },
+  "2025-03": {
+   "v": 100.83,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ8"
+  },
+  "2025-04": {
+   "v": 100.71,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ9"
+  },
+  "2025-05": {
+   "v": 100.26,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ10"
+  },
+  "2025-06": {
+   "v": 100.11,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ11"
+  },
+  "2025-07": {
+   "v": 99.36,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ12"
+  },
+  "2025-08": {
+   "v": 99.09,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ13"
+  },
+  "2025-09": {
+   "v": 100.03,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ14"
+  },
+  "2025-10": {
+   "v": 101.05,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ15"
+  },
+  "2025-11": {
+   "v": 100.69,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ16"
+  },
+  "2025-12": {
+   "v": 100.43,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AJ17"
+  },
+  "2026-01": {
+   "v": 101.95,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK6"
+  },
+  "2026-02": {
+   "v": 100.84,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK7"
+  },
+  "2026-03": {
+   "v": 100.38,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK8"
+  },
+  "2026-04": {
+   "v": 99.8,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK9"
+  },
+  "2026-05": {
+   "v": 99.15,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK10"
+  },
+  "2026-06": {
+   "v": 100.65,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK11"
+  },
+  "2026-07": {
+   "v": 100.29,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK12"
+  },
+  "2026-08": {
+   "v": 99.74,
+   "src": "rosstat_ipc_mes_08-2026.xlsx › 02!AK13"
+  }
+ }
+}

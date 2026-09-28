@@ -1,0 +1,59 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млрд ₽",
+ "note": "ФИКСТУРА ТЕСТОВ ЯДРА: перенос из x5-850-handoff/research/facts (агент X1) с источниками; не выверена агентом фактов. Рабочие факты — data/facts/.",
+ "lines": [
+  {
+   "key": "accrued_interest",
+   "label": "Начисленные проценты",
+   "amount": {
+    "v": 1.719,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) баланс с. 5, прим. 15 с. 20, прим. 25 с. 25; пресс-релиз 2 кв. 2026 с. 12"
+   }
+  },
+  {
+   "key": "nci_put",
+   "label": "Пут на неконтролирующую долю",
+   "amount": {
+    "v": 0.698,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, с. 8; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 7 с. 23; МСФО 2024 (reference/primary/ifrs-fy2024_godovaya-konsolidirovannaya-finansovaya-otchetnost.pdf) прим. 19 с. 53"
+   }
+  },
+  {
+   "key": "lti_liability",
+   "label": "Обязательство LTI",
+   "amount": {
+    "v": 7.896,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19",
+    "calc": "долгосрочная часть; краткосрочная не раскрыта отдельно"
+   }
+  },
+  {
+   "key": "tax_provisions_net",
+   "label": "Резервы по налоговым позициям (нетто)",
+   "amount": {
+    "v": 7.599,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, баланс с. 5, прим. 6 с. 13, прим. 26 с. 26; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 34 с. 54–56",
+    "calc": "резервы по неопределённым налоговым позициям 10,167 − компенсирующий актив 2,568"
+   }
+  },
+  {
+   "key": "st_investments",
+   "label": "Краткосрочные финансовые вложения",
+   "amount": {
+    "v": -0.204,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) баланс с. 5, прим. 8 с. 15, прим. 24 с. 24",
+    "calc": "актив — со знаком минус"
+   }
+  },
+  {
+   "key": "associates",
+   "label": "Инвестиции в ассоциированные и СП",
+   "amount": {
+    "v": -0.969,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) баланс с. 5, прим. 9 с. 16, ОДДС с. 7",
+    "calc": "балансовая стоимость; актив — со знаком минус"
+   }
+  }
+ ]
+}

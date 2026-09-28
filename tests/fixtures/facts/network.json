@@ -1,0 +1,119 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "тыс. м²",
+ "note": "ФИКСТУРА ТЕСТОВ ЯДРА: перенос из x5-850-handoff/research/facts (агент X1) с источниками; не выверена агентом фактов. Рабочие факты — data/facts/.",
+ "area_end": {
+  "2023H2": {
+   "v": 10206.011,
+   "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ76",
+   "calc": "торговая площадь всего на конец квартала, тыс. м² (КЯ/Слата — в итоге во всех датах)"
+  },
+  "2024H1": {
+   "v": 10538.84925,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H53",
+   "calc": "торговая площадь всего на конец квартала, тыс. м² (КЯ/Слата — в итоге во всех датах)"
+  },
+  "2024H2": {
+   "v": 11062.348,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K53",
+   "calc": "торговая площадь всего на конец квартала, тыс. м² (КЯ/Слата — в итоге во всех датах)"
+  },
+  "2025H1": {
+   "v": 11477.03717,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O53",
+   "calc": "торговая площадь всего на конец квартала, тыс. м² (КЯ/Слата — в итоге во всех датах)"
+  },
+  "2025H2": {
+   "v": 11912.101,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R53",
+   "calc": "торговая площадь всего на конец квартала, тыс. м² (КЯ/Слата — в итоге во всех датах)"
+  },
+  "2026H1": {
+   "v": 12157.24,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U53",
+   "calc": "торговая площадь всего на конец квартала, тыс. м² (КЯ/Слата — в итоге во всех датах)"
+  }
+ },
+ "net_added": {
+  "2024H1": {
+   "v": 332.83825,
+   "calc": "area_end 2024H1 − area_end 2023H2"
+  },
+  "2024H2": {
+   "v": 523.49875,
+   "calc": "area_end 2024H2 − area_end 2024H1"
+  },
+  "2025H1": {
+   "v": 414.68917,
+   "calc": "area_end 2025H1 − area_end 2024H2"
+  },
+  "2025H2": {
+   "v": 435.06383,
+   "calc": "area_end 2025H2 − area_end 2025H1"
+  },
+  "2026H1": {
+   "v": 245.139,
+   "calc": "area_end 2026H1 − area_end 2025H2"
+  }
+ },
+ "gross_opened_hist": {
+  "2024H1": {
+   "v": 434.89836,
+   "calc": "оценка (валовые открытия не раскрыты): чистый прирост 2024H1 + закрытия по ставке книги network.close_rate LT 0.02 годовых × area_end 2023H2 / 2"
+  },
+  "2024H2": {
+   "v": 628.887243,
+   "calc": "оценка (валовые открытия не раскрыты): чистый прирост 2024H2 + закрытия по ставке книги network.close_rate LT 0.02 годовых × area_end 2024H1 / 2"
+  },
+  "2025H1": {
+   "v": 525.31265,
+   "calc": "оценка (валовые открытия не раскрыты): чистый прирост 2025H1 + закрытия по ставке книги network.close_rate LT 0.02 годовых × area_end 2024H2 / 2"
+  },
+  "2025H2": {
+   "v": 549.834202,
+   "calc": "оценка (валовые открытия не раскрыты): чистый прирост 2025H2 + закрытия по ставке книги network.close_rate LT 0.02 годовых × area_end 2025H1 / 2"
+  },
+  "2026H1": {
+   "v": 364.26001,
+   "calc": "оценка (валовые открытия не раскрыты): чистый прирост 2026H1 + закрытия по ставке книги network.close_rate LT 0.02 годовых × area_end 2025H2 / 2"
+  }
+ },
+ "stores_end": {
+  "2026H1": {
+   "v": 30604.0,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U48"
+  }
+ },
+ "by_format_2026H1": {
+  "pyaterochka": {
+   "area": {
+    "v": 10012.2,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U50"
+   },
+   "stores": {
+    "v": 26004.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U45"
+   }
+  },
+  "perekrestok": {
+   "area": {
+    "v": 1100.877,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U51"
+   },
+   "stores": {
+    "v": 1004.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U46"
+   }
+  },
+  "chizhik": {
+   "area": {
+    "v": 1044.163,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U52"
+   },
+   "stores": {
+    "v": 3596.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U47"
+   }
+  }
+ }
+}

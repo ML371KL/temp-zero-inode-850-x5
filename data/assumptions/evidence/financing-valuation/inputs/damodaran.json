@@ -1,0 +1,21 @@
+{
+ "_about": "Damodaran, Country Default Spreads and Risk Premiums",
+ "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html",
+ "last_updated": "January 5, 2026",
+ "accessed": "2026-09-28",
+ "sha256": "ea30d57fc0858072c520930e2e5b8a5e5affdce81f7f2e1f9054efab79959dbc",
+ "Russia": {
+  "rating": "NR",
+  "default_spread": 0.0256,
+  "crp": 0.039,
+  "erp": 0.08130000000000001
+ },
+ "United States": {
+  "rating": "Aa1",
+  "default_spread": 0.0023,
+  "crp": 0.0023,
+  "erp": 0.0446
+ },
+ "mature_erp": 0.0423,
+ "note": "зрелая премия = ERP США − её добавка (по методу страницы: US ERP минус default spread US)"
+}

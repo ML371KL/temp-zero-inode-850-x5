@@ -1,0 +1,28 @@
+{
+"securities": {
+	"columns": ["SECURITY_TYPE", "SECURITY_TYPE_ID", "TYPE", "SECID", "SHORTNAME", "NAME", "REGNUMBER", "IS_TRADED", "PRIMARY_BOARDID", "MARKET", "ENGINE", "FACEVALUE", "FACEUNIT", "ISIN", "CLASS_UNIT"], 
+	"data": [
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10AT27", "ИКС5Ф3P10", "ИКС 5 ФИНАНС 003P-10", "4B02-10-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10AT27", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10AT35", "ИКС5Ф3P11", "ИКС 5 ФИНАНС 003P-11", "4B02-11-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10AT35", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10AHA3", "ИКС5Фин3P7", "ИКС 5 ФИНАНС 003P-07", "4B02-07-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10AHA3", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A1075S4", "ИКС5Фин3P2", "ИКС 5 ФИНАНС 003Р-02", "4B02-02-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A1075S4", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10DYP0", "ИКС5Фи3P15", "ИКС 5 ФИНАНС 003P-15", "4B02-15-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10DYP0", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10E6V2", "ИКС5Фи3P17", "ИКС 5 ФИНАНС 003P-17", "4B02-17-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10E6V2", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10F9D3", "ИКС5Фи3P21", "ИКС 5 ФИНАНС 003P-21", "4B02-21-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10F9D3", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10BUK3", "ИКС5Фи3P12", "ИКС 5 ФИНАНС 003P-12", "4B02-12-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10BUK3", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A109KC0", "ИКС5Фин3P6", "ИКС 5 ФИНАНС 003P-06", "4B02-06-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A109KC0", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10CSX8", "ИКС5Фи3P14", "ИКС 5 ФИНАНС 003P-14", "4B02-14-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10CSX8", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A108LU2", "ИКС5Фин3P5", "ИКС 5 ФИНАНС 003P-05", "4B02-05-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A108LU2", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10C5Y0", "ИКС5Фи3P13", "ИКС 5 ФИНАНС 003P-13", "4B02-13-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10C5Y0", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10EL70", "ИКС5Фи3P18", "ИКС 5 ФИНАНС 003P-18", "4B02-18-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10EL70", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10E6Q2", "ИКС5Фи3P16", "ИКС 5 ФИНАНС 003P-16", "4B02-16-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10E6Q2", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10EL96", "ИКС5Фи3P20", "ИКС 5 ФИНАНС 003P-20", "4B02-20-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10EL96", null],
+		["Биржевая облигация", 43, "exchange_bond", "RU000A10EL88", "ИКС5Фи3P19", "ИКС 5 ФИНАНС 003P-19", "4B02-19-36241-R-003P", 1, "TQCB", "bonds", "stock", 1000, "RUB", "RU000A10EL88", null]
+	]
+},
+"securities.cursor": {
+	"columns": ["INDEX", "TOTAL", "PAGESIZE"], 
+	"data": [
+		[0, 16, 16]
+	]
+}}

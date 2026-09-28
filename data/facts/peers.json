@@ -1,0 +1,180 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млрд ₽; акции — млн шт.",
+ "basis": "одна база для всех: чистый долг до МСФО 16 на 30.06.2026, EBITDA до МСФО 16 (отчётная) и чистая прибыль за 12 мес. на 30.06.2026 (LTM 1П2026); цена — живая, берёт конвейер",
+ "rows": [
+  {
+   "ticker": "X5",
+   "name": "X5",
+   "shares_outstanding": {
+    "v": 245.98118,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21"
+   },
+   "net_debt": {
+    "v": 310.647,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R11"
+   },
+   "dividends_after_balance": {
+    "v": 60.265,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 22",
+    "calc": "объявлены до даты баланса, реестр 07.07.2026 — после"
+   },
+   "ebitda_ltm": {
+    "v": 287.021,
+    "calc": "balance.ebitda_rep_ltm"
+   },
+   "revenue_ltm": {
+    "v": 4878.555,
+    "calc": "balance.revenue_ltm"
+   },
+   "net_profit_ltm": {
+    "v": 66.469,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AM22 + AN22 + AO22 + AP22",
+    "calc": "чистая прибыль по МСФО (IFRS 16), 3 кв. 2025 – 2 кв. 2026"
+   },
+   "net_profit_ltm_pre16": {
+    "v": 81.141,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Y22 + Z22 + AA22 + AB22"
+   },
+   "reported_on": "2026-08-13"
+  },
+  {
+   "ticker": "MGNT",
+   "name": "Магнит",
+   "shares_outstanding": {
+    "v": 67.847,
+    "src": "magnit-850oa (ветка v5, только чтение) data/assumptions/assumptions.yaml › facts.shares_mln (в обращении; выпущено 101,911, у дочерних 34,064)"
+   },
+   "net_debt": {
+    "v": 518.111,
+    "src": "magnit-850oa (ветка v5, только чтение) data/assumptions/evidence/book-1.4/beta/inputs/net_debt.json › MGNT.2026-06-30 (magnit-model/data/nd_pit_quarterly.csv as_of=2026-06-30 (exact (Databook)))"
+   },
+   "dividends_after_balance": {
+    "v": 0.0,
+    "src": "magnit-850oa (ветка v5, только чтение) data/facts/peers.json (выплат нет)"
+   },
+   "ebitda_ltm": {
+    "v": 179.635043,
+    "src": "magnit-850oa (ветка v5, только чтение) data/facts/history.json › pnl.pre_ifrs16.2025H2.ebitda + 2026H1.ebitda (databook Магнита, IAS 17)"
+   },
+   "revenue_ltm": {
+    "v": 3723.189819,
+    "src": "magnit-850oa (ветка v5, только чтение) data/facts/history.json › pnl.pre_ifrs16 2025H2 + 2026H1"
+   },
+   "net_profit_ltm": {
+    "v": -41.275776,
+    "src": "magnit-850oa (ветка v5, только чтение) data/facts/history.json › pnl.ifrs16.2025H2.net_income + 2026H1.net_income (МСФО 16)"
+   },
+   "net_profit_ltm_pre16": {
+    "v": -25.065677,
+    "src": "magnit-850oa (ветка v5, только чтение) data/facts/history.json › pnl.pre_ifrs16 2025H2 + 2026H1 net_income"
+   },
+   "reported_on": "2026-08-28",
+   "reported_on_src": "magnit-850oa (ветка v5, только чтение) data/facts/sources.json › RELEASE_H1_2026.publication_date"
+  },
+  {
+   "ticker": "LENT",
+   "name": "Лента",
+   "shares_outstanding": {
+    "v": 115.985197,
+    "src": "magnit-850oa (ветка v5, только чтение) data/assumptions/evidence/book-1.4/beta/inputs/shares.json (ISS LENT ISSUESIZE 115 985 197, запрос 24.09.2026)"
+   },
+   "net_debt": {
+    "v": 117.411168,
+    "src": "lenta-850-handoff/reference/primary/Lenta_Q22026_DATABOOK.xlsx (sha256 0d290ed28fc13a0b…) › BS!AF54 + AF62 − AF34 (1П2026, IAS 17: кредиты долгосрочные + краткосрочные − денежные средства)"
+   },
+   "dividends_after_balance": {
+    "v": 0.0,
+    "src": "magnit-850oa (ветка v5, только чтение) data/facts/peers.json («дивидендов нет»)"
+   },
+   "ebitda_ltm": {
+    "v": 84.433077,
+    "src": "lenta-850-handoff/reference/primary/Lenta_Q22026_DATABOOK.xlsx (sha256 0d290ed28fc13a0b…) › PL!AD49 − AC49 + AE49 (IAS 17)"
+   },
+   "revenue_ltm": {
+    "v": 1238.217494,
+    "src": "lenta-850-handoff/reference/primary/Lenta_Q22026_DATABOOK.xlsx (sha256 0d290ed28fc13a0b…) › PL!AD10 − AC10 + AE10"
+   },
+   "net_profit_ltm": {
+    "v": 31.206057,
+    "src": "lenta-850-handoff/reference/primary/Lenta_Q22026_DATABOOK.xlsx (sha256 0d290ed28fc13a0b…) › PL!AT46 − AS46 + AU46 (МСФО 16)"
+   },
+   "net_profit_ltm_pre16": {
+    "v": 35.413558,
+    "src": "lenta-850-handoff/reference/primary/Lenta_Q22026_DATABOOK.xlsx (sha256 0d290ed28fc13a0b…) › PL!AD46 − AC46 + AE46 (IAS 17)"
+   },
+   "reported_on": "2026-08-03",
+   "reported_on_src": "lenta-850-handoff/reference/primary/MANIFEST.md (пресс-релиз 2 кв. 2026 от 03.08.2026)",
+   "note": "О'КЕЙ консолидирован с 02.06.2026: его долг в ЧД целиком, EBITDA — за один месяц; мультипликатор LTM завышен (research/X4 §3.1)"
+  },
+  {
+   "ticker": "FIXR",
+   "name": "Fix Price (ПАО)",
+   "shares_outstanding": {
+    "v": 99856.1,
+    "src": "peer-fixprice-pjsc-q2-2026-results-rus.pdf, с. 5 (выкуплено 300 млн, передано по LTIP 250 млн, второй этап — 93,9 млн на 26.08.2026); ISS FIXR ISSUESIZE 100 000 000 000 (research/X4)",
+    "calc": "100 000 − (300 − 250 + 93,9) млн акций; разница с выпущенными 0,14 %"
+   },
+   "net_debt": {
+    "v": 6.144,
+    "src": "peer-fixprice-pjsc-databook-6m2026.xlsx › 6!N17 («Скорр. чистый долг по МСФО (IAS) 17», 30.06.2026)"
+   },
+   "dividends_after_balance": {
+    "v": 0.0,
+    "src": "peer-fixprice-pjsc-q2-2026-results-rus.pdf (дивиденды за 2025 г. не выплачиваются)"
+   },
+   "ebitda_ltm": {
+    "v": 22.5,
+    "src": "peer-fixprice-pjsc-databook-6m2026.xlsx › 5!G23 − M23 + N23 («EBITDA по МСФО (IAS) 17»)"
+   },
+   "revenue_ltm": {
+    "v": 320.449,
+    "src": "peer-fixprice-pjsc-databook-6m2026.xlsx › 1!G6 − M6 + N6"
+   },
+   "net_profit_ltm": {
+    "v": 10.005,
+    "src": "peer-fixprice-pjsc-databook-6m2026.xlsx › 1!G22 − M22 + N22 (МСФО 16)"
+   },
+   "net_profit_ltm_pre16": {
+    "v": null,
+    "calc": "не раскрыта"
+   },
+   "reported_on": "2026-08-27"
+  },
+  {
+   "ticker": "OKEY",
+   "name": "О'Кей («ДА!»)",
+   "shares_outstanding": {
+    "v": 269.074,
+    "src": "peer-okey-1h2026-ifrs-fs.pdf, с. 21 (средневзвешенное число акций 269 074 тыс.)"
+   },
+   "net_debt": {
+    "v": -8.987381,
+    "src": "peer-okey-1h2026-ifrs-fs.pdf, с. 3–4 (кредитов и займов нет; денежные средства 8 987 381 тыс. ₽)",
+    "calc": "0 − денежные средства (чистая касса)"
+   },
+   "dividends_after_balance": {
+    "v": null,
+    "calc": "не раскрыто"
+   },
+   "ebitda_ltm": {
+    "v": null,
+    "calc": "EBITDA до МСФО 16 не раскрыта (только МСФО 16: 6М2026 4,152 млрд)"
+   },
+   "revenue_ltm": {
+    "v": null,
+    "calc": "LTM на одной базе не собрана: гипермаркеты проданы в ноябре 2025 г."
+   },
+   "net_profit_ltm": {
+    "v": null,
+    "calc": "за 2025 г. на базе продолжающейся деятельности не найдена"
+   },
+   "net_profit_ltm_pre16": {
+    "v": null,
+    "calc": "не раскрыта"
+   },
+   "reported_on": "2026-08-21",
+   "note": "после продажи гипермаркетов осталась сеть дискаунтеров «ДА!»; торгуются ГДР (OKEY)"
+  }
+ ]
+}

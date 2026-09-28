@@ -1,0 +1,269 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млрд ₽",
+ "basis": "до МСФО 16 (IAS 17)",
+ "source_note": "financial_and_operating_results_q2_2026.xlsx (databook X5, 2 кв. 2026): кварталы 3 кв. 2024 – 2 кв. 2026, столбцы U–AB; обесценение — МСФО X5 (промежуточная 1П2025, 1П2026; годовая 2024, 2025)",
+ "periods": {
+  "2024H2": {
+   "revenue": {
+    "v": 2056.336,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!U6 + V6",
+    "calc": "сумма кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 126.928,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U14 + V14",
+    "calc": "скорр. EBITDA до МСФО 16 (без LTI и разовых), сумма кварталов"
+   },
+   "lti": {
+    "v": 2.716,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U16 + V16",
+    "calc": "расход LTI и прочего вознаграждения менеджмента, знак — расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 124.212,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U22 + V22",
+    "calc": "EBITDA до МСФО 16 отчётная = скорр. − LTI − разовые"
+   },
+   "da": {
+    "v": 50.889,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!U8 + V8; ifrs-fy2024_godovaya-konsolidirovannaya-finansovaya-otchetnost.pdf прим. 10 (ОС, с. 44: 4 251 − 926), прим. 14 (НМА, с. 49: 442), прим. 12 (инвест. недвижимость, с. 47: 96 − 762); гудвил — нет (прим. 13, с. 49); finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: за 6 мес. 2024 г. чистый убыток от обесценения 1 544, восстановление 31",
+    "calc": "D&A и обесценение до МСФО 16 (SG&A, стр. 8) 52,477 − обесценение внеоборотных активов нетто (МСФО) 1,588 (2024 г. − 1П2024)"
+   },
+   "capex": {
+    "v": 85.734,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U30 + V30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!U36 + V36",
+    "calc": "денежный capex: приобретение ОС (с первоначальными затратами по ППИ) + НМА, до МСФО 16, положительным"
+   }
+  },
+  "2025H1": {
+   "revenue": {
+    "v": 2243.992,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!W6 + X6",
+    "calc": "сумма кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 130.069,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W14 + X14",
+    "calc": "скорр. EBITDA до МСФО 16 (без LTI и разовых), сумма кварталов"
+   },
+   "lti": {
+    "v": 3.188,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W16 + X16",
+    "calc": "расход LTI и прочего вознаграждения менеджмента, знак — расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 122.754,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W22 + X22",
+    "calc": "EBITDA до МСФО 16 отчётная = скорр. − LTI − разовые"
+   },
+   "da": {
+    "v": 48.961,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!W8 + X8; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17 (сравн. данные): ОС 1 036 + НМА 323; finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: «убыток от обесценения 1 359»",
+    "calc": "D&A и обесценение до МСФО 16 (SG&A, стр. 8) 50,320 − обесценение внеоборотных активов нетто (МСФО) 1,359"
+   },
+   "capex": {
+    "v": 101.58,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W30 + X30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!W36 + X36",
+    "calc": "денежный capex: приобретение ОС (с первоначальными затратами по ППИ) + НМА, до МСФО 16, положительным"
+   }
+  },
+  "2025H2": {
+   "revenue": {
+    "v": 2398.042,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Y6 + Z6",
+    "calc": "сумма кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 155.399,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y14 + Z14",
+    "calc": "скорр. EBITDA до МСФО 16 (без LTI и разовых), сумма кварталов"
+   },
+   "lti": {
+    "v": 5.044,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y16 + Z16",
+    "calc": "расход LTI и прочего вознаграждения менеджмента, знак — расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 150.355,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y22 + Z22",
+    "calc": "EBITDA до МСФО 16 отчётная = скорр. − LTI − разовые"
+   },
+   "da": {
+    "v": 59.072,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Y8 + Z8; auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf прим. 10 (ОС, с. 28: убыток 5 207, восстановление 1 756), прим. 13 (НМА, с. 34: 925), прим. 12 (инвест. недвижимость, с. 33: 27 − 150); гудвил не обесценивался (с. 25); finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17 (сравн. данные): ОС 1 036 + НМА 323; finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: «убыток от обесценения 1 359»",
+    "calc": "D&A и обесценение до МСФО 16 (SG&A, стр. 8) 61,966 − обесценение внеоборотных активов нетто (МСФО) 2,894 (2025 г. − 1П2025)"
+   },
+   "capex": {
+    "v": 113.645,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y30 + Z30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y36 + Z36",
+    "calc": "денежный capex: приобретение ОС (с первоначальными затратами по ППИ) + НМА, до МСФО 16, положительным"
+   }
+  },
+  "2026H1": {
+   "revenue": {
+    "v": 2480.513,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AA6 + AB6",
+    "calc": "сумма кварталов полугодия; млн ₽ / 1000"
+   },
+   "adj_ebitda": {
+    "v": 141.341,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA14 + AB14",
+    "calc": "скорр. EBITDA до МСФО 16 (без LTI и разовых), сумма кварталов"
+   },
+   "lti": {
+    "v": 4.675,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA16 + AB16",
+    "calc": "расход LTI и прочего вознаграждения менеджмента, знак — расход положительным"
+   },
+   "ebitda_rep": {
+    "v": 136.666,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA22 + AB22",
+    "calc": "EBITDA до МСФО 16 отчётная = скорр. − LTI − разовые"
+   },
+   "da": {
+    "v": 56.066,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!AA8 + AB8; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17: убыток от обесценения ОС 1 737 + НМА 161 − восстановление 33 (с. 11: убыток 1 898, восстановление 33; ППИ и инвест. недвижимость в 1П2026 не обесценивались)",
+    "calc": "D&A и обесценение до МСФО 16 (SG&A, стр. 8) 57,931 − обесценение внеоборотных активов нетто (МСФО) 1,865"
+   },
+   "capex": {
+    "v": 92.664,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA30 + AB30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA36 + AB36",
+    "calc": "денежный capex: приобретение ОС (с первоначальными затратами по ППИ) + НМА, до МСФО 16, положительным"
+   }
+  }
+ },
+ "memo": {
+  "2024H2": {
+   "da_incl_impairment": {
+    "v": 52.477,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!U8 + V8",
+    "calc": "D&A и обесценение до МСФО 16 (как в databook)"
+   },
+   "impairment_net": {
+    "v": 1.588,
+    "src": "ifrs-fy2024_godovaya-konsolidirovannaya-finansovaya-otchetnost.pdf прим. 10 (ОС, с. 44: 4 251 − 926), прим. 14 (НМА, с. 49: 442), прим. 12 (инвест. недвижимость, с. 47: 96 − 762); гудвил — нет (прим. 13, с. 49); finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: за 6 мес. 2024 г. чистый убыток от обесценения 1 544, восстановление 31",
+    "calc": "2024 г. − 1П2024"
+   },
+   "oneoff_ecl_adj": {
+    "v": 0.0,
+    "calc": "строки нет в периоде (корректировка только во 2 кв. 2025)"
+   },
+   "adj_margin": {
+    "v": 0.061725,
+    "calc": "adj_ebitda / revenue"
+   },
+   "rep_margin": {
+    "v": 0.060405,
+    "calc": "ebitda_rep / revenue"
+   },
+   "capex_pct": {
+    "v": 0.041693,
+    "calc": "capex / revenue"
+   },
+   "da_pct": {
+    "v": 0.024747,
+    "calc": "da / revenue"
+   }
+  },
+  "2025H1": {
+   "da_incl_impairment": {
+    "v": 50.32,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!W8 + X8",
+    "calc": "D&A и обесценение до МСФО 16 (как в databook)"
+   },
+   "impairment_net": {
+    "v": 1.359,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17 (сравн. данные): ОС 1 036 + НМА 323; finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: «убыток от обесценения 1 359»",
+    "calc": "обесценение ОС + НМА (+ инвест. недвижимость) − восстановление"
+   },
+   "oneoff_ecl_adj": {
+    "v": 4.126649,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W20 + X20",
+    "calc": "разовая корректировка ОКУ (470-ФЗ), 2 кв. 2025; в скорр. EBITDA не входит"
+   },
+   "adj_margin": {
+    "v": 0.057963,
+    "calc": "adj_ebitda / revenue"
+   },
+   "rep_margin": {
+    "v": 0.054703,
+    "calc": "ebitda_rep / revenue"
+   },
+   "capex_pct": {
+    "v": 0.045268,
+    "calc": "capex / revenue"
+   },
+   "da_pct": {
+    "v": 0.021819,
+    "calc": "da / revenue"
+   }
+  },
+  "2025H2": {
+   "da_incl_impairment": {
+    "v": 61.966,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Y8 + Z8",
+    "calc": "D&A и обесценение до МСФО 16 (как в databook)"
+   },
+   "impairment_net": {
+    "v": 2.894,
+    "src": "auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf прим. 10 (ОС, с. 28: убыток 5 207, восстановление 1 756), прим. 13 (НМА, с. 34: 925), прим. 12 (инвест. недвижимость, с. 33: 27 − 150); гудвил не обесценивался (с. 25); finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17 (сравн. данные): ОС 1 036 + НМА 323; finansovaya-otchetnost_pao-kcz-iks5_6m2025.pdf с. 12: «убыток от обесценения 1 359»",
+    "calc": "2025 г. − 1П2025"
+   },
+   "oneoff_ecl_adj": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y20 + Z20",
+    "calc": "разовая корректировка ОКУ (470-ФЗ), 2 кв. 2025; в скорр. EBITDA не входит"
+   },
+   "adj_margin": {
+    "v": 0.064802,
+    "calc": "adj_ebitda / revenue"
+   },
+   "rep_margin": {
+    "v": 0.062699,
+    "calc": "ebitda_rep / revenue"
+   },
+   "capex_pct": {
+    "v": 0.047391,
+    "calc": "capex / revenue"
+   },
+   "da_pct": {
+    "v": 0.024633,
+    "calc": "da / revenue"
+   }
+  },
+  "2026H1": {
+   "da_incl_impairment": {
+    "v": 57.931,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!AA8 + AB8",
+    "calc": "D&A и обесценение до МСФО 16 (как в databook)"
+   },
+   "impairment_net": {
+    "v": 1.865,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 10, с. 17: убыток от обесценения ОС 1 737 + НМА 161 − восстановление 33 (с. 11: убыток 1 898, восстановление 33; ППИ и инвест. недвижимость в 1П2026 не обесценивались)",
+    "calc": "обесценение ОС + НМА (+ инвест. недвижимость) − восстановление"
+   },
+   "oneoff_ecl_adj": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA20 + AB20",
+    "calc": "разовая корректировка ОКУ (470-ФЗ), 2 кв. 2025; в скорр. EBITDA не входит"
+   },
+   "adj_margin": {
+    "v": 0.056981,
+    "calc": "adj_ebitda / revenue"
+   },
+   "rep_margin": {
+    "v": 0.055096,
+    "calc": "ebitda_rep / revenue"
+   },
+   "capex_pct": {
+    "v": 0.037357,
+    "calc": "capex / revenue"
+   },
+   "da_pct": {
+    "v": 0.022603,
+    "calc": "da / revenue"
+   }
+  }
+ }
+}

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>X5 — справедливая стоимость акции</title>
+<meta name="description" content="Модель справедливой стоимости акции X5: медиана и полосы по суждениям книги допущений, что заложено в рыночную цену, ближайший отчёт, деньги и долг.">
+<meta name="color-scheme" content="light dark">
+<script>
+/* Тема до первой отрисовки. Правило владельца для всех панелей: с 20:00 до 07:00
+   по часам зрителя страница открывается тёмной. Выбор, сделанный вечером, живёт до
+   закрытия вкладки (sessionStorage), дневной — в localStorage, и вечер его не
+   затирает. Правило лежит здесь одной копией: app.js берёт его через window.__theme.
+   После любой правки этого скрипта пересчитать хэш в CSP (web/_headers и
+   functions/_middleware.js): тест печатает готовую строку. */
+(function () {
+  var DAY = "x5-850-theme", NIGHT = "x5-850-theme-tonight", FROM = 20, TO = 7;
+  function isNight(d) { var h = (d || new Date()).getHours(); return h >= FROM || h < TO; }
+  function read(area, key) {
+    try { var v = window[area].getItem(key); return v === "light" || v === "dark" ? v : null; }
+    catch (e) { return null; }
+  }
+  function resolve() {
+    if (isNight()) return read("sessionStorage", NIGHT) || "dark";
+    return read("localStorage", DAY)
+      || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function remember(theme) {
+    try {
+      if (isNight()) window.sessionStorage.setItem(NIGHT, theme);
+      else window.localStorage.setItem(DAY, theme);
+    } catch (e) { /* приватный режим: тема живёт до перезагрузки */ }
+  }
+  document.documentElement.dataset.theme = resolve();
+  window.__theme = { isNight: isNight, resolve: resolve, remember: remember, from: FROM, to: TO };
+})();
+</script>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<a class="skip" href="#app">К содержанию</a>
+
+<header class="masthead">
+  <div class="wrap masthead-row">
+    <a class="brand" href="#overview" aria-label="X5 — справедливая стоимость, к оценке">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" class="brand-bg"/>
+        <path d="M7.5 8.5 19 23.5M19 8.5 7.5 23.5" class="brand-curve"/>
+        <path d="M24.5 7v11" class="brand-mid"/>
+        <circle cx="24.5" cy="23.5" r="2.4" class="brand-dot"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-name">X5</span>
+        <span class="brand-sub">справедливая стоимость акции</span>
+      </span>
+    </a>
+    <a class="chip" id="release-chip" href="#book" aria-live="polite">
+      <span class="chip-dot" aria-hidden="true"></span><span class="chip-text">загружаем выпуск…</span>
+    </a>
+    <button id="theme-toggle" class="icon-btn" type="button" aria-label="Переключить тему">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-sun" d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66 1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14-1.41-1.41M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/><path class="icon-moon" d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></svg>
+    </button>
+  </div>
+  <nav class="wrap tabs" role="tablist" aria-label="Экраны панели">
+    <button class="tab" role="tab" type="button" aria-controls="app" data-screen="overview" aria-selected="true" tabindex="0">Оценка</button>
+    <button class="tab" role="tab" type="button" aria-controls="app" data-screen="market" aria-selected="false" tabindex="-1">Что в цене</button>
+    <button class="tab" role="tab" type="button" aria-controls="app" data-screen="model" aria-selected="false" tabindex="-1">Расчёт</button>
+    <button class="tab" role="tab" type="button" aria-controls="app" data-screen="report" aria-selected="false" tabindex="-1">Ближайший отчёт</button>
+    <button class="tab" role="tab" type="button" aria-controls="app" data-screen="debt" aria-selected="false" tabindex="-1">Деньги и долг</button>
+    <button class="tab" role="tab" type="button" aria-controls="app" data-screen="book" aria-selected="false" tabindex="-1">Допущения</button>
+  </nav>
+</header>
+
+<main id="app" class="wrap" tabindex="-1" role="tabpanel" aria-label="Экран панели">
+  <p class="boot">Загружаем выпуск модели…</p>
+</main>
+
+<footer class="wrap colophon">
+  <p id="colophon-release">—</p>
+</footer>
+
+<div id="tip" class="tip" role="tooltip" hidden></div>
+<script src="/app.js" defer></script>
+</body>
+</html>

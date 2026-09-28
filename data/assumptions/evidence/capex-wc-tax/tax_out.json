@@ -1,0 +1,100 @@
+{
+ "annual": {
+  "2023": {
+   "base": 14.165,
+   "by_item_pct": {
+    "dta_writeoff": 0.000327,
+    "inventory_shortages": 0.000755,
+    "other_nondeductible": 0.004169,
+    "other_rates": -0.000749
+   },
+   "check": 0.0,
+   "pct": 0.004503,
+   "perm_tax": 2.833,
+   "rate": 0.2,
+   "revenue": 3145.859
+  },
+  "2024": {
+   "base": 9.555,
+   "by_item_pct": {
+    "dta_writeoff": 0.0,
+    "inventory_shortages": 0.000715,
+    "other_nondeductible": 0.001635,
+    "other_rates": 9.5e-05
+   },
+   "check": 0.0,
+   "pct": 0.002445,
+   "perm_tax": 1.911,
+   "rate": 0.2,
+   "revenue": 3908.047
+  },
+  "2025": {
+   "base": -6.192,
+   "by_item_pct": {
+    "dta_writeoff": 0.0,
+    "inventory_shortages": 0.000448,
+    "other_nondeductible": -0.000883,
+    "other_rates": -0.000899
+   },
+   "check": 0.0,
+   "pct": -0.001334,
+   "perm_tax": -1.548,
+   "rate": 0.25,
+   "revenue": 4642.034
+  },
+  "2026H1": {
+   "base": 6.441,
+   "pct": 0.002597,
+   "revenue": 2480.513
+  }
+ },
+ "book": {
+  "permanent_add_pct": 0.0017,
+  "range": [
+   -0.0013,
+   0.0045
+  ],
+  "rate": 0.25
+ },
+ "by_item": {
+  "dta_writeoff": 8.8e-05,
+  "inventory_shortages": 0.00062,
+  "other_nondeductible": 0.001317,
+  "other_rates": -0.000526
+ },
+ "equal_2023_2026H1": 0.002053,
+ "halves": {
+  "2024H1": {
+   "etr_pre16": 0.224613,
+   "excess_ifrs16": 1.8854,
+   "excess_pre16": 1.8852,
+   "pct": 0.00509
+  },
+  "2024H2": {
+   "etr_pre16": 0.232733,
+   "excess_ifrs16": -3.9694,
+   "excess_pre16": 2.163,
+   "pct": 0.005259
+  },
+  "2025H1": {
+   "etr_pre16": 0.256922,
+   "excess_ifrs16": 0.44425,
+   "excess_pre16": 0.4485,
+   "pct": 0.000799
+  },
+  "2025H2": {
+   "etr_pre16": 0.216487,
+   "excess_ifrs16": -1.99225,
+   "excess_pre16": -1.99575,
+   "pct": -0.003329
+  },
+  "2026H1": {
+   "etr_pre16": 0.283461,
+   "excess_ifrs16": 1.596,
+   "excess_pre16": 1.61025,
+   "pct": 0.002597
+  }
+ },
+ "weighted_2023_2026H1": 0.001691,
+ "weighted_2024_2026H1": 0.000889
+}

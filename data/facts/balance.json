@@ -1,0 +1,108 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млрд ₽",
+ "basis": "до МСФО 16 (IAS 17); аренда МСФО 16 — справочно, вне долга",
+ "net_debt": {
+  "v": 310.647,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R11; x5_q2_2026_financial_results_rus.pdf, с. 12 (чистый долг 310 647, 1,08х)",
+  "calc": "чистый долг компании до МСФО 16 = общий долг (с лизингом) − денежные средства; краткосрочные финансовые вложения не вычитаются"
+ },
+ "total_debt": {
+  "v": 435.857,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R6; x5_q2_2026_financial_results_rus.pdf, с. 12, сноска 18 («включает обязательства по лизингу»)"
+ },
+ "cash": {
+  "v": 125.21,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R26; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 8, с. 15"
+ },
+ "borrowings": {
+  "v": 434.709,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R42 + R49; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (434 709)",
+  "calc": "кредиты и займы долгосрочные + краткосрочные (баланс)"
+ },
+ "leasing": {
+  "v": 1.148,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R6; financial_and_operating_results_q2_2026.xlsx › Financial Position!R42 + R49",
+  "calc": "общий долг компании − кредиты и займы баланса (лизинг внутри «общего долга», отдельно не раскрыт)"
+ },
+ "accrued_interest": {
+  "v": 1.719,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R51",
+  "calc": "в «общий долг» компании не входит — строка моста"
+ },
+ "dividends_payable": {
+  "v": 60.425,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 13, с. 19: «Дивиденды к выплате 60 425»",
+  "calc": "объявленные и не выплаченные на 30.06.2026: финальные за 2025 г. 60,265 + невостребованные прошлых выплат 0,160"
+ },
+ "nwc_trade": {
+  "v": -18.597,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R19; financial_and_operating_results_q2_2026.xlsx › Financial Position!R23; financial_and_operating_results_q2_2026.xlsx › Financial Position!R48",
+  "calc": "запасы + торговая и прочая дебиторская задолженность с авансами выданными − торговая кредиторская задолженность"
+ },
+ "nwc_magnit_like": {
+  "v": -78.512,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R19; financial_and_operating_results_q2_2026.xlsx › Financial Position!R23; financial_and_operating_results_q2_2026.xlsx › Financial Position!R48; financial_and_operating_results_q2_2026.xlsx › Financial Position!R53; financial_and_operating_results_q2_2026.xlsx › Financial Position!R52; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 13, с. 19: «Налоги, кроме налога на прибыль» (краткосрочные) 53 115",
+  "calc": "nwc_trade − налоги, кроме налога на прибыль (краткоср.) − налог на прибыль к уплате − краткосрочные обязательства по договорам (определение книги Магнита, research/X1 §5.1)"
+ },
+ "nwc": {
+  "v": -78.512,
+  "calc": "= nwc_magnit_like (определение книги working_capital; выбор — книга)"
+ },
+ "nwc_components": {
+  "inventories": {
+   "v": 323.722,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R19"
+  },
+  "receivables_and_advances": {
+   "v": 52.382,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R23"
+  },
+  "trade_payables": {
+   "v": 394.701,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R48"
+  },
+  "other_taxes_payable": {
+   "v": 53.115,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 13, с. 19: «Налоги, кроме налога на прибыль» (краткосрочные) 53 115"
+  },
+  "income_tax_payable": {
+   "v": 3.915,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R53"
+  },
+  "contract_liabilities_st": {
+   "v": 2.885,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R52"
+  }
+ },
+ "revenue_ltm": {
+  "v": 4878.555,
+  "calc": "accounting 2025H2 + 2026H1 (= 2025 − 1П2025 + 1П2026)"
+ },
+ "ebitda_rep_ltm": {
+  "v": 287.021,
+  "calc": "accounting 2025H2 + 2026H1, EBITDA до МСФО 16 отчётная"
+ },
+ "adj_ebitda_ltm": {
+  "v": 296.74,
+  "calc": "accounting 2025H2 + 2026H1, скорр. EBITDA до МСФО 16"
+ },
+ "net_debt_to_ebitda": {
+  "v": 1.082315,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R12; x5_q2_2026_financial_results_rus.pdf, с. 12; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 16, с. 21 (1,08x)",
+  "calc": "чистый долг / EBITDA до МСФО 16 LTM (ковенант ≤ 4,00х)"
+ },
+ "lease_liabilities_ifrs16": {
+  "v": 742.991,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R13; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 11, с. 18"
+ },
+ "credit_lines_unused": {
+  "v": 804.643,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 25; x5_q2_2026_financial_results_rus.pdf, с. 12",
+  "calc": "невыбранные лимиты кредитных линий крупнейших банков"
+ },
+ "st_investments": {
+  "v": 0.204,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R22"
+ }
+}

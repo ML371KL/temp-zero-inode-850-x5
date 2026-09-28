@@ -1,0 +1,877 @@
+{
+ "schema": "x5-margin-history-v1",
+ "built": "2026-09-28",
+ "units": "млрд ₽; маржа не хранится — считается как adj_ebitda / revenue",
+ "basis": "до МСФО 16 (IAS 17); скорр. EBITDA X5 — без LTI и прочего вознаграждения менеджмента, эффекта «Карусели» (2021–2023) и разовой корректировки ОКУ 2К2025",
+ "splice": "кварталы ≤2017 — старый databook (X5 Retail Group N.V., лист EBITDA стр. 14, P&L стр. 6); 2018Q1–2022Q4 — старый databook через history_quarterly.json X1; с 2023Q1 — новый databook (ПАО «КЦ ИКС 5»); годы ≤2017 — старый, 2018–2020 — старый, ≥2021 — новый (правило X1)",
+ "sources": {
+  "financial_and_operating_results_q1_2024.xlsx": {
+   "path": "x5-850-handoff/reference/primary/financial_and_operating_results_q1_2024.xlsx",
+   "sha256": "89d41096c90a92bb99ee3ff6af3fffdfbadc95c61a1302172744bd5470260f10"
+  },
+  "history_quarterly.json": {
+   "path": "x5-850-handoff/research/facts/history_quarterly.json",
+   "sha256": "6debbcc973437414668c649b477d1c65605c7b7856d74ae0a50805f2aec641a7",
+   "note": "сборка X1; каждое число — ссылка на ячейку databook (src)"
+  },
+  "history_annual.json": {
+   "path": "x5-850-handoff/research/facts/history_annual.json",
+   "sha256": "5625ba9da8b4c60a42186a82fe9befbed0f1f34c942d3abb37465fa6d1b19f7e"
+  },
+  "financial_and_operating_results_q2_2026.xlsx": {
+   "path": "x5-850-handoff/reference/primary/financial_and_operating_results_q2_2026.xlsx",
+   "sha256": "d16d7b8f71004de5f579268c08e12a09d7b989f4d09b0125361550be67ef520b",
+   "note": "источник чисел 2023Q1+ (через JSON X1)"
+  }
+ },
+ "quarters": {
+  "2011Q1": {
+   "revenue": {
+    "v": 112.55417672939998,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!W6"
+   },
+   "adj_ebitda": {
+    "v": 8.096663834253658,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!W14"
+   }
+  },
+  "2011Q2": {
+   "revenue": {
+    "v": 112.62647946119999,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!X6"
+   },
+   "adj_ebitda": {
+    "v": 7.361631998277992,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!X14"
+   }
+  },
+  "2011Q3": {
+   "revenue": {
+    "v": 105.33975666059999,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!Y6"
+   },
+   "adj_ebitda": {
+    "v": 6.222153849810049,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!Y14"
+   }
+  },
+  "2011Q4": {
+   "revenue": {
+    "v": 123.66444024000002,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!Z6"
+   },
+   "adj_ebitda": {
+    "v": 10.348010978739053,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!Z14"
+   }
+  },
+  "2012Q1": {
+   "revenue": {
+    "v": 117.14491003639999,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AA6"
+   },
+   "adj_ebitda": {
+    "v": 8.37106040571416,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AA14"
+   }
+  },
+  "2012Q2": {
+   "revenue": {
+    "v": 123.6365124256,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AB6"
+   },
+   "adj_ebitda": {
+    "v": 8.706190333393758,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AB14"
+   }
+  },
+  "2012Q3": {
+   "revenue": {
+    "v": 116.08484591400007,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AC6"
+   },
+   "adj_ebitda": {
+    "v": 7.089541738277014,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AC14"
+   }
+  },
+  "2012Q4": {
+   "revenue": {
+    "v": 134.25540878099994,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AD6"
+   },
+   "adj_ebitda": {
+    "v": 10.901533878539945,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AD14"
+   }
+  },
+  "2013Q1": {
+   "revenue": {
+    "v": 126.5239540118,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AE6"
+   },
+   "adj_ebitda": {
+    "v": 8.597573384360189,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AE14"
+   }
+  },
+  "2013Q2": {
+   "revenue": {
+    "v": 133.44882638760978,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AF6"
+   },
+   "adj_ebitda": {
+    "v": 9.216376271267913,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AF14"
+   }
+  },
+  "2013Q3": {
+   "revenue": {
+    "v": 124.2459671878857,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AG6"
+   },
+   "adj_ebitda": {
+    "v": 9.20270412934058,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AG14"
+   }
+  },
+  "2013Q4": {
+   "revenue": {
+    "v": 150.34103982892375,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AH6"
+   },
+   "adj_ebitda": {
+    "v": 11.310815688530736,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AH14"
+   }
+  },
+  "2014Q1": {
+   "revenue": {
+    "v": 144.167,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AI6"
+   },
+   "adj_ebitda": {
+    "v": 9.933361999999999,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AI14"
+   }
+  },
+  "2014Q2": {
+   "revenue": {
+    "v": 155.579,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AJ6"
+   },
+   "adj_ebitda": {
+    "v": 11.524379000000001,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AJ14"
+   }
+  },
+  "2014Q3": {
+   "revenue": {
+    "v": 152.539,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AK6"
+   },
+   "adj_ebitda": {
+    "v": 11.312259,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AK14"
+   }
+  },
+  "2014Q4": {
+   "revenue": {
+    "v": 181.588,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AL6"
+   },
+   "adj_ebitda": {
+    "v": 13.633,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AL14"
+   }
+  },
+  "2015Q1": {
+   "revenue": {
+    "v": 182.725,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AM6"
+   },
+   "adj_ebitda": {
+    "v": 13.129,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AM14"
+   }
+  },
+  "2015Q2": {
+   "revenue": {
+    "v": 199.883,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AN6"
+   },
+   "adj_ebitda": {
+    "v": 14.389,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AN14"
+   }
+  },
+  "2015Q3": {
+   "revenue": {
+    "v": 196.093,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AO6"
+   },
+   "adj_ebitda": {
+    "v": 19.931,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AO14"
+   }
+  },
+  "2015Q4": {
+   "revenue": {
+    "v": 230.117,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AP6"
+   },
+   "adj_ebitda": {
+    "v": 17.472,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AP14"
+   }
+  },
+  "2016Q1": {
+   "revenue": {
+    "v": 231.611,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AQ6"
+   },
+   "adj_ebitda": {
+    "v": 16.526,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AQ14"
+   }
+  },
+  "2016Q2": {
+   "revenue": {
+    "v": 251.633,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AR6"
+   },
+   "adj_ebitda": {
+    "v": 20.047,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AR14"
+   }
+  },
+  "2016Q3": {
+   "revenue": {
+    "v": 256.247,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AS6"
+   },
+   "adj_ebitda": {
+    "v": 19.931,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AS14"
+   }
+  },
+  "2016Q4": {
+   "revenue": {
+    "v": 294.176,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AT6"
+   },
+   "adj_ebitda": {
+    "v": 23.015,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AT14"
+   }
+  },
+  "2017Q1": {
+   "revenue": {
+    "v": 293.078,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AU6"
+   },
+   "adj_ebitda": {
+    "v": 22.704,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AU14"
+   }
+  },
+  "2017Q2": {
+   "revenue": {
+    "v": 320.801,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AV6"
+   },
+   "adj_ebitda": {
+    "v": 29.165,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AV14"
+   }
+  },
+  "2017Q3": {
+   "revenue": {
+    "v": 319.424,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AW6"
+   },
+   "adj_ebitda": {
+    "v": 23.179,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AW14"
+   }
+  },
+  "2017Q4": {
+   "revenue": {
+    "v": 361.705,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AX6"
+   },
+   "adj_ebitda": {
+    "v": 24.084,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AX14"
+   }
+  },
+  "2018Q1": {
+   "revenue": {
+    "v": 351.518,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AY6"
+   },
+   "adj_ebitda": {
+    "v": 22.234,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AY14"
+   }
+  },
+  "2018Q2": {
+   "revenue": {
+    "v": 382.559,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AZ6"
+   },
+   "adj_ebitda": {
+    "v": 29.464,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AZ14"
+   }
+  },
+  "2018Q3": {
+   "revenue": {
+    "v": 375.505,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BA6"
+   },
+   "adj_ebitda": {
+    "v": 27.786,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BA14"
+   }
+  },
+  "2018Q4": {
+   "revenue": {
+    "v": 422.955,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BB6"
+   },
+   "adj_ebitda": {
+    "v": 30.387,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BB14"
+   }
+  },
+  "2019Q1": {
+   "revenue": {
+    "v": 405.864,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BC6"
+   },
+   "adj_ebitda": {
+    "v": 29.473,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BC14"
+   }
+  },
+  "2019Q2": {
+   "revenue": {
+    "v": 437.311,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BD6"
+   },
+   "adj_ebitda": {
+    "v": 36.599,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BD14"
+   }
+  },
+  "2019Q3": {
+   "revenue": {
+    "v": 421.955,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BE6"
+   },
+   "adj_ebitda": {
+    "v": 29.903,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BE14"
+   }
+  },
+  "2019Q4": {
+   "revenue": {
+    "v": 469.217,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BF6"
+   },
+   "adj_ebitda": {
+    "v": 31.405,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BF14"
+   }
+  },
+  "2020Q1": {
+   "revenue": {
+    "v": 468.994,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BG6"
+   },
+   "adj_ebitda": {
+    "v": 32.98,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BG14"
+   }
+  },
+  "2020Q2": {
+   "revenue": {
+    "v": 493.631,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BH6"
+   },
+   "adj_ebitda": {
+    "v": 41.854,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BH14"
+   }
+  },
+  "2020Q3": {
+   "revenue": {
+    "v": 486.641,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BI6"
+   },
+   "adj_ebitda": {
+    "v": 39.21,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BI14"
+   }
+  },
+  "2020Q4": {
+   "revenue": {
+    "v": 528.76,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BJ6"
+   },
+   "adj_ebitda": {
+    "v": 31.972,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BJ14"
+   }
+  },
+  "2021Q1": {
+   "revenue": {
+    "v": 507.191,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BK6"
+   },
+   "adj_ebitda": {
+    "v": 35.475,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BK14"
+   }
+  },
+  "2021Q2": {
+   "revenue": {
+    "v": 546.512,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BL6"
+   },
+   "adj_ebitda": {
+    "v": 45.424,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BL14"
+   }
+  },
+  "2021Q3": {
+   "revenue": {
+    "v": 543.586,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BM6"
+   },
+   "adj_ebitda": {
+    "v": 42.804,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BM14"
+   }
+  },
+  "2021Q4": {
+   "revenue": {
+    "v": 607.53,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BN6"
+   },
+   "adj_ebitda": {
+    "v": 40.494,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BN14"
+   }
+  },
+  "2022Q1": {
+   "revenue": {
+    "v": 604.23,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BO6"
+   },
+   "adj_ebitda": {
+    "v": 42.532,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BO14"
+   }
+  },
+  "2022Q2": {
+   "revenue": {
+    "v": 647.95,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BP6"
+   },
+   "adj_ebitda": {
+    "v": 62.376,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BP14"
+   }
+  },
+  "2022Q3": {
+   "revenue": {
+    "v": 647.869,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BQ6"
+   },
+   "adj_ebitda": {
+    "v": 47.986,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BQ14"
+   }
+  },
+  "2022Q4": {
+   "revenue": {
+    "v": 705.183,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BR6"
+   },
+   "adj_ebitda": {
+    "v": 36.574,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BR14"
+   }
+  },
+  "2023Q1": {
+   "revenue": {
+    "v": 696.364,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!O6"
+   },
+   "adj_ebitda": {
+    "v": 40.357,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!O14"
+   },
+   "lti": {
+    "v": 0.723,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!O16"
+   }
+  },
+  "2023Q2": {
+   "revenue": {
+    "v": 772.043,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!P6"
+   },
+   "adj_ebitda": {
+    "v": 60.62,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!P14"
+   },
+   "lti": {
+    "v": 1.418,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!P16"
+   }
+  },
+  "2023Q3": {
+   "revenue": {
+    "v": 796.236,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Q6"
+   },
+   "adj_ebitda": {
+    "v": 62.573,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Q14"
+   },
+   "lti": {
+    "v": 1.149,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Q16"
+   }
+  },
+  "2023Q4": {
+   "revenue": {
+    "v": 881.216,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!R6"
+   },
+   "adj_ebitda": {
+    "v": 54.969,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!R14"
+   },
+   "lti": {
+    "v": 1.66,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!R16"
+   }
+  },
+  "2024Q1": {
+   "revenue": {
+    "v": 886.22,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!S6"
+   },
+   "adj_ebitda": {
+    "v": 55.578,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!S14"
+   },
+   "lti": {
+    "v": 0.142,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!S16"
+   }
+  },
+  "2024Q2": {
+   "revenue": {
+    "v": 965.491,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!T6"
+   },
+   "adj_ebitda": {
+    "v": 73.635,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!T14"
+   },
+   "lti": {
+    "v": 1.476,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!T16"
+   }
+  },
+  "2024Q3": {
+   "revenue": {
+    "v": 978.556,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!U6"
+   },
+   "adj_ebitda": {
+    "v": 72.978,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U14"
+   },
+   "lti": {
+    "v": 1.7,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U16"
+   }
+  },
+  "2024Q4": {
+   "revenue": {
+    "v": 1077.78,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!V6"
+   },
+   "adj_ebitda": {
+    "v": 53.95,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!V14"
+   },
+   "lti": {
+    "v": 1.016,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!V16"
+   }
+  },
+  "2025Q1": {
+   "revenue": {
+    "v": 1069.786,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!W6"
+   },
+   "adj_ebitda": {
+    "v": 51.121,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W14"
+   },
+   "lti": {
+    "v": 1.14,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W16"
+   }
+  },
+  "2025Q2": {
+   "revenue": {
+    "v": 1174.206,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!X6"
+   },
+   "adj_ebitda": {
+    "v": 78.948,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!X14"
+   },
+   "lti": {
+    "v": 2.048,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!X16"
+   }
+  },
+  "2025Q3": {
+   "revenue": {
+    "v": 1160.077,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Y6"
+   },
+   "adj_ebitda": {
+    "v": 74.151,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y14"
+   },
+   "lti": {
+    "v": 2.443,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y16"
+   }
+  },
+  "2025Q4": {
+   "revenue": {
+    "v": 1237.965,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Z6"
+   },
+   "adj_ebitda": {
+    "v": 81.248,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Z14"
+   },
+   "lti": {
+    "v": 2.601,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Z16"
+   }
+  },
+  "2026Q1": {
+   "revenue": {
+    "v": 1190.606,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AA6"
+   },
+   "adj_ebitda": {
+    "v": 64.312,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA14"
+   },
+   "lti": {
+    "v": 1.904,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA16"
+   }
+  },
+  "2026Q2": {
+   "revenue": {
+    "v": 1289.907,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AB6"
+   },
+   "adj_ebitda": {
+    "v": 77.029,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AB14"
+   },
+   "lti": {
+    "v": 2.771,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AB16"
+   }
+  }
+ },
+ "years": {
+  "2011": {
+   "revenue": {
+    "v": 454.1848530912,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!D6"
+   },
+   "adj_ebitda": {
+    "v": 32.02846066108075,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!D14"
+   }
+  },
+  "2012": {
+   "revenue": {
+    "v": 491.121677157,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!E6"
+   },
+   "adj_ebitda": {
+    "v": 35.06832635592488,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!E14"
+   }
+  },
+  "2013": {
+   "revenue": {
+    "v": 534.5597874162193,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!F6"
+   },
+   "adj_ebitda": {
+    "v": 38.32746947349942,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!F14"
+   }
+  },
+  "2014": {
+   "revenue": {
+    "v": 633.873,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!G6"
+   },
+   "adj_ebitda": {
+    "v": 46.403,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!G14"
+   }
+  },
+  "2015": {
+   "revenue": {
+    "v": 808.818,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!H6"
+   },
+   "adj_ebitda": {
+    "v": 59.413,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!H14"
+   }
+  },
+  "2016": {
+   "revenue": {
+    "v": 1033.667,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!I6"
+   },
+   "adj_ebitda": {
+    "v": 79.519,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!I14"
+   }
+  },
+  "2017": {
+   "revenue": {
+    "v": 1295.008,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!J6"
+   },
+   "adj_ebitda": {
+    "v": 99.131,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!J14"
+   }
+  },
+  "2018": {
+   "revenue": {
+    "v": 1532.537,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!K6"
+   },
+   "adj_ebitda": {
+    "v": 109.871,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!K14"
+   }
+  },
+  "2019": {
+   "revenue": {
+    "v": 1734.347,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!L6"
+   },
+   "adj_ebitda": {
+    "v": 127.38,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!L14"
+   }
+  },
+  "2020": {
+   "revenue": {
+    "v": 1978.026,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!M6"
+   },
+   "adj_ebitda": {
+    "v": 146.016,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!M14"
+   }
+  },
+  "2021": {
+   "revenue": {
+    "v": 2204.814,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!D6"
+   },
+   "adj_ebitda": {
+    "v": 164.371,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!D14"
+   },
+   "lti": {
+    "v": 2.923,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!D16"
+   }
+  },
+  "2022": {
+   "revenue": {
+    "v": 2605.206,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!E6"
+   },
+   "adj_ebitda": {
+    "v": 190.494,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!E14"
+   },
+   "lti": {
+    "v": 2.504,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!E16"
+   }
+  },
+  "2023": {
+   "revenue": {
+    "v": 3145.859,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!F6"
+   },
+   "adj_ebitda": {
+    "v": 218.519,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!F14"
+   },
+   "lti": {
+    "v": 4.95,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!F16"
+   }
+  },
+  "2024": {
+   "revenue": {
+    "v": 3908.047,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!G6"
+   },
+   "adj_ebitda": {
+    "v": 256.141,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!G14"
+   },
+   "lti": {
+    "v": 4.334,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!G16"
+   }
+  },
+  "2025": {
+   "revenue": {
+    "v": 4642.034,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!H6"
+   },
+   "adj_ebitda": {
+    "v": 285.467649,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!H14"
+   },
+   "lti": {
+    "v": 8.232,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!H16"
+   }
+  }
+ }
+}

@@ -1,0 +1,890 @@
+{
+ "fragments": [
+  "capex-wc-tax.yaml",
+  "margin.yaml",
+  "network-revenue.yaml",
+  "financing-valuation.yaml"
+ ],
+ "schema_errors": [],
+ "runs": {
+  "факты data/facts (NWC −78,512)": {
+   "layers": {
+    "analytical": {
+     "v0": 1427.919,
+     "d": 379.3245,
+     "equity": 1048.5945,
+     "price": 4135.0182,
+     "v0_to_d": 3.7644,
+     "equity_share": 0.7344,
+     "pv_shield": 103.0918,
+     "pv_terminal": 653.9576,
+     "terminal_share": 0.458,
+     "ev_ebitda": 4.3825
+    },
+    "market_implied": {
+     "v0": 1428.2641,
+     "d": 378.769,
+     "equity": 1049.4951,
+     "price": 4138.5696,
+     "v0_to_d": 3.7708,
+     "equity_share": 0.7348,
+     "pv_shield": 115.0337,
+     "pv_terminal": 629.9225,
+     "terminal_share": 0.441,
+     "ev_ebitda": 4.389
+    },
+    "macro_neutral": {
+     "v0": 1453.5213,
+     "d": 378.4257,
+     "equity": 1075.0956,
+     "price": 4239.5226,
+     "v0_to_d": 3.841,
+     "equity_share": 0.7396,
+     "pv_shield": 123.3591,
+     "pv_terminal": 634.0281,
+     "terminal_share": 0.4362,
+     "ev_ebitda": 4.4724
+    }
+   },
+   "point": 4187.2704,
+   "low": 4239.5226,
+   "high": 4135.0182,
+   "v_star": 837.94
+  },
+  "NWC_op −163,156 (как требует capex-wc-tax)": {
+   "layers": {
+    "analytical": {
+     "v0": 1385.1833,
+     "d": 418.8864,
+     "equity": 966.2969,
+     "price": 3810.4868,
+     "v0_to_d": 3.3068,
+     "equity_share": 0.6976,
+     "pv_shield": 104.51,
+     "pv_terminal": 653.9576,
+     "terminal_share": 0.4721,
+     "ev_ebitda": 4.2513
+    },
+    "market_implied": {
+     "v0": 1385.5733,
+     "d": 418.3309,
+     "equity": 967.2425,
+     "price": 3814.2153,
+     "v0_to_d": 3.3121,
+     "equity_share": 0.6981,
+     "pv_shield": 116.494,
+     "pv_terminal": 629.9225,
+     "terminal_share": 0.4546,
+     "ev_ebitda": 4.2579
+    },
+    "macro_neutral": {
+     "v0": 1410.8546,
+     "d": 417.9876,
+     "equity": 992.867,
+     "price": 3915.263,
+     "v0_to_d": 3.3754,
+     "equity_share": 0.7037,
+     "pv_shield": 124.8448,
+     "pv_terminal": 634.0281,
+     "terminal_share": 0.4494,
+     "ev_ebitda": 4.3411
+    }
+   },
+   "point": 3862.8749,
+   "low": 3915.263,
+   "high": 3810.4868,
+   "v_star": 877.5018
+  }
+ },
+ "shield": {
+  "explicit": 104.51,
+  "terminal": 70.5842,
+  "share_v0": 0.1264
+ },
+ "credit_put": {
+  "rows": [
+   {
+    "layer": "analytical",
+    "sigma_e": 0.2657,
+    "T": 1.24,
+    "sigma_ev": 0.1854,
+    "put_bn": 0.0,
+    "rub": 0.0
+   },
+   {
+    "layer": "analytical",
+    "sigma_e": 0.2657,
+    "T": 3.0,
+    "sigma_ev": 0.1854,
+    "put_bn": 0.0056,
+    "rub": 0.0222
+   },
+   {
+    "layer": "analytical",
+    "sigma_e": 0.4,
+    "T": 3.0,
+    "sigma_ev": 0.279,
+    "put_bn": 0.7789,
+    "rub": 3.0717
+   },
+   {
+    "layer": "market_implied",
+    "sigma_e": 0.2657,
+    "T": 1.24,
+    "sigma_ev": 0.1855,
+    "put_bn": 0.0,
+    "rub": 0.0
+   },
+   {
+    "layer": "market_implied",
+    "sigma_e": 0.2657,
+    "T": 3.0,
+    "sigma_ev": 0.1855,
+    "put_bn": 0.0056,
+    "rub": 0.022
+   },
+   {
+    "layer": "market_implied",
+    "sigma_e": 0.4,
+    "T": 3.0,
+    "sigma_ev": 0.2792,
+    "put_bn": 0.7752,
+    "rub": 3.057
+   },
+   {
+    "layer": "macro_neutral",
+    "sigma_e": 0.2657,
+    "T": 1.24,
+    "sigma_ev": 0.187,
+    "put_bn": 0.0,
+    "rub": 0.0
+   },
+   {
+    "layer": "macro_neutral",
+    "sigma_e": 0.2657,
+    "T": 3.0,
+    "sigma_ev": 0.187,
+    "put_bn": 0.005,
+    "rub": 0.0199
+   },
+   {
+    "layer": "macro_neutral",
+    "sigma_e": 0.4,
+    "T": 3.0,
+    "sigma_ev": 0.2815,
+    "put_bn": 0.7433,
+    "rub": 2.9313
+   }
+  ],
+  "v_star": 877.5018,
+  "d": 418.8864,
+  "thresholds": {
+   "put_at_1.5_T1.24_rub": 3.8811,
+   "T1.24_rub1": 1.6641,
+   "T1.24_rub25": 1.2651,
+   "put_at_1.5_T3.0_rub": 31.6935,
+   "T3.0_rub1": 2.3491,
+   "T3.0_rub25": 1.5662,
+   "T_for_25rub_at_1.5": 2.6445
+  },
+  "sigma_e": 0.2657,
+  "T": 1.24
+ },
+ "cells": [
+  {
+   "key": "N|stress|low",
+   "p": 0.0436,
+   "ev": 1250.9721,
+   "ev_ebitda": 3.9696,
+   "term": 0.4298,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0258,
+   "cmax": 0.0353,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 837.6732,
+   "price": 3303.2729
+  },
+  {
+   "key": "N|stress|base",
+   "p": 0.0799,
+   "ev": 980.9999,
+   "ev_ebitda": 3.1129,
+   "term": 0.4293,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0307,
+   "cmax": 0.0377,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 562.1003,
+   "price": 2216.5812
+  },
+  {
+   "key": "N|stress|high",
+   "p": 0.0218,
+   "ev": 613.7423,
+   "ev_ebitda": 1.9475,
+   "term": 0.4276,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0374,
+   "cmax": 0.0418,
+   "lev": 1.3448,
+   "real": 0.0834,
+   "equity": 187.1721,
+   "price": 738.0926
+  },
+  {
+   "key": "N|floor|low",
+   "p": 0.021,
+   "ev": 2037.1602,
+   "ev_ebitda": 6.1785,
+   "term": 0.5336,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0247,
+   "cmax": 0.0365,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 1622.4589,
+   "price": 6397.99
+  },
+  {
+   "key": "N|floor|base",
+   "p": 0.063,
+   "ev": 1727.1589,
+   "ev_ebitda": 5.2383,
+   "term": 0.5481,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0294,
+   "cmax": 0.0392,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 1306.7677,
+   "price": 5153.0961
+  },
+  {
+   "key": "N|floor|high",
+   "p": 0.021,
+   "ev": 1304.8146,
+   "ev_ebitda": 3.9574,
+   "term": 0.5791,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0358,
+   "cmax": 0.0455,
+   "lev": 1.3118,
+   "real": 0.0834,
+   "equity": 876.6306,
+   "price": 3456.8974
+  },
+  {
+   "key": "N|partial|low",
+   "p": 0.0164,
+   "ev": 2312.2353,
+   "ev_ebitda": 6.916,
+   "term": 0.5362,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0247,
+   "cmax": 0.0365,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 1897.9979,
+   "price": 7484.548
+  },
+  {
+   "key": "N|partial|base",
+   "p": 0.0493,
+   "ev": 2002.2341,
+   "ev_ebitda": 5.9888,
+   "term": 0.5492,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0294,
+   "cmax": 0.0392,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 1582.3067,
+   "price": 6239.6541
+  },
+  {
+   "key": "N|partial|high",
+   "p": 0.0164,
+   "ev": 1579.8459,
+   "ev_ebitda": 4.7254,
+   "term": 0.5751,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0358,
+   "cmax": 0.0455,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 1152.1257,
+   "price": 4543.2822
+  },
+  {
+   "key": "N|full|low",
+   "p": 0.0026,
+   "ev": 3043.8471,
+   "ev_ebitda": 8.8549,
+   "term": 0.5732,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.0235,
+   "cmax": 0.0364,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 2630.8924,
+   "price": 10374.6377
+  },
+  {
+   "key": "N|full|base",
+   "p": 0.0105,
+   "ev": 2721.7363,
+   "ev_ebitda": 7.9178,
+   "term": 0.5862,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.028,
+   "cmax": 0.0388,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 2303.0246,
+   "price": 9081.7269
+  },
+  {
+   "key": "N|full|high",
+   "p": 0.0044,
+   "ev": 2282.8553,
+   "ev_ebitda": 6.6411,
+   "term": 0.61,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.0341,
+   "cmax": 0.0451,
+   "lev": 1.3,
+   "real": 0.0834,
+   "equity": 1856.2591,
+   "price": 7319.9556
+  },
+  {
+   "key": "H|stress|low",
+   "p": 0.056,
+   "ev": 1084.6998,
+   "ev_ebitda": 3.4266,
+   "term": 0.3657,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0259,
+   "cmax": 0.0353,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 671.3823,
+   "price": 2647.5228
+  },
+  {
+   "key": "H|stress|base",
+   "p": 0.1027,
+   "ev": 856.4043,
+   "ev_ebitda": 2.7054,
+   "term": 0.3678,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0308,
+   "cmax": 0.0377,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 437.4792,
+   "price": 1725.1516
+  },
+  {
+   "key": "H|stress|high",
+   "p": 0.028,
+   "ev": 546.108,
+   "ev_ebitda": 1.7252,
+   "term": 0.3729,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0374,
+   "cmax": 0.0418,
+   "lev": 1.3522,
+   "real": 0.1054,
+   "equity": 119.503,
+   "price": 471.2471
+  },
+  {
+   "key": "H|floor|low",
+   "p": 0.027,
+   "ev": 1659.9962,
+   "ev_ebitda": 5.0233,
+   "term": 0.4468,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0246,
+   "cmax": 0.0358,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 1246.9199,
+   "price": 4917.093
+  },
+  {
+   "key": "H|floor|base",
+   "p": 0.081,
+   "ev": 1409.4104,
+   "ev_ebitda": 4.265,
+   "term": 0.4599,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0293,
+   "cmax": 0.0382,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 990.6435,
+   "price": 3906.495
+  },
+  {
+   "key": "H|floor|high",
+   "p": 0.027,
+   "ev": 1067.9286,
+   "ev_ebitda": 3.2316,
+   "term": 0.4878,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0357,
+   "cmax": 0.0443,
+   "lev": 1.3012,
+   "real": 0.1054,
+   "equity": 641.3682,
+   "price": 2529.1657
+  },
+  {
+   "key": "H|partial|low",
+   "p": 0.0212,
+   "ev": 1872.9985,
+   "ev_ebitda": 5.5895,
+   "term": 0.4508,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0246,
+   "cmax": 0.0358,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 1460.3861,
+   "price": 5758.8737
+  },
+  {
+   "key": "H|partial|base",
+   "p": 0.0634,
+   "ev": 1622.4127,
+   "ev_ebitda": 4.8417,
+   "term": 0.4628,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0293,
+   "cmax": 0.0382,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 1204.1097,
+   "price": 4748.2756
+  },
+  {
+   "key": "H|partial|high",
+   "p": 0.0212,
+   "ev": 1280.9254,
+   "ev_ebitda": 3.8226,
+   "term": 0.4868,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0357,
+   "cmax": 0.0443,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 854.8289,
+   "price": 3370.9247
+  },
+  {
+   "key": "H|full|low",
+   "p": 0.0034,
+   "ev": 2391.8195,
+   "ev_ebitda": 6.9424,
+   "term": 0.4846,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.0234,
+   "cmax": 0.0357,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 1980.4895,
+   "price": 7809.8448
+  },
+  {
+   "key": "H|full|base",
+   "p": 0.0135,
+   "ev": 2132.964,
+   "ev_ebitda": 6.191,
+   "term": 0.497,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.0279,
+   "cmax": 0.0381,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 1715.8765,
+   "price": 6766.3722
+  },
+  {
+   "key": "H|full|high",
+   "p": 0.0056,
+   "ev": 1780.2127,
+   "ev_ebitda": 5.1671,
+   "term": 0.52,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.034,
+   "cmax": 0.0439,
+   "lev": 1.3,
+   "real": 0.1054,
+   "equity": 1355.2399,
+   "price": 5344.2411
+  },
+  {
+   "key": "M|stress|low",
+   "p": 0.0249,
+   "ev": 1211.9663,
+   "ev_ebitda": 3.8401,
+   "term": 0.3937,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0263,
+   "cmax": 0.0353,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 798.5307,
+   "price": 3148.9189
+  },
+  {
+   "key": "M|stress|base",
+   "p": 0.0457,
+   "ev": 955.0835,
+   "ev_ebitda": 3.0261,
+   "term": 0.3933,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0313,
+   "cmax": 0.0377,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 536.0438,
+   "price": 2113.8305
+  },
+  {
+   "key": "M|stress|high",
+   "p": 0.0125,
+   "ev": 605.884,
+   "ev_ebitda": 1.9197,
+   "term": 0.392,
+   "mmin": 0.052,
+   "mmax": 0.0613,
+   "cmin": 0.0381,
+   "cmax": 0.0418,
+   "lev": 1.3502,
+   "real": 0.1024,
+   "equity": 179.1691,
+   "price": 706.5337
+  },
+  {
+   "key": "M|floor|low",
+   "p": 0.012,
+   "ev": 1846.7283,
+   "ev_ebitda": 5.6196,
+   "term": 0.4552,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0249,
+   "cmax": 0.0352,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 1434.9421,
+   "price": 5658.538
+  },
+  {
+   "key": "M|floor|base",
+   "p": 0.036,
+   "ev": 1580.5248,
+   "ev_ebitda": 4.8096,
+   "term": 0.4639,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0296,
+   "cmax": 0.0376,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 1163.0568,
+   "price": 4586.388
+  },
+  {
+   "key": "M|floor|high",
+   "p": 0.012,
+   "ev": 1217.7725,
+   "ev_ebitda": 3.7057,
+   "term": 0.482,
+   "mmin": 0.0602,
+   "mmax": 0.0622,
+   "cmin": 0.0361,
+   "cmax": 0.0414,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 792.523,
+   "price": 3125.2282
+  },
+  {
+   "key": "M|partial|low",
+   "p": 0.0094,
+   "ev": 2073.7257,
+   "ev_ebitda": 6.2234,
+   "term": 0.4608,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0249,
+   "cmax": 0.0352,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 1662.4027,
+   "price": 6555.5039
+  },
+  {
+   "key": "M|partial|base",
+   "p": 0.0282,
+   "ev": 1807.5222,
+   "ev_ebitda": 5.4245,
+   "term": 0.4692,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0296,
+   "cmax": 0.0376,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 1390.5174,
+   "price": 5483.3538
+  },
+  {
+   "key": "M|partial|high",
+   "p": 0.0094,
+   "ev": 1444.7699,
+   "ev_ebitda": 4.3358,
+   "term": 0.4858,
+   "mmin": 0.0614,
+   "mmax": 0.066,
+   "cmin": 0.0361,
+   "cmax": 0.0414,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 1019.9835,
+   "price": 4022.194
+  },
+  {
+   "key": "M|full|low",
+   "p": 0.0015,
+   "ev": 2640.8717,
+   "ev_ebitda": 7.7084,
+   "term": 0.4979,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.0237,
+   "cmax": 0.0351,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 2230.8294,
+   "price": 8797.0327
+  },
+  {
+   "key": "M|full|base",
+   "p": 0.006,
+   "ev": 2365.6091,
+   "ev_ebitda": 6.905,
+   "term": 0.5079,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.0282,
+   "cmax": 0.0375,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 1949.8181,
+   "price": 7688.8954
+  },
+  {
+   "key": "M|full|high",
+   "p": 0.0025,
+   "ev": 1990.5179,
+   "ev_ebitda": 5.8101,
+   "term": 0.526,
+   "mmin": 0.0628,
+   "mmax": 0.0715,
+   "cmin": 0.0344,
+   "cmax": 0.041,
+   "lev": 1.3,
+   "real": 0.1024,
+   "equity": 1566.8537,
+   "price": 6178.7169
+  }
+ ],
+ "gate_masses": {
+  "ev_ebitda": 0.034,
+  "margin_range": 0,
+  "capex_range": 0,
+  "terminal_share": 0,
+  "real_rate": 0,
+  "leverage_path": 0,
+  "equity_cushion": 0
+ },
+ "reverse_point": [
+  {
+   "name": "β_u",
+   "solved": 1.5711
+  },
+  {
+   "name": "ERP",
+   "solved": 0.1459
+  },
+  {
+   "name": "Дисконт за управление",
+   "solved": 0.5458
+  }
+ ],
+ "sensitivities": [
+  {
+   "name": "β_u",
+   "low": 0.45,
+   "high": 0.75,
+   "point_low": 4415.9677,
+   "point_high": 3401.3346,
+   "swing": 1014.6331
+  },
+  {
+   "name": "ERP",
+   "low": 0.049,
+   "high": 0.065,
+   "point_low": 4115.9719,
+   "point_high": 3545.9138,
+   "swing": 570.0581
+  },
+  {
+   "name": "Дисконт за управление",
+   "low": 0.0,
+   "high": 0.1,
+   "point_low": 3982.3452,
+   "point_high": 3584.1107,
+   "swing": 398.2345
+  },
+  {
+   "name": "Целевой рычаг",
+   "low": 1.0,
+   "high": 1.6,
+   "point_low": 3710.0119,
+   "point_high": 4019.4527,
+   "swing": 309.4408
+  },
+  {
+   "name": "Спред плавающего долга, base",
+   "low": 0.0115,
+   "high": 0.0155,
+   "point_low": 3861.8983,
+   "point_high": 3863.8512,
+   "swing": 1.9529
+  },
+  {
+   "name": "Спред фикса, base",
+   "low": 0.0095,
+   "high": 0.0155,
+   "point_low": 3858.5872,
+   "point_high": 3867.1614,
+   "swing": 8.5742
+  },
+  {
+   "name": "Спреды stress (оба; верх — пик 2025 г.)",
+   "low": -0.0015,
+   "high": 0.008,
+   "point_low": 3858.8641,
+   "point_high": 3884.2445,
+   "swing": 25.3804
+  },
+  {
+   "name": "Доля фикса (сдвиг)",
+   "low": -0.1,
+   "high": 0.1,
+   "point_low": 3861.4179,
+   "point_high": 3864.3264,
+   "swing": 2.9085
+  },
+  {
+   "name": "Купон «старого» фикса",
+   "low": 0.145,
+   "high": 0.155,
+   "point_low": 3862.5982,
+   "point_high": 3863.152,
+   "swing": 0.5537
+  },
+  {
+   "name": "Доходность кассы k",
+   "low": 0.8,
+   "high": 1.05,
+   "point_low": 3864.7549,
+   "point_high": 3860.0779,
+   "swing": 4.677
+  },
+  {
+   "name": "Подушка кассы",
+   "low": 0.0,
+   "high": 0.0145,
+   "point_low": 3858.7112,
+   "point_high": 3872.1275,
+   "swing": 13.4162
+  },
+  {
+   "name": "Веса миров",
+   "low": {
+    "N": 0.25,
+    "H": 0.5,
+    "M": 0.25
+   },
+   "high": {
+    "N": 0.4,
+    "H": 0.45,
+    "M": 0.15
+   },
+   "point_low": 3825.5549,
+   "point_high": 3874.2145,
+   "swing": 48.6596
+  },
+  {
+   "name": "Инфляция мира M",
+   "low": -0.003,
+   "high": 0.005,
+   "point_low": 3759.9704,
+   "point_high": 4049.2924,
+   "swing": 289.322
+  }
+ ],
+ "alternatives": [
+  {
+   "name": "LTI в мосте",
+   "point": 3831.7379,
+   "delta": -31.137
+  },
+  {
+   "name": "выплаты с 2026H2",
+   "point": 3865.5997,
+   "delta": 2.7248
+  },
+  {
+   "name": "мир M с кредитом base",
+   "point": 3847.9148,
+   "delta": -14.9601
+  }
+ ],
+ "base_point": 3862.8749
+}

@@ -1,0 +1,21 @@
+{
+ "_about": "Маржа EBITDA до МСФО 16 аналогов за 2025 г. (выписка из входа листа margin)",
+ "source": {
+  "file": "x5-850/data/assumptions/evidence/margin/inputs/external_points.json",
+  "sha256": "f75a3da2852c20cd35f346adf7164649595008d68407d2c1d3f85b70ea2a3433"
+ },
+ "peers_2025": {
+  "lenta": {
+   "margin": 0.07582,
+   "basis": "EBITDA до МСФО 16 (блок IAS 17 databook Ленты), с «Монеткой» (M&A 2024)",
+   "src": "inputs/episodes_magnit_book15.json → series.lenta.values[2025] (лист референс-класса книги Магнита 1.5, класс A)",
+   "rel": "A"
+  },
+  "magnit": {
+   "margin": 0.04824,
+   "basis": "EBITDA до МСФО 16",
+   "src": "inputs/episodes_magnit_book15.json → series.magnit.values[2025] (history.json книги Магнита)",
+   "rel": "A"
+  }
+ }
+}

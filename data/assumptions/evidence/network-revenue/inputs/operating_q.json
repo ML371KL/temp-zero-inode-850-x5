@@ -1,0 +1,4038 @@
+{
+ "_about": "Выписка research/facts/operating_by_format.json (сборка X1 по databook): кварталы 2021Q4–2026Q2 в двух базисах (as_reported; restated_KY_Slata — колонки «Скорр.»), продуктивность. Деньги — млн ₽, площадь — тыс. м², средний чек — ₽ (с НДС, промокодами и бонусами), покупатели — млн.",
+ "source": {
+  "file": "x5-850-handoff/research/facts/operating_by_format.json",
+  "sha256": "dc5bed0e05ebc920ac749e01da83c9e70c66f589dc29fb811cdfc7e296c8051c"
+ },
+ "meta_note": "as_reported — как в соответствующем databook; restated_KY_Slata — колонки «Скорр.» нового databook: «Красный Яр» и «Слата» включены в «Пятёрочку» (с 3 кв. 2025 — всегда включены), в 1 кв. 2026 — перенос 5Post в «Прочее». LFL «Пятёрочки» — без КЯ и Слаты. nrs_* — чистая розничная выручка формата, включая экспресс-доставку.",
+ "quarterly": {
+  "2021Q4": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 491290.01,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 103033.95,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 1853.97,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 603567.38,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 16243.88,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.0898,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.0154,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.0733,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.0982,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.01728,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.07958,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.06008,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 7048.48816,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1098.9054500000002,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 20.3271,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 128.06259999999997,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 8409.757049999998,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 17972.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 990.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 72.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 19121.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 438.4601165969514,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 683.6453497055106,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 616.7036898733826,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 470.16644616826704,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1284.605027,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 163.780333,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 3.427413,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1458.866401,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2022Q1": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 489193.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 102574.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 4099.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 601776.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 18835.46,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.1174,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.0367,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.0777,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.1263,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.0416,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.0813,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.08009,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 7183.452,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1096.14295,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 25.361100000000008,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 108.98199999999999,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 8528.416,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 18320.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 982.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 89.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 19479.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 452.43,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 700.51,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 702.46,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 484.23,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1241.316509,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 157.72902299999998,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 6.642123,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1411.39,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BJ89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2022Q2": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 534318.02,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 100040.9,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 6818.2,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 646162.26,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 14710.54,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.117,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.006,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.11,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.123,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.009,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.114,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.09,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 7271.2907,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1109.171,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 44.128600000000006,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 100.9308,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 8643.579,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 18558.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 985.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 153.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 19779.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 438.64,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 655.08,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 689.08,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 465.12,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1402.097469,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 167.215645,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 11.270711,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1585.488024,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2022Q3": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 538842.3,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 93420.6,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 9741.62,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 646013.19,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 14749.227,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.124,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.039,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.082,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.137,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.044,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.089,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.063,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 7385.83,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1094.474,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 93.01799999999997,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 67.7457,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 8759.19,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 18865.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 971.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 316.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 20227.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 422.22,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 614.85,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 600.16,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 444.9,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1465.55,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 165.53,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 18.48,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1653.47,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BL89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2022Q4": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 560439.8,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 108966.6,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 15233.46,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 702134.34,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 22058.49,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.079,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.043,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.035,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.084,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.047,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.036,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.053,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 7497.05,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1085.49,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 152.37,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 49.22,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 9107.479,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 19164.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 971.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 517.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 21323.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 453.88,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 712.95,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 609.77,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 484.22,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1415.119,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 167.09,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 28.45,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1648.22,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2023Q1": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 548912.39,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 105744.45,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 18744.06,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 693480.78,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 25602.6,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.065,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.036,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.028,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.07,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.039,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.03,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.041,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 7634.733,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1068.031,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 174.368,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 0.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 9203.045,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 19549.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 956.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 591.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 21760.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 465.4,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 722.2,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 585.9,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 494.2,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1351.6,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 160.4,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 36.39,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1595.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BN89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2023Q2": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 616985.71,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 104429.07,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 26585.55,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 768608.76,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 27017.619,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.078,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.066,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.011,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.085,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.072,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.012,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.046,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 7899.87,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1067.17,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 239.55,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 0.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 9541.02,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 20248.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 956.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 809.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 22682.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 442.71,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 673.42,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 557.6,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 467.33,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1594.93,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 170.28,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 54.19,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1869.53,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2023Q3": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 639516.273,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 101095.284,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 31435.06,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 792252.23,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 29192.167,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.102,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.057,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.043,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.10400000000000001,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.061,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.04100000000000001,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.095,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 8139.969,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1066.458,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 316.88,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 0.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 9859.61,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 20761.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 955.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 1071.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 23466.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 440.11,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 661.97,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 555.3,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 463.325,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1669.31,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 168.32,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 64.349,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1951.258,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BP89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2023Q4": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 685594.479,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 124492.0785,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 41660.551,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 874504.759,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 41782.419,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.132,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.03,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.099,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.13,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.03,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.096,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.14400000000000002,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 8339.20479,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1084.91277,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 442.1102100000004,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 0.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 10206.011,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 21308.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 972.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 1500.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 24472.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 497.822,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 792.41,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 615.568,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 529.98,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1580.7,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 172.98,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 76.98,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1879.96,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2024Q1": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 686512.621,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR7",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 125401.841,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR9",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 45639.948,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR13",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 880299.967,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR17",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 46525.234,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR39",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.148,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR45",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.029000000000000005,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR46",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.11600000000000002,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR47",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.146,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR49",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.03,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR50",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.11200000000000002,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR51",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.168,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR53",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 8438.77,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR70",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1087.76,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR71",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 476.222,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR73",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_karusel": {
+     "v": 0.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR72",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 10335.914,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR76",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 21593.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR62",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 978.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR63",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 1616.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR65",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 24884.0,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR68",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 517.56,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR79",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 815.13,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR80",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 615.89,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR82",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 549.91,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR83",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1521.01,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR85",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 168.87,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR86",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 84.22,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR88",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 1821.28,
+     "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BR89",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2024Q2": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 756791.28590247,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 119067.09729648,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 56783.00240382,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 957551.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 917008.76464863,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 46906.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 1573.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 965488.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.149,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.029000000000000005,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.117,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.149,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.031,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.114,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.161,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 8584.714310000001,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1093.7242300000012,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 525.2879600000007,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 10538.849250000003,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 21997.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 987.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 1785.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 25466.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 494.1237300058622,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 755.7693590010733,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 601.689640181045,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 522.5399197754375,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1757.363273,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 179.82964600000003,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 107.238903,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2095.617034,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!H64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2024Q3": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 767914.9529669702,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 114049.7983925,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 62796.08331648,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 969187.1735365503,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 929843.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 45236.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 3481.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 978560.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.138,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.022,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.114,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.136,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.022,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.11200000000000002,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.14,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 8704.05639,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1099.124270000001,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 588.2537900000003,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 10726.557200000005,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 22356.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 992.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2002.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 26047.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 488.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 735.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 607.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 515.3,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1807.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 177.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 117.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2152.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!I64",
+     "unit": "млн чеков"
+    }
+   },
+   "restated_KY_Slata": {
+    "nrs_pyaterochka": {
+     "v": 790420.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 114049.7983925,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 62796.08331648,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 969187.1735365503,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 929843.46302803,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 45236.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 3481.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 978560.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.138,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.022,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.114,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.136,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.022,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.11200000000000002,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.14,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 8939.659,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1099.124270000001,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 588.2537900000003,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 10726.557200000005,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 22968.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 992.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2002.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 26047.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 488.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 735.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 607.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 515.3,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1858.3,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 177.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 117.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2152.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2024Q4": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 810582.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 137236.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 84282.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1059149.7077104903,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1004692.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 61407.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 11681.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1077780.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.14,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.038,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.099,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.131,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.035,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.094,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.115,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 8942.32,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1096.345,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 686.702,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11062.348,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 22975.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 986.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2346.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 27015.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 541.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 870.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 685.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 580.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1716.3,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 180.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 140.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2087.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!K64",
+     "unit": "млн чеков"
+    }
+   },
+   "restated_KY_Slata": {
+    "nrs_pyaterochka": {
+     "v": 835781.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 137236.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 84282.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1059149.7077104903,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1004692.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 61407.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 11681.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1077780.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.14,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.038,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.099,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.131,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.035,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.094,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.115,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9177.964,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1096.345,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 686.702,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11062.348,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 23588.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 986.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2346.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 27015.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 542.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 870.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 685.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 580.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1716.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 180.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 140.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2087.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2025Q1": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 805824.6385145001,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 132900.1638452,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 90006.32832511,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1056376.1088138802,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 992061.0671273199,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 70826.39289632997,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 6899.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1069786.4893046601,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.146,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.046,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.096,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.132,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.04,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.08900000000000001,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.095,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9072.594529999997,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1093.4208500000007,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 722.9384500000009,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11238.05928,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 23363.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 984.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2471.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 27536.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 561.7226303605989,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 895.4716973183469,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 693.4210059624442,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 600.2583182663533,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1644.9681139999998,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 169.235748,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 147.504771,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2009.7036549999998,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!M64",
+     "unit": "млн чеков"
+    }
+   },
+   "restated_KY_Slata": {
+    "nrs_pyaterochka": {
+     "v": 830745.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 132900.1638452,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 90006.32832511,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1056376.1088138802,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 992061.0671273199,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 69121.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 8604.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1069786.4893046601,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.146,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.046,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.096,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.132,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.04,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.08900000000000001,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.095,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9308.118,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1093.4208500000007,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 722.9384500000009,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11238.05928,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 23974.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 984.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2471.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 27536.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 562.6,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 895.4716973183469,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 693.4210059624442,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 600.2583182663533,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1693.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 169.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 147.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2009.7,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!N64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2025Q2": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 896868.42499709,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 130464.63879117,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 103831.7936368,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1160627.1316160697,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1096518.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 70078.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 7608.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1174204.3908159998,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.139,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.015,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.122,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.125,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.01,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.114,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.096,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_chizhik": {
+     "v": 0.359,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O40",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9268.211600000011,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1095.3898600000005,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 781.7448600000005,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11477.037170000014,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 23911.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 992.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2676.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 28301.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 548.7808755200779,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 852.0797955052719,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 694.8497091024406,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 583.7763905315887,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1876.058025,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 174.652913,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 169.80211200000002,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2272.17102,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!O64",
+     "unit": "млн чеков"
+    }
+   },
+   "restated_KY_Slata": {
+    "nrs_pyaterochka": {
+     "v": 923179.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 130465.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 103832.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1160627.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1096518.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 68352.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 9334.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1174204.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.139,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.015,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.122,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.125,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.01,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.114,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.096,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_chizhik": {
+     "v": 0.359,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P40",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9499.021,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1095.39,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 781.745,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11477.037170000014,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 24514.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 992.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2676.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 28301.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 549.7,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 852.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 694.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 583.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1927.7,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 174.7,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 169.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2272.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!P64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2025Q3": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 913787.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 122621.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 103821.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1143241.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1083773.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 64966.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 11339.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1160078.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.106,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.004,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.101,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.097,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.002,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.095,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.073,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_chizhik": {
+     "v": 0.255,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q40",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9667.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1099.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 848.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11718.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 24990.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 998.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 2909.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 29011.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 534.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 815.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 686.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 566.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1967.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 172.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 172.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2311.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2025Q4": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 945843.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 145141.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 119841.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1213389.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1139062.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 79834.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 19069.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1237965.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.073,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.005,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.068,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.073,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.006,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.066,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.048,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_chizhik": {
+     "v": 0.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R40",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9859.131,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1105.495,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 947.475,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 11912.101,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 25533.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 1004.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 3253.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 29790.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 576.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 927.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 732.7,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 617.7,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1876.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 178.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 186.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2241.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2026Q1": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 913145.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 141902.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 116787.7763862,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1175136.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1088889.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 89670.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 12047.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1190606.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.061,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": -0.017,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.079,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.06,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": -0.017,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.079,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.067,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_chizhik": {
+     "v": 0.047,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S40",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9926.082,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1098.419,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 986.476,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 12010.976,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 25750.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 996.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 3392.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 30138.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 605.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 959.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 739.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 645.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1742.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 169.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 180.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2093.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!S64",
+     "unit": "млн чеков"
+    }
+   },
+   "restated_KY_Slata": {
+    "nrs_pyaterochka": {
+     "v": 913145.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 141902.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 116787.7763862,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1175136.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1088889.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 87219.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 14498.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1190606.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.061,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": -0.017,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.079,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.06,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": -0.017,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.079,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.067,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_chizhik": {
+     "v": 0.047,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T40",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 9926.082,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1098.419,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 986.476,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 12010.976,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 25750.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 996.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 3392.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 30138.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 605.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 959.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 739.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 645.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 1742.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 169.9,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 180.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2093.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!T64",
+     "unit": "млн чеков"
+    }
+   }
+  },
+  "2026Q2": {
+   "as_reported": {
+    "nrs_pyaterochka": {
+     "v": 993117.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U8",
+     "unit": "млн руб."
+    },
+    "nrs_perekrestok": {
+     "v": 138949.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U10",
+     "unit": "млн руб."
+    },
+    "nrs_chizhik": {
+     "v": 134819.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U12",
+     "unit": "млн руб."
+    },
+    "nrs_total": {
+     "v": 1270357.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U14",
+     "unit": "млн руб."
+    },
+    "retail_ex_digital": {
+     "v": 1184665.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U18",
+     "unit": "млн руб."
+    },
+    "digital_total": {
+     "v": 85691.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U20",
+     "unit": "млн руб."
+    },
+    "other_revenue": {
+     "v": 19551.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U22",
+     "unit": "млн руб."
+    },
+    "revenue_total": {
+     "v": 1289907.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U24",
+     "unit": "млн руб."
+    },
+    "lfl_sales_total": {
+     "v": 0.042,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U28",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_total": {
+     "v": 0.012,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U29",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_total": {
+     "v": 0.03,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U30",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_pyaterochka": {
+     "v": 0.039,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U32",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_traffic_pyaterochka": {
+     "v": 0.011,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U33",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_ticket_pyaterochka": {
+     "v": 0.028,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U34",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_perekrestok": {
+     "v": 0.052,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U36",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "lfl_sales_chizhik": {
+     "v": 0.053,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U40",
+     "unit": "доля (0,042 = 4,2 %)"
+    },
+    "space_pyaterochka": {
+     "v": 10012.2,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U50",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_perekrestok": {
+     "v": 1100.877,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U51",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_chizhik": {
+     "v": 1044.163,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U52",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "space_total": {
+     "v": 12157.24,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U53",
+     "unit": "тыс. кв. м на конец периода"
+    },
+    "stores_pyaterochka": {
+     "v": 26004.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U45",
+     "unit": "шт. на конец периода"
+    },
+    "stores_perekrestok": {
+     "v": 1004.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U46",
+     "unit": "шт. на конец периода"
+    },
+    "stores_chizhik": {
+     "v": 3596.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U47",
+     "unit": "шт. на конец периода"
+    },
+    "stores_total": {
+     "v": 30604.0,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U48",
+     "unit": "шт. на конец периода"
+    },
+    "avg_ticket_pyaterochka": {
+     "v": 564.3,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U56",
+     "unit": "руб."
+    },
+    "avg_ticket_perekrestok": {
+     "v": 878.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U57",
+     "unit": "руб."
+    },
+    "avg_ticket_chizhik": {
+     "v": 711.1,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U58",
+     "unit": "руб."
+    },
+    "avg_ticket_total": {
+     "v": 600.8,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U59",
+     "unit": "руб."
+    },
+    "customers_pyaterochka": {
+     "v": 2035.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U61",
+     "unit": "млн чеков"
+    },
+    "customers_perekrestok": {
+     "v": 181.6,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U62",
+     "unit": "млн чеков"
+    },
+    "customers_chizhik": {
+     "v": 216.4,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U63",
+     "unit": "млн чеков"
+    },
+    "customers_total": {
+     "v": 2433.5,
+     "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!U64",
+     "unit": "млн чеков"
+    }
+   }
+  }
+ },
+ "productivity": {
+  "annual": {
+   "2022": {
+    "pyaterochka": {
+     "v": 291.9120647343764,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 7272.02989,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O7",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI70",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK70",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM70"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "perekrestok": {
+     "v": 367.95492222685226,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 1100.6843625000001,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O9",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI71",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK71",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM71"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "chizhik": {
+     "v": 550.1698956483953,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 65.238575,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O13",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI73",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK73",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM73"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "karusel": {
+     "v": 165.56307600116264,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 94.78604999999999,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O11",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI72",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK72",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM72"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "total": {
+     "v": 298.362994892721,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 8701.098512499999,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O17",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI76",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK76",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM76"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    }
+   },
+   "2023": {
+    "pyaterochka": {
+     "v": 314.9588156089894,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 7908.998697499999,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P7",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM70",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO70",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ70"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "perekrestok": {
+     "v": 404.9123641973153,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 1076.1856925,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P9",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM71",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO71",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ71"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "chizhik": {
+     "v": 441.23480310778064,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 268.39505250000013,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P13",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM73",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO73",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ73"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "karusel": {
+     "v": 51.26460565623731,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 12.305,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P11",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM72",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO72",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ72"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "total": {
+     "v": 325.9594584723283,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 9598.8825,
+     "src": [
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P17",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM76",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO76",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ76"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    }
+   },
+   "2024": {
+    "pyaterochka": {
+     "v": 350.85252521607936,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 8612.7383525,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!D8",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ70",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!H50",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!K50"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "perekrestok": {
+     "v": 449.55277297278906,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 1092.1765575000004,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!D10",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ71",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!H51",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!K51"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "chizhik": {
+     "v": 457.92852877472495,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 544.8470325000005,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!D12",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ73",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!H52",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!K52"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "total": {
+     "v": 364.7489497694088,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 10586.514375000002,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!D14",
+      "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BQ76",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!H53",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!K53"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    }
+   },
+   "2025": {
+    "pyaterochka": {
+     "v": 380.0227142602378,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 9508.78425,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!F8",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!L50",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!P50",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!R50"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "perekrestok": {
+     "v": 483.65394684721184,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 1098.1550000000002,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!F10",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!L51",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!P51",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!R51"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "chizhik": {
+     "v": 522.2557570879019,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 799.4167500000001,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!F12",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!L52",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!P52",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!R52"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    },
+    "total": {
+     "v": 398.32615267355965,
+     "unit": "тыс. руб. на кв. м в год (млн руб. / тыс. кв. м)",
+     "avg_space": 11482.130835000007,
+     "src": [
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!F14",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!L53",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!P53",
+      "financial_and_operating_results_q2_2026.xlsx › Operating Results!R53"
+     ],
+     "calc": "чистая розничная выручка года / ((площадь дек.пред. + июнь)/2 + (июнь + дек.)/2)/2"
+    }
+   }
+  },
+  "ltm_2026-06-30": {
+   "pyaterochka": {
+    "v": 383.98589142762853,
+    "avg_space": 9807.37075,
+    "src": [
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q8",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R8",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!T8",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U8",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!P50",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R50",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U50"
+    ],
+    "calc": "выручка 3 кв. 2025 – 2 кв. 2026 / средняя площадь (июнь 2025 скорр., дек. 2025, июнь 2026)"
+   },
+   "perekrestok": {
+    "v": 497.91786591977734,
+    "avg_space": 1101.81425,
+    "src": [
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q10",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R10",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!T10",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U10",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!P51",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R51",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U51"
+    ],
+    "calc": "выручка 3 кв. 2025 – 2 кв. 2026 / средняя площадь (июнь 2025 скорр., дек. 2025, июнь 2026)"
+   },
+   "chizhik": {
+    "v": 510.9238529244599,
+    "avg_space": 930.2145,
+    "src": [
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q12",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R12",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!T12",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U12",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!P52",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R52",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U52"
+    ],
+    "calc": "выручка 3 кв. 2025 – 2 кв. 2026 / средняя площадь (июнь 2025 скорр., дек. 2025, июнь 2026)"
+   },
+   "total": {
+    "v": 404.74310040980595,
+    "avg_space": 11864.619792500003,
+    "src": [
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!Q14",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R14",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!T14",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U14",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!P53",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!R53",
+     "financial_and_operating_results_q2_2026.xlsx › Operating Results!U53"
+    ],
+    "calc": "выручка 3 кв. 2025 – 2 кв. 2026 / средняя площадь (июнь 2025 скорр., дек. 2025, июнь 2026)"
+   }
+  },
+  "note": "2024 — «Пятёрочка» без КЯ/Слаты (как отчитано) и в выручке, и в площади; 2025 — с ними. Итог включает прочие объекты (КЯ/Слата, дарксторы до 3 кв. 2025)."
+ }
+}

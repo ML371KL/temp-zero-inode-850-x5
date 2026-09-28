@@ -1,0 +1,133 @@
+{
+ "as_of": "2026-09-28",
+ "unit": "₽ на акцию",
+ "rows": [
+  {
+   "broker": "Финам",
+   "date": "2026-09-24",
+   "rating": "покупать",
+   "target": {
+    "v": 2510,
+    "src": "analyst-finmarket-6713775.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": "12 мес.",
+   "src": "analyst-finmarket-6713775.html"
+  },
+  {
+   "broker": "Эйлер",
+   "date": "2026-09-11",
+   "rating": "покупать",
+   "target": {
+    "v": 2600,
+    "src": "analyst-finmarket-6704753.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": "12 мес.",
+   "src": "analyst-finmarket-6704753.html"
+  },
+  {
+   "broker": "БКС Мир инвестиций",
+   "date": "2026-08-14",
+   "rating": "позитивно",
+   "target": {
+    "v": 2500,
+    "src": "analyst-finmarket-6685670.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": "12 мес.",
+   "src": "analyst-finmarket-6685670.html"
+  },
+  {
+   "broker": "ПСБ",
+   "date": "2026-08-14",
+   "rating": "потенциал роста",
+   "target": {
+    "v": 3800,
+    "src": "analyst-finmarket-6685730.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": "долгосрочный",
+   "src": "analyst-finmarket-6685730.html"
+  },
+  {
+   "broker": "Т-Инвестиции",
+   "date": "2026-08-13",
+   "rating": "держать",
+   "target": {
+    "v": 2250,
+    "src": "analyst-finmarket-6685040.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": "12 мес.",
+   "src": "analyst-finmarket-6685040.html"
+  },
+  {
+   "broker": "Цифра брокер",
+   "date": "2026-08-13",
+   "rating": "покупать",
+   "target": {
+    "v": 3943,
+    "src": "analyst-finmarket-6685096.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": null,
+   "src": "analyst-finmarket-6685096.html"
+  },
+  {
+   "broker": "Синара",
+   "date": "2026-08-13",
+   "rating": "позитивно",
+   "target": {
+    "v": null,
+    "calc": "цель не раскрыта (analyst-finmarket-6684897.html)"
+   },
+   "horizon": null,
+   "src": "analyst-finmarket-6684897.html"
+  },
+  {
+   "broker": "Газпромбанк",
+   "date": "2026-08-13",
+   "rating": "позитивно на долгий срок",
+   "target": {
+    "v": null,
+    "calc": "цель не раскрыта (analyst-finmarket-6685216.html)"
+   },
+   "horizon": null,
+   "src": "analyst-finmarket-6685216.html"
+  },
+  {
+   "broker": "Freedom Finance Global",
+   "date": "2026-05-19",
+   "rating": "держать",
+   "target": {
+    "v": 3000,
+    "src": "analyst-finmarket-6623908.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": null,
+   "src": "analyst-finmarket-6623908.html"
+  },
+  {
+   "broker": "ВЕЛЕС Капитал",
+   "date": "2026-04-30",
+   "rating": "покупать",
+   "target": {
+    "v": 3603,
+    "src": "analyst-finmarket-6611603.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": null,
+   "src": "analyst-finmarket-6611603.html"
+  },
+  {
+   "broker": "ВТБ Мои инвестиции",
+   "date": "2026-04-30",
+   "rating": "позитивно",
+   "target": {
+    "v": 3485,
+    "src": "analyst-finmarket-6611561.html (Интерфакс/Финмаркет; research/X4 §4)"
+   },
+   "horizon": "12 мес.",
+   "src": "analyst-finmarket-6611561.html"
+  }
+ ],
+ "median_12m_after_2q2026": {
+  "v": 2505.0,
+  "calc": "медиана 12-месячных целей после отчёта за 2 кв. 2026 (13.08–24.09.2026): 2250 / 2500 / 2510 / 2600"
+ },
+ "after_report": "МСФО 2 кв. 2026 (13.08.2026)",
+ "not_included": "вторичные и устаревшие: консенсус 3 290 ₽ (smart-lab 22.07.2026, источник не назван), SberCIB 4 500 ₽ (пересказы, декабрь 2025), ВТБ Моя аналитика 4 481 ₽ (17.10.2025); Альфа, Атон, Совкомбанк, Invest Heroes — актуальной цели с датой нет (research/X4 §4)"
+}

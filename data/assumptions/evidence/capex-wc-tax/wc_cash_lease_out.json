@@ -1,0 +1,243 @@
+{
+ "cash": {
+  "by_date": {
+   "2023-12-31": {
+    "d1": 30.61,
+    "d2": 38.625,
+    "dividends_payable": 0.0,
+    "liquid": 155.18,
+    "non_dividend_liquidity": 155.18,
+    "revenue_ltm": 3145.859
+   },
+   "2024-12-31": {
+    "d1": 33.809,
+    "d2": 67.583,
+    "dividends_payable": 0.0,
+    "liquid": 260.603,
+    "non_dividend_liquidity": 260.603,
+    "revenue_ltm": 3908.047
+   },
+   "2025-06-30": {
+    "d1": 24.543,
+    "d2": 53.518,
+    "dividends_payable": 158.838,
+    "liquid": 214.747,
+    "non_dividend_liquidity": 55.909,
+    "revenue_ltm": 4300.328
+   },
+   "2025-12-31": {
+    "d1": null,
+    "d2": 85.672,
+    "dividends_payable": 90.311,
+    "liquid": 178.454,
+    "non_dividend_liquidity": 88.143,
+    "revenue_ltm": 4642.034
+   },
+   "2026-06-30": {
+    "d1": null,
+    "d2": 58.28,
+    "dividends_payable": 60.425,
+    "liquid": 125.414,
+    "non_dividend_liquidity": 64.989,
+    "revenue_ltm": 4878.555
+   }
+  },
+  "cash_buffer_pct": 0.0045,
+  "d1_mean": 0.00803,
+  "float_min": 0.002548,
+  "non_dividend_mean": 0.015103,
+  "operating_cash_pct": 0.0106
+ },
+ "h1_excess": {
+  "mean_all": 0.003206,
+  "median_all": 0.002688,
+  "nwc_op_obs": {
+   "2025: июнь − пред. дек.": 0.006374,
+   "2025: июнь − след. дек.": 0.005371,
+   "2026: июнь − пред. дек.": -0.0024
+  },
+  "trade_next_dec": [
+   -0.00454,
+   -0.000824,
+   0.010303,
+   -2.8e-05,
+   0.00793,
+   -0.000131,
+   0.004571
+  ],
+  "trade_prev_dec": [
+   0.005387,
+   0.002688,
+   0.011463,
+   0.002475,
+   0.001642,
+   0.006999,
+   -0.002775
+  ]
+ },
+ "lease_adj": {
+  "book": -0.0005,
+  "by_period": {
+   "2023H2": {
+    "adj_pct": -0.001276,
+    "cash": 68.691,
+    "ias17_fixed": 66.551
+   },
+   "2024": {
+    "adj_pct": -0.000344,
+    "cash": 148.021,
+    "ias17_fixed": 146.675
+   },
+   "2024H1": {
+    "adj_pct": -0.000168,
+    "cash": 71.717,
+    "ias17_fixed": 71.405
+   },
+   "2024H2": {
+    "adj_pct": -0.000503,
+    "cash": 76.304,
+    "ias17_fixed": 75.27
+   },
+   "2025": {
+    "adj_pct": -0.000368,
+    "cash": 167.091,
+    "ias17_fixed": 165.382
+   },
+   "2025H1": {
+    "adj_pct": -0.000475,
+    "cash": 80.877,
+    "ias17_fixed": 79.81
+   },
+   "2025H2": {
+    "adj_pct": -0.000268,
+    "cash": 86.214,
+    "ias17_fixed": 85.572
+   },
+   "2026H1": {
+    "adj_pct": -0.000437,
+    "cash": 91.317,
+    "ias17_fixed": 90.233
+   }
+  },
+  "range": [
+   -0.0013,
+   -0.0002
+  ],
+  "weighted_2023H2_2026H1": -0.000494
+ },
+ "nwc_op": {
+  "2023-12-31": {
+   "contract_liabilities": 1.458,
+   "former_parent_excluded": 0.0,
+   "inventories": 236.826,
+   "note_vs_bs": 0.0,
+   "nwc_op": -127.147,
+   "other_operating_liabilities": 122.472,
+   "pct": -0.040417,
+   "receivables": 36.928,
+   "revenue_ltm": 3145.859,
+   "trade_payables": 290.232,
+   "trade_pct": -0.005238,
+   "vat_receivable": 13.261
+  },
+  "2024-12-31": {
+   "contract_liabilities": 1.879,
+   "former_parent_excluded": 45.372,
+   "inventories": 325.569,
+   "note_vs_bs": 0.0,
+   "nwc_op": -125.239,
+   "other_operating_liabilities": 124.167,
+   "pct": -0.032046,
+   "receivables": 37.579,
+   "revenue_ltm": 3908.047,
+   "trade_payables": 376.689,
+   "trade_pct": -0.003465,
+   "vat_receivable": 14.348
+  },
+  "2025-06-30": {
+   "contract_liabilities": 2.471,
+   "former_parent_excluded": 0.0,
+   "inventories": 314.695,
+   "note_vs_bs": 0.0,
+   "nwc_op": -110.402,
+   "other_operating_liabilities": 136.807,
+   "pct": -0.025673,
+   "receivables": 39.059,
+   "revenue_ltm": 4300.328,
+   "trade_payables": 338.557,
+   "trade_pct": 0.003534,
+   "vat_receivable": 13.679
+  },
+  "2025-12-31": {
+   "contract_liabilities": 2.317,
+   "former_parent_excluded": 1.102,
+   "inventories": 342.314,
+   "note_vs_bs": 0.0,
+   "nwc_op": -144.106,
+   "other_operating_liabilities": 150.619,
+   "pct": -0.031044,
+   "receivables": 56.038,
+   "revenue_ltm": 4642.034,
+   "trade_payables": 403.165,
+   "trade_pct": -0.001037,
+   "vat_receivable": 13.643
+  },
+  "2026-06-30": {
+   "contract_liabilities": 2.885,
+   "former_parent_excluded": 0.0,
+   "inventories": 323.722,
+   "note_vs_bs": 0.0,
+   "nwc_op": -163.156,
+   "other_operating_liabilities": 156.455,
+   "pct": -0.033444,
+   "receivables": 52.382,
+   "revenue_ltm": 4878.555,
+   "trade_payables": 394.701,
+   "trade_pct": -0.003812,
+   "vat_receivable": 14.781
+  }
+ },
+ "nwc_pct": {
+  "anchor_dec_expect": -0.036444,
+  "anchor_fact_nwc_op": -163.156,
+  "dec_2023_2025": [
+   -0.040417,
+   -0.032046,
+   -0.031044
+  ],
+  "dec_mean": -0.034502,
+  "h1_excess_pct": 0.003,
+  "path": {
+   "2026": -0.0364,
+   "LT": -0.035,
+   "LT_from": 2028
+  }
+ },
+ "odds_reconciliation": {
+  "2024": {
+   "balance": -1.908,
+   "cash_flow": -2.161,
+   "gap_pct_rev": 6.5e-05
+  },
+  "2025": {
+   "balance": 18.867,
+   "cash_flow": 11.116,
+   "gap_pct_rev": 0.00167
+  },
+  "2025H1": {
+   "balance": -14.837,
+   "cash_flow": -26.021,
+   "gap_pct_rev": 0.004984
+  },
+  "2025H2": {
+   "balance": 33.704,
+   "cash_flow": 37.137,
+   "gap_pct_rev": -0.001432
+  },
+  "2026H1": {
+   "balance": 19.05,
+   "cash_flow": 16.066,
+   "gap_pct_rev": 0.001203
+  }
+ }
+}

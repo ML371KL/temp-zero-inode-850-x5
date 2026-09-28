@@ -1,0 +1,58 @@
+{
+ "_about": "Валовые открытия и закрытия магазинов 4 кв. 2022 – 4 кв. 2023 по трейдинг-апдейтам X5 (ручная выписка). Ссылка — файл текста первички (reference/primary/text/) и номер строки. «Пятёрочка» — магазины «у дома» (с сетями «Покупочка», «Виктория» и др. в её базисе, без «Красного Яра» и «Слаты»); КЯ/Слата — отдельно (в сопоставимом базисе фактов они внутри «Пятёрочки»). «Чижик» закрытий в этих кварталах не раскрывал — принято 0. Трейдинг-апдейты 4 кв. 2022, 1 и 2 кв. 2023 скачаны 28.09.2026 с x5.ru (URL ниже).",
+ "sha256": {
+  "q4_2022_trading_update_rus.pdf": "62b1c4905af2c8d50bf779250d893f09bb913c2a89485800b6dfe5850701ca7b",
+  "q1_2023_trading_update_rus.pdf": "d7a0727ea754ff76087c0afe8624e567001e41c00a7b9f084a4f968cd72971c7",
+  "q2_2023_trading_update_rus.pdf": "8800c5c9f5ad8cc42c2ad6ef669d74a3dcc1b2a60caebb48303b710517ad6fb3",
+  "q3_2023_trading_update_rus.pdf": "558a72804e8a70f67caf22c8593be85e2e5b8532c0ede1dd0f02ef7f40ac56bd",
+  "q4_2023_trading_update_rus.pdf": "b9048be4d0ed4e3f9c9f729efee5e4a0ab4d663bf40e62842b2f5fe62dc68414"
+ },
+ "urls": {
+  "q4_2022_trading_update_rus.pdf": "https://www.x5.ru/wp-content/uploads/2023/01/q4_2022_trading_update_rus.pdf",
+  "q1_2023_trading_update_rus.pdf": "https://www.x5.ru/wp-content/uploads/2023/04/q1_2023_trading_update_rus.pdf",
+  "q2_2023_trading_update_rus.pdf": "https://www.x5.ru/wp-content/uploads/2023/07/q2_2023_trading_update_rus.pdf"
+ },
+ "quarters": {
+  "2022Q4": {
+   "pyaterochka_opened": {"v": 341, "src": "q4_2022_trading_update_rus.txt, стр. 349–350 («открыв 341 новый магазин… (без учета закрытий)»)"},
+   "pyaterochka_closed": {"v": 42, "src": "q4_2022_trading_update_rus.txt, стр. 368–369 («закрыла 42 магазина «у дома»»)"},
+   "perekrestok_opened": {"v": 9, "src": "q4_2022_trading_update_rus.txt, стр. 377–381 («в дополнение к открытию девяти новых магазинов»)"},
+   "perekrestok_closed": {"v": 9, "src": "q4_2022_trading_update_rus.txt, стр. 369 («9 супермаркетов»)"},
+   "chizhik_opened": {"v": 201, "src": "q4_2022_trading_update_rus.txt, стр. 343"},
+   "ky_slata_acquired": {"v": 595, "src": "q4_2022_trading_update_rus.txt, стр. 36–37 (M&A, 70 % в «Красном Яре» и «Слате», стр. 364)"}
+  },
+  "2023Q1": {
+   "pyaterochka_opened": {"v": 412, "src": "q1_2023_trading_update_rus.txt, стр. 266–267"},
+   "pyaterochka_closed": {"v": 27, "src": "q1_2023_trading_update_rus.txt, стр. 289–291"},
+   "perekrestok_opened": {"v": 2, "src": "q1_2023_trading_update_rus.txt, стр. 305"},
+   "perekrestok_closed": {"v": 17, "src": "q1_2023_trading_update_rus.txt, стр. 290"},
+   "chizhik_opened": {"v": 74, "src": "q1_2023_trading_update_rus.txt, стр. 281"},
+   "ky_slata_net": {"v": 1, "src": "q1_2023_trading_update_rus.txt, стр. 15 («1 магазин «Слата»»)"}
+  },
+  "2023Q2": {
+   "pyaterochka_opened": {"v": 740, "src": "q2_2023_trading_update_rus.txt, стр. 279–281"},
+   "pyaterochka_closed": {"v": 41, "src": "q2_2023_trading_update_rus.txt, стр. 323–325"},
+   "perekrestok_opened": {"v": 4, "src": "q2_2023_trading_update_rus.txt, стр. 310"},
+   "perekrestok_closed": {"v": 4, "src": "q2_2023_trading_update_rus.txt, стр. 324"},
+   "chizhik_opened": {"v": 218, "src": "q2_2023_trading_update_rus.txt, стр. 15"},
+   "ky_slata_net": {"v": 0, "src": "q2_2023_trading_update_rus.txt, стр. 13 (в приросте КЯ/Слата не названы)"}
+  },
+  "2023Q3": {
+   "pyaterochka_opened": {"v": 598, "src": "q3_2023_trading_update_rus.txt, стр. 285–286"},
+   "pyaterochka_closed": {"v": 85, "src": "q3_2023_trading_update_rus.txt, стр. 302–304 (76 «у дома» + 8 «Покупочка» + 1 «Виктория»)"},
+   "perekrestok_opened": {"v": 2, "src": "q3_2023_trading_update_rus.txt, стр. 319–321"},
+   "perekrestok_closed": {"v": 3, "src": "q3_2023_trading_update_rus.txt, стр. 304"},
+   "chizhik_opened": {"v": 262, "src": "q3_2023_trading_update_rus.txt, стр. 15"},
+   "ky_slata_net": {"v": 5, "src": "q3_2023_trading_update_rus.txt, стр. 14 («5 магазинов «Красный Яр» и «Слата»»; 1 магазин КЯ закрыт, стр. 304)"}
+  },
+  "2023Q4": {
+   "pyaterochka_opened": {"v": 630, "src": "q4_2023_trading_update_rus.txt, стр. 375–377"},
+   "pyaterochka_closed": {"v": 83, "src": "q4_2023_trading_update_rus.txt, стр. 420–421"},
+   "perekrestok_opened": {"v": 17, "src": "q4_2023_trading_update_rus.txt, стр. 407"},
+   "perekrestok_closed": {"v": 0, "src": "q4_2023_trading_update_rus.txt, стр. 420–422 (закрытий супермаркетов не названо)"},
+   "chizhik_opened": {"v": 429, "src": "q4_2023_trading_update_rus.txt, стр. 36"},
+   "ky_slata_net": {"v": 9, "src": "q4_2023_trading_update_rus.txt, стр. 37"}
+  }
+ },
+ "ky_slata_stores_2023_end": {"v": 610, "src": "q4_2023_trading_update_rus.txt, стр. 495"}
+}

@@ -1,0 +1,94 @@
+{
+ "_about": "Рынок X5: цена, акции, казначейский пакет, ликвидность, листинг, волатильность",
+ "price_2026_09_25": {
+  "v": 1808.5,
+  "src": "MOEX ISS TQBR, LEGALCLOSEPRICE 25.09.2026 (meta.market_price книги)"
+ },
+ "shares_outstanding_mln": {
+  "v": 245.98118,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 (245 981 180 в обращении)",
+  "calc": "выпущено − казначейские = 271 572 872 − 25 591 692"
+ },
+ "shares_issued_mln": {
+  "v": 271.572872,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 (271 572 872 обыкновенных акций); moex-iss-x5-share-tqbr-2026-09-28.json › ISSUESIZE",
+  "calc": "шт. / 10⁶"
+ },
+ "treasury_mln": {
+  "v": 25.591692,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 (25 591 692 собственных выкупленных, 54 287 млн ₽)",
+  "calc": "шт. / 10⁶; включают 15 770 акций у дочерних обществ"
+ },
+ "treasury_sales_2026H1": {
+  "period": "2026H1",
+  "units_mln": {
+   "v": 0.861,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 («реализовала 861 000 собственных акций»)"
+  },
+  "proceeds": {
+   "v": 2.01,
+   "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB55 («Поступления от реализации собственных акций» 2 010)",
+   "calc": "млрд ₽"
+  },
+  "avg_price_rub": {
+   "v": 2334.5,
+   "calc": "2 010 млн ₽ / 0,861 млн шт."
+  },
+  "buyer": "не раскрыт"
+ },
+ "treasury_policy": {
+  "text": "Наблюдательный совет 13.11.2025 одобрил отчуждение казначейских акций (9,7 % УК) в срок не более трёх лет; погашение не объявлялось",
+  "src": "x5-news-2025-11-13-dividends-9m2025-treasury.html; x5-ar25.pdf, с. 225"
+ },
+ "free_float": {
+  "v": 0.29,
+  "src": "x5-investors-shares-2026-09-28.html (x5.ru/ru/investors/shares/, доступ 28.09.2026): «free-float … по методике ПАО Московская Биржа … 29%»",
+  "calc": "доля единицы"
+ },
+ "vwap": {
+  "2026H1": 2453.396120610479,
+  "2026Q1": 2516.9688400708965,
+  "2026Q2": 2367.2702938391812,
+  "2025Q2": 3328.6956277362506,
+  "src": "research/market/x5_daily.csv (ISS: VALUE / VOLUME)"
+ },
+ "turnover_bn_day": {
+  "all": 2.47,
+  "last_3m": 1.86,
+  "src": "X4 §1 (x5_daily.csv)"
+ },
+ "listing": {
+  "X5": "1",
+  "MGNT": "3",
+  "src": "MOEX ISS /iss/securities/{X5,MGNT}.json › description.LISTLEVEL (28.09.2026)"
+ },
+ "imoex_weight_pct": {
+  "X5": 2.52,
+  "MGNT": null,
+  "date": "2026-09-25",
+  "src": "MOEX ISS /iss/statistics/engines/stock/markets/index/analytics/IMOEX.json"
+ },
+ "vol_weekly_tr": 0.2657,
+ "vol_daily_tr": 0.2391,
+ "vol_src": "research/market/beta_summary.json (полная доходность X5, 09.01.2025–25.09.2026)",
+ "treasury_buyout": {
+  "shares_mln": 26.452692,
+  "cost_bn": 56.115,
+  "cash_bn": 50.01,
+  "src": "МСФО 2025 прим. 22; МСФО 1П2026 с. 8, прим. 17 (X2 §1.2)"
+ },
+ "source": [
+  {
+   "file": "x5-850-handoff/research/market/x5_daily.csv",
+   "sha256": "94303dbb0ce4a44bb71d6936fb6e6d66fac73ef22778eac664d2908b04acdef9"
+  },
+  {
+   "file": "x5-850/data/facts/shares.json",
+   "sha256": "117adf9196200021819f178cdbee1c3c1c2d9663889d630df7d26b4c7810855c"
+  },
+  {
+   "file": "x5-850-handoff/research/market/beta_summary.json",
+   "sha256": "fbff9dc30429470b24a86f95fa4043f864fe502798c68e200decfe799fe8e234"
+  }
+ ]
+}

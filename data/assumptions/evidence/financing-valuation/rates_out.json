@@ -1,0 +1,240 @@
+{
+ "fixed_share": {
+  "history_fixed": {
+   "2023-12-31": 0.74,
+   "2024-12-31": 0.44,
+   "2025-06-30": 0.64,
+   "2025-12-31": 0.61,
+   "2026-06-30": 0.45
+  },
+  "mean_all": 0.576,
+  "mean_policy_era": 0.535,
+  "sep28_banks_same": 0.4219,
+  "sep28_bonds_replaced_banks": 0.4505,
+  "fixed_banks_0630": 71.324,
+  "float_banks_0630": 144.09,
+  "book": {
+   "2026H2": 0.44,
+   "2027": 0.5,
+   "LT": 0.55,
+   "LT_from": 2028
+  }
+ },
+ "legacy": {
+  "rows": [
+   {
+    "period": "2026H2",
+    "bonds": 124.708,
+    "banks": 69.0111,
+    "fixed_stock": 204.252,
+    "weight": 0.9484
+   },
+   {
+    "period": "2027H1",
+    "bonds": 108.0229,
+    "banks": 57.3252,
+    "fixed_stock": 232.1045,
+    "weight": 0.7124
+   },
+   {
+    "period": "2027H2",
+    "bonds": 65.9932,
+    "banks": 38.37,
+    "fixed_stock": 232.1045,
+    "weight": 0.4496
+   },
+   {
+    "period": "2028H1",
+    "bonds": 22.044,
+    "banks": 21.6505,
+    "fixed_stock": 255.315,
+    "weight": 0.1711
+   },
+   {
+    "period": "2028H2",
+    "bonds": 0.6576,
+    "banks": 7.2692,
+    "fixed_stock": 255.315,
+    "weight": 0.031
+   }
+  ],
+  "bond_rate_time_weighted": 0.148523,
+  "book_weight": {
+   "2026H2": 0.95,
+   "2027H1": 0.71,
+   "2027H2": 0.45,
+   "2028H1": 0.17,
+   "2028H2": 0.03,
+   "LT": 0.0,
+   "LT_from": 2029
+  },
+  "bank_fixed_rate": 0.153,
+  "legacy_rate": 0.150191,
+  "book_rate": 0.15
+ },
+ "h1_2026_reconciliation": {
+  "gross_interest": 32.992,
+  "bond_coupons": 17.1892,
+  "banks_avg": 199.2777,
+  "bank_interest": 15.8028,
+  "bank_rate": 0.1599,
+  "key_avg_h1_2026": 0.1516,
+  "bank_float_spread_if_fixed_as_bonds": 0.0121
+ },
+ "spreads": {
+  "float_weighted_0928": 0.0118,
+  "float_recent_mean": 0.012,
+  "float_crunch": [
+   0.02
+  ],
+  "float_regime": [
+   0.011000000000000001,
+   0.011000000000000001,
+   0.0115,
+   0.013000000000000001,
+   0.02
+  ],
+  "g_crunch_mean": 0.0261,
+  "tc_per_year": 0.0015,
+  "fixed_placements": [
+   {
+    "date": "2024-12-26",
+    "series": "003P-07",
+    "coupon": 0.2285,
+    "years": 0.7479,
+    "dur": 0.6963,
+    "y_eff": 0.254,
+    "kbd": 0.1799,
+    "g": 0.0741,
+    "key": 0.21
+   },
+   {
+    "date": "2025-01-27",
+    "series": "003P-08",
+    "coupon": 0.215,
+    "years": 1.0849,
+    "dur": 0.976,
+    "y_eff": 0.2375,
+    "kbd": 0.1898,
+    "g": 0.0477,
+    "key": 0.21
+   },
+   {
+    "date": "2025-02-28",
+    "series": "003P-10",
+    "coupon": 0.19949999999999998,
+    "years": 1.989,
+    "dur": 1.6654,
+    "y_eff": 0.2188,
+    "kbd": 0.1823,
+    "g": 0.0364,
+    "key": 0.21
+   },
+   {
+    "date": "2025-03-24",
+    "series": "003P-11",
+    "coupon": 0.1725,
+    "years": 1.9808,
+    "dur": 1.7055,
+    "y_eff": 0.1868,
+    "kbd": 0.1638,
+    "g": 0.023,
+    "key": 0.21
+   },
+   {
+    "date": "2025-06-26",
+    "series": "003P-12",
+    "coupon": 0.1555,
+    "years": 2.6438,
+    "dur": 2.1997,
+    "y_eff": 0.1671,
+    "kbd": 0.1484,
+    "g": 0.0187,
+    "key": 0.2
+   },
+   {
+    "date": "2025-07-28",
+    "series": "003P-13",
+    "coupon": 0.141,
+    "years": 2.1507,
+    "dur": 1.8795,
+    "y_eff": 0.1505,
+    "kbd": 0.1376,
+    "g": 0.0129,
+    "key": 0.18
+   },
+   {
+    "date": "2025-11-26",
+    "series": "003P-06",
+    "coupon": 0.14400000000000002,
+    "years": 1.9808,
+    "dur": 1.7496,
+    "y_eff": 0.1539,
+    "kbd": 0.1444,
+    "g": 0.0095,
+    "key": 0.165
+   },
+   {
+    "date": "2025-12-25",
+    "series": "003P-15",
+    "coupon": 0.145,
+    "years": 1.4932,
+    "dur": 1.357,
+    "y_eff": 0.155,
+    "kbd": 0.1405,
+    "g": 0.0145,
+    "key": 0.16
+   },
+   {
+    "date": "2026-02-03",
+    "series": "003P-17",
+    "coupon": 0.145,
+    "years": 2.1507,
+    "dur": 1.8722,
+    "y_eff": 0.155,
+    "kbd": 0.1457,
+    "g": 0.0094,
+    "key": 0.16
+   },
+   {
+    "date": "2026-04-21",
+    "series": "003P-18",
+    "coupon": 0.135,
+    "years": 2.2274,
+    "dur": 1.9529,
+    "y_eff": 0.1437,
+    "kbd": 0.1342,
+    "g": 0.0095,
+    "key": 0.15
+   }
+  ],
+  "g_stress_mean": 0.0183,
+  "g_base_mean": 0.0111,
+  "g_secondary_median": 0.0111,
+  "book": {
+   "spread_float": {
+    "base": 0.0135,
+    "stress": 0.015
+   },
+   "spread_fixed": {
+    "base": 0.0125,
+    "stress": 0.0195
+   }
+  }
+ },
+ "cash_yield": {
+  "k_quarters": [
+   1.1093,
+   1.0279,
+   1.1906,
+   1.0373,
+   1.1358,
+   1.1351,
+   0.8369
+  ],
+  "k_mean": 1.0676,
+  "k_median": 1.1093,
+  "k_2026q2": 0.8369,
+  "book": 0.9
+ }
+}

@@ -1,0 +1,32 @@
+{
+"description": {
+	"columns": ["name", "title", "value", "type", "sort_order", "is_hidden", "precision"], 
+	"data": [
+		["SECID", "Код ценной бумаги", "MGNT", "string", 1, 0, null],
+		["ISSUENAME", "Наименование ценной бумаги", "акции обыкновенные именные бездокументарные", "string", 2, 0, null],
+		["NAME", "Полное наименование", "\"Магнит\" ПАО ао", "string", 3, 0, null],
+		["SHORTNAME", "Краткое наименование", "Магнит ао", "string", 4, 0, null],
+		["ISIN", "ISIN код", "RU000A0JKQU8", "string", 5, 0, null],
+		["REGNUMBER", "Номер государственной регистрации", "1-01-60525-P", "string", 6, 0, null],
+		["ISSUESIZE", "Объем выпуска", "101911355", "number", 7, 0, 0],
+		["FACEVALUE", "Номинальная стоимость", "0.01", "number", 8, 0, 2],
+		["FACEUNIT", "Валюта номинала", "SUR", "string", 9, 0, null],
+		["ISSUEDATE", "Дата начала торгов", "2006-04-24", "date", 10, 0, null],
+		["LATNAME", "Английское наименование", "Magnit", "string", 11, 1, null],
+		["HASPROSPECTUS", "Наличие проспекта", "0", "boolean", 12, 1, 0],
+		["HASDEFAULT", "Допущен дефолт", "0", "boolean", 14, 1, 0],
+		["HASTECHNICALDEFAULT", "Допущен технический дефолт", "0", "boolean", 15, 1, 0],
+		["EMITENTMISMATCHCUR", "Эмитент не соответствует требованию на текущий Список", "0", "number", 17, 1, 0],
+		["LISTLEVEL", "Уровень листинга", "3", "number", 18, 0, 0],
+		["ISQUALIFIEDINVESTORS", "Бумаги для квалифицированных инвесторов", "0", "boolean", 20, 0, 0],
+		["MORNINGSESSION", "Допуск к утренней дополнительной торговой сессии", "1", "boolean", 23, 0, 0],
+		["EVENINGSESSION", "Допуск к вечерней дополнительной торговой сессии", "1", "boolean", 24, 0, 0],
+		["WEEKENDSESSION", "Допуск к дополнительной торговой сессии выходного дня", "1", "boolean", 25, 0, 0],
+		["REGISTRY_DATE", "Дата государственной регистрации ценной бумаги", "2004-03-04", "date", 28, 0, null],
+		["TYPENAME", "Вид\/категория ценной бумаги", "Акция обыкновенная", "string", 9000, 0, null],
+		["GROUP", "Код типа инструмента", "stock_shares", "string", 9001, 1, null],
+		["TYPE", "Тип бумаги", "common_share", "string", 10000, 1, null],
+		["GROUPNAME", "Типа инструмента", "Акции", "string", 10011, 1, null],
+		["EMITTER_ID", "Код эмитента", "886", "number", 11000, 1, null]
+	]
+}}

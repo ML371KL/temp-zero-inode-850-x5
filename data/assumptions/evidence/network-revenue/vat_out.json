@@ -1,0 +1,135 @@
+{
+ "implied_jump_by_w": 0.007018,
+ "jumps": {
+  "chizhik": {
+   "2026Q1": 0.005764,
+   "2026Q2": 0.004548
+  },
+  "perekrestok": {
+   "2026Q1": 0.007681,
+   "2026Q2": 0.006609
+  },
+  "pyaterochka": {
+   "2026Q1": 0.007994,
+   "2026Q2": 0.007631
+  },
+  "total": {
+   "2026Q1": 0.007481,
+   "2026Q2": 0.006972
+  }
+ },
+ "ratios": {
+  "2022Q1": {
+   "chizhik": 1.138284,
+   "perekrestok": 1.077181,
+   "pyaterochka": 1.148031,
+   "total": 1.135701
+  },
+  "2022Q2": {
+   "chizhik": 1.139072,
+   "perekrestok": 1.094948,
+   "pyaterochka": 1.15103,
+   "total": 1.141265
+  },
+  "2022Q3": {
+   "chizhik": 1.138513,
+   "perekrestok": 1.08944,
+   "pyaterochka": 1.148359,
+   "total": 1.138721
+  },
+  "2022Q4": {
+   "chizhik": 1.138806,
+   "perekrestok": 1.093242,
+   "pyaterochka": 1.146054,
+   "total": 1.136679
+  },
+  "2023Q1": {
+   "chizhik": 1.137475,
+   "perekrestok": 1.09548,
+   "pyaterochka": 1.145965,
+   "total": 1.136656
+  },
+  "2023Q2": {
+   "chizhik": 1.13657,
+   "perekrestok": 1.098065,
+   "pyaterochka": 1.144421,
+   "total": 1.136713
+  },
+  "2023Q3": {
+   "chizhik": 1.136724,
+   "perekrestok": 1.102156,
+   "pyaterochka": 1.148806,
+   "total": 1.141135
+  },
+  "2023Q4": {
+   "chizhik": 1.137441,
+   "perekrestok": 1.101043,
+   "pyaterochka": 1.147774,
+   "total": 1.139321
+  },
+  "2024Q1": {
+   "chizhik": 1.13651,
+   "perekrestok": 1.097679,
+   "pyaterochka": 1.146685,
+   "total": 1.137726
+  },
+  "2024Q2": {
+   "chizhik": 1.136335,
+   "perekrestok": 1.141455,
+   "pyaterochka": 1.147417,
+   "total": 1.143588
+  },
+  "2024Q3": {
+   "chizhik": 1.136495,
+   "perekrestok": 1.141486,
+   "pyaterochka": 1.148477,
+   "total": 1.144606
+  },
+  "2024Q4": {
+   "chizhik": 1.137847,
+   "perekrestok": 1.141996,
+   "pyaterochka": 1.14719,
+   "total": 1.143758
+  },
+  "2025Q1": {
+   "chizhik": 1.13636,
+   "perekrestok": 1.140057,
+   "pyaterochka": 1.146539,
+   "total": 1.14196
+  },
+  "2025Q2": {
+   "chizhik": 1.13623,
+   "perekrestok": 1.14101,
+   "pyaterochka": 1.147834,
+   "total": 1.142926
+  },
+  "2025Q3": {
+   "chizhik": 1.136495,
+   "perekrestok": 1.143197,
+   "pyaterochka": 1.149478,
+   "total": 1.144138
+  },
+  "2025Q4": {
+   "chizhik": 1.137803,
+   "perekrestok": 1.140552,
+   "pyaterochka": 1.144522,
+   "total": 1.14103
+  },
+  "2026Q1": {
+   "chizhik": 1.14291,
+   "perekrestok": 1.148814,
+   "pyaterochka": 1.155705,
+   "total": 1.150503
+  },
+  "2026Q2": {
+   "chizhik": 1.141397,
+   "perekrestok": 1.148551,
+   "pyaterochka": 1.156593,
+   "total": 1.150894
+  }
+ },
+ "vat_effect": -0.007175,
+ "vat_effect_book": -0.0072,
+ "w_standard_rate": 0.446525,
+ "wedge": 0.007227
+}

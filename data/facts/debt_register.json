@@ -1,0 +1,977 @@
+{
+ "as_of": "2026-06-30",
+ "collected_on": "2026-09-28",
+ "unit": "млрд ₽; ставки — доли единицы",
+ "basis": "финансовый долг до МСФО 16, аренда исключена",
+ "anchor": {
+  "borrowings_total": {
+   "v": 434.709,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+  },
+  "bonds_carrying": {
+   "v": 219.295,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, 25, с. 20, 25"
+  },
+  "bonds_face": {
+   "v": 219.708,
+   "calc": "сумма номиналов выпусков в обращении на 30.06.2026"
+  },
+  "bank_loans": {
+   "short": {
+    "v": 41.913,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (двусторонние кредиты, погашение 2026–2027)"
+   },
+   "long": {
+    "v": 173.501,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (двусторонние кредиты и займы, погашение 2027–2028)"
+   },
+   "total": {
+    "v": 215.414,
+    "calc": "41,913 + 173,501"
+   },
+   "lenders": "не раскрыты",
+   "rates": "по траншам не раскрыты"
+  },
+  "total_debt_company": {
+   "v": 435.857,
+   "src": "x5_q2_2026_financial_results_rus.pdf, с. 12; financial_and_operating_results_q2_2026.xlsx › Debt!R6"
+  },
+  "cash": {
+   "v": 125.21,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 8, с. 15"
+  },
+  "net_debt": {
+   "v": 310.647,
+   "src": "x5_q2_2026_financial_results_rus.pdf, с. 12; financial_and_operating_results_q2_2026.xlsx › Debt!R11"
+  },
+  "floating_share": {
+   "v": 0.55,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 24 («55% заёмных средств с плавающей процентной ставкой, привязанной к ключевой ставке»)"
+  },
+  "floating_share_2025_12_31": {
+   "v": 0.39,
+   "src": "auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf прим. 30, с. 50"
+  },
+  "effective_rate_2026H1": {
+   "v": 0.1654,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (16,54 % годовых)"
+  },
+  "effective_rate_2025": {
+   "v": 0.1992,
+   "src": "auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf прим. 21, с. 42"
+  },
+  "sensitivity_pbt_per_100bp_half": {
+   "v": 0.641,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 24",
+   "calc": "−0,641 млрд прибыли до налога за полугодие при +100 б.п."
+  },
+  "capitalised_interest_2026H1": {
+   "v": 2.085,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+  },
+  "credit_lines_unused": {
+   "v": 804.643,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 25"
+  },
+  "bond_programme_remaining": {
+   "v": 103.0,
+   "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 25"
+  },
+  "undiscounted_loans_with_interest": {
+   "lt_1y": {
+    "v": 185.24,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 24"
+   },
+   "1_5y": {
+    "v": 332.86,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 24"
+   },
+   "gt_5y": {
+    "v": 0.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 24, с. 24"
+   }
+  },
+  "covenant": "чистый долг / EBITDA до МСФО 16 ≤ 4,00х (4,25х два квартала после приобретения); факт 1,08х (finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 16, с. 21)",
+  "weighted_avg_maturity_2025_12_31_months": {
+   "v": 17,
+   "src": "x5-ar25.pdf, с. 225"
+  }
+ },
+ "ratings": [
+  {
+   "agency": "АКРА",
+   "rating": "AAA(RU)",
+   "outlook": "стабильный",
+   "date": "2026-06-24",
+   "src": "x5-news_akra-podtverdilo-kreditnyj-rejting-x5-na-urovne-aaaru-prognoz-stabilnyj.html"
+  },
+  {
+   "agency": "Эксперт РА",
+   "rating": "ruAAA",
+   "outlook": "стабильный",
+   "date": "2026-07-29",
+   "src": "x5-news_ekspert-ra-podtverdil-kreditnyj-rejting-x5-na-urovne-ruaaa-prognoz-stabilnyj.html"
+  },
+  {
+   "agency": "НКР",
+   "rating": "AAA.ru",
+   "outlook": "стабильный",
+   "date": "2025-12-03",
+   "src": "x5-ar25.pdf, с. 227 (присвоен 03.12.2025); x5-credit-ratings-2026-09-28.html"
+  }
+ ],
+ "bonds": [
+  {
+   "series": "003P-02",
+   "isin": "RU000A1075S4",
+   "name": "ИКС5Фин3P2",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 20.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 19.997); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 20.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 19.997,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + 1,10 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.011,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: спред выведен из истории купонов ISS: 15,60/15,35/15,10 % = КС 14,50/14,25/14,00 + 1,10"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": 0.151,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": null,
+   "maturity": "2026-10-17",
+   "repayment_date_for_model": "2026-10-17",
+   "price": {
+    "v": 100,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1616,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-04",
+   "isin": "RU000A107WL0",
+   "name": "003P-04",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 10.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 9.997); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 0.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json; торги 003P-04 прекращены 07.09.2026 (оферта 11.09.2026)"
+   },
+   "carrying_2026_06_30": {
+    "v": 9.997,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + 1,10 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.011,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2024 прим. 21, с. 54 («плавающий купон 1,1% к КС»); купоны ISS 19,1/17,6/16,6/15,6 %"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": null,
+    "calc": "выпуск выбыл"
+   },
+   "put_date": "2026-09-11",
+   "maturity": "2034-02-28",
+   "repayment_date_for_model": "2026-09-11",
+   "price": null,
+   "ytm": null,
+   "as_of": "2026-09-28",
+   "status": "redeemed_at_put_presumed"
+  },
+  {
+   "series": "003P-05",
+   "isin": "RU000A108LU2",
+   "name": "ИКС5Фин3P5",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 10.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 9.991); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 10.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 9.991,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + 1,10 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.011,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2024 прим. 21, с. 54; оферта по ISS 09.06.2027 (МСФО 2024 писал «октябрь 2027»)"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": 0.151,
+    "calc": "оценка: ключевая ставка 14,00 % + спред выпуска (research/X2 §3.2)"
+   },
+   "put_date": "2027-06-09",
+   "maturity": "2034-05-26",
+   "repayment_date_for_model": "2027-06-09",
+   "price": {
+    "v": 99.88,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1569,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-06",
+   "isin": "RU000A109KC0",
+   "name": "ИКС5Фин3P6",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 26.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 25.941); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 26.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 25.941,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.144,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42; ISS COUPONPERCENT 14,4"
+   },
+   "coupon_now": {
+    "v": 0.144,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2027-11-19",
+   "maturity": "2035-11-04",
+   "repayment_date_for_model": "2027-11-19",
+   "price": {
+    "v": 100.28,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1509,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-07",
+   "isin": "RU000A10AHA3",
+   "name": "ИКС5Фин3P7",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 1.708,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 1.708); номинал = объём выпуска (ISS ISSUESIZEPLACED); 003P-07 — остаток после оферты 25.09.2025 по балансу МСФО"
+   },
+   "outstanding_2026_09_28": {
+    "v": 1.708,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 1.708,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.1325,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2024 прим. 21 (22,85 %); ISS: оферта 25.09.2025 состоялась, купон 13,25 %; остаток в обращении оценён по балансовой стоимости МСФО 1,708 млрд — точное число бумаг не раскрыто"
+   },
+   "coupon_now": {
+    "v": 0.1325,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2027-07-19",
+   "maturity": "2034-12-04",
+   "repayment_date_for_model": "2027-07-19",
+   "price": {
+    "v": 99.41,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1497,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-10",
+   "isin": "RU000A10AT27",
+   "name": "ИКС5Ф3P10",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 10.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 9.988); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 10.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 9.988,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.1995,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+   },
+   "coupon_now": {
+    "v": 0.1995,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2027-02-24",
+   "maturity": "2035-02-06",
+   "repayment_date_for_model": "2027-02-24",
+   "price": {
+    "v": 102.7,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.139,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-11",
+   "isin": "RU000A10AT35",
+   "name": "ИКС5Ф3P11",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 15.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 14.98); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 15.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 14.98,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.1725,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+   },
+   "coupon_now": {
+    "v": 0.1725,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2027-03-17",
+   "maturity": "2035-03-02",
+   "repayment_date_for_model": "2027-03-17",
+   "price": {
+    "v": 101.16,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1567,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-12",
+   "isin": "RU000A10BUK3",
+   "name": "ИКС5Фи3P12",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 15.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 14.975); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 15.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 14.975,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.1555,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+   },
+   "coupon_now": {
+    "v": 0.1555,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2028-02-16",
+   "maturity": "2035-06-04",
+   "repayment_date_for_model": "2028-02-16",
+   "price": {
+    "v": 101.53,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.153,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-13",
+   "isin": "RU000A10C5Y0",
+   "name": "ИКС5Фи3P13",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 11.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 10.979); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 11.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 10.979,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.141,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+   },
+   "coupon_now": {
+    "v": 0.141,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2027-09-21",
+   "maturity": "2035-07-06",
+   "repayment_date_for_model": "2027-09-21",
+   "price": {
+    "v": 100.69,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1419,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-14",
+   "isin": "RU000A10CSX8",
+   "name": "ИКС5Фи3P14",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 15.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 14.964); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 15.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 14.964,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + 1,15 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.0115,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": 0.1515,
+    "calc": "оценка: ключевая ставка 14,00 % + спред выпуска (research/X2 §3.2)"
+   },
+   "put_date": "2028-09-13",
+   "maturity": "2035-09-02",
+   "repayment_date_for_model": "2028-09-13",
+   "price": {
+    "v": 100.01,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.158,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-15",
+   "isin": "RU000A10DYP0",
+   "name": "ИКС5Фи3P15",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 20.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 19.956); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 20.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 19.956,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.145,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+   },
+   "coupon_now": {
+    "v": 0.145,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2027-06-23",
+   "maturity": "2035-12-03",
+   "repayment_date_for_model": "2027-06-23",
+   "price": {
+    "v": 100.33,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1496,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-16",
+   "isin": "RU000A10E6Q2",
+   "name": "ИКС5Фи3P16",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 20.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 19.947); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 20.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 19.947,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + ≈1,30 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.013,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS; спред выведен"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": 0.153,
+    "calc": "оценка: ключевая ставка 14,00 % + спред выпуска (research/X2 §3.2)"
+   },
+   "put_date": "2028-04-28",
+   "maturity": "2036-01-14",
+   "repayment_date_for_model": "2028-04-28",
+   "price": {
+    "v": 100.75,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.153,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-17",
+   "isin": "RU000A10E6V2",
+   "name": "ИКС5Фи3P17",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 15.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 14.961); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 15.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 14.961,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.145,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS COUPONPERCENT 14,5; купоны 11,92 ₽/мес"
+   },
+   "coupon_now": {
+    "v": 0.145,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2028-03-29",
+   "maturity": "2036-01-12",
+   "repayment_date_for_model": "2028-03-29",
+   "price": {
+    "v": 100.33,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1523,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-18",
+   "isin": "RU000A10EL70",
+   "name": "ИКС5Фи3P18",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 11.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 10.968); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 11.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 10.968,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "fixed",
+   "coupon_formula": null,
+   "spread_to_key_rate": null,
+   "coupon_fixed": {
+    "v": 0.135,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS COUPONPERCENT 13,5"
+   },
+   "coupon_now": {
+    "v": 0.135,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.COUPONPERCENT (текущий купон)"
+   },
+   "put_date": "2028-07-12",
+   "maturity": "2036-03-29",
+   "repayment_date_for_model": "2028-07-12",
+   "price": {
+    "v": 98.5,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1546,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-19",
+   "isin": "RU000A10EL88",
+   "name": "ИКС5Фи3P19",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": 20.0,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20 (балансовая 19.943); номинал = объём выпуска (ISS ISSUESIZEPLACED)"
+   },
+   "outstanding_2026_09_28": {
+    "v": 20.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": 19.943,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 15, с. 20"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + ≈1,20 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.012,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS; спред выведен"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": 0.152,
+    "calc": "оценка: ключевая ставка 14,00 % + спред выпуска (research/X2 §3.2)"
+   },
+   "put_date": "2028-05-16",
+   "maturity": "2036-03-30",
+   "repayment_date_for_model": "2028-05-16",
+   "price": {
+    "v": 100.05,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1577,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-20",
+   "isin": "RU000A10EL96",
+   "name": "ИКС5Фи3P20",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": null,
+    "calc": "размещён после 30.06.2026"
+   },
+   "outstanding_2026_09_28": {
+    "v": 22.0,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": null,
+    "calc": "размещён после 30.06.2026"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + 1,15 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.0115,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: пресс-релиз X5 21.07.2026 (reference/primary/x5-news_x5-razmestila-korporativnye-obligaczii-na-summu-22-mlrd-rub.html)"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": 0.1515,
+    "calc": "оценка: ключевая ставка 14,00 % + спред выпуска (research/X2 §3.2)"
+   },
+   "put_date": "2028-08-14",
+   "maturity": "2036-06-28",
+   "repayment_date_for_model": "2028-08-14",
+   "price": {
+    "v": 100.37,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1554,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  },
+  {
+   "series": "003P-21",
+   "isin": "RU000A10F9D3",
+   "name": "ИКС5Фи3P21",
+   "issuer": "ООО «ИКС 5 ФИНАНС»",
+   "outstanding_2026_06_30": {
+    "v": null,
+    "calc": "размещён после 30.06.2026"
+   },
+   "outstanding_2026_09_28": {
+    "v": 17.5,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21"
+   },
+   "carrying_2026_06_30": {
+    "v": null,
+    "calc": "размещён после 30.06.2026"
+   },
+   "coupon_type": "floating",
+   "coupon_formula": "КС ЦБ + 1,20 п.п.",
+   "spread_to_key_rate": {
+    "v": 0.012,
+    "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: пресс-релиз X5 14.09.2026 (reference/primary/x5-news_x5-razmestila-korporativnye-obligaczii-na-summu-175-mlrd-rublej.html)"
+   },
+   "coupon_fixed": null,
+   "coupon_now": {
+    "v": 0.152,
+    "calc": "оценка: ключевая ставка 14,00 % + спред выпуска (research/X2 §3.2)"
+   },
+   "put_date": "2028-10-06",
+   "maturity": "2036-08-22",
+   "repayment_date_for_model": "2028-10-06",
+   "price": {
+    "v": 100.19,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.LAST (28.09.2026 ≈11:44 МСК)"
+   },
+   "ytm": {
+    "v": 0.1575,
+    "src": "moex-iss-x5-bonds-tqcb-2026-09-28.json › marketdata.YIELD (у флоатеров — при неизменном купоне)"
+   },
+   "as_of": "2026-09-28",
+   "status": "live"
+  }
+ ],
+ "bonds_summary_2026_09_28": {
+  "face": {
+   "v": 249.208,
+   "calc": "219,708 + 22,0 (003P-20) + 17,5 (003P-21) − 10,0 (003P-04)"
+  },
+  "floating_face": {
+   "v": 124.5,
+   "calc": "сумма номиналов флоатеров"
+  },
+  "floating_share": {
+   "v": 0.5,
+   "calc": "floating_face / face"
+  },
+  "weighted_coupon_now": {
+   "v": 0.152,
+   "calc": "средний купон, взвешенный по номиналу (флоатеры — КС 14,00 % + спред)"
+  },
+  "weighted_fixed_coupon": {
+   "v": 0.1523,
+   "calc": "по фиксированным выпускам"
+  },
+  "weighted_floating_spread": {
+   "v": 0.011770000000000001,
+   "calc": "по флоатерам"
+  },
+  "weighted_years_to_put": {
+   "v": 1.24,
+   "calc": "лет до оферты/погашения, взвешенно"
+  },
+  "weighted_market_yield": {
+   "v": 0.1537,
+   "calc": "доходность ISS, взвешенная по номиналу"
+  }
+ },
+ "key_rate_2026_09_28": {
+  "v": 0.14,
+  "src": "cbr-keyrate-2025-01-01_2026-09-28.html (14,00 % с 27.07.2026)"
+ },
+ "bank_floating_est": {
+  "v": 144.1,
+  "calc": "оценка: 55 % × 434,709 − плавающие облигации по номиналу 95,0"
+ },
+ "wall": [
+  {
+   "period": "2026Q4",
+   "bonds": {
+    "v": 20.0,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2027Q1",
+   "bonds": {
+    "v": 25.0,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2027Q2",
+   "bonds": {
+    "v": 30.0,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2027Q3",
+   "bonds": {
+    "v": 12.708,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2027Q4",
+   "bonds": {
+    "v": 26.0,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2028Q1",
+   "bonds": {
+    "v": 30.0,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2028Q2",
+   "bonds": {
+    "v": 40.0,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2028Q3",
+   "bonds": {
+    "v": 48.0,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  },
+  {
+   "period": "2028Q4",
+   "bonds": {
+    "v": 17.5,
+    "calc": "номинал облигаций к оферте/погашению по кварталам (реестр выпусков, 28.09.2026)"
+   },
+   "banks": {
+    "v": null,
+    "calc": "график банковских кредитов по кварталам не раскрыт"
+   }
+  }
+ ],
+ "wall_note": "облигации — по оферте, если её нет — по погашению (номинал на 28.09.2026); банковские кредиты по срокам не раскрыты: краткосрочные 41,9 (окончательное погашение 2026–2027), долгосрочные 173,5 (2027–2028)"
+}

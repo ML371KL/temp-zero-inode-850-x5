@@ -1,0 +1,59 @@
+{
+ "schema": "x5-margin-external-v1",
+ "built": "2026-09-28",
+ "note": "Точки вне рядов databook: прогнозы компании, оценки инвестдомов, аналоги, арифметика смеси форматов. У каждого числа — источник (файл папки передачи x5-850-handoff/reference/primary/ и строка текста в text/) и класс надёжности: A — первичка X5, B — вторичка (инвестдома, СМИ, чужие отчёты), C — суждение/реконструкция.",
+ "primary_sha256": {
+  "q4-2025-financial-results-webcast.pdf": "fdf805be6e37f42b91a5d630405b85368a7218be30454c86aec4e9b42e98818c",
+  "x5-news-2026-03-20-guidance-2026.html": "d95b6d5fbe2d0f09c30fbe265c932d21aa64e1c8afc3a7fe8c83289be1b4c71b",
+  "x5_q2_2026_financial_results_rus.pdf": "ef20fdc30d9ae6b4ac19513896238b68efe6c245bbbcf574cf53bd5bde137e4f",
+  "x5_investor_day_2025.pdf": "e9790ec961a335bcec577596b4522ae89dd13b47558dc8a7d8dcfce676619045"
+ },
+ "guidance": {
+  "2026": {"adj_margin_min": 0.06, "revenue_growth": [0.12, 0.16], "src": "q4-2025-financial-results-webcast.pdf, слайд 20 (text/q4-2025-financial-results-webcast.txt, стр. 436–453): «6+ % Рентабельность скорр. EBITDA»; x5-news-2026-03-20-guidance-2026.html", "rel": "A",
+           "revision": "в пресс-релизе за 2К2026 (13.08.2026) числового прогноза маржи нет, публичного пересмотра нет (X3-strategy.md §1.1)"},
+  "2025": {"adj_margin_min_initial": 0.06, "adj_margin_revised": [0.058, 0.060], "actual": 0.0615, "src": "x5_investor_day_2025.pdf, слайд 37 (text стр. 684–688: «Прогноз 2025 6+ %»); x5-news-2025-09-30-guidance-2025-en.html (пересмотр 30.09.2025); факт — x5_margin_history.json", "rel": "A"},
+  "2024": {"adj_margin_range": [0.060, 0.065], "actual": 0.0655, "src": "пересказ «целевого диапазона» в обзоре Т-Инвестиций 3К2024 (X3-strategy.md §1.3)", "rel": "B"}
+ },
+ "analysts": [
+  {"house": "Т-Инвестиции", "date": "2026-06-10", "year": 2026, "margin": 0.059, "basis": "отчётная EBITDA до МСФО 16 (с LTI): «сохранения рентабельности вблизи показателя 2025 года в 5,9 %»; 6 % скорр. ≈ 5,84 % отчётной", "src": "text/analyst-tinvest-x5-2026-06.txt, стр. 98–100", "rel": "B"},
+  {"house": "Т-Инвестиции", "date": "2026-06-10", "year": "2027–2028", "margin": 0.058, "basis": "отчётная EBITDA: «рентабельность … опустится до 5,8 %» (Чижик, зарплаты, доставка)", "src": "text/analyst-tinvest-x5-2026-06.txt, стр. 104–111 (число — стр. 106)", "rel": "B"},
+  {"house": "ВЕЛЕС Капитал", "date": "2026-04-30", "year": 2026, "margin": 0.062, "basis": "скорр. EBITDA", "src": "text/analyst-finmarket-6611603.txt, стр. 64", "rel": "B"},
+  {"house": "ВТБ Мои инвестиции", "date": "2026-04-30", "year": "2026 (2–4 кв.)", "margin": 0.062, "basis": "«для выхода на плановые показатели выше 6 % … потребуется средняя рентабельность 6,2 % до конца года, что выглядит выполнимым»", "src": "text/analyst-finmarket-6611561.txt, стр. 63", "rel": "B"},
+  {"house": "Market Power (РБК Инвестиции)", "date": "2026-08-13", "year": 2026, "margin": 0.056, "basis": "EBITDA ≈291 млрд ₽ при выручке ≈5,2 трлн ₽; база (скорр./отчётная) не названа", "src": "text/analyst-mailru-x5-2q2026.txt, стр. 85", "rel": "B"},
+  {"house": "Эйлер (Н. Ковалев)", "date": "2026-08-13", "year": 2026, "margin": null, "basis": "качественно: снижение на 70 б.п. г/г во 2К26 «усиливает риски для годового плана компании (выше 6 %)»", "src": "text/analyst-finmarket-6685019.txt, стр. 62–63", "rel": "B"}
+ ],
+ "peers_2025": {
+  "lenta": {"margin": 0.07582, "basis": "EBITDA до МСФО 16 (блок IAS 17 databook Ленты), с «Монеткой» (M&A 2024)", "src": "inputs/episodes_magnit_book15.json → series.lenta.values[2025] (лист референс-класса книги Магнита 1.5, класс A)", "rel": "A"},
+  "magnit": {"margin": 0.04824, "basis": "EBITDA до МСФО 16", "src": "inputs/episodes_magnit_book15.json → series.magnit.values[2025] (history.json книги Магнита)", "rel": "A"}
+ },
+ "x5_formats_2024": {
+  "pyaterochka_margin": 0.088, "perekrestok_margin": 0.067,
+  "basis": "EBITDA margin 2024 до МСФО 16 по форматам (другие форматы не раскрыты)",
+  "src": "x5_investor_day_2025.pdf, слайды 9–10 (text/x5_investor_day_2025.txt, стр. 165–181)", "rel": "A"
+ },
+ "x5_bridge_2024": {"headwinds_pp": -1.7, "efficiency_pp": 1.4, "from": 0.069, "to": 0.066,
+  "text": "−1,7 п.п.: инфляция расходов, развитие e-grocery, рост доли «Чижика»; +1,4 п.п.: коммерческая и операционная эффективность",
+  "src": "x5_investor_day_2025.pdf, слайд 31 (text стр. 543–556)", "rel": "A"},
+ "mix_arithmetic": {
+  "note": "Арифметика смеси форматов X3-strategy.md §2.4 (класс C): маржа группы = Σ доля × маржа формата − расходы центра 0,6 % выручки; «Прочее» — маржа 0. Маржи «Пятёрочки» и «Перекрёстка» округлены вниз от 8,8 / 6,7 % 2024 г.; маржа «Чижика» 2025 г. −0,5 % (плюс только в 4К25), зрелая — 3 %; онлайн — 0 (не раскрыто).",
+  "center_cost": 0.006,
+  "structures": {
+   "2025":             {"pyaterochka": 0.72, "perekrestok": 0.10, "chizhik": 0.09, "online": 0.06},
+   "2028_strategy":    {"pyaterochka": 0.65, "perekrestok": 0.07, "chizhik": 0.13, "online": 0.10},
+   "2030_realistic":   {"pyaterochka": 0.70, "perekrestok": 0.09, "chizhik": 0.12, "online": 0.08}
+  },
+  "margins": {
+   "2025":           {"pyaterochka": 0.085, "perekrestok": 0.065, "chizhik": -0.005, "online": 0.0},
+   "2028_strategy":  {"pyaterochka": 0.085, "perekrestok": 0.065, "chizhik": 0.03, "online": 0.0},
+   "2030_realistic": {"pyaterochka": 0.085, "perekrestok": 0.065, "chizhik": 0.03, "online": 0.0}
+  },
+  "src": "X3-strategy.md §2.4; доли 2025 — ID-25 стр. 30 и q4-25 вебкаст, слайды 6–9 (по пересказу X3)", "rel": "C"
+ },
+ "labor": {
+  "staff_ex_lti_pct_rev": {"2021": 0.0827, "2025": 0.0843, "2026H1": 0.0868},
+  "q2_2026_staff_ex_lti_yoy_pp": 0.37,
+  "avg_income_growth_2025": 0.18, "food_cpi_q2_2026": 0.034, "lfl_ticket_q2_2026": 0.030,
+  "src": "X3-strategy.md §2.0–2.1 (db26, листы SG&A и EBITDA; x5_q2_2026_financial_results_rus.pdf, стр. 7; AR25-HTML «Сотрудники»; q2_2026_trading_update_rus.pdf, стр. 2)", "rel": "A"
+ },
+ "price_cap": {"prob_5y": 0.15, "effect_pp": [-0.6, -0.3], "src": "X3-strategy.md §7.2, A-G1 (ФАС 17.09.2026; закон о мониторинге цен с 01.01.2027)", "rel": "C"}
+}

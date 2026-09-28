@@ -1,0 +1,95 @@
+{
+ "_about": "Денежный capex (ОС + НМА) и выручка, млрд ₽",
+ "years": {
+  "2011": {
+   "revenue": 454.1848530912,
+   "capex": 23.929081419240937,
+   "src": "старый databook › Profit and Loss!D6; Cash Flow!D33 + D42"
+  },
+  "2012": {
+   "revenue": 491.121677157,
+   "capex": 23.45136898373716,
+   "src": "старый databook › Profit and Loss!E6; Cash Flow!E33 + E42"
+  },
+  "2013": {
+   "revenue": 534.5597874162193,
+   "capex": 21.070450079198814,
+   "src": "старый databook › Profit and Loss!F6; Cash Flow!F33 + F42"
+  },
+  "2014": {
+   "revenue": 633.873,
+   "capex": 29.091,
+   "src": "старый databook › Profit and Loss!G6; Cash Flow!G33 + G42"
+  },
+  "2015": {
+   "revenue": 808.818,
+   "capex": 54.29,
+   "src": "старый databook › Profit and Loss!H6; Cash Flow!H33 + H42"
+  },
+  "2016": {
+   "revenue": 1033.667,
+   "capex": 71.21,
+   "src": "старый databook › Profit and Loss!I6; Cash Flow!I33 + I42"
+  },
+  "2017": {
+   "revenue": 1295.008,
+   "capex": 81.793,
+   "src": "старый databook › Profit and Loss!J6; Cash Flow!J33 + J42"
+  },
+  "2018": {
+   "revenue": 1532.537,
+   "capex": 78.768,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  },
+  "2019": {
+   "revenue": 1734.347,
+   "capex": 73.511,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  },
+  "2020": {
+   "revenue": 1978.026,
+   "capex": 85.511,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  },
+  "2021": {
+   "revenue": 2204.814,
+   "capex": 93.177,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  },
+  "2022": {
+   "revenue": 2605.206,
+   "capex": 74.941,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  },
+  "2023": {
+   "revenue": 3145.859,
+   "capex": 118.381,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  },
+  "2024": {
+   "revenue": 3908.047,
+   "capex": 158.488,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  },
+  "2025": {
+   "revenue": 4642.034,
+   "capex": 215.225,
+   "src": "research/facts/history_annual.json (revenue, capex_total = ОС + НМА, ОДДС до МСФО 16)"
+  }
+ },
+ "2026H1": {
+  "revenue": 2480.513,
+  "capex": 92.664,
+  "src": "research/facts/history_quarterly.json (2026Q1 + 2026Q2)"
+ },
+ "source": [
+  {
+   "file": "x5-850-handoff/reference/primary/financial_and_operating_results_q1_2024.xlsx",
+   "sha256": "89d41096c90a92bb99ee3ff6af3fffdfbadc95c61a1302172744bd5470260f10"
+  },
+  {
+   "file": "x5-850-handoff/research/facts/history_annual.json",
+   "sha256": "5625ba9da8b4c60a42186a82fe9befbed0f1f34c942d3abb37465fa6d1b19f7e"
+  }
+ ]
+}

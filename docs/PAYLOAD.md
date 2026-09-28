@@ -1,0 +1,178 @@
+# Выпуск X5: контракт `x5-v1`
+
+Выпуск — один JSON (`/api/model`), из которого витрина берёт ВСЕ числа. Единственный
+пересчёт во фронте — ползунок λ по `fair_value.draws_low/draws_high`. Новое число для
+экрана сначала добавляется сюда и в `model/payload.py`, потом во фронт. Потолок —
+500 000 байт компактного JSON; ни одного NaN/Inf. Деньги — млрд ₽, цены — ₽, доли —
+доли единицы (витрина сама переводит в проценты). Даты — ISO `YYYY-MM-DD`, время —
+ISO UTC.
+
+Обязательные блоки верхнего уровня (`REQUIRED_TOP_LEVEL`): `schema, meta, market,
+headline, fair_value, layers, grid, worlds, regimes, capex_levels, paths, debt,
+dividends, history, reverse_dcf, judgements, uncertainty, next_report, journal,
+calendar, checks, inputs, live, changes, book, indicators`. Витрина читает только
+объявленные блоки (тест `test_frontend_reads_only_declared_blocks`).
+
+## schema
+`"x5-v1"`.
+
+## meta
+`generated_at`, `valuation_date`, `facts_date`, `book_version`, `book_date`,
+`engine_commit`, `basis` ("до МСФО 16"), `shares_mln`, `governance_discount`,
+`anchor_period`, `first_period`, `last_period`, `open_period` (первое прогнозное без
+факта), `curve_as_of`, `closed_periods`, `elapsed`, `payload_sha256` (хэш выпуска без
+полей `generated_at`, `payload_sha256`, `bytes`), `bytes`, `previous_sha256` (или null).
+
+## market
+* `price`, `price_date`, `price_time`, `price_source` ("ISS TQBR"), `price_status`
+  ("live" | "fallback"), `book_price` (цена книги).
+* `market_cap` (по акциям в обращении), `claims` (D слоя «свой взгляд» на дату оценки),
+  `market_ev` (= V\*), `ebitda_rep_ltm`, `adj_ebitda_ltm`, `ev_ebitda_ltm`,
+  `pe_ltm` (или null), `dividend_yield_ltm`.
+* `peers`: `rows` [{`ticker`, `name`, `price`, `price_date`, `market_cap`, `net_debt`,
+  `ev`, `ebitda_ltm`, `ev_ebitda`, `pe`, `basis`, `as_of`}] — X5 первой строкой.
+* `brokers`: `rows` [{`broker`, `date`, `target`, `rating`, `src`}], `median`,
+  `after_report` (метка отчёта).
+* `price_history`: [{`date`, `close`}] — дневные закрытия за 12 мес. (тонкая выборка
+  для графика), `ex_dividend`: [{`date`, `dps`}].
+
+## headline
+`central` (медиана, точная), `printed_central`, `band` [P10, P90], `printed_band`,
+`inner` [P25, P75], `printed_inner`, `mean`, `p_central_below_market`,
+`market_price`, `print_step`, `draws`, `lambda`.
+
+## fair_value
+* `low`, `central`, `high` (точка при центральных значениях: низ, точка при λ книги,
+  верх), `printed` {low, central, high}, `lambda`, `lambda_step` (0,05).
+* `rates_view` {`rub`: верх − низ}.
+* `by_lambda`: [{`lambda`, `point`, `median`, `p10`, `p25`, `p75`, `p90`, `mean`,
+  `p_below`}] — 21 строка λ = 0, 0,05, …, 1 (контроль фронта; фронт считает сам по
+  прогонам, таблица — сверка).
+* `draws_low`, `draws_high`: массивы длины `headline.draws` (цены ₽, округление до 0,1).
+* `center_ev`: {`v0_median`, `v0_point`, `v_star`, `gap_median`, `gap_point`,
+  `rub_per_1pct_ev_median`, `rub_per_1pct_ev_point`}.
+* `equity_share_of_ev` (капитал / V0 точки).
+
+## layers
+`analytical`, `market_implied`, `macro_neutral` — у каждого: `title`, `world_weights`,
+`v0`, `d`, `equity`, `price`, `pv_fcff`, `pv_shield`, `pv_terminal`, `terminal_share`,
+`ev_ebitda_fwd`, `v0_to_d`.
+
+## grid
+`cells`: 36 × {`world`, `regime`, `capex`, `p_analytical`, `p_market_implied`,
+`p_neutral`, `ev`, `d`, `equity`, `price`, `margin_lt`, `ev_ebitda_fwd`,
+`terminal_share`, `max_leverage`}. `regime_order`, `capex_order`, `world_order`.
+
+## worlds
+По N, H, M: `name`, `weights` {analytical, market_implied, macro_neutral},
+`key_rate` [{year, value}] (среднее за год), `cpi`, `food_cpi` (то же),
+`zero_curve` {1, 3, 5, 10, LT}, `lt_inflation`, `r_terminal` (z_LT + β_u·ERP),
+`real_terminal`, `price` (цена слоя «только этот мир»), `v0`. `source` —
+происхождение миров (книга Магнита 1.6, дата кривой).
+
+## regimes
+По stress, floor, partial, full: `title`, `target` [{period, value}] (якорь…LT),
+`lt`, `prior`, `posterior`, `demand`. `history`: [{period, adj_margin, rep_margin}]
+полугодия 2018H1–якорь; `annual_history`: [{year, adj_margin}] 2011–последний год.
+`expected_lt` (Σ posterior × LT). `update`: {sigma_pp, rho, cap_pp, observations}.
+
+## capex_levels
+По low, base, high: `maintenance` [{year, value}], `lt`, `p_given_regime`
+{stress, floor, partial, full}. `history`: [{year, capex_pct, da_pct}].
+`price_per_m2`, `infra_per_m2`, `maintenance_area_share`.
+
+## paths
+Ожидаемый путь слоя «свой взгляд» (взвешенный по вероятностям клеток), по годам
+2026–2036 (2026 = факт 1П + прогноз 2П) и отдельно полугодия:
+`annual`: [{`year`, `revenue`, `revenue_growth`, `ticket`, `traffic`, `area_end`,
+`area_growth`, `margin`, `adj_ebitda`, `lti`, `da`, `capex`, `capex_maintenance`,
+`capex_growth`, `capex_infra`, `capex_pct`, `nwc_change`, `tax_unlevered`, `fcff`,
+`shield`, `interest`, `dividends`, `net_debt`, `leverage`}],
+`halves`: [{`period`, `revenue`, `margin`, `adj_ebitda`, `capex`, `fcff`, `net_debt`}],
+`fact_marks`: какие строки — факт.
+
+## debt
+* `anchor`: {`as_of`, `total_debt`, `cash`, `net_debt`, `leverage`, `leasing`,
+  `lease_liabilities_ifrs16`, `credit_lines_unused`, `floating_share`,
+  `effective_rate`, `ratings` [{agency, rating, outlook, date}]}.
+* `bridge`: [{`key`, `label`, `amount`, `included`, `src`}] + `rows_at_valuation`:
+  разложение D на дату оценки (ЧД факт, операционная касса, строки, перекат,
+  дивиденды к выплате) и `total`.
+* `bonds`: [{`isin`, `name`, `outstanding`, `coupon_type`, `coupon`, `spread`,
+  `put_date`, `maturity`, `price`, `ytm`, `as_of`}]; `bank_loans` {short, long, total}.
+* `wall`: [{`period` (квартал/год), `bonds`, `banks`}] — график погашений/оферт.
+
+## dividends
+`policy` {target_leverage [lo, hi], no_pay_above, frequency, text}; `register`
+[{id, label, dps, amount, record_date, ex_date, pay_until, status, paid_share,
+in_claims}]; `history` [{period, dps, amount, record_date}]; `model` [{year,
+amount, dps}] — ожидаемые выплаты модели по годам (слой «свой взгляд»);
+`next_expected` {label, record_date_est, dps_model, note}; `yield_ltm`.
+
+## history
+`annual` [{year, revenue, growth, adj_margin, rep_margin, capex_pct, da_pct,
+leverage, lfl, lfl_traffic, lfl_ticket, area_end, stores_end}], `halves`
+[{period, revenue, growth, adj_margin, capex_pct}], `formats` [{year, pyaterochka,
+perekrestok, chizhik, digital, other}] (выручка), `format_area` (то же для площади).
+
+## reverse_dcf
+`rows`: [{`name`, `unit`, `book`, `solved`, `delta`, `in_range`, `range`, `status`
+("solved" | "unreachable"), `point_solved`}]; `target` (рыночная цена);
+`method` ("медиана на подвыборке 200 + сдвиг").
+
+## judgements
+`rows`: [{`id`, `name`, `unit`, `book`, `low`, `high`, `price_low`, `price_high`,
+`swing`, `share`}] — «суждения по цене ошибки» (точка) и вклад в полосу; по
+убыванию `swing`.
+
+## uncertainty
+`contributions`: [{`axis`, `share`}] (сумма 1), `draws`, `seed`, `axes_count`,
+`mean`, `histogram_bins` (рекомендованные границы для гистограммы, ₽).
+
+## next_report
+* `period` (открытое полугодие), `events` [{date, title, kind ("trading_update" |
+  "ifrs" | "dividend" | "cbr"), confirmed (bool), note}].
+* `expectation`: {`revenue_growth` (г/г полугодия), `revenue`, `margin`,
+  `adj_ebitda`, `by_regime` [{regime, margin}]}.
+* `guidance`: {`revenue_growth` [lo, hi], `margin_min`, `capex_pct` [lo, hi],
+  `openings`, `required_h2_margin`, `required_h2_growth`, `src`}.
+* `benchmarks`: [{`name`, `margin`, `revenue_growth`, `note`}] — наивные эталоны
+  («то же полугодие год назад», «среднее двух полугодий», «как прошлое полугодие»).
+* `table`: [{`margin`, `point`, `median`, `d_point`, `d_median`, `posterior`
+  {stress…full}}]; `neutral` {`median`, `point`}; `rub_per_01pp` (медиана на 0,1 п.п.).
+
+## journal
+`entries`: [{`id`, `target` ("x5.adj_margin" | "x5.revenue_growth"), `period`,
+`recorded_at`, `release_sha`, `forecast`, `benchmarks` {name: value},
+`actual` (или null), `errors` {forecast, benchmarks}}]; `rule` (текст правила
+допуска); `status`.
+
+## calendar
+`events`: [{`date`, `title`, `kind`, `confirmed`, `note`}] ближайших 12 месяцев.
+
+## checks
+`invariants`: [{name, ok, detail}]; `gates`: [{`name`, `title`, `fired`, `mass`,
+`explanation`, `valid_until`, `expected_mass`}]; `flags`: [{`name`, `title`,
+`raised`, `detail`}].
+
+## inputs
+`rows`: [{`name`, `value`, `unit`, `as_of`, `source`, `status` ("ok" | "stale" |
+"fallback")}] — цена, кривая, ключевая, книга, факты.
+
+## live
+`price` {value, date, accepted, reason}, `curve` {as_of, nodes {1,3,5,10},
+book_nodes, shift_bp {5, 10}}, `key_rate` {value, date}, `valuation_date`.
+
+## changes
+`vs_previous`: {`previous_sha`, `previous_generated_at`, `rows` [{`component`,
+`rub`}], `total_rub`} — атрибуция изменения точки: дата оценки (перекат), цена
+рынка, книга/факты/код (остатком).
+
+## book
+`version`, `date`, `tag`, `sections`: [{id, title}], `worlds_source`,
+`facts_date`, `key_judgements`: [{id, name, value, unit}].
+
+## indicators
+`tiles`: [{`id`, `title`, `unit`, `value`, `date`, `change`, `history`
+[{date, value}] (≤ 60 точек)}] — X5 (цена), ключевая ставка, ОФЗ 5 и 10 лет
+(бескупонная кривая), спред облигаций X5 к ОФЗ.

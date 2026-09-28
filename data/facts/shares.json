@@ -1,0 +1,66 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млн шт.",
+ "issued": {
+  "v": 271.572872,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 (271 572 872 обыкновенных акций); moex-iss-x5-share-tqbr-2026-09-28.json › ISSUESIZE",
+  "calc": "шт. / 10⁶"
+ },
+ "treasury": {
+  "v": 25.591692,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 (25 591 692 собственных выкупленных, 54 287 млн ₽)",
+  "calc": "шт. / 10⁶; включают 15 770 акций у дочерних обществ"
+ },
+ "treasury_at_subsidiaries": {
+  "v": 0.01577,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 (15 770 акций у дочерних организаций); oeczb-pao-kcz-za-6m2026_disclosure.pdf, с. 38",
+  "calc": "шт. / 10⁶"
+ },
+ "outstanding_mln": {
+  "v": 245.98118,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 (245 981 180 в обращении)",
+  "calc": "выпущено − казначейские = 271 572 872 − 25 591 692"
+ },
+ "free_float_pct": {
+  "v": 0.29,
+  "src": "x5-investors-shares-2026-09-28.html (x5.ru/ru/investors/shares/, доступ 28.09.2026): «free-float … по методике ПАО Московская Биржа … 29%»",
+  "calc": "доля единицы"
+ },
+ "treasury_book_value": {
+  "v": 54.287,
+  "src": "financial_and_operating_results_q2_2026.xlsx › Financial Position!R38; finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17",
+  "calc": "млрд ₽"
+ },
+ "dividend_base_mln": {
+  "v": 245.99695,
+  "src": "x5-investors-dividends-2026-09-28.html: 60 269 252 750 ₽ / 245 ₽",
+  "calc": "акции, на которые начислен финальный дивиденд за 2025 г. = в обращении + 15 770 акций «дочек» (внутригрупповые)"
+ },
+ "weighted_avg_eps_2026H1": {
+  "v": 245.272401,
+  "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 18, с. 22"
+ },
+ "treasury_sales_history": [
+  {
+   "period": "2026H1",
+   "units_mln": {
+    "v": 0.861,
+    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21 («реализовала 861 000 собственных акций»)"
+   },
+   "proceeds": {
+    "v": 2.01,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AB55 («Поступления от реализации собственных акций» 2 010)",
+    "calc": "млрд ₽"
+   },
+   "avg_price_rub": {
+    "v": 2334.5,
+    "calc": "2 010 млн ₽ / 0,861 млн шт."
+   },
+   "buyer": "не раскрыт"
+  }
+ ],
+ "treasury_policy": {
+  "text": "Наблюдательный совет 13.11.2025 одобрил отчуждение казначейских акций (9,7 % УК) в срок не более трёх лет; погашение не объявлялось",
+  "src": "x5-news-2025-11-13-dividends-9m2025-treasury.html; x5-ar25.pdf, с. 225"
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "as_of": "2026-06-30",
+ "unit": "млн шт.",
+ "note": "ФИКСТУРА ТЕСТОВ ЯДРА: перенос из x5-850-handoff/research/facts (агент X1) с источниками; не выверена агентом фактов. Рабочие факты — data/facts/.",
+ "issued": {
+  "v": 271.572872,
+  "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 17, с. 21; MOEX ISS /iss/engines/stock/markets/shares/boards/TQBR/securities/X5.json (доступ 2026-09-28 12:03 МСК) ISSUESIZE; https://www.x5.ru/ru/investors/shares/ (копия reference/primary/x5-investors-shares-2026-09-28.html, доступ 2026-09-28)",
+  "calc": "шт. / 10⁶"
+ },
+ "treasury": {
+  "v": 25.591692,
+  "src": "МСФО 1П2026 (finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 17",
+  "calc": "шт. / 10⁶"
+ },
+ "treasury_at_subsidiaries": {
+  "v": 0.01577,
+  "src": "Отчёт эмитента 12м2025 (reference/primary/oeczb-pao-kcz-za-12m2025_disclosure.pdf) с. 45; Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) с. 38",
+  "calc": "шт. / 10⁶"
+ },
+ "outstanding_mln": {
+  "v": 245.98118,
+  "src": "МСФО 1П2026 (finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 17, с. 21",
+  "calc": "выпущено − казначейские; шт. / 10⁶"
+ }
+}

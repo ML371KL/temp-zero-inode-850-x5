@@ -1,0 +1,66 @@
+{
+ "iss/quotes_tqbr.json": {
+  "url": "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=securities,marketdata&securities=X5,MGNT,LENT,FIXR,OKEY&securities.columns=SECID,SHORTNAME,ISIN,PREVPRICE,PREVLEGALCLOSEPRICE,PREVDATE&marketdata.columns=SECID,LAST,TIME,UPDATETIME,SYSTIME,TRADINGSTATUS",
+  "fetched_at": "2026-09-28T10:00:08+00:00",
+  "sha256": "64e51e9f550f6a9d8e516f00334a2434155b47f2db482f19d188dbdcfe5dd8ae",
+  "bytes": 969,
+  "status": 200
+ },
+ "iss/history_X5_0.json": {
+  "url": "https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/X5.json?iss.meta=off&from=2025-09-28&till=2026-09-28&start=0&history.columns=TRADEDATE,LEGALCLOSEPRICE,CLOSE,VOLUME",
+  "fetched_at": "2026-09-28T10:00:09+00:00",
+  "sha256": "180992b3d7664f487873f7b472b980a65d994f4be27c0056c4fd4067425123a9",
+  "bytes": 4186,
+  "status": 200
+ },
+ "iss/history_X5_100.json": {
+  "url": "https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/X5.json?iss.meta=off&from=2025-09-28&till=2026-09-28&start=100&history.columns=TRADEDATE,LEGALCLOSEPRICE,CLOSE,VOLUME",
+  "fetched_at": "2026-09-28T10:00:10+00:00",
+  "sha256": "cf6b5c61c0999a82bca8a859fd8bf369223f6427677cf619799bf0597d1913ed",
+  "bytes": 4157,
+  "status": 200
+ },
+ "iss/history_X5_200.json": {
+  "url": "https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/X5.json?iss.meta=off&from=2025-09-28&till=2026-09-28&start=200&history.columns=TRADEDATE,LEGALCLOSEPRICE,CLOSE,VOLUME",
+  "fetched_at": "2026-09-28T10:00:11+00:00",
+  "sha256": "3a2efff584ed69b335ee0e37ba61ab0b0b103e0b9cd11e9b92a8f5dd568a4011",
+  "bytes": 2312,
+  "status": 200
+ },
+ "iss/zcyc.json": {
+  "url": "https://iss.moex.com/iss/engines/stock/zcyc.json?iss.meta=off&iss.only=params,yearyields",
+  "fetched_at": "2026-09-28T10:00:12+00:00",
+  "sha256": "3e0461db74210cde7035a75113f39df7d51fc54367f1fda108e7012ef0d94f1d",
+  "bytes": 910,
+  "status": 200
+ },
+ "iss/emitter_securities.json": {
+  "url": "https://iss.moex.com/iss/emitters/1259/securities.json?iss.meta=off",
+  "fetched_at": "2026-09-28T10:00:13+00:00",
+  "sha256": "49c1cbb5daf79f2c036deaa5fed22405dd4fe92552464e9822ab6c41b24ee7ae",
+  "bytes": 3856,
+  "status": 200
+ },
+ "iss/bonds_tqcb.json": {
+  "url": "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.json?iss.meta=off&iss.only=securities,marketdata&securities=RU000A1075S4,RU000A108LU2,RU000A109KC0,RU000A10AHA3,RU000A10AT27,RU000A10AT35,RU000A10BUK3,RU000A10C5Y0,RU000A10CSX8,RU000A10DYP0,RU000A10E6Q2,RU000A10E6V2,RU000A10EL70,RU000A10EL88,RU000A10EL96,RU000A10F9D3&securities.columns=SECID,SHORTNAME,SECNAME,ISIN,MATDATE,OFFERDATE,PUTOPTIONDATE,COUPONPERCENT,FACEVALUE,ISSUESIZE,ISSUESIZEPLACED,BONDTYPE,COUPON_DETAILS,PREVPRICE,PREVDATE,YIELDATPREVWAPRICE&marketdata.columns=SECID,LAST,YIELD,DURATION,VALTODAY,SYSTIME,TIME",
+  "fetched_at": "2026-09-28T10:00:14+00:00",
+  "sha256": "a8ea1e7b0ccfcb9afad371de52a93d86e056bca73a7f0f9ee9952ad006118fcb",
+  "bytes": 6977,
+  "status": 200
+ },
+ "cbr/key_rate_soap.xml": {
+  "url": "https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx",
+  "fetched_at": "2026-09-28T10:00:14+00:00",
+  "sha256": "837cb11710e6a1562db6141f89e25b04dfb19008277bc3c49446590f5340978f",
+  "bytes": 26543,
+  "status": 200,
+  "post_body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n <soap:Body><KeyRate xmlns=\"http://web.cbr.ru/\">\n  <fromDate>2025-09-27T00:00:00</fromDate>\n  <ToDate>2026-09-28T00:00:00</ToDate>\n </KeyRate></soap:Body></soap:Envelope>"
+ },
+ "cbr/key_rate_page.html": {
+  "url": "https://www.cbr.ru/hd_base/KeyRate/?UniDbQuery.Posted=True&UniDbQuery.From=27.09.2025&UniDbQuery.To=28.09.2026",
+  "fetched_at": "2026-09-28T10:00:15+00:00",
+  "sha256": "57d656ecc508d765379aaa786ee7d2c9eeb2020bff7ff5ac3e4a8f39d7503714",
+  "bytes": 57063,
+  "status": 200
+ }
+}

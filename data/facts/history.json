@@ -1,0 +1,2264 @@
+{
+ "unit": "выручка — млрд ₽; доли — доли единицы; площадь — тыс. м²",
+ "basis": "до МСФО 16; годы ≤2020 и полугодия ≤2022H2 — databook X5 Retail Group N.V. (financial_and_operating_results_q1_2024.xlsx), дальше — databook ПАО «КЦ ИКС 5» (financial_and_operating_results_q2_2026.xlsx); площадь и магазины с 2023H2 — сопоставимый базис network.json",
+ "annual": [
+  {
+   "year": 2011,
+   "revenue": {
+    "v": 454.184853,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!D6"
+   },
+   "growth": {
+    "v": null,
+    "calc": "нет 2010 г."
+   },
+   "adj_margin": {
+    "v": 0.070519,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!D14 / Profit and Loss!D6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.073131,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!D18 / Profit and Loss!D6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.052686,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!D33 + D42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.02771,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!D8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 3.126114,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!D12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.06,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D45"
+   },
+   "lfl_traffic": {
+    "v": -0.01,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D46"
+   },
+   "lfl_ticket": {
+    "v": 0.07,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D47"
+   },
+   "area_end": {
+    "v": 1727.284366,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 3002,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2012,
+   "revenue": {
+    "v": 491.121677,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!E6"
+   },
+   "growth": {
+    "v": 0.081326,
+    "calc": "выручка 2012 / 2011 − 1"
+   },
+   "adj_margin": {
+    "v": 0.071405,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!E14 / Profit and Loss!E6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.071151,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!E18 / Profit and Loss!E6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.047751,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!E33 + E42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.059032,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!E8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 3.145946,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!E12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": -0.014,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E45"
+   },
+   "lfl_traffic": {
+    "v": -0.031,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E46"
+   },
+   "lfl_ticket": {
+    "v": 0.017,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E47"
+   },
+   "area_end": {
+    "v": 1969.744652,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 3802,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2013,
+   "revenue": {
+    "v": 534.559787,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!F6"
+   },
+   "growth": {
+    "v": 0.088447,
+    "calc": "выручка 2013 / 2012 − 1"
+   },
+   "adj_margin": {
+    "v": 0.071699,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!F14 / Profit and Loss!F6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.071742,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!F18 / Profit and Loss!F6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.039416,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!F33 + F42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.024421,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!F8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 2.683449,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!F12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.007,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F45"
+   },
+   "lfl_traffic": {
+    "v": -0.029,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F46"
+   },
+   "lfl_ticket": {
+    "v": 0.037,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F47"
+   },
+   "area_end": {
+    "v": 2222.88334,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 4544,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2014,
+   "revenue": {
+    "v": 633.873,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!G6"
+   },
+   "growth": {
+    "v": 0.185785,
+    "calc": "выручка 2014 / 2013 − 1"
+   },
+   "adj_margin": {
+    "v": 0.073206,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!G14 / Profit and Loss!G6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.072347,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!G18 / Profit and Loss!G6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.045894,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!G33 + G42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.02772,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!G8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 2.297542,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!G12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.098,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G45"
+   },
+   "lfl_traffic": {
+    "v": 0.006,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G46"
+   },
+   "lfl_ticket": {
+    "v": 0.092,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G47"
+   },
+   "area_end": {
+    "v": 2572.2428,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 5483,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2015,
+   "revenue": {
+    "v": 808.818,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!H6"
+   },
+   "growth": {
+    "v": 0.275994,
+    "calc": "выручка 2015 / 2014 − 1"
+   },
+   "adj_margin": {
+    "v": 0.073457,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!H14 / Profit and Loss!H6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.068289,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!H18 / Profit and Loss!H6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.067123,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!H33 + H42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.025697,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!H8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 2.448844,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!H12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.136617,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H45"
+   },
+   "lfl_traffic": {
+    "v": 0.022518,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H46"
+   },
+   "lfl_ticket": {
+    "v": 0.111585,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H47"
+   },
+   "area_end": {
+    "v": 3333.173965,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 7020,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2016,
+   "revenue": {
+    "v": 1033.667,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!I6"
+   },
+   "growth": {
+    "v": 0.277997,
+    "calc": "выручка 2016 / 2015 − 1"
+   },
+   "adj_margin": {
+    "v": 0.076929,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!I14 / Profit and Loss!I6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.073783,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!I18 / Profit and Loss!I6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.068891,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!I33 + I42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.029638,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!I8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 1.807374,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!I12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.077,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I45"
+   },
+   "lfl_traffic": {
+    "v": 0.025,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I46"
+   },
+   "lfl_ticket": {
+    "v": 0.05,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I47"
+   },
+   "area_end": {
+    "v": 4301.752255,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 9187,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2017,
+   "revenue": {
+    "v": 1295.008,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!J6"
+   },
+   "growth": {
+    "v": 0.252829,
+    "calc": "выручка 2017 / 2016 − 1"
+   },
+   "adj_margin": {
+    "v": 0.076549,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!J14 / Profit and Loss!J6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.07428,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!J18 / Profit and Loss!J6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.06316,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!J33 + J42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.02968,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!J8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 1.732,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!J12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.054,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J45"
+   },
+   "lfl_traffic": {
+    "v": 0.03,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J46"
+   },
+   "lfl_ticket": {
+    "v": 0.023,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J47"
+   },
+   "area_end": {
+    "v": 5478.55491,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 12121,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2018,
+   "revenue": {
+    "v": 1532.537,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!K6"
+   },
+   "growth": {
+    "v": 0.183419,
+    "calc": "выручка 2018 / 2017 − 1"
+   },
+   "adj_margin": {
+    "v": 0.071692,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!K14 / Profit and Loss!K6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.070229,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!K18 / Profit and Loss!K6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.051397,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!K33 + K42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.032283,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!K8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 1.703,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!K12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.015066,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K45"
+   },
+   "lfl_traffic": {
+    "v": 0.008927,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K46"
+   },
+   "lfl_ticket": {
+    "v": 0.006084,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K47"
+   },
+   "area_end": {
+    "v": 6451.88081,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 14431,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2019,
+   "revenue": {
+    "v": 1734.347,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!L6"
+   },
+   "growth": {
+    "v": 0.131684,
+    "calc": "выручка 2019 / 2018 − 1"
+   },
+   "adj_margin": {
+    "v": 0.073446,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!L14 / Profit and Loss!L6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.070681,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!L18 / Profit and Loss!L6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.042385,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!L33 + L42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.035941,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!L8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 1.71,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!L12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.04,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L45"
+   },
+   "lfl_traffic": {
+    "v": 0.02,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L46"
+   },
+   "lfl_ticket": {
+    "v": 0.019,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L47"
+   },
+   "area_end": {
+    "v": 7217.98101,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 16297,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2020,
+   "revenue": {
+    "v": 1978.026,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!M6"
+   },
+   "growth": {
+    "v": 0.140502,
+    "calc": "выручка 2020 / 2019 − 1"
+   },
+   "adj_margin": {
+    "v": 0.073819,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!M14 / Profit and Loss!M6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.073375,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!M18 / Profit and Loss!M6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.04323,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!M33 + M42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.034556,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!M8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 1.66,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!M12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.054864,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M45"
+   },
+   "lfl_traffic": {
+    "v": -0.059786,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M46"
+   },
+   "lfl_ticket": {
+    "v": 0.12194,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M47"
+   },
+   "area_end": {
+    "v": 7840.05523,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 17707,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2021,
+   "revenue": {
+    "v": 2204.814,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!D6"
+   },
+   "growth": {
+    "v": 0.114654,
+    "calc": "выручка 2021 / 2020 − 1 (2021 г. — новый databook к старому)"
+   },
+   "adj_margin": {
+    "v": 0.074551,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!D14 / Profit and Loss!D6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.073152,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!D22 / Profit and Loss!D6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.042261,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!D30 + D36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.034769,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!D8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 1.664645,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!D12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.050886,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N45"
+   },
+   "lfl_traffic": {
+    "v": 0.015156,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N46"
+   },
+   "lfl_ticket": {
+    "v": 0.035197,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N47"
+   },
+   "area_end": {
+    "v": 8409.75705,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 19121,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2022,
+   "revenue": {
+    "v": 2605.206,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!E6"
+   },
+   "growth": {
+    "v": 0.181599,
+    "calc": "выручка 2022 / 2021 − 1"
+   },
+   "adj_margin": {
+    "v": 0.073121,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!E14 / Profit and Loss!E6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.072097,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!E22 / Profit and Loss!E6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.028766,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!E30 + E36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.03422,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!E8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 1.027195,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!E12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.108,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O45"
+   },
+   "lfl_traffic": {
+    "v": 0.031,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O46"
+   },
+   "lfl_ticket": {
+    "v": 0.075,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O47"
+   },
+   "area_end": {
+    "v": 9107.479,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O76",
+    "calc": "итого X5 как отчитано (с 2022 г. — с «Красным Яром»/«Слатой»)"
+   },
+   "stores_end": {
+    "v": 21323,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O68",
+    "calc": "итого X5 как отчитано"
+   }
+  },
+  {
+   "year": 2023,
+   "revenue": {
+    "v": 3145.859,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!F6"
+   },
+   "growth": {
+    "v": 0.207528,
+    "calc": "выручка 2023 / 2022 − 1"
+   },
+   "adj_margin": {
+    "v": 0.069462,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!F14 / Profit and Loss!F6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.068483,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!F22 / Profit and Loss!F6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.037631,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!F30 + F36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.026911,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!F8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 0.885656,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!F12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.096,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P45"
+   },
+   "lfl_traffic": {
+    "v": 0.046,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P46"
+   },
+   "lfl_ticket": {
+    "v": 0.048,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P47"
+   },
+   "area_end": {
+    "v": 10108.94106,
+    "calc": "network.area_end[2023H2] — сопоставимый базис"
+   },
+   "stores_end": {
+    "v": 24390,
+    "calc": "network.stores_end_hist[2023H2] — сопоставимый базис"
+   }
+  },
+  {
+   "year": 2024,
+   "revenue": {
+    "v": 3908.047,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!G6"
+   },
+   "growth": {
+    "v": 0.242283,
+    "calc": "выручка 2024 / 2023 − 1"
+   },
+   "adj_margin": {
+    "v": 0.065542,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!G14 / Profit and Loss!G6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.064433,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!G22 / Profit and Loss!G6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.040554,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!G30 + G36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.025031,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!G8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 0.876996,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!G12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.144,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E28"
+   },
+   "lfl_traffic": {
+    "v": 0.029,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E29"
+   },
+   "lfl_ticket": {
+    "v": 0.111,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E30"
+   },
+   "area_end": {
+    "v": 10961.011,
+    "calc": "network.area_end[2024H2] — сопоставимый базис"
+   },
+   "stores_end": {
+    "v": 26920,
+    "calc": "network.stores_end_hist[2024H2] — сопоставимый базис"
+   }
+  },
+  {
+   "year": 2025,
+   "revenue": {
+    "v": 4642.034,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!H6"
+   },
+   "growth": {
+    "v": 0.187814,
+    "calc": "выручка 2025 / 2024 − 1"
+   },
+   "adj_margin": {
+    "v": 0.061496,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!H14 / Profit and Loss!H6",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.058834,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!H22 / Profit and Loss!H6",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.046364,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!H30 + H36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.024189,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!H8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "leverage": {
+    "v": 0.836692,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!H12",
+    "calc": "чистый долг / EBITDA до МСФО 16 на 31.12"
+   },
+   "lfl": {
+    "v": 0.114,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F28"
+   },
+   "lfl_traffic": {
+    "v": 0.016,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F29"
+   },
+   "lfl_ticket": {
+    "v": 0.096,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F30"
+   },
+   "area_end": {
+    "v": 11912.101,
+    "calc": "network.area_end[2025H2] — сопоставимый базис"
+   },
+   "stores_end": {
+    "v": 29790,
+    "calc": "network.stores_end_hist[2025H2] — сопоставимый базис"
+   }
+  }
+ ],
+ "halves": [
+  {
+   "period": "2018H1",
+   "revenue": {
+    "v": 734.077,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!AY6 + AZ6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.195801,
+    "calc": "выручка 2018H1 / 2017H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.070426,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AY14 + AZ14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.068301,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!AY18 + AZ18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.051978,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!AY33 + AZ33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!AY42 + AZ42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.030878,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!AY8 + AZ8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 5944.98411,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!AU76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 2.184009,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!AU12"
+   }
+  },
+  {
+   "period": "2018H2",
+   "revenue": {
+    "v": 798.46,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BA6 + BB6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.17226,
+    "calc": "выручка 2018H2 / 2017H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.072856,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BA14 + BB14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.072001,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BA18 + BB18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.050863,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BA33 + BB33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BA42 + BB42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.033575,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BA8 + BB8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 6451.88081,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!AW76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.703965,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!AW12"
+   }
+  },
+  {
+   "period": "2019H1",
+   "revenue": {
+    "v": 843.175,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BC6 + BD6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.148619,
+    "calc": "выручка 2019H1 / 2018H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.078361,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BC14 + BD14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.077269,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BC18 + BD18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.038788,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BC33 + BD33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BC42 + BD42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.031206,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BC8 + BD8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 6774.21041,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!AY76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.590907,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!AY12"
+   }
+  },
+  {
+   "period": "2019H2",
+   "revenue": {
+    "v": 891.172,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BE6 + BF6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.116114,
+    "calc": "выручка 2019H2 / 2018H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.068795,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BE14 + BF14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.064448,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BE18 + BF18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.045789,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BE33 + BF33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BE42 + BF42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.040421,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BE8 + BF8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 7217.98101,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BA76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.71,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BA12"
+   }
+  },
+  {
+   "period": "2020H1",
+   "revenue": {
+    "v": 962.625,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BG6 + BH6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.141667,
+    "calc": "выручка 2020H1 / 2019H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.07774,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BG14 + BH14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.076678,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BG18 + BH18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.039194,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BG33 + BH33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BG42 + BH42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.032572,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BG8 + BH8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 7510.26123,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BC76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.679868,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BC12"
+   }
+  },
+  {
+   "period": "2020H2",
+   "revenue": {
+    "v": 1015.401,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BI6 + BJ6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.1394,
+    "calc": "выручка 2020H2 / 2019H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.070102,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BI14 + BJ14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.070243,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BI18 + BJ18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.047057,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BI33 + BJ33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BI42 + BJ42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.036436,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BI8 + BJ8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 7840.05523,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BE76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.66697,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BE12"
+   }
+  },
+  {
+   "period": "2021H1",
+   "revenue": {
+    "v": 1053.703,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BK6 + BL6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.094614,
+    "calc": "выручка 2021H1 / 2020H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.076776,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BK14 + BL14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.075045,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BK18 + BL18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.042028,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BK33 + BL33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BK42 + BL42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.034959,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BK8 + BL8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 8062.90271,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BG76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.684501,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BG12"
+   }
+  },
+  {
+   "period": "2021H2",
+   "revenue": {
+    "v": 1151.116,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BM6 + BN6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.133657,
+    "calc": "выручка 2021H2 / 2020H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.072363,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BM14 + BN14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.071191,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BM18 + BN18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.042247,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BM33 + BN33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BM42 + BN42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.0346,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BM8 + BN8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 8409.75705,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.66,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BI12"
+   }
+  },
+  {
+   "period": "2022H1",
+   "revenue": {
+    "v": 1252.18,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BO6 + BP6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.188361,
+    "calc": "выручка 2022H1 / 2021H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.08378,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BO14 + BP14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.082595,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BO18 + BP18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.030929,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BO33 + BP33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BO42 + BP42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.035777,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BO8 + BP8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 8643.579,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.108,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BK12"
+   }
+  },
+  {
+   "period": "2022H2",
+   "revenue": {
+    "v": 1353.052,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Profit and Loss!BQ6 + BR6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.175426,
+    "calc": "выручка 2022H2 / 2021H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.062496,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BQ14 + BR14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.061612,
+    "src": "financial_and_operating_results_q1_2024.xlsx › EBITDA!BQ18 + BR18",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.026062,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Cash Flow!BQ33 + BR33; financial_and_operating_results_q1_2024.xlsx › Cash Flow!BQ42 + BR42",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.032783,
+    "src": "financial_and_operating_results_q1_2024.xlsx › SG&A!BQ8 + BR8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 9107.479,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.024,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BM12"
+   }
+  },
+  {
+   "period": "2023H1",
+   "revenue": {
+    "v": 1468.407,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!O6 + P6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.17268,
+    "calc": "выручка 2023H1 / 2022H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.068766,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!O14 + P14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.068527,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!O22 + P22",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.027656,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!O30 + P30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!O36 + P36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.027153,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!O8 + P8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 9541.02,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO76",
+    "calc": "итого X5 как отчитано"
+   },
+   "leverage": {
+    "v": 1.097,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Debt!BO12"
+   }
+  },
+  {
+   "period": "2023H2",
+   "revenue": {
+    "v": 1677.452,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Q6 + R6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.239754,
+    "calc": "выручка 2023H2 / 2022H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.070072,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Q14 + R14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.068444,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Q22 + R22",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.046363,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q30 + R30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!Q36 + R36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.026698,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Q8 + R8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 10108.94106,
+    "calc": "network.area_end[2023H2] — сопоставимый базис"
+   },
+   "leverage": {
+    "v": 0.885656,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!F12"
+   }
+  },
+  {
+   "period": "2024H1",
+   "revenue": {
+    "v": 1851.711,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!S6 + T6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.261034,
+    "calc": "выручка 2024H1 / 2023H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.06978,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!S14 + T14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.068907,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!S22 + T22",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.03929,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!S30 + T30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!S36 + T36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.024488,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!S8 + T8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 10439.32906,
+    "calc": "network.area_end[2024H1] — сопоставимый базис"
+   },
+   "leverage": {
+    "v": 0.70071,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!J12"
+   }
+  },
+  {
+   "period": "2024H2",
+   "revenue": {
+    "v": 2056.336,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!U6 + V6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.225869,
+    "calc": "выручка 2024H2 / 2023H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.061725,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U14 + V14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.060405,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!U22 + V22",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.041693,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!U30 + V30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!U36 + V36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.02552,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!U8 + V8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 10961.011,
+    "calc": "network.area_end[2024H2] — сопоставимый базис"
+   },
+   "leverage": {
+    "v": 0.876996,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!G12"
+   }
+  },
+  {
+   "period": "2025H1",
+   "revenue": {
+    "v": 2243.992,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!W6 + X6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.211848,
+    "calc": "выручка 2025H1 / 2024H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.057963,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W14 + X14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.054703,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!W22 + X22",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.045268,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!W30 + X30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!W36 + X36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.022424,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!W8 + X8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 11376.156,
+    "calc": "network.area_end[2025H1] — сопоставимый базис"
+   },
+   "leverage": {
+    "v": 1.046133,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!N12"
+   }
+  },
+  {
+   "period": "2025H2",
+   "revenue": {
+    "v": 2398.042,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!Y6 + Z6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.166172,
+    "calc": "выручка 2025H2 / 2024H2 − 1"
+   },
+   "adj_margin": {
+    "v": 0.064802,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y14 + Z14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.062699,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!Y22 + Z22",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.047391,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y30 + Z30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!Y36 + Z36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.02584,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!Y8 + Z8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 11912.101,
+    "calc": "network.area_end[2025H2] — сопоставимый базис"
+   },
+   "leverage": {
+    "v": 0.836692,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!H12"
+   }
+  },
+  {
+   "period": "2026H1",
+   "revenue": {
+    "v": 2480.513,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Profit and Loss!AA6 + AB6",
+    "calc": "сумма кварталов"
+   },
+   "growth": {
+    "v": 0.105402,
+    "calc": "выручка 2026H1 / 2025H1 − 1"
+   },
+   "adj_margin": {
+    "v": 0.056981,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA14 + AB14",
+    "calc": "скорр. EBITDA / выручка"
+   },
+   "rep_margin": {
+    "v": 0.055096,
+    "src": "financial_and_operating_results_q2_2026.xlsx › EBITDA!AA22 + AB22",
+    "calc": "EBITDA / выручка"
+   },
+   "capex_pct": {
+    "v": 0.037357,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA30 + AB30; financial_and_operating_results_q2_2026.xlsx › Cash Flow!AA36 + AB36",
+    "calc": "(ОС + НМА) / выручка"
+   },
+   "da_pct": {
+    "v": 0.023354,
+    "src": "financial_and_operating_results_q2_2026.xlsx › SG&A!AA8 + AB8",
+    "calc": "D&A и обесценение до МСФО 16 / выручка"
+   },
+   "area_end": {
+    "v": 12157.24,
+    "calc": "network.area_end[2026H1] — сопоставимый базис"
+   },
+   "leverage": {
+    "v": 1.082315,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Debt!R12"
+   }
+  }
+ ],
+ "formats": [
+  {
+   "year": 2011,
+   "pyaterochka": {
+    "v": 282.885536,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D7"
+   },
+   "perekrestok": {
+    "v": 99.751195,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 66.629326,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D11"
+   },
+   "other": {
+    "v": 4.918797,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2012,
+   "pyaterochka": {
+    "v": 317.751302,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E7"
+   },
+   "perekrestok": {
+    "v": 105.472063,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 61.484862,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E11"
+   },
+   "other": {
+    "v": 6.41345,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2013,
+   "pyaterochka": {
+    "v": 348.39023,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F7"
+   },
+   "perekrestok": {
+    "v": 110.661814,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 64.306924,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F11"
+   },
+   "other": {
+    "v": 11.20082,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2014,
+   "pyaterochka": {
+    "v": 435.820176,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G7"
+   },
+   "perekrestok": {
+    "v": 115.648232,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 69.376455,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G11"
+   },
+   "other": {
+    "v": 13.028137,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2015,
+   "pyaterochka": {
+    "v": 585.402171,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H7"
+   },
+   "perekrestok": {
+    "v": 130.143822,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 77.443285,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H11"
+   },
+   "other": {
+    "v": 15.828722,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2016,
+   "pyaterochka": {
+    "v": 775.579363,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I7"
+   },
+   "perekrestok": {
+    "v": 155.403928,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 83.558246,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I11"
+   },
+   "other": {
+    "v": 19.125464,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2017,
+   "pyaterochka": {
+    "v": 1000.863079,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J7"
+   },
+   "perekrestok": {
+    "v": 186.935275,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 89.302168,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J11"
+   },
+   "other": {
+    "v": 17.907478,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2018,
+   "pyaterochka": {
+    "v": 1197.771755,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K7"
+   },
+   "perekrestok": {
+    "v": 230.848174,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 90.818087,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K11"
+   },
+   "other": {
+    "v": 13.098984,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": null,
+    "calc": "не раскрыто"
+   }
+  },
+  {
+   "year": 2019,
+   "pyaterochka": {
+    "v": 1366.656809,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L7"
+   },
+   "perekrestok": {
+    "v": 273.180534,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 87.396871,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L11"
+   },
+   "other": {
+    "v": 7.112786,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": 4.341,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L39",
+    "calc": "справочно: выручка цифровых бизнесов (пересекается с форматами — экспресс-доставка)"
+   }
+  },
+  {
+   "year": 2020,
+   "pyaterochka": {
+    "v": 1597.173815,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M7"
+   },
+   "perekrestok": {
+    "v": 320.460284,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M9"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 55.661909,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M11"
+   },
+   "other": {
+    "v": 4.729992,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": 20.066,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M39",
+    "calc": "справочно: выручка цифровых бизнесов (пересекается с форматами — экспресс-доставка)"
+   }
+  },
+  {
+   "year": 2021,
+   "pyaterochka": {
+    "v": 1793.67735,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N7"
+   },
+   "perekrestok": {
+    "v": 365.118333,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N9"
+   },
+   "chizhik": {
+    "v": 2.94,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N13"
+   },
+   "karusel": {
+    "v": 31.742131,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N11"
+   },
+   "other": {
+    "v": 11.336186,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": 47.99128,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N39",
+    "calc": "справочно: выручка цифровых бизнесов (пересекается с форматами — экспресс-доставка)"
+   }
+  },
+  {
+   "year": 2022,
+   "pyaterochka": {
+    "v": 2122.79326,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O7"
+   },
+   "perekrestok": {
+    "v": 405.002229,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O9"
+   },
+   "chizhik": {
+    "v": 35.8923,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O13"
+   },
+   "karusel": {
+    "v": 15.69307,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O11"
+   },
+   "other": {
+    "v": 25.825141,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": 70.35373,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O39",
+    "calc": "справочно: выручка цифровых бизнесов (пересекается с форматами — экспресс-доставка)"
+   }
+  },
+  {
+   "year": 2023,
+   "pyaterochka": {
+    "v": 2491.008862,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P7"
+   },
+   "perekrestok": {
+    "v": 435.760893,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P9"
+   },
+   "chizhik": {
+    "v": 118.425238,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P13"
+   },
+   "karusel": {
+    "v": 0.630811,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P11"
+   },
+   "other": {
+    "v": 100.033195,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": 123.588462,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P39",
+    "calc": "справочно: выручка цифровых бизнесов (пересекается с форматами — экспресс-доставка)"
+   }
+  },
+  {
+   "year": 2024,
+   "pyaterochka": {
+    "v": 3114.117,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E8"
+   },
+   "perekrestok": {
+    "v": 490.991,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E10"
+   },
+   "chizhik": {
+    "v": 249.501,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E12"
+   },
+   "karusel": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E8 (формат закрыт в 2023 г.)"
+   },
+   "other": {
+    "v": 53.438,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": 200.066,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!E20",
+    "calc": "справочно: выручка цифровых бизнесов (пересекается с форматами — экспресс-доставка)"
+   }
+  },
+  {
+   "year": 2025,
+   "pyaterochka": {
+    "v": 3613.554,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F8"
+   },
+   "perekrestok": {
+    "v": 531.127,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F10"
+   },
+   "chizhik": {
+    "v": 417.5,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F12"
+   },
+   "karusel": {
+    "v": 0.0,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F8 (формат закрыт в 2023 г.)"
+   },
+   "other": {
+    "v": 79.853,
+    "calc": "выручка − сумма форматов (цифровые без экспресс-доставки, опт, франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)"
+   },
+   "digital": {
+    "v": 285.705,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!F20",
+    "calc": "справочно: выручка цифровых бизнесов (пересекается с форматами — экспресс-доставка)"
+   }
+  }
+ ],
+ "format_area": [
+  {
+   "year": 2011,
+   "pyaterochka": {
+    "v": 996.053501,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D70"
+   },
+   "perekrestok": {
+    "v": 347.266147,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 371.293368,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!D72"
+   }
+  },
+  {
+   "year": 2012,
+   "pyaterochka": {
+    "v": 1191.353454,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E70"
+   },
+   "perekrestok": {
+    "v": 383.458842,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 368.249106,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!E72"
+   }
+  },
+  {
+   "year": 2013,
+   "pyaterochka": {
+    "v": 1414.10218,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F70"
+   },
+   "perekrestok": {
+    "v": 397.75043,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 375.80773,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!F72"
+   }
+  },
+  {
+   "year": 2014,
+   "pyaterochka": {
+    "v": 1754.25034,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G70"
+   },
+   "perekrestok": {
+    "v": 415.78808,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 358.59268,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!G72"
+   }
+  },
+  {
+   "year": 2015,
+   "pyaterochka": {
+    "v": 2422.62613,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H70"
+   },
+   "perekrestok": {
+    "v": 484.008005,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 390.13283,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!H72"
+   }
+  },
+  {
+   "year": 2016,
+   "pyaterochka": {
+    "v": 3329.2726,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I70"
+   },
+   "perekrestok": {
+    "v": 548.472895,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 386.89716,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!I72"
+   }
+  },
+  {
+   "year": 2017,
+   "pyaterochka": {
+    "v": 4426.8075,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J70"
+   },
+   "perekrestok": {
+    "v": 636.05611,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 385.271,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!J72"
+   }
+  },
+  {
+   "year": 2018,
+   "pyaterochka": {
+    "v": 5291.4212,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K70"
+   },
+   "perekrestok": {
+    "v": 769.68401,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 382.0236,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!K72"
+   }
+  },
+  {
+   "year": 2019,
+   "pyaterochka": {
+    "v": 5975,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L70"
+   },
+   "perekrestok": {
+    "v": 878.75671,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 364,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!L72"
+   }
+  },
+  {
+   "year": 2020,
+   "pyaterochka": {
+    "v": 6541.62208,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M70"
+   },
+   "perekrestok": {
+    "v": 1013.85965,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M71"
+   },
+   "chizhik": {
+    "v": null,
+    "calc": "формата нет"
+   },
+   "karusel": {
+    "v": 222.1188,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!M72"
+   }
+  },
+  {
+   "year": 2021,
+   "pyaterochka": {
+    "v": 7048.48816,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N70"
+   },
+   "perekrestok": {
+    "v": 1098.90545,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N71"
+   },
+   "chizhik": {
+    "v": 20.3271,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N73"
+   },
+   "karusel": {
+    "v": 128.0626,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!N72"
+   }
+  },
+  {
+   "year": 2022,
+   "pyaterochka": {
+    "v": 7497.05,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O70"
+   },
+   "perekrestok": {
+    "v": 1085.49,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O71"
+   },
+   "chizhik": {
+    "v": 152.37,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O73"
+   },
+   "karusel": {
+    "v": 49.22,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!O72"
+   }
+  },
+  {
+   "year": 2023,
+   "pyaterochka": {
+    "v": 8581.919,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J50; q3_2025_trading_update_rus.pdf, с. 12 «Прирост торговой площади и количества магазинов»; сверка: q4_2025_trading_update_rus.pdf, с. 14 (прирост 12М 2024 596 044 м² от 9 177 964 м² = 8 581 920)"
+   },
+   "perekrestok": {
+    "v": 1084.91227,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J51; q3_2025_trading_update_rus.pdf, с. 12 «Прирост торговой площади и количества магазинов»; сверка: q4_2023_trading_update_rus.pdf, с. 5 (31.12.2023: 1 084 913 м²)"
+   },
+   "chizhik": {
+    "v": 442.10979,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!J52; q3_2025_trading_update_rus.pdf, с. 12 «Прирост торговой площади и количества магазинов»; сверка: q4_2023_trading_update_rus.pdf, с. 5 (31.12.2023: 442 110 м²)"
+   },
+   "karusel": {
+    "v": 0,
+    "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!P72"
+   }
+  },
+  {
+   "year": 2024,
+   "pyaterochka": {
+    "v": 9177.964,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L50"
+   },
+   "perekrestok": {
+    "v": 1096.345,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L51"
+   },
+   "chizhik": {
+    "v": 686.702,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!L52"
+   },
+   "karusel": {
+    "v": 0.0,
+    "src": "формат закрыт в 2023 г."
+   }
+  },
+  {
+   "year": 2025,
+   "pyaterochka": {
+    "v": 9859.131,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R50"
+   },
+   "perekrestok": {
+    "v": 1105.495,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R51"
+   },
+   "chizhik": {
+    "v": 947.475,
+    "src": "financial_and_operating_results_q2_2026.xlsx › Operating Results!R52"
+   },
+   "karusel": {
+    "v": 0.0,
+    "src": "формат закрыт в 2023 г."
+   }
+  }
+ ]
+}

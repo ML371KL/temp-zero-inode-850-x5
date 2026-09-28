@@ -1,0 +1,467 @@
+{
+ "asset_life": {
+  "class_effective": 9.423436,
+  "fit_best": 6.0,
+  "fit_bias": {
+   "10.0": 0.885145,
+   "5.0": 1.071265,
+   "5.5": 1.056556,
+   "6.0": 1.035949,
+   "6.5": 1.021323,
+   "7.0": 1.005311,
+   "7.5": 0.989169,
+   "8.0": 0.97436,
+   "8.5": 0.952938,
+   "9.0": 0.933896,
+   "9.5": 0.908237
+  },
+  "fit_rmse": {
+   "10.0": 0.195527,
+   "5.0": 0.08919,
+   "5.5": 0.075552,
+   "6.0": 0.061161,
+   "6.5": 0.061885,
+   "7.0": 0.06919,
+   "7.5": 0.089934,
+   "8.0": 0.110098,
+   "8.5": 0.132519,
+   "9.0": 0.15345,
+   "9.5": 0.175146
+  },
+  "fit_unbiased_2023_2026": 7.0
+ },
+ "bottom_up": {
+  "R26": 5131.313161,
+  "area_eq": 11635.1585,
+  "close_rate": 0.02,
+  "g_1h26": 0.105402,
+  "judgments": {
+   "chizhik_refurb_factor": 0.5,
+   "cvp": {
+    "base": 0.0015,
+    "high": 0.0022,
+    "low": 0.001
+   },
+   "cycle": {
+    "base": 10.0,
+    "high": 8.0,
+    "low": 12.5
+   },
+   "dc_growth_share": {
+    "base": 0.6666666666666666,
+    "high": 1.0,
+    "low": 0.3333333333333333
+   },
+   "dc_upkeep": {
+    "base": 0.0018,
+    "high": 0.0025,
+    "low": 0.0012
+   },
+   "economic_life_mult": 1.3,
+   "fleet_life": {
+    "base": 8.0,
+    "high": 7.0,
+    "low": 10.0
+   },
+   "it": {
+    "base": 0.0055,
+    "high": 0.0065,
+    "low": 0.0045
+   },
+   "magnit_refurb_to_new": 0.7916666666666666,
+   "refurb_low_2015_rub_m2": 10000.0,
+   "restyle_factor": 0.4
+  },
+  "levels": {
+   "base": {
+    "cvp": 7.69697,
+    "dc": 9.236364,
+    "fleet": 14.705034,
+    "it": 28.222222,
+    "pct": 0.02671,
+    "phys_share": 0.686788,
+    "refurb_m2eq": 930.81268,
+    "store": 77.194222,
+    "total": 137.054811
+   },
+   "high": {
+    "cvp": 11.288889,
+    "dc": 12.828283,
+    "fleet": 16.805753,
+    "it": 33.353536,
+    "pct": 0.033121,
+    "phys_share": 0.704868,
+    "refurb_m2eq": 1221.691643,
+    "store": 95.67887,
+    "total": 169.95533
+   },
+   "low": {
+    "cvp": 5.131313,
+    "dc": 6.157576,
+    "fleet": 11.764027,
+    "it": 23.090909,
+    "pct": 0.022037,
+    "phys_share": 0.691764,
+    "refurb_m2eq": 698.10951,
+    "store": 66.934894,
+    "total": 113.078719
+   }
+  },
+  "refurb_2025_m2eq": 462.439751,
+  "store_2025": 55.952,
+  "store_2025_now": 62.323176,
+  "unit_refurb": {
+   "base": 0.03175,
+   "high": 0.043932,
+   "low": 0.019569
+  }
+ },
+ "capex_prob": {
+  "conditional": {
+   "floor": {
+    "base": 0.6,
+    "high": 0.2,
+    "low": 0.2
+   },
+   "full": {
+    "base": 0.6,
+    "high": 0.25,
+    "low": 0.15
+   },
+   "partial": {
+    "base": 0.6,
+    "high": 0.2,
+    "low": 0.2
+   },
+   "stress": {
+    "base": 0.55,
+    "high": 0.15,
+    "low": 0.3
+   }
+  },
+  "draft": {
+   "expected_ss": 0.026888,
+   "unconditional": {
+    "base": 0.5875,
+    "high": 0.19,
+    "low": 0.2225
+   }
+  },
+  "margin_fragment": {
+   "expected_ss": 0.026758,
+   "unconditional": {
+    "base": 0.57925,
+    "high": 0.18175,
+    "low": 0.239
+   }
+  }
+ },
+ "capex_to_da": {
+  "da_2025_ex_impairment_pct": 0.023246,
+  "ratio": 1.262096
+ },
+ "checks": {
+  "capex_2026": {
+   "high/base": 0.040078,
+   "high/high": 0.043332,
+   "high/low": 0.037701,
+   "low/base": 0.03855,
+   "low/high": 0.041805,
+   "low/low": 0.036174,
+   "mid/base": 0.039568,
+   "mid/high": 0.042823,
+   "mid/low": 0.037192
+  },
+  "model_stationary_total": 0.029339,
+  "replacement_corridor": {
+   "accounting": 0.030054,
+   "economic": 0.023118,
+   "pi": 0.07222
+  },
+  "run_rate_1h26": 0.037357
+ },
+ "checks_2026": {
+  "expected_mid": 0.039658,
+  "h2_pct": 0.041638,
+  "h2_to_h1": 1.114607
+ },
+ "closure_rate_annual": {
+  "2024": 0.015847,
+  "2025": 0.015417,
+  "2026H1": 0.025663
+ },
+ "disposal": {
+  "2011–2025": 0.001224,
+  "2018–2025": 0.001249,
+  "2021–1П2026": 0.001147,
+  "2024–1П2026": 0.000567
+ },
+ "fleet": {
+  "avg_age_years": 3.536031,
+  "cpi_2022_2025_annual": 0.085879,
+  "estimates": {
+   "2024": {
+    "added_units": 2044.820794,
+    "commissioned": 28.941,
+    "disposed_units": 406.820794
+   },
+   "2025": {
+    "added_units": 614.415115,
+    "commissioned": 11.906,
+    "disposed_units": 338.415115
+   }
+  },
+  "fleet_per_m2": 0.009677,
+  "truck_price": 0.015759,
+  "truck_price_a": 0.017087,
+  "truck_price_b": 0.014431,
+  "trucks_2026Q2": 7465,
+  "trucks_per_thousand_m2": 0.614037
+ },
+ "history": {
+  "2018": {
+   "capex_cash": 78.768,
+   "capex_company": null,
+   "da": 49.475,
+   "revenue": 1532.537
+  },
+  "2019": {
+   "capex_cash": 73.511,
+   "capex_company": null,
+   "da": 62.334,
+   "revenue": 1734.347
+  },
+  "2020": {
+   "capex_cash": 85.511,
+   "capex_company": 89.9,
+   "da": 68.352,
+   "revenue": 1978.026
+  },
+  "2021": {
+   "capex_cash": 93.177,
+   "capex_company": 97.9,
+   "da": 76.659,
+   "revenue": 2204.814
+  },
+  "2022": {
+   "capex_cash": 74.941,
+   "capex_company": 82.0,
+   "da": 89.15,
+   "revenue": 2605.206
+  },
+  "2023": {
+   "capex_cash": 118.381,
+   "capex_company": 148.4,
+   "da": 84.657,
+   "revenue": 3145.859
+  },
+  "2024": {
+   "capex_cash": 158.488,
+   "capex_company": 166.4,
+   "da": 97.821,
+   "revenue": 3908.047
+  },
+  "2024H1": {
+   "capex_cash": 72.754,
+   "da": 45.344,
+   "revenue": 1851.711
+  },
+  "2024H2": {
+   "capex_cash": 85.734,
+   "da": 52.477,
+   "revenue": 2056.336
+  },
+  "2025": {
+   "capex_cash": 215.225,
+   "capex_company": 215.2,
+   "da": 112.286,
+   "revenue": 4642.034
+  },
+  "2025H1": {
+   "capex_cash": 101.58,
+   "da": 50.32,
+   "revenue": 2243.992
+  },
+  "2025H2": {
+   "capex_cash": 113.645,
+   "da": 61.966,
+   "revenue": 2398.042
+  },
+  "2026H1": {
+   "capex_cash": 92.664,
+   "da": 57.931,
+   "revenue": 2480.513
+  }
+ },
+ "identity": {
+  "2024": {
+   "capex": 158.488,
+   "infra": 20.966931,
+   "maint": 87.450325,
+   "maint_pct": 0.022377,
+   "openings": 50.070744,
+   "revenue": 3908.047
+  },
+  "2024H1": {
+   "capex": 72.754,
+   "infra": 8.06331,
+   "maint": 44.68405,
+   "maint_pct": 0.024131,
+   "openings": 20.006639,
+   "revenue": 1851.711
+  },
+  "2024H2": {
+   "capex": 85.734,
+   "infra": 12.998123,
+   "maint": 42.493357,
+   "maint_pct": 0.020665,
+   "openings": 30.24252,
+   "revenue": 2056.336
+  },
+  "2024_company_ex_mna": {
+   "capex": 161.408,
+   "maint": 90.370325,
+   "maint_pct": 0.023124
+  },
+  "2025": {
+   "capex": 215.225,
+   "infra": 25.22932,
+   "maint": 130.246835,
+   "maint_pct": 0.028058,
+   "openings": 59.748845,
+   "revenue": 4642.034
+  },
+  "2025H1": {
+   "capex": 101.58,
+   "infra": 10.907636,
+   "maint": 65.982532,
+   "maint_pct": 0.029404,
+   "openings": 24.689832,
+   "revenue": 2243.992
+  },
+  "2025H2": {
+   "capex": 113.645,
+   "infra": 14.352179,
+   "maint": 64.168215,
+   "maint_pct": 0.026759,
+   "openings": 35.124606,
+   "revenue": 2398.042
+  },
+  "2026H1": {
+   "capex": 92.664,
+   "infra": 6.813819,
+   "maint": 63.677101,
+   "maint_pct": 0.025671,
+   "openings": 22.173081,
+   "revenue": 2480.513
+  }
+ },
+ "infra_per_m2": {
+  "dc_2024": 2.675,
+  "dc_2025": 44.046,
+  "dc_per_net_m2": 0.027179,
+  "dc_real": 49.199789,
+  "logistics_2024": 31.616,
+  "logistics_2025": 55.952,
+  "net_area_2024_2025": 1810.22923,
+  "values": {
+   "base": 0.027796,
+   "high": 0.036855,
+   "low": 0.018736
+  }
+ },
+ "maint_ltm_pct": 0.026206,
+ "maint_seasonality": {
+  "2024": {
+   "h1": 1.078395,
+   "h2": 0.923475
+  },
+  "2025": {
+   "h1": 1.04797,
+   "h2": 0.953684
+  }
+ },
+ "network_flows": {
+  "2024": {
+   "closed_area": 168.520018,
+   "gross_area": 1027.659248,
+   "net_area": 859.13923
+  },
+  "2024H1": {
+   "closed_area": 81.940784,
+   "gross_area": 419.439514,
+   "net_area": 337.49873
+  },
+  "2024H2": {
+   "closed_area": 86.277582,
+   "gross_area": 607.918082,
+   "net_area": 521.6405
+  },
+  "2025": {
+   "closed_area": 177.099386,
+   "gross_area": 1128.189386,
+   "net_area": 951.09
+  },
+  "2025H1": {
+   "closed_area": 55.532767,
+   "gross_area": 470.677487,
+   "net_area": 415.14472
+  },
+  "2025H2": {
+   "closed_area": 121.032195,
+   "gross_area": 656.977475,
+   "net_area": 535.94528
+  },
+  "2026H1": {
+   "closed_area": 154.423108,
+   "gross_area": 399.562108,
+   "net_area": 245.139
+  }
+ },
+ "paths": {
+  "base": {
+   "2026H2": 0.0262,
+   "2027": 0.0262,
+   "LT": 0.0267,
+   "LT_from": 2029
+  },
+  "high": {
+   "2026H2": 0.0325,
+   "2027": 0.0325,
+   "LT": 0.0331,
+   "LT_from": 2029
+  },
+  "low": {
+   "2026H2": 0.0216,
+   "2027": 0.0216,
+   "LT": 0.022,
+   "LT_from": 2029
+  }
+ },
+ "phi": 0.69,
+ "price_per_m2": {
+  "center": 0.055493,
+  "chizhik_all_in_per_net_m2": {
+   "2024": 0.084689,
+   "2025": 0.077849,
+   "2025H1": 0.092798,
+   "2026H1": 0.068654
+  },
+  "obs": {
+   "2024": {
+    "anchor_prices": 0.057171,
+    "cpi_to_anchor": 1.138956,
+    "gross_area": 1027.659248,
+    "nominal": 0.050196,
+    "openings_capex": 51.584
+   },
+   "2025": {
+    "anchor_prices": 0.053966,
+    "cpi_to_anchor": 1.047838,
+    "gross_area": 1128.189386,
+    "nominal": 0.051502,
+    "openings_capex": 58.104
+   }
+  }
+ }
+}

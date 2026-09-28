@@ -1,0 +1,109 @@
+name: pipeline
+
+# Конвейер X5: сбор живых входов → тесты такта → сборка выпуска → проверка
+# контракта → публикация в орфан-ветку data → сверка через боевую дверь.
+# Любой упавший шаг — ветка data не трогается, на витрине прежний выпуск;
+# красный прогон — письмо GitHub владельцу. Секретов не нужно: GITHUB_TOKEN.
+# Порядок действий оператора — ops/README.md.
+on:
+  schedule:
+    # По будням 16:50 UTC (19:50 МСК) — после основной сессии MOEX.
+    - cron: "50 16 * * 1-5"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "model/**"
+      - "data/**"
+      - "indicators/**"
+      - "ops/**"
+      - "requirements.txt"
+      - "!**/*.md"
+
+permissions:
+  actions: write     # keepalive расписания
+  contents: write    # push в ветку data
+
+# Один конвейер одновременно; идущий не отменяется (он может быть на шаге
+# публикации).
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PYTHONIOENCODING: utf-8
+  PUBLIC_DATA_URL: https://tzi-850-x5.pages.dev/api/model
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          # Токен не оставляется в git-конфиге: публикация берёт GITHUB_TOKEN
+          # из окружения только в своих шагах.
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Зависимости
+        run: python -m pip install --quiet -r requirements.txt
+
+      - name: Состояние из ветки data
+        # latest.json (прошлый выпуск: эталон цены, защита заголовка),
+        # journal.json, history.json. Ветки ещё нет — первый выпуск.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python ops/publish.py --fetch-state var/state
+
+      - name: Сбор живых входов
+        run: |
+          args=(--out var/live/live.json)
+          if [ -f var/state/latest.json ]; then args+=(--previous var/state/latest.json); fi
+          python -m indicators.live "${args[@]}"
+
+      - name: Тесты такта
+        run: python -m pytest -q -m "not network and not ci_only and not docs"
+
+      - name: Сборка выпуска
+        run: |
+          args=(--live-file var/live/live.json --out var/release/latest.json)
+          if [ -f var/state/latest.json ]; then args+=(--previous var/state/latest.json); fi
+          if [ -f var/state/journal.json ]; then args+=(--journal var/state/journal.json); fi
+          python ops/build_release.py "${args[@]}"
+
+      - name: Проверка контракта
+        run: python ops/build_release.py --check var/release/latest.json
+
+      - name: Публикация в ветку data
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python ops/publish.py --release var/release/latest.json
+
+      - name: Сверка через боевую дверь
+        # raw.githubusercontent.com кэширует до 5 мин: до 20 попыток × 30 с.
+        run: python ops/publish.py --verify "$PUBLIC_DATA_URL" --release var/release/latest.json
+
+      - name: Сырые ответы и выпуск прогона
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: run-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            var/raw
+            var/live
+            var/release
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Keepalive расписания
+        # Против отключения расписания через 60 дней без активности репозитория.
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/pipeline.yml/enable"

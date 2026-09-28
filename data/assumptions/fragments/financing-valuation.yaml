@@ -1,0 +1,102 @@
+# Фрагмент книги X5 — области «ФИНАНСИРОВАНИЕ И ДИВИДЕНДЫ», «МОСТ И АКЦИИ», «ОЦЕНКА», «ГЕЙТЫ»
+# (financing-valuation). Только ключи своей области в структуре assumptions.draft.yaml.
+# Обоснования — data/assumptions/sections/financing-valuation.md, расчёты —
+# data/assumptions/evidence/financing-valuation/ (rates.py, leverage.py, bridge.py, valuation.py, gates.py,
+# model_check.py; сверка фрагмента с их выходами — check_fragment.py).
+# joint.world_links — только кредитное состояние (рост сети — область network-revenue).
+# valuation.uncertainty.axes и reverse_dcf.axes — ИТОГОВЫЕ списки: свои оси + предложения областей margin,
+# capex-wc-tax, network-revenue (fragments/*.yaml на 28.09.2026 19:05) в порядке оси черновика.
+
+joint:
+  world_prob: {N: 0.35, H: 0.45, M: 0.20}           # A-P1: общие с книгой Магнита 1.6 (joint.world_prob)
+  market_implied_prob: {N: 0.10, H: 0.25, M: 0.65}  # A-P1m: общие (Магнит: world_prob_market_implied)
+  neutral_world: M                                  # A-P1n: низ оси ставок — мир M целиком (Магнит: macro_neutral_world)
+  lambda: 0.5                                       # A-P1c: общий ползунок (Магнит: own_macro_confidence)
+  world_links:                                      # A-P4w (кредит): M — режим высоких ставок (КС ≥ 16 %), N и H — нынешний рынок
+    N: {credit: base}
+    H: {credit: base}
+    M: {credit: stress}
+
+financing:                                          # A-F1…A-F6 (rates.py, leverage.py)
+  fixed_share: {"2026H2": 0.44, "2027": 0.50, "LT": 0.55, "LT_from": 2028}   # A-F4: 45 % на 30.06, 42–45 % на 28.09; политика «>50 %», среднее 5 дат 57,6 %
+  legacy_rate: 0.150                                # A-F4b: «старый» фикс — облигации 14,85 % и кредиты ≈15,3 %, взвешенно по номиналу × времени до оферт
+  legacy_weight: {"2026H2": 0.95, "2027H1": 0.71, "2027H2": 0.45, "2028H1": 0.17, "2028H2": 0.03, "LT": 0.0, "LT_from": 2029}  # A-F4b: график оферт 003P-06…18 и банков 2026–2028
+  spread_float: {base: 0.0135, stress: 0.0150}      # A-F1: флоатеры КС + 1,18 (взвешенно 28.09) + издержки 0,15; stress — размещения при КС ≥ 16 % (1,33)
+  spread_fixed: {base: 0.0125, stress: 0.0195}      # A-F1b: G-спред 1,11 (вторичка и размещения с 07.2025) + 0,15; stress — КС ≥ 16 %, дюрация ≥ 1,5 г. (1,83)
+  cash_buffer_pct: 0.0045                           # A-F3b: принято предложение capex-wc-tax (ликвидность без дивидендов 1,51 % − касса 1,06 %)
+  cash_yield_k: 0.90                                # A-F2: k 2К2026 0,84 и рублёвые депозиты 14–15 % при КС 14,25–14,5 %
+  target_leverage: 1.3                              # A-F6: политика 1,2–1,4× и прогноз 2026; старт модели 1,29×
+  dividends_from: "2027H1"                          # A-F6d: финал 2025 уже в стартовом долге; следующая выплата — за 9М 2026 в январе 2027
+
+bridge:                                             # A-B (bridge.py): LTI — скользящая программа, её поток уже в марже (A-C7)
+  include: [accrued_interest, nci_put, tax_provisions_net, st_investments, associates]
+
+valuation:                                          # A-V (valuation.py)
+  beta_u: 0.60                                      # A-V1: X5 3 года, недели, полная доходность к MCFTR, Харрис — Пингл (лист Магнита 1.4: 0,601)
+  erp: 0.0557                                       # A-V2: Damodaran 05.01.2026: 8,13 − 2,56 (дефолтный спред уже в ОФЗ)
+  governance_discount: 0.03                         # A-V7: навес казначейских 0,8 % + ликвидность 0,5 % + непрозрачность 1,5 %
+  headline: {print_step: 50}                        # A-V8: шаг печати как у Магнита (2,8 % цены)
+  uncertainty:                                      # A-V9
+    draws: 2000
+    seed: 20260928
+    axes:
+      - {name: "Долгосрочный уровень маржи (сдвиг целей LT всех режимов)", kind: shift,
+         paths: [margin.targets.stress.LT, margin.targets.floor.LT, margin.targets.partial.LT, margin.targets.full.LT],
+         low: -0.005, high: 0.004}
+      - {name: "Поддерживающий capex (сдвиг всех уровней)", kind: shift,
+         paths: [capex.maintenance.low, capex.maintenance.base, capex.maintenance.high], low: -0.004, high: 0.004}
+      - {name: "Бета активов β_u", kind: value, paths: [valuation.beta_u], low: 0.45, high: 0.75}
+      - {name: "Премия за риск ERP", kind: value, paths: [valuation.erp], low: 0.049, high: 0.065}
+      - {name: "Дисконт за управление", kind: value, paths: [valuation.governance_discount], low: 0.0, high: 0.10}
+      - {name: "Трафик LFL (сдвиг всех состояний)", kind: shift,
+         paths: [revenue.traffic.bear, revenue.traffic.base, revenue.traffic.bull], low: -0.008, high: 0.004}
+      - {name: "Чистый рост площади 2027–2030 (сдвиг всех тарифов)", kind: shift,
+         paths: [network.net_growth.low.2027, network.net_growth.low.2028, network.net_growth.low.2029, network.net_growth.low.2030,
+                 network.net_growth.mid.2027, network.net_growth.mid.2028, network.net_growth.mid.2029, network.net_growth.mid.2030,
+                 network.net_growth.high.2027, network.net_growth.high.2028, network.net_growth.high.2029, network.net_growth.high.2030],
+         low: -0.010, high: 0.008}
+      - {name: "Стоимость открытия, млрд ₽ на тыс. м²", kind: value, paths: [capex.price_per_m2], low: 0.047, high: 0.064}
+      - {name: "Инфраструктура на м² прироста, млрд ₽ на тыс. м²", kind: value, paths: [capex.infra_per_m2], low: 0.019, high: 0.037}
+      - {name: "Плотность новой площади", kind: value, paths: [network.new_space_density], low: 0.74, high: 0.94}
+      - {name: "Продуктивность закрываемой площади", kind: value, paths: [network.closed_productivity], low: 0.4, high: 0.8}
+      - {name: "Операционная касса", kind: value, paths: [working_capital.operating_cash_pct], low: 0.006, high: 0.0145}
+      - {name: "Оборотный капитал, долгосрочный уровень (сдвиг)", kind: shift, paths: [working_capital.nwc_pct.LT], low: -0.005, high: 0.005}
+      - {name: "Постоянные налоговые разницы", kind: value, paths: [tax.permanent_add_pct], low: -0.0013, high: 0.0045}
+      - {name: "LTI", kind: value, paths: [margin.lti_pct], low: 0.0012, high: 0.0026}
+      - {name: "Целевой рычаг", kind: value, paths: [financing.target_leverage], low: 1.0, high: 1.6}
+      - {name: "Веса миров", kind: dict, paths: [joint.world_prob], low: {N: 0.25, H: 0.50, M: 0.25}, high: {N: 0.40, H: 0.45, M: 0.15}}
+      - {name: "Инфляция мира M", kind: shift, paths: [worlds.M.cpi, worlds.M.food_cpi, worlds.M.lt.inflation], low: -0.003, high: 0.005}
+  reverse_dcf:                                      # A-V11
+    subsample: 200
+    axes:
+      - {name: "Долгосрочный уровень маржи (сдвиг целей LT всех режимов)", kind: shift,
+         paths: [margin.targets.stress.LT, margin.targets.floor.LT, margin.targets.partial.LT, margin.targets.full.LT],
+         search: [-0.03, 0.02], range: [-0.005, 0.004], unit: "п.п."}
+      - {name: "Поддерживающий capex (сдвиг всех уровней)", kind: shift,
+         paths: [capex.maintenance.low, capex.maintenance.base, capex.maintenance.high],
+         search: [-0.02, 0.04], range: [-0.004, 0.004], unit: "п.п."}
+      - {name: "Стоимость открытия, млрд ₽ на тыс. м²", kind: value, paths: [capex.price_per_m2],
+         search: [0.0, 0.20], range: [0.047, 0.064], unit: "bn_per_m2"}
+      - {name: "Бета активов β_u", kind: value, paths: [valuation.beta_u], search: [0.2, 2.0], range: [0.45, 0.75], unit: ""}
+      - {name: "Премия за риск ERP", kind: value, paths: [valuation.erp], search: [0.0, 0.20], range: [0.049, 0.065], unit: "%"}
+      - {name: "Дисконт за управление", kind: value, paths: [valuation.governance_discount], search: [0.0, 0.9], range: [0.0, 0.10], unit: "%"}
+      - {name: "Трафик LFL (сдвиг всех состояний)", kind: shift,
+         paths: [revenue.traffic.bear, revenue.traffic.base, revenue.traffic.bull],
+         search: [-0.04, 0.03], range: [-0.008, 0.004], unit: "п.п."}
+      - {name: "Чистый рост площади 2027–2030 (сдвиг всех тарифов)", kind: shift,
+         paths: [network.net_growth.low.2027, network.net_growth.low.2028, network.net_growth.low.2029, network.net_growth.low.2030,
+                 network.net_growth.mid.2027, network.net_growth.mid.2028, network.net_growth.mid.2029, network.net_growth.mid.2030,
+                 network.net_growth.high.2027, network.net_growth.high.2028, network.net_growth.high.2029, network.net_growth.high.2030],
+         search: [-0.05, 0.04], range: [-0.010, 0.008], unit: "п.п."}
+      - {name: "Инфляция мира M", kind: shift, paths: [worlds.M.cpi, worlds.M.food_cpi, worlds.M.lt.inflation],
+         search: [-0.05, 0.08], range: [-0.003, 0.005], unit: "п.п."}
+
+checks:                                             # коридоры гейтов (gates.py; docs/MODEL.md §13)
+  ev_ebitda: {N: [1.5, 8.0], H: [1.5, 7.0], M: [1.5, 5.5]}   # история X5 NTM по режимам ставок: N 4,2–6,4×, M 3,1–4,3×; низ — ниже 2022 г. (2,4×) и Fix Price (2,0×)
+  margin_range: [0.045, 0.090]                      # X5 2011H1–2026H1: 5,70–8,78 %; Магнит 2025 — 4,82 %
+  capex_range: [0.020, 0.075]                       # X5 2011–2025: 2,88–6,89 %; D&A 2025 — 2,32 %
+  terminal_share: [0.15, 0.65]                      # ровный поток ((1+g)/(1+r))^10,27: 0,38–0,45 по мирам; ± 0,2 на форму пути
+  real_rate: [0.02, 0.13]                           # как у Магнита (общая макро-основа); миры книги 8,3–10,5 %, концы полосы 7,2–12,1 %
+  max_leverage: 4.0                                 # ковенант ЧД/EBITDA до МСФО 16 ≤ 4,0×
+  min_v0_to_d: 1.5                                  # при V0/D 1,5 кредитный пут слоя < 25 ₽ (полшага печати) на сроке до 2,6 года
+  book_update: {shift_bp: 50, max_age_days: 45}     # как у Магнита: миры общие, пересборка — вместе

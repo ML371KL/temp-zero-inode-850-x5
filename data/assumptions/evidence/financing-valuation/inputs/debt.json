@@ -1,0 +1,482 @@
+{
+ "_about": "Реестр долга X5: облигации ИКС 5 ФИНАНС (номинал, млрд ₽), погашенные в 1П2026, банки, раскрытия МСФО. Источник — research/facts/debt_register.json (сборка X2, у каждого числа ссылка на первичку) + MOEX ISS (inputs/web).",
+ "source": {
+  "file": "x5-850-handoff/research/facts/debt_register.json",
+  "sha256": "27e676f6487f001f29d835176c574b2fac9e5dc6194a76c381a4193542d0efb2"
+ },
+ "bonds": [
+  {
+   "series": "003P-02",
+   "isin": "RU000A1075S4",
+   "issue_date": "2023-11-02",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.011000000000000001,
+   "freq": 12,
+   "face_2025_12_31": 20.0,
+   "face_2026_06_30": 20.0,
+   "face_2026_09_28": 20.0,
+   "exit_date": "2026-10-17",
+   "price_2026_09_28": 100,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: спред выведен из истории купонов ISS: 15,60/15,35/15,10 % = КС 14,50/14,25/14,00 + 1,10"
+  },
+  {
+   "series": "003P-04",
+   "isin": "RU000A107WL0",
+   "issue_date": "2024-03-12",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.011000000000000001,
+   "freq": 4,
+   "face_2025_12_31": 10.0,
+   "face_2026_06_30": 10.0,
+   "face_2026_09_28": 0.0,
+   "exit_date": "2026-09-11",
+   "price_2026_09_28": null,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2024 прим. 21, с. 54 («плавающий купон 1,1% к КС»); купоны ISS 19,1/17,6/16,6/15,6 %"
+  },
+  {
+   "series": "003P-05",
+   "isin": "RU000A108LU2",
+   "issue_date": "2024-06-07",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.011000000000000001,
+   "freq": 4,
+   "face_2025_12_31": 10.0,
+   "face_2026_06_30": 10.0,
+   "face_2026_09_28": 10.0,
+   "exit_date": "2027-06-09",
+   "price_2026_09_28": 99.88,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2024 прим. 21, с. 54; оферта по ISS 09.06.2027 (МСФО 2024 писал «октябрь 2027»)"
+  },
+  {
+   "series": "003P-06",
+   "isin": "RU000A109KC0",
+   "issue_date": "2025-11-26",
+   "type": "fixed",
+   "coupon": 0.14400000000000002,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 26.0,
+   "face_2026_06_30": 26.0,
+   "face_2026_09_28": 26.0,
+   "exit_date": "2027-11-19",
+   "price_2026_09_28": 100.28,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42; ISS COUPONPERCENT 14,4"
+  },
+  {
+   "series": "003P-07",
+   "isin": "RU000A10AHA3",
+   "issue_date": "2024-12-26",
+   "type": "fixed",
+   "coupon": 0.1325,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 1.708,
+   "face_2026_06_30": 1.708,
+   "face_2026_09_28": 1.708,
+   "exit_date": "2027-07-19",
+   "price_2026_09_28": 99.41,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2024 прим. 21 (22,85 %); ISS: оферта 25.09.2025 состоялась, купон 13,25 %; остаток в обращении оценён по балансовой стоимости МСФО 1,708 млрд — точное число бумаг не раскрыто"
+  },
+  {
+   "series": "003P-10",
+   "isin": "RU000A10AT27",
+   "issue_date": "2025-02-28",
+   "type": "fixed",
+   "coupon": 0.19949999999999998,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 10.0,
+   "face_2026_06_30": 10.0,
+   "face_2026_09_28": 10.0,
+   "exit_date": "2027-02-24",
+   "price_2026_09_28": 102.7,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+  },
+  {
+   "series": "003P-11",
+   "isin": "RU000A10AT35",
+   "issue_date": "2025-03-24",
+   "type": "fixed",
+   "coupon": 0.1725,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 15.0,
+   "face_2026_06_30": 15.0,
+   "face_2026_09_28": 15.0,
+   "exit_date": "2027-03-17",
+   "price_2026_09_28": 101.16,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+  },
+  {
+   "series": "003P-12",
+   "isin": "RU000A10BUK3",
+   "issue_date": "2025-06-26",
+   "type": "fixed",
+   "coupon": 0.1555,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 15.0,
+   "face_2026_06_30": 15.0,
+   "face_2026_09_28": 15.0,
+   "exit_date": "2028-02-16",
+   "price_2026_09_28": 101.53,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+  },
+  {
+   "series": "003P-13",
+   "isin": "RU000A10C5Y0",
+   "issue_date": "2025-07-28",
+   "type": "fixed",
+   "coupon": 0.141,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 11.0,
+   "face_2026_06_30": 11.0,
+   "face_2026_09_28": 11.0,
+   "exit_date": "2027-09-21",
+   "price_2026_09_28": 100.69,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+  },
+  {
+   "series": "003P-14",
+   "isin": "RU000A10CSX8",
+   "issue_date": "2025-09-24",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.0115,
+   "freq": 12,
+   "face_2025_12_31": 15.0,
+   "face_2026_06_30": 15.0,
+   "face_2026_09_28": 15.0,
+   "exit_date": "2028-09-13",
+   "price_2026_09_28": 100.01,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+  },
+  {
+   "series": "003P-15",
+   "isin": "RU000A10DYP0",
+   "issue_date": "2025-12-25",
+   "type": "fixed",
+   "coupon": 0.145,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 20.0,
+   "face_2026_06_30": 20.0,
+   "face_2026_09_28": 20.0,
+   "exit_date": "2027-06-23",
+   "price_2026_09_28": 100.33,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: МСФО 2025 прим. 21, с. 42"
+  },
+  {
+   "series": "003P-16",
+   "isin": "RU000A10E6Q2",
+   "issue_date": "2026-02-05",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.013000000000000001,
+   "freq": 12,
+   "face_2025_12_31": 0.0,
+   "face_2026_06_30": 20.0,
+   "face_2026_09_28": 20.0,
+   "exit_date": "2028-04-28",
+   "price_2026_09_28": 100.75,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS; спред выведен"
+  },
+  {
+   "series": "003P-17",
+   "isin": "RU000A10E6V2",
+   "issue_date": "2026-02-03",
+   "type": "fixed",
+   "coupon": 0.145,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 0.0,
+   "face_2026_06_30": 15.0,
+   "face_2026_09_28": 15.0,
+   "exit_date": "2028-03-29",
+   "price_2026_09_28": 100.33,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS COUPONPERCENT 14,5; купоны 11,92 ₽/мес"
+  },
+  {
+   "series": "003P-18",
+   "isin": "RU000A10EL70",
+   "issue_date": "2026-04-21",
+   "type": "fixed",
+   "coupon": 0.135,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 0.0,
+   "face_2026_06_30": 11.0,
+   "face_2026_09_28": 11.0,
+   "exit_date": "2028-07-12",
+   "price_2026_09_28": 98.5,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS COUPONPERCENT 13,5"
+  },
+  {
+   "series": "003P-19",
+   "isin": "RU000A10EL88",
+   "issue_date": "2026-04-22",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.012,
+   "freq": 12,
+   "face_2025_12_31": 0.0,
+   "face_2026_06_30": 20.0,
+   "face_2026_09_28": 20.0,
+   "exit_date": "2028-05-16",
+   "price_2026_09_28": 100.05,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: ISS; спред выведен"
+  },
+  {
+   "series": "003P-20",
+   "isin": "RU000A10EL96",
+   "issue_date": "2026-07-21",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.0115,
+   "freq": 12,
+   "face_2025_12_31": 0.0,
+   "face_2026_06_30": 0.0,
+   "face_2026_09_28": 22.0,
+   "exit_date": "2028-08-14",
+   "price_2026_09_28": 100.37,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: пресс-релиз X5 21.07.2026 (reference/primary/x5-news_x5-razmestila-korporativnye-obligaczii-na-summu-22-mlrd-rub.html)"
+  },
+  {
+   "series": "003P-21",
+   "isin": "RU000A10F9D3",
+   "issue_date": "2026-09-14",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.012,
+   "freq": 12,
+   "face_2025_12_31": 0.0,
+   "face_2026_06_30": 0.0,
+   "face_2026_09_28": 17.5,
+   "exit_date": "2028-10-06",
+   "price_2026_09_28": 100.19,
+   "src": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) прим. 15, с. 20 (баланс/справедливая стоимость); MOEX ISS: /iss/securities/{isin}.json, /bondization.json, /engines/stock/markets/bonds/boards/TQCB/securities.json (доступ 2026-09-28 ≈12:00 МСК); купон: пресс-релиз X5 14.09.2026 (reference/primary/x5-news_x5-razmestila-korporativnye-obligaczii-na-summu-175-mlrd-rublej.html)"
+  },
+  {
+   "series": "003P-03",
+   "isin": "RU000A107AJ0",
+   "issue_date": "2023-12-05",
+   "type": "fixed",
+   "coupon": 0.129,
+   "spread": null,
+   "freq": 4,
+   "face_2025_12_31": 10.0,
+   "face_2026_06_30": 0.0,
+   "face_2026_09_28": 0.0,
+   "exit_date": "2026-06-05",
+   "src": "MOEX ISS bondization RU000A107AJ0 (купон 12,9 % с 04.03.2025; оферта 05.06.2026); МСФО 1П2026 прим. 15 (баланс 31.12.2025 9,995)"
+  },
+  {
+   "series": "003P-08",
+   "isin": "RU000A10AP21",
+   "issue_date": "2025-01-27",
+   "type": "fixed",
+   "coupon": 0.215,
+   "spread": null,
+   "freq": 12,
+   "face_2025_12_31": 20.0,
+   "face_2026_06_30": 0.0,
+   "face_2026_09_28": 0.0,
+   "exit_date": "2026-02-27",
+   "src": "МСФО 2025 прим. 21 («в январе … 003P-08 … 21,50 % с офертой в феврале 2026»); MOEX ISS bondization RU000A10AP21 (оферта 27.02.2026)"
+  },
+  {
+   "series": "003P-09",
+   "isin": "RU000A10AT19",
+   "issue_date": "2025-02-10",
+   "type": "floating",
+   "coupon": null,
+   "spread": 0.02,
+   "freq": 12,
+   "face_2025_12_31": 18.0,
+   "face_2026_06_30": 0.0,
+   "face_2026_09_28": 0.0,
+   "exit_date": "2026-04-09",
+   "src": "МСФО 2025 прим. 21 («в феврале … 003P-09 … плавающим купоном 2,00 % к ключевой»); MOEX ISS bondization RU000A10AT19 (оферта 09.04.2026)"
+  }
+ ],
+ "placements_stress_extra": [
+  {
+   "series": "003P-01",
+   "date": null,
+   "coupon": 0.23,
+   "put_months": 9,
+   "src": "МСФО 2024 прим. (кредиты и займы): «в ноябре и декабре 2024 … 003P-01 … 23,00 % и 003P-07 … 22,85 %, оба выпуска с офертой через 9 месяцев» — дата размещения 003P-01 не раскрыта"
+  },
+  {
+   "series": "003P-07",
+   "date": "2024-12-26",
+   "coupon": 0.2285,
+   "put": "2025-09-25",
+   "freq": 12,
+   "src": "МСФО 2024 (там же); дата — MOEX ISS ISSUEDATE; оферта 25.09.2025 (X2 §3.2)"
+  },
+  {
+   "series": "003P-08",
+   "date": "2025-01-27",
+   "coupon": 0.215,
+   "put": "2026-02-27",
+   "freq": 12,
+   "src": "МСФО 2025 прим. 21; MOEX ISS"
+  }
+ ],
+ "banks": {
+  "short_2026_06_30": 41.913,
+  "long_2026_06_30": 173.501,
+  "short_2025_12_31": 42.5,
+  "long_2025_12_31": 161.591,
+  "short_final_maturity": "2026-2027",
+  "long_final_maturity": "2027-2028",
+  "src": "МСФО 1П2026 прим. 15, с. 20 (кредиторы и ставки по траншам не раскрыты)"
+ },
+ "reported": {
+  "source": "МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf, sha256 f8cdf679…) баланс с. 5; прим. 15, с. 20; прим. 24–25, с. 24–25",
+  "borrowings_noncurrent": 307.887,
+  "borrowings_current": 126.822,
+  "borrowings_total": 434.709,
+  "bonds_carrying": 219.295,
+  "bonds_fair_value": 221.244,
+  "bank_carrying": 215.414,
+  "bank_fair_value": 216.551,
+  "interest_accrued": 1.719,
+  "total_debt_company_definition_incl_leasing": 435.857,
+  "total_debt_company_definition_note": "пресс-релиз 2 кв. 2026, с. 12 («Общий долг», сноска 18: включает обязательства по лизингу); разница с кредитами и займами 1,148 — лизинг (не раскрыт отдельно)",
+  "cash_and_equivalents": 125.21,
+  "short_term_investments": 0.204,
+  "net_debt_company_definition": 310.647,
+  "net_debt_to_ebitda_pre_ifrs16": 1.08,
+  "lease_liabilities_ifrs16": 742.991,
+  "lease_liabilities_noncurrent": 667.452,
+  "lease_liabilities_current": 75.539,
+  "transaction_costs_netted": 0.413,
+  "floating_share_of_borrowings_pct": 55,
+  "floating_share_2025_12_31_pct": 39,
+  "floating_share_2024_12_31_pct": 56,
+  "sensitivity_pbt_per_100bp_h1_2026_rub_bn": 0.641,
+  "sensitivity_pbt_per_100bp_fy2025_rub_bn": 1.041,
+  "effective_rate_h1_2026_pct": 16.54,
+  "effective_rate_h1_2025_pct": 20.72,
+  "effective_rate_fy2025_pct": 19.92,
+  "effective_rate_fy2024_pct": 15.21,
+  "capitalised_interest_h1_2026": 2.085,
+  "capitalised_interest_fy2025": 1.759,
+  "undrawn_credit_lines": 804.643,
+  "undrawn_credit_lines_2025_12_31": 772.64,
+  "bond_programme_remaining": 103.0,
+  "undiscounted_loans_and_interest": {
+   "lt_1y": 185.24,
+   "1_5y": 332.86,
+   "gt_5y": 0.0
+  },
+  "undiscounted_leases": {
+   "lt_1y": 189.238,
+   "1_5y": 660.381,
+   "gt_5y": 515.344
+  },
+  "covenant": "чистый долг / EBITDA до МСФО 16 ≤ 4,00х (4,25х в течение 2 кварталов после приобретения); факт 1,08х — выполнен",
+  "currency": "долг до МСФО 16 полностью в рублях (пресс-релиз 2 кв. 2026, с. 12)",
+  "weighted_avg_maturity_2025_12_31_months": 17,
+  "weighted_avg_maturity_source": "Годовой отчёт 2025 (reference/primary/x5-ar25.pdf; text/x5-ar25.txt), с. 225 (печатн.)"
+ },
+ "floating_share_history": {
+  "2023-12-31": {
+   "v": 0.26,
+   "src": "МСФО 2024, прим. «Процентный риск» (на 31.12.2023: 26 %)"
+  },
+  "2024-12-31": {
+   "v": 0.56,
+   "src": "МСФО 2024, прим. «Процентный риск»"
+  },
+  "2025-06-30": {
+   "v": 0.36,
+   "src": "МСФО 1П2025, «Рыночный риск – процентный риск»"
+  },
+  "2025-12-31": {
+   "v": 0.39,
+   "src": "МСФО 2025 прим. 30, с. 50"
+  },
+  "2026-06-30": {
+   "v": 0.55,
+   "src": "МСФО 1П2026 прим. 24, с. 24"
+  }
+ },
+ "interest": {
+  "loans_h1_2026": {
+   "v": 31.076,
+   "src": "МСФО 1П2026 прим. 21: «Процентные расходы по кредитам и займам» 31 076"
+  },
+  "loans_h1_2025": {
+   "v": 31.416,
+   "src": "там же, сравнительные"
+  },
+  "loans_fy2025": {
+   "v": 61.176,
+   "src": "МСФО 2025 прим. 27"
+  },
+  "loans_fy2024": {
+   "v": 34.138,
+   "src": "МСФО 2025 прим. 27, сравнительные"
+  },
+  "income_h1_2026": {
+   "v": 3.186,
+   "src": "МСФО 1П2026 прим. 21: «Процентные доходы» (3 186)"
+  },
+  "income_h1_2025": {
+   "v": 22.938,
+   "src": "там же, сравнительные"
+  },
+  "income_fy2025": {
+   "v": 27.817,
+   "src": "МСФО 2025 прим. 27"
+  },
+  "income_fy2024": {
+   "v": 27.348,
+   "src": "МСФО 2025 прим. 27, сравнительные"
+  },
+  "capitalised_h1_2026": {
+   "v": 2.085,
+   "src": "МСФО 1П2026 прим. 15"
+  },
+  "tc_amortised_h1_2026": {
+   "v": 0.169,
+   "src": "МСФО 1П2026 прим. 15 («амортизации транзакционных издержек 169»)"
+  },
+  "tc_unamortised_2026_06_30": {
+   "v": 0.413,
+   "src": "МСФО 1П2026 прим. 15"
+  },
+  "borrowings_2025_12_31": {
+   "v": 405.428,
+   "src": "МСФО 1П2026 прим. 15"
+  },
+  "borrowings_2026_06_30": {
+   "v": 434.709,
+   "src": "МСФО 1П2026 прим. 15"
+  },
+  "total_debt_2026_03_31": {
+   "v": 406.659,
+   "src": "databook q2_2026 › Debt!R6 (31.03.2026; с лизингом)"
+  },
+  "leasing_2026_06_30": {
+   "v": 1.148,
+   "src": "databook Debt!R6 − кредиты и займы баланса (research/facts)"
+  },
+  "deposits": {
+   "text": "Депозиты в рублях размещены по ставкам в диапазоне 14-15% годовых, депозиты в валюте — 0,1-2,5%",
+   "rub_deposits": 41.578,
+   "fx_deposits": 5.095,
+   "rub_cash_accounts": 58.28,
+   "fx_cash_accounts": 20.257,
+   "total": 125.21,
+   "src": "МСФО 1П2026 прим. 8, с. 15 (скан; сумма 125 210 сходится)"
+  }
+ }
+}

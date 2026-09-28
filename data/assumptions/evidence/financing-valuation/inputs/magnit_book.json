@@ -1,0 +1,130 @@
+{
+ "_about": "Выписка из книги Магнита 1.6 (magnit-850oa, ветка v5, только чтение): общие с X5 суждения и числа, с которыми сравнивается X5",
+ "source": [
+  {
+   "file": "magnit-850oa/data/assumptions/assumptions.yaml",
+   "sha256": "23a932127c5681635734b770b6dfd6aa35e77239da4a460611a07bf0dbd09aaa"
+  },
+  {
+   "file": "magnit-850oa/model/checks.py",
+   "sha256": "614cc3c1c23e85a29189fb5ed6bfbd8edffd83df7cdf010185f49399775dbc0b"
+  }
+ ],
+ "joint": {
+  "world_prob": {
+   "N": 0.35,
+   "H": 0.45,
+   "M": 0.2
+  },
+  "market_implied_prob": {
+   "N": 0.1,
+   "H": 0.25,
+   "M": 0.65
+  },
+  "neutral_world": "M",
+  "lambda": 0.5,
+  "by_world": {
+   "N": {
+    "growth": "high",
+    "nwc": "hold",
+    "credit": "base"
+   },
+   "H": {
+    "growth": "mid",
+    "nwc": "hold",
+    "credit": "base"
+   },
+   "M": {
+    "growth": "low",
+    "nwc": "hold",
+    "credit": "stress"
+   }
+  }
+ },
+ "financing": {
+  "spread_float": {
+   "base": 0.014,
+   "stress": 0.022
+  },
+  "spread_fixed": {
+   "base": 0.016,
+   "stress": 0.0285
+  },
+  "cash_yield_k": 0.87,
+  "fixed_share": {
+   "2026H2": 0.27,
+   "2027": 0.2,
+   "2028": 0.1,
+   "LT": 0.1
+  },
+  "leverage_target": 1.5,
+  "dividends_from_year": 2028
+ },
+ "valuation": {
+  "beta_u": 0.7,
+  "erp": 0.0557,
+  "governance_discount": 0.1,
+  "print_step": 50,
+  "draws": 2000,
+  "seed": 20260918
+ },
+ "axes": {
+  "β_u": {
+   "name": "β_u",
+   "path": "valuation.beta_u",
+   "low": 0.55,
+   "high": 0.85
+  },
+  "ERP": {
+   "name": "ERP",
+   "path": "valuation.erp",
+   "low": 0.049,
+   "high": 0.062
+  },
+  "Дисконт за управление": {
+   "name": "Дисконт за управление",
+   "path": "valuation.governance_discount",
+   "low": 0.0,
+   "high": 0.25
+  },
+  "Целевой рычаг": {
+   "name": "Целевой рычаг",
+   "path": "financing.leverage_target",
+   "low": 1.2,
+   "high": 2.0
+  },
+  "Веса миров": {
+   "name": "Веса миров",
+   "path": "joint.world_prob",
+   "low": {
+    "N": 0.25,
+    "H": 0.5,
+    "M": 0.25
+   },
+   "high": {
+    "N": 0.4,
+    "H": 0.45,
+    "M": 0.15
+   }
+  },
+  "Инфляция мира M (дата, ликвидность ОФЗ-ИН)": {
+   "name": "Инфляция мира M (дата, ликвидность ОФЗ-ИН)",
+   "paths": [
+    "worlds.M.cpi",
+    "worlds.M.food_cpi",
+    "worlds.M.lt.inflation"
+   ],
+   "shift_low": -0.003,
+   "shift_high": 0.005
+  }
+ },
+ "checks_py": {
+  "EV_EBITDA_RANGE": "{\"N\": (3.5, 5.5), \"H\": (2.5, 4.5), \"M\": (2.5, 4.5)}",
+  "EV_EBITDA_REGIMES": "(\"floor\", \"partial\")",
+  "MARGIN_RANGE": "(0.040, 0.075)",
+  "CAPEX_RANGE": "(0.015, 0.040)",
+  "TERMINAL_SHARE_RANGE": "(0.10, 0.55)",
+  "REAL_RATE_RANGE": "(0.02, 0.13)"
+ },
+ "book_update_rule": "ASSUMPTIONS-BOOK.md §17: сдвиг ≥50 б.п. на узлах 5–10 лет или книга старше 45 дней"
+}

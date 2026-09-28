@@ -1,0 +1,42 @@
+# Фрагмент книги X5 — область «МАРЖА И РЕЖИМЫ» (margin). Только ключи своей области в структуре
+# assumptions.draft.yaml. Обоснования — data/assumptions/sections/margin.md, расчёты — evidence/margin/.
+# Маржа — скорр. EBITDA до МСФО 16 без LTI (определение X5 и её прогноза «6+ %»); LTI — отдельная строка.
+
+joint:
+  # A-P2: вероятности режимов — частоты референс-класса (правило B, n = 10, сглаживание Лапласа ½),
+  # минимально (по KL) наклонённые к центру класса на шкале X5; E[m_LT] = 5,90 % (evidence/margin/refclass.py)
+  regime_prob: {stress: 0.415, floor: 0.300, partial: 0.235, full: 0.050}
+  # A-P4: состояние спроса по режиму (как у Магнита): новое падение маржи — слабый чек/трафик, полный возврат — сильный
+  regime_demand: {stress: bear, floor: base, partial: base, full: bull}
+  regime_update:                                    # A-P2u (MODEL §10)
+    sigma_pp: 0.0053      # стационарное σ отклонения от пути режима: √(σ_d²(1−ρ²) + q²)/√(1−ρ²), σ_d 0,46, q 0,24 п.п. (series.py)
+    rho: -0.4             # = margin.deviation_persistence (MODEL §4.3/§10 читают ρ_d; ключи обязаны совпадать)
+    cap_pp: 0.10          # предел сдвига вероятности любого режима за одно наблюдение
+    observations: []      # факты после якоря 2026H1 пока нет
+
+margin:
+  targets:                # A-C1: скорр. EBITDA до МСФО 16 без LTI; 2026H1 — цель на якоре (уровень фильтра, series.py);
+                          # далее линейный сход к LT к 2031 (paths.py); LT — средние режимов класса на шкале X5 (refclass.py)
+    stress:  {"2026H1": 0.0607, "2026H2": 0.0598, "2027": 0.0585, "2028": 0.0568, "2029": 0.0550, "2030": 0.0533, "LT": 0.0520, "LT_from": 2031}
+    floor:   {"2026H1": 0.0607, "2026H2": 0.0607, "2027": 0.0608, "2028": 0.0608, "2029": 0.0609, "2030": 0.0610, "LT": 0.0610, "LT_from": 2031}
+    partial: {"2026H1": 0.0607, "2026H2": 0.0612, "2027": 0.0620, "2028": 0.0631, "2029": 0.0641, "2030": 0.0652, "LT": 0.0660, "LT_from": 2031}
+    full:    {"2026H1": 0.0607, "2026H2": 0.0618, "2027": 0.0634, "2028": 0.0656, "2029": 0.0677, "2030": 0.0699, "LT": 0.0715, "LT_from": 2031}
+  seasonal_h1_pp: 0.0     # A-C5: устойчивой сезонности нет (2П − 1П: −0,16 п.п., t −0,6; эпохи +0,53 / −0,78 / 0,00)
+  deviation_persistence: -0.4   # A-C4: ρ AR(1) отклонения, МП по 2011H1–2026H1 (95 %: −0,75…+0,10); слабое 1П — сильнее 2П
+  lti_pct: 0.0020         # A-C7: LTM 2К2026 0,199 % выручки (9,7 млрд ₽) после расширения программ 2025–2026 гг.
+
+valuation:
+  next_report:            # A-V12
+    period: "2026H2"
+    demo_values: [0.053, 0.056, 0.059, 0.062, 0.065, 0.068, 0.071]   # шаг 0,3 п.п. вокруг ожидания модели 6,20 % (±1,8 sd)
+
+axes_proposals:
+  - {name: "Долгосрочный уровень маржи (сдвиг целей LT всех режимов)", kind: shift,
+     paths: [margin.targets.stress.LT, margin.targets.floor.LT, margin.targets.partial.LT, margin.targets.full.LT],
+     low: -0.005, high: 0.004}
+  - {name: "LTI", kind: value, paths: [margin.lti_pct], low: 0.0012, high: 0.0026}
+
+reverse_dcf_proposals:
+  - {name: "Долгосрочный уровень маржи (сдвиг целей LT всех режимов)", kind: shift,
+     paths: [margin.targets.stress.LT, margin.targets.floor.LT, margin.targets.partial.LT, margin.targets.full.LT],
+     search: [-0.03, 0.02], range: [-0.005, 0.004], unit: "п.п."}

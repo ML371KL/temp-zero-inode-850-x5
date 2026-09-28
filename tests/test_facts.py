@@ -222,8 +222,20 @@ def test_guidance_ranges():
     assert v(g["adj_margin_min"]) > 0 and v(g["openings_min"]) > 0
 
 
-def test_actuals_is_empty_list():
-    assert load("actuals")["actuals"] == []
+def test_actuals_entries_follow_the_format():
+    """Факты журнала (вносит человек после отчёта): формат записи, цели, полугодия, источник."""
+    targets = {"x5.adj_margin", "x5.revenue_growth"}
+    seen = set()
+    for i, a in enumerate(load("actuals")["actuals"]):
+        where = f"actuals[{i}]"
+        assert set(a) >= {"target", "period", "value", "reported_on"}, where
+        assert a["target"] in targets, where
+        assert len(a["period"]) == 6 and a["period"][4] == "H" and a["period"][5] in "12", where
+        assert isinstance(a["value"]["v"], (int, float)) and (a["value"].get("src") or a["value"].get("calc")), where
+        assert dt.date.fromisoformat(a["reported_on"]), where
+        key = (a["target"], a["period"])
+        assert key not in seen, f"{where}: повтор {key}"
+        seen.add(key)
 
 
 def test_core_reads_facts():

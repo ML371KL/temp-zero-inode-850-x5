@@ -20,12 +20,16 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 `generated_at`, `valuation_date`, `facts_date`, `book_version`, `book_date`,
 `engine_commit`, `basis` ("до МСФО 16"), `shares_mln`, `governance_discount`,
 `anchor_period`, `first_period`, `last_period`, `open_period` (первое прогнозное без
-факта), `curve_as_of`, `closed_periods`, `elapsed`, `payload_sha256` (хэш выпуска без
-полей `generated_at`, `payload_sha256`, `bytes`), `bytes`, `previous_sha256` (или null).
+факта), `curve_as_of`, `closed_periods`, `elapsed`, `payload_sha256`, `bytes`,
+`previous_sha256` (или null), `fast` (быстрая сборка на 200 прогонах — в выпуск не идёт).
+**Хэш** — sha256 канонического JSON без `meta.generated_at`, `meta.payload_sha256`,
+`meta.bytes`, `meta.previous_sha256`, `live.fetched_at`, блока `changes` и
+`journal.entries[].release_sha`: время сборки и ссылки на выпуски вне хэша, иначе
+каждая пересборка на тех же входах — новый выпуск. Числа выпуска — 9 значащих цифр.
 
 ## market
 * `price`, `price_date`, `price_time`, `price_source` ("ISS TQBR"), `price_status`
-  ("live" | "fallback"), `book_price` (цена книги).
+  ("live" | "fallback" | "book" — сборка на входах книги), `book_price` (цена книги).
 * `market_cap` (по акциям в обращении), `claims` (D слоя «свой взгляд» на дату оценки),
   `market_ev` (= V\*), `ebitda_rep_ltm`, `adj_ebitda_ltm`, `ev_ebitda_ltm`,
   `pe_ltm` (или null), `dividend_yield_ltm`.
@@ -39,7 +43,9 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 ## headline
 `central` (медиана, точная), `printed_central`, `band` [P10, P90], `printed_band`,
 `inner` [P25, P75], `printed_inner`, `mean`, `p_central_below_market`,
-`market_price`, `print_step`, `draws`, `lambda`.
+`market_price`, `print_step`, `draws`, `lambda`. Статистики считаются по прогонам
+выпуска, округлённым до 0,1 ₽ (так же, как их пересчитает фронт); печать — к шагу,
+половина вверх.
 
 ## fair_value
 * `low`, `central`, `high` (точка при центральных значениях: низ, точка при λ книги,
@@ -135,7 +141,8 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 * `expectation`: {`revenue_growth` (г/г полугодия), `revenue`, `margin`,
   `adj_ebitda`, `by_regime` [{regime, margin}]}.
 * `guidance`: {`revenue_growth` [lo, hi], `margin_min`, `capex_pct` [lo, hi],
-  `openings`, `required_h2_margin`, `required_h2_growth`, `src`}.
+  `openings`, `required_h2_margin`, `required_h2_growth` (нижняя граница),
+  `required_h2_growth_range`, `src`}.
 * `benchmarks`: [{`name`, `margin`, `revenue_growth`, `note`}] — наивные эталоны
   («то же полугодие год назад», «среднее двух полугодий», «как прошлое полугодие»).
 * `table`: [{`margin`, `point`, `median`, `d_point`, `d_median`, `posterior`
@@ -165,8 +172,9 @@ book_nodes, shift_bp {5, 10}}, `key_rate` {value, date}, `valuation_date`.
 
 ## changes
 `vs_previous`: {`previous_sha`, `previous_generated_at`, `rows` [{`component`,
-`rub`}], `total_rub`} — атрибуция изменения точки: дата оценки (перекат), цена
-рынка, книга/факты/код (остатком).
+`title`, `rub`}], `total_rub`, `reference` (опорные числа прошлого выпуска для
+защиты заголовка), `note`} — атрибуция изменения точки: дата оценки (перекат),
+цена рынка, книга/факты/код (остатком).
 
 ## book
 `version`, `date`, `tag`, `sections`: [{id, title}], `worlds_source`,
@@ -176,3 +184,11 @@ book_nodes, shift_bp {5, 10}}, `key_rate` {value, date}, `valuation_date`.
 `tiles`: [{`id`, `title`, `unit`, `value`, `date`, `change`, `history`
 [{date, value}] (≤ 60 точек)}] — X5 (цена), ключевая ставка, ОФЗ 5 и 10 лет
 (бескупонная кривая), спред облигаций X5 к ОФЗ.
+
+## Дополнительные поля (не ломают витрину)
+
+`judgements.rows[].kind/paths`, `reverse_dcf.rows[].kind/paths/search/point_status`,
+`uncertainty.subsample/delta`, `uncertainty.contributions[].rank_corr`,
+`checks.gates[].status/blocking/cells/detail`, `checks.invariants[].title`,
+`live.errors/degraded/fetched_at`, `grid.cells[].growth/credit/demand`,
+`debt.bonds[].series/duration_years`, `next_report.book_period`, `benchmarks[].key`.

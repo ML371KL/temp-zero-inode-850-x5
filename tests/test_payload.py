@@ -232,6 +232,7 @@ def test_hash_ignores_time_and_links_but_not_content(book_release):
     R["changes"] = {"vs_previous": {"rows": [1, 2, 3]}}
     for e in R["journal"]["entries"]:
         e["release_sha"] = "x"
+    R["journal"]["releases"] = {"x": {"book_version": "0.1", "generated_at": None}}
     assert P.content_digest(R) == digest
     R["headline"]["mean"] += 0.01
     assert P.content_digest(R) != digest
@@ -304,6 +305,68 @@ def test_journal_is_carried_byte_for_byte(book_release, live_release):
     was = {e["id"]: canonical(e) for e in book_release["journal"]["entries"]}
     now = {e["id"]: canonical(e) for e in payload["journal"]["entries"]}
     assert was == now
+
+
+def test_journal_names_the_book_of_each_recording_release(book_release, live_release):
+    """Книга выпуска, записавшего прогноз, — в `journal.releases` (записи не трогаются)."""
+    assert book_release["journal"]["releases"] == {}, "прошлого выпуска нет — и карта пуста"
+    payload, _ = live_release
+    sha = book_release["meta"]["payload_sha256"]
+    assert {e["release_sha"] for e in payload["journal"]["entries"]} == {sha}
+    assert payload["journal"]["releases"] == {
+        sha: {"book_version": book_release["meta"]["book_version"],
+              "generated_at": book_release["meta"]["generated_at"]}}
+
+
+def test_journal_releases_reach_back_through_the_previous_release():
+    """Позапрошлый выпуск — по ссылке прошлого (`changes.vs_previous`); карта прошлого
+    журнала переносится; выпуски, на которые записи не ссылаются, в карту не идут."""
+    entries = [{"id": "a", "release_sha": "old"}, {"id": "b", "release_sha": "older"},
+               {"id": "c", "release_sha": None}]
+    previous = {"meta": {"payload_sha256": "prev", "book_version": "1.1", "generated_at": "t1"},
+                "changes": {"vs_previous": {"previous_sha": "old", "previous_generated_at": "t0",
+                                            "reference": {"book_version": "1.0"}}},
+                "journal": {"entries": entries,
+                            "releases": {"older": {"book_version": "0.9", "generated_at": "t-1"}}}}
+    got = P.journal_releases({"entries": entries}, previous, previous["journal"])
+    assert got == {"old": {"book_version": "1.0", "generated_at": "t0"},
+                   "older": {"book_version": "0.9", "generated_at": "t-1"}}
+    assert P.journal_releases({"entries": entries}, None) == {}
+
+
+def test_journal_releases_find_the_book_in_release_history():
+    """Выпуск, до которого цепочка прошлых выпусков не дотягивается (записал прогноз
+    позапозапрошлый выпуск, а прошлый собран кодом без карты), — по строкам публикаций
+    `history.json`; откаты и переоткрытия книгу не дают."""
+    entries = [{"id": "a", "release_sha": "first"}]
+    previous = {"meta": {"payload_sha256": "third", "book_version": "1.1", "generated_at": "t3"},
+                "changes": {"vs_previous": {"previous_sha": "second", "previous_generated_at": "t2",
+                                            "reference": {"book_version": "1.1"}}},
+                "journal": {"entries": entries}}
+    assert P.journal_releases({"entries": entries}, previous, previous["journal"]) == {}
+    history = [
+        {"event": "publish", "payload_sha256": "first", "book_version": "1.0", "generated_at": "t1"},
+        {"event": "rollback", "payload_sha256": "first", "book_version": "0.0"},
+        {"event": "publish", "payload_sha256": "second", "book_version": "1.1", "generated_at": "t2"},
+    ]
+    got = P.journal_releases({"entries": entries}, previous, previous["journal"], history)
+    assert got == {"first": {"book_version": "1.0", "generated_at": "t1"}}
+
+
+def test_terminal_share_follows_from_the_layer_columns(book_release):
+    """Доля терминала — чистая: (PV терминала − его вычеты) / V0; вычеты терминала — часть
+    всех вычетов финансирования."""
+    for name, L in book_release["layers"].items():
+        tf = L["pv_terminal_financing"]
+        assert -1e-6 <= tf <= L["pv_financing"] + 1e-6, name
+        assert (L["pv_terminal"] - tf) / L["v0"] == pytest.approx(L["terminal_share"], rel=1e-6), name
+
+
+def test_wall_note_reaches_the_release(book_release, facts):
+    note = (facts.data.get("debt_register") or {}).get("wall_note")
+    assert book_release["debt"]["wall_note"] == (note if isinstance(note, str) else None)
+    if all(w["banks"] is None for w in book_release["debt"]["wall"]):
+        assert book_release["debt"]["wall_note"], "график кредитов не раскрыт — нужна подпись стены"
 
 
 def test_changes_add_up_to_the_point_move(book, facts, book_release, live_release):
@@ -420,7 +483,7 @@ def test_anchor_year_marks_its_forecast_only_flows(book_release, book):
 
 def test_regime_titles_and_key_judgement_codes_follow_the_book(book_release):
     assert book_release["regimes"]["floor"]["title"] == "Дно"
-    # Канон текста книги — ASSUMPTIONS-BOOK.md (sections/ — материал сборки).
+    # Текст книги живёт только в ASSUMPTIONS-BOOK.md (книга 1.1.1, [42] аудита раунда 2).
     text = (ROOT / "data" / "assumptions" / "ASSUMPTIONS-BOOK.md").read_text(encoding="utf-8")
     parts = re.split(r"\n(?=### )", text)
     for jid, path, _, _ in P.KEY_JUDGEMENTS:

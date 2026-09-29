@@ -143,10 +143,13 @@ lev = json.loads((HERE / "leverage_out.json").read_text(encoding="utf-8"))["max_
 R(f"  max_leverage = {lev['book']}: ковенант {lev['covenant']}× (история — до {lev['hist_max_quarter']}×) — leverage.py")
 mc = json.loads((HERE / "model_check_out.json").read_text(encoding="utf-8"))
 thr = mc["credit_put"]["thresholds"]
-R(f"  min_v0_to_d = 1.5: при V0/D 1,5 кредитный пут слоя (σ_EV книги, T 1,24 / 3 года) — "
-  f"{thr.get('put_at_1.5_T1.24_rub', float('nan')):.1f} / {thr.get('put_at_1.5_T3.0_rub', float('nan')):.1f} ₽ на акцию, "
-  f"меньше полушага печати (25 ₽) — model_check.py")
-R(f"  book_update = {{shift_bp: 50, max_age_days: 45}}: {MAG['book_update_rule']} — миры общие, правило общее")
+p124, p3 = thr.get("put_at_1.5_T1.24_rub", float("nan")), thr.get("put_at_1.5_T3.0_rub", float("nan"))
+t25 = thr.get("T_for_25rub_at_1.5", float("nan"))
+R(f"  min_v0_to_d = 1.5: при V0/D 1,5 кредитный пут слоя (σ_EV книги) на сроке долга 1,24 года — {p124:.1f} ₽ на акцию "
+  f"({'меньше' if p124 < 25 else 'не меньше'} полушага печати 25 ₽), на 3 года — {p3:.1f} ₽; полшага печати пут "
+  f"достигает на сроке {t25:.2f} года — model_check.py")
+R(f"  book_update = {{shift_bp: 50, max_age_days: 45}}: правило справочника книги Магнита ({MAG['book_update_rule']}) "
+  f"— миры общие, правило общее")
 out["other"] = {"max_leverage": lev["book"], "min_v0_to_d": 1.5, "book_update": {"shift_bp": 50, "max_age_days": 45}}
 
 # ------------------------------------------------------------------ массы на книге

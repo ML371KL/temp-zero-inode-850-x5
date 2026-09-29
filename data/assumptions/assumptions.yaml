@@ -1,12 +1,12 @@
-# Книга допущений X5 1.1 — машинный вид (канон вместе с ASSUMPTIONS-BOOK.md).
+# Книга допущений X5 1.1.1 — машинный вид (канон вместе с ASSUMPTIONS-BOOK.md).
 # Каждый ключ — суждение книги (код A-xx в ASSUMPTIONS-BOOK.md) или импорт общей макро-основы (worlds).
 # Единицы: деньги — млрд ₽, площадь — тыс. м², акции — млн шт., ставки и доли — доли единицы (годовые).
 # Траектории: {ключ: значение}; ключи — "2026H2" (полугодие), "2027" (год), "LT" и "LT_from" (год выхода на LT).
 # Правила чтения — docs/MODEL.md §0.1. Незнакомый ключ — отказ BookError (закрытая схема model/book_schema.py).
 # Менять только новой версией книги (data/assumptions/README.md); тег версии — book-<версия>.
 meta:
-  version: '1.1'
-  date: '2026-09-28'
+  version: '1.1.1'
+  date: '2026-09-29'
   facts_date: '2026-06-30'
   anchor_period: 2026H1
   first_period: 2026H2
@@ -337,7 +337,7 @@ network:
   - 0.75
   - 0.9
   - 1.0
-  new_space_density: 0.84
+  new_space_density: 0.83
   closed_productivity: 0.6
 revenue:
   ticket_k:
@@ -434,18 +434,18 @@ margin:
 capex:
   maintenance:
     low:
-      2026H2: 0.0236
-      '2027': 0.0236
+      2026H2: 0.0243
+      '2027': 0.0243
       LT: 0.0244
       LT_from: 2029
     base:
-      2026H2: 0.0282
-      '2027': 0.0282
+      2026H2: 0.0291
+      '2027': 0.0291
       LT: 0.0293
       LT_from: 2029
     high:
-      2026H2: 0.0346
-      '2027': 0.0346
+      2026H2: 0.0356
+      '2027': 0.0356
       LT: 0.0359
       LT_from: 2029
   maintenance_area_share: 0.65
@@ -586,8 +586,8 @@ valuation:
       kind: value
       paths:
       - network.new_space_density
-      low: 0.74
-      high: 0.94
+      low: 0.73
+      high: 0.93
     - name: Продуктивность закрываемой площади
       kind: value
       paths:

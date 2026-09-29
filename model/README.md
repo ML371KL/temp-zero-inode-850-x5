@@ -17,7 +17,7 @@
 | `add_observation(A, period, value, se=0.0) -> dict` | копия книги с ещё одним наблюдением маржи A-P2u поверх внесённых («что даст отчёт», §12); повтор полугодия — `BookError` |
 | `open_period(A) -> str \| None` | самое раннее прогнозное полугодие без факта (se = 0) |
 | `path_value(spec, p)`, `trajectory(spec, P)` | значение траектории §0.1 в полугодии / на списке полугодий (память по содержимому) |
-| `interp_curve(curve, t)`, `half_rate(r)` | кривая §0.2; (1 + r)^0,5 − 1 |
+| `interp_curve(curve, t)`, `half_rate(r)` | кривая §0.2 (за последним узлом форвард = `LT`); (1 + r)^0,5 − 1 |
 | `periods`, `prev_period`, `next_period`, `prev_same_half`, `period_index`, `period_start`, `period_end`, `period_of` | линейка полугодий |
 | `book_warnings(A) -> list[str]` | несмертельные замечания (например, траектория без `LT`, которую §0.1 продлевает навсегда) |
 | `today() -> date` | сегодня по Москве (UTC+3, фиксированное смещение `MOSCOW`); `FAKE_TODAY=ГГГГ-ММ-ДД` подменяет |
@@ -197,8 +197,14 @@ high — (низ, верх) каждого прогона), `stats` (p10, p25, m
 **Быстрая сборка** (`fast=True`): полоса на 200 прогонах, подвыборка ≤ 40 — для проверок, в
 выпуск не идёт (`meta.fast = true`, защита заголовка её не сравнивает).
 
-Замер на книге-черновике (ноутбук, 8 логических ядер): полная сборка выпуска — 19 с на 8
-процессах, 28,5 с на 4, 87 с на одном; `results.json` с полосой — 15 с.
+Замер на книге 1.1.1 (ноутбук, 8 логических ядер, `X5_WORKERS=8`, 29.09.2026):
+`model.book_results` с полосой — 97–110 с, полная сборка выпуска
+`ops/build_release.py --book` — ≈ 97 с; `model.book_results` на одном процессе — 8 мин
+(450 с процессорного времени); `results.json` на 1 и 8 процессах совпадает байт в байт.
+С книги 1.1 обратный DCF, «что даст отчёт» и нейтральная маржа уточняются на полной
+полосе (десятки полных полос вместо одной), поэтому сборка примерно втрое дольше, чем на
+книге 1.0 (≈ 35 с на той же машине). Под параллельной нагрузкой на те же ядра время
+растёт вдвое и больше (231 с у `model.book_results` рядом с чужой сборкой).
 
 ### Что изменилось — `model/attribution.py`
 
@@ -223,14 +229,16 @@ recorded_at=, actuals=actuals_of(F))` → (журнал, id новых запи�
 ```python
 payload = build_payload(live=None, previous=None, journal=None, fast=False,
                         book=None, facts=None, strict=True, explanations=None,
-                        notes_path=None, n_workers=None)
+                        notes_path=None, n_workers=None, release_history=None)
 problems = validate(payload)          # [] — годен
 ```
 
 `build_payload` → словарь строго по `docs/PAYLOAD.md` (`REQUIRED_TOP_LEVEL`). `strict=True`
 (конвейер): инвариант, необъяснённый гейт или нарушение контракта — `ReleaseBlocked(reasons)`;
 `strict=False` (образец) — причины в stderr, выпуск возвращается. `journal` — журнал ветки
-`data` (объект с `entries` или список); нет — берётся `previous["journal"]`.
+`data` (объект с `entries` или список); нет — берётся `previous["journal"]`. `release_history` —
+`history.json` ветки `data` (список строк): по строкам публикаций `journal.releases` находит
+книгу выпуска, записавшего прогноз, и когда цепочка прошлых выпусков до него не дотягивается.
 
 `validate(payload, notes_path=None, previous_journal=None, today=None)`: блоки
 `REQUIRED_TOP_LEVEL` (и ничего сверх), конечность чисел, размер ≤ 500 000 байт компактного

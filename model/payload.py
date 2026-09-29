@@ -217,14 +217,14 @@ def compact_json(payload: dict) -> str:
 
 def content_digest(payload: dict) -> str:
     """sha256 содержания выпуска (без времени сборки, своего хэша, размера и
-    ссылок на выпуски)."""
+    ссылок на выпуски: `release_sha` записей журнала и `journal.releases`)."""
     body = {k: v for k, v in payload.items() if k not in ("meta", "changes")}
     body["meta"] = {k: v for k, v in (payload.get("meta") or {}).items()
                     if k not in NOT_CONTENT_META}
     if isinstance(body.get("live"), dict):
         body["live"] = {k: v for k, v in body["live"].items() if k != "fetched_at"}
     if isinstance(body.get("journal"), dict):
-        J = body["journal"]
+        J = {k: v for k, v in body["journal"].items() if k != "releases"}
         body["journal"] = {**J, "entries": [{k: v for k, v in e.items() if k != "release_sha"}
                                             for e in J.get("entries") or []]}
     text = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
@@ -478,9 +478,16 @@ def _layer(L) -> dict:
     # кэрри подушки — V0 = PV потока + PV щита + PV терминала − их сумма.
     financing = math.fsum(getattr(L, k, 0.0) or 0.0
                           for k in ("pv_issuance", "pv_excess_spread", "pv_buffer_carry"))
+    # Терминальная часть вычетов: доля терминала чистая — (TV + TV_S − TV_fin)·df / V0
+    # (grid.layer_of: Σp·доля·EV / V0), а PV терминала валовой; разность и есть Σp·TV_fin·df.
+    terminal_fin = (L.pv_terminal - L.terminal_share * L.v0
+                    if all(math.isfinite(x) for x in (L.pv_terminal, L.terminal_share, L.v0)) else None)
+    if terminal_fin is not None and abs(terminal_fin) < 1e-9 * max(1.0, abs(L.v0)):
+        terminal_fin = 0.0  # без вычетов разность — хвост двоичной арифметики
     return {"title": L.title, "world_weights": L.world_weights, "v0": L.v0, "d": L.d,
             "equity": L.equity, "price": L.price, "pv_fcff": L.pv_fcff, "pv_shield": L.pv_shield,
             "pv_terminal": L.pv_terminal, "pv_financing": financing,
+            "pv_terminal_financing": terminal_fin,
             "terminal_share": L.terminal_share,
             "ev_ebitda_fwd": L.ev_ebitda_fwd, "ebitda_ntm": _ebitda_ntm(L), "v0_to_d": L.v0_to_d}
 
@@ -713,7 +720,8 @@ def debt_block(A, F, cf, grid, live) -> dict:
             "bonds": _bonds(F, live), "bank_loans": RA.get("bank_loans") and {
                 k: RA["bank_loans"].get(k) for k in ("short", "long", "total")},
             "wall": [{"period": w.get("period"), "bonds": w.get("bonds"), "banks": w.get("banks")}
-                     for w in R.get("wall") or []]}
+                     for w in R.get("wall") or []],
+            "wall_note": R.get("wall_note") if isinstance(R.get("wall_note"), str) else None}
 
 
 def dividends_block(A, F, cf, grid, paths, inputs) -> dict:
@@ -1134,12 +1142,14 @@ def book_block(A) -> dict:
 def build_payload(live: dict | None = None, previous: dict | None = None, journal=None,
                   fast: bool = False, *, book: dict | None = None, facts: Facts | None = None,
                   strict: bool = True, explanations=None, notes_path=None,
-                  n_workers: int | None = None) -> dict:
+                  n_workers: int | None = None, release_history=None) -> dict:
     """Выпуск `x5-v1` на книге, фактах и живых входах.
 
     `live` — живые входы конвейера (формат — `model/README.md`) или None (входы
     книги); `previous` — прошлый выпуск (атрибуция, защита заголовка, плитки);
     `journal` — журнал прогнозов ветки `data` (или берётся из `previous`);
+    `release_history` — `history.json` ветки `data` (строки публикаций: книга каждого
+    выпуска для `journal.releases`) или None;
     `fast` — полоса на 200 прогонах (в выпуск не идёт).
     `strict` — при инварианте, необъяснённом гейте или нарушении контракта
     бросить `ReleaseBlocked` (конвейер); False — записать как есть (образец).
@@ -1173,6 +1183,8 @@ def build_payload(live: dict | None = None, previous: dict | None = None, journa
         previous_journal, period=period, forecasts=for_journal.get("forecasts") or {},
         bench=for_journal.get("bench") or {}, recorded_at=today.isoformat(),
         actuals=journal_mod.actuals_of(F))
+    new_journal["releases"] = journal_releases(new_journal, previous, previous_journal,
+                                               release_history)
 
     meta = {"generated_at": generated_at(), "valuation_date": v.isoformat(),
             "facts_date": A["meta"]["facts_date"], "book_version": str(A["meta"]["version"]),
@@ -1218,6 +1230,45 @@ def build_payload(live: dict | None = None, previous: dict | None = None, journa
     if not strict and blocking:
         print("сборка была бы заблокирована:", *blocking, sep="\n  ", file=sys.stderr)
     return payload
+
+
+def journal_releases(journal: dict, previous: dict | None, previous_journal=None,
+                     history=None) -> dict:
+    """Книга и время сборки выпусков, записавших прогнозы журнала:
+    {release_sha: {book_version, generated_at}}.
+
+    Записи журнала неизменяемы, поэтому версия книги лежит рядом с ними, а не в них.
+    Источники: карта прошлого журнала (перенос), `meta` прошлого выпуска и его ссылка на
+    позапрошлый (`changes.vs_previous`: `previous_sha` и `reference.book_version`), строки
+    публикаций `history.json` ветки `data` (`event` = publish: `payload_sha256`,
+    `book_version`, `generated_at`) — по ним карта находит и выпуск, до которого цепочка
+    прошлых выпусков не дотягивается.
+    Текущего выпуска в карте нет — его хэш считается после; витрина берёт его книгу из
+    `meta`. В карте — только выпуски, на которые ссылаются записи."""
+    known: dict[str, dict] = {}
+    for J in (previous_journal, (previous or {}).get("journal")):
+        releases = J.get("releases") if isinstance(J, dict) else None
+        for sha, info in (releases.items() if isinstance(releases, dict) else ()):
+            if isinstance(info, dict):
+                known.setdefault(sha, info)
+    meta = (previous or {}).get("meta") or {}
+    if meta.get("payload_sha256") and meta.get("book_version") is not None:
+        known.setdefault(meta["payload_sha256"], {"book_version": str(meta["book_version"]),
+                                                  "generated_at": meta.get("generated_at")})
+    vs = ((previous or {}).get("changes") or {}).get("vs_previous") or {}
+    ref = vs.get("reference") or {}
+    if vs.get("previous_sha") and ref.get("book_version") is not None:
+        known.setdefault(vs["previous_sha"], {"book_version": str(ref["book_version"]),
+                                              "generated_at": vs.get("previous_generated_at")})
+    for row in (history if isinstance(history, list) else ()):
+        if (isinstance(row, dict) and row.get("event") == "publish" and row.get("payload_sha256")
+                and row.get("book_version") is not None):
+            known.setdefault(row["payload_sha256"], {"book_version": str(row["book_version"]),
+                                                     "generated_at": row.get("generated_at")})
+    wanted = sorted({e.get("release_sha") for e in journal.get("entries") or []
+                     if e.get("release_sha")})
+    return {sha: {"book_version": known[sha].get("book_version"),
+                  "generated_at": known[sha].get("generated_at")} for sha in wanted if sha in known}
 
 
 def _seal(payload: dict, new_ids: list[str]) -> None:

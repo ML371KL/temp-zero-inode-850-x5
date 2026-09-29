@@ -8,9 +8,9 @@
 
 На входах книги (версия и дата оценки — `data/assumptions/results.json`, блоки `book` и `inputs`; рынок <!--=inputs.market_price r1-->1 808,5<!--/--> ₽):
 
-- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 150<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 400<!--/-->–<!--=band.printed.p90 r0-->3 900<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->2 750<!--/-->–<!--=band.printed.p75 r0-->3 600<!--/--> ₽;
-- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 250<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->0,75<!--/--> %;
-- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+42,6<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
+- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 100<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 350<!--/-->–<!--=band.printed.p90 r0-->3 900<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->2 700<!--/-->–<!--=band.printed.p75 r0-->3 550<!--/--> ₽;
+- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 200<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->1,00<!--/--> %;
+- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+41,2<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
 
 Живой выпуск считает на сегодняшней цене и печатает свои числа — экран «Оценка» и `/api/model`. Числа выше стоят в метках и перерисовываются из `data/assumptions/results.json` (`python -B ops/tools/render_numbers.py`).
 
@@ -22,7 +22,7 @@
 |---|---|
 | `README.md` | этот обзор |
 | `requirements.txt` | зависимости Python — точные версии всего дерева (PyYAML, pytest и его зависимости), только ASCII |
-| `pytest.ini` | корень тестов, `pythonpath`, метки `network`, `ci_only`, `docs`, `slow` (`--strict-markers`) |
+| `pytest.ini` | корень тестов, `pythonpath`, метки `network`, `ci_only`, `primary`, `docs`, `slow` (`--strict-markers`) |
 | `.gitattributes` | текст — LF (`* text=auto eol=lf`), PNG, PDF, XLSX — двоичные |
 | `.gitignore` | `.venv/`, `var/`, `.wrangler/`, кэши Python и pytest |
 
@@ -90,8 +90,8 @@
 
 | Путь | Что |
 |---|---|
-| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журнал версии — `V1.1-CHANGES.md`; состав и порядок новой версии — `data/assumptions/README.md` |
-| `facts/` | отчётные факты на якорь книги, у каждого числа источник: `accounting`, `network`, `balance`, `bridge`, `shares`, `dividends` (читает ядро), `debt_register`, `history`, `peers`, `brokers`, `guidance` (читает выпуск), `actuals` (факты журнала); поля — `data/facts/SCHEMA.md`, первичка и сверка — `docs/FACTS.md`; собирает `ops/tools/build_facts.py` |
+| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журналы версий — `V1.1-CHANGES.md` (1.1) и `V1.1.1-CHANGES.md` (1.1.1, errata); состав и порядок новой версии — `data/assumptions/README.md` |
+| `facts/` | отчётные факты на якорь книги, у каждого числа источник: `accounting`, `network`, `balance`, `bridge`, `shares`, `dividends`, `history` (читает ядро; из `history` — выручку и capex/выручку полугодий до якоря, `docs/MODEL.md` §4.5; `dividends` и `history` читает и выпуск), `debt_register`, `peers`, `brokers`, `guidance` (читает выпуск), `actuals` (факты журнала, ведёт человек); поля — `data/facts/SCHEMA.md`, первичка и сверка — `docs/FACTS.md`; собирает `ops/tools/build_facts.py` (кроме `actuals`: его шаблон — только если файла нет) |
 | `calendar.json` | события на 12 месяцев: отчёты X5, дивиденды, заседания ЦБ; `confirmed` и прецедент в `note` |
 
 `tests/`:
@@ -103,7 +103,7 @@
 | `test_book_results.py` | регрессия таблиц книги (полоса — `ci_only`) |
 | `independent_model.py`, `test_control_model.py` | контрольная модель по тексту книги и `docs/MODEL.md`; сверка с ядром, сценарии (и в такте), свежесть `docs/CONTROL-MODEL.md` |
 | `test_no_literals.py` | в коде ядра нет чисел книги и фактов |
-| `test_facts.py`, `test_core_facts.py` | факты и календарь: источники, даты, согласованность; пересборка фактов байт в байт (`ci_only`) |
+| `test_facts.py`, `test_core_facts.py` | факты и календарь: источники, даты, согласованность; пересборка фактов байт в байт (`primary`: на ноутбуке с первичкой рядом) |
 | `test_payload.py`, `test_journal.py`, `test_time_travel.py` | выпуск и контракт, журнал, прогон «в будущем» (`ci_only`) |
 | `test_live_*.py` | сборщики на сохранённых ответах ISS и ЦБ; `test_live_network.py` — живые источники (`network`) |
 | `test_ops_*.py` | сборка, публикация на локальном «удалённом» репозитории (`ci_only`), workflow, `ops/README.md` |
@@ -124,14 +124,21 @@ python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-Дальше `python` — это `.venv\Scripts\python.exe`.
+Дальше `python` — это `.venv\Scripts\python.exe`. Сборщику фактов и тесту пересборки нужен ещё openpyxl — только на ноутбуке, в `requirements.txt` его нет (на раннерах первички нет):
 
 ```
-python -m pytest -q -m "not network and not ci_only and not docs"   # тесты такта, как в конвейере
-python -m pytest -q -m docs                                          # сверка документов с кодом и results.json
-$env:CI=1; python -m pytest -q -m "not network"                      # как CI (Git Bash: CI=1 python -m pytest …)
-$env:X5_NETWORK=1; python -m pytest -q -m network                    # живые ISS и ЦБ
+python -m pip install openpyxl==3.1.5 et-xmlfile==2.0.0
 ```
+
+```
+python -m pytest -q -rs -m "not network and not ci_only and not docs"   # тесты такта, как в конвейере
+python -m pytest -q -rs -m primary                                      # пересборка фактов = data/facts (первичка рядом)
+python -m pytest -q -m docs                                             # сверка документов с кодом и results.json
+$env:CI=1; python -m pytest -q -rs -m "not network"                     # как CI (Git Bash: CI=1 python -m pytest …)
+$env:X5_NETWORK=1; python -m pytest -q -m network                       # живые ISS и ЦБ
+```
+
+Тест с меткой `primary` (пересборка фактов) идёт, когда рядом с репозиторием лежат первичка (`../x5-850-handoff/reference/primary`, иначе `X5_PRIMARY`), `../magnit-850oa` и `../lenta-850-handoff` (иначе `X5_WORKSPACE`) и стоит openpyxl, — в том числе в тестах такта; без них он пропускается с причиной (`-rs`). Перед push правки фактов, календаря или сборщика он должен пройти, а не пропуститься.
 
 Если pytest падает на системном временном каталоге (`PermissionError`) — добавить `--basetemp var/pytest-tmp`. Прогон «в будущем» — `FAKE_TODAY=ГГГГ-ММ-ДД` в окружении.
 
@@ -168,7 +175,7 @@ TAG=<метка> BASE_URL=http://127.0.0.1:8872 OUT_ROOT=../x5-850-handoff/shots
 
 - `docs/MANUAL.md` — справочник владельца: с него начинать.
 - `docs/MODEL.md` — методика; `docs/PAYLOAD.md` — контракт выпуска `x5-v1`; `model/README.md` — API ядра.
-- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md` — что изменилось в книге 1.1 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
+- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md` и `V1.1.1-CHANGES.md` — что изменилось в книгах 1.1 и 1.1.1 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
 - `docs/FACTS.md` — факты и первичка; `data/facts/SCHEMA.md` — поля фактов.
 - `docs/DASHBOARD.md` — витрина; `docs/INDICATORS.md` — ближайший отчёт и журнал прогнозов.
 - `docs/CONTROL-MODEL.md` — сверка контрольной модели с ядром (генерируется).

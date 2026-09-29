@@ -39,9 +39,6 @@ DRAFT_YAML = BOOK_DIR / "assumptions.draft.yaml"
 H2_START_MONTH = 7
 # Московское время — UTC+3 круглый год (перехода на летнее время нет с 2014 г.).
 MOSCOW = dt.timezone(dt.timedelta(hours=3), "MSK")
-# Срок, к которому бескупонная кривая сходится к LT после последнего узла,
-# лет (docs/MODEL.md §0.2: «за 10 лет — линейный сход к LT к 15 годам»).
-CURVE_LT_TENOR = 15
 
 
 class BookFallbackWarning(UserWarning):
@@ -183,7 +180,8 @@ def interp_curve(curve: dict, tenor: float) -> float:
     """Бескупонная ставка мира на срок `tenor` лет (docs/MODEL.md §0.2).
 
     До первого узла — первый узел; между узлами — линейно по сроку; за
-    последним узлом — линейный сход к `LT` к `CURVE_LT_TENOR` годам, дальше `LT`.
+    последним узлом T — форвард равен `LT` (уровень кривой с даты терминала):
+    (1 + z(t))^t = (1 + z(T))^T × (1 + LT)^(t − T).
     """
     nodes = sorted((float(k), float(v)) for k, v in curve.items() if k != "LT")
     if tenor <= nodes[0][0]:
@@ -193,9 +191,8 @@ def interp_curve(curve: dict, tenor: float) -> float:
             return z0 + (z1 - z0) * (tenor - t0) / (t1 - t0)
     t_last, z_last = nodes[-1]
     lt = float(curve["LT"])
-    if tenor >= CURVE_LT_TENOR:
-        return lt
-    return z_last + (lt - z_last) * (tenor - t_last) / (CURVE_LT_TENOR - t_last)
+    growth = t_last * math.log1p(z_last) + (tenor - t_last) * math.log1p(lt)
+    return math.expm1(growth / tenor)
 
 
 def half_rate(annual: float) -> float:

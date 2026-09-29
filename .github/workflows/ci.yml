@@ -23,7 +23,9 @@ concurrency:
 env:
   PYTHONUNBUFFERED: "1"
   PYTHONIOENCODING: utf-8
-  TZ: Europe/Moscow  # «сегодня» ядра — день по Москве, как в конвейере
+  # «Сегодня» ядра и сборщиков — день по Москве, фиксированное UTC+3 в коде
+  # (model.book.today); TZ — только для отметок времени инструментов, как в конвейере.
+  TZ: Europe/Moscow
 
 jobs:
   tests:
@@ -42,7 +44,9 @@ jobs:
         run: python -m pip install --quiet -r requirements.txt
 
       - name: Тесты
-        run: python -m pytest -q -m "not network"
+        # -rs: причина каждого пропуска — в журнале (тест пересборки фактов с меткой
+        # primary здесь пропускается: первички и openpyxl на раннере нет).
+        run: python -m pytest -q -rs -m "not network"
 
       - name: Сборка выпуска на входах книги
         run: python ops/build_release.py --book --fast --out var/release/latest.json

@@ -117,8 +117,9 @@ def main() -> None:
     R.h(f"3. Книга: μ = {MU_BOOK}, κ = {KAPPA_BOOK}: d* = {fb['d']:.3f} → {d_book}")
     R.table(["полугодие", "NL факт", "NL модели", "m (в отчётном LFL)", "рост эфф. площади (NL + m)"],
             [[p, pc(T[p]["nl"]), pc(fb["yoy"][p]["nonlfl"]), pc(fb["yoy"][p]["m"]), pc(fb["yoy"][p]["g"])] for p in CALIB])
+    d_axis = [round(d_book - 0.10, 2), round(d_book + 0.10, 2)]
     R.p(f"Ошибка складного ножа (без одного полугодия) для d: {se:.3f}; с неопределённостью формы кривой и κ (±0,04…0,05, "
-        f"таблица 2) — ось полосы 0,74–0,94.")
+        f"таблица 2) — ось полосы d ± 0,10: {d_axis[0]}–{d_axis[1]} (±{0.10 / se:.1f} СО).")
 
     R.h("4. Смесь форматов открытий и зрелая плотность")
     prod = load("operating_q.json")["productivity"]
@@ -162,8 +163,9 @@ def main() -> None:
     cons = eff_consistent(order, A["2022H2"], O_all, C_all, MU_BOOK, d_book, KAPPA_BOOK)["yoy"]
     R.table(["полугодие", "NL (вне LFL)", "m (в LFL)", "эфф. площадь"],
             [[p, pc(cons[p]["nonlfl"]), pc(cons[p]["m"]), pc(cons[p]["g"])] for p in P])
-    R.p("Индекс — тот же, что у ядра (MODEL §4.1) и в подборе d: история от 2022H2, все когорты (и до якоря) созревают "
-        "с плотностью d, закрытия — с κ; прогноз продолжает ту же рекурсию.")
+    R.p("Индекс — тот же, что у ядра (MODEL §4.1) и в подборе d: старт на конце 2022H2 (зрелая площадь — с плотностью 1, "
+        "когорты 2022H1 и 2022H2 — с d × μ возраста), все когорты созревают до плотности d, закрытия — с κ; прогноз "
+        "продолжает ту же рекурсию.")
     variants = {}
     for mu in VARIANTS:
         dd = round(fits[(tuple(mu), KAPPA_BOOK)]["d"], 2)
@@ -185,7 +187,8 @@ def main() -> None:
     R.p(f"(d − κ)·cl = ({d_book} − {KAPPA_BOOK}) × {cl} = {pc(up)} % в год; из них вне LFL {pc(newp)} %, в отчётном LFL {pc(mlt)} %.")
     R.p(f"Черновик: (0,95 − 0,6) × 0,02 = 0,70 %. Магнит (книга 1.6): (0,85 − 0,6) × закрытия LT.")
 
-    R.data = {"mu_book": MU_BOOK, "kappa_book": KAPPA_BOOK, "d_fit": r6(fb["d"]), "d_book": d_book, "d_se_jackknife": r6(se),
+    R.data = {"mu_book": MU_BOOK, "kappa_book": KAPPA_BOOK, "d_fit": r6(fb["d"]), "d_book": d_book, "d_axis": d_axis,
+              "d_se_jackknife": r6(se),
               "rmse": r6(fb["rmse"]), "ratio_nl_area": r6(ratio_mean), "wedge": r6(wedge_2026()),
               "targets": {p: {k: r6(x) for k, x in T[p].items()} for p in CALIB},
               "calib": {p: {k: r6(x) for k, x in fb["yoy"][p].items()} for p in CALIB},

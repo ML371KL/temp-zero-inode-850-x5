@@ -142,7 +142,15 @@ async function main() {
       await S("Page.navigate", { url: "about:blank" });
       await sleep(150);
       await S("Page.navigate", { url: `${BASE}/#overview` });
-      await sleep(1400);
+      // Ждать, пока витрина заменит заглушку «Загружаем выпуск модели…» (.boot) экраном
+      // или ошибкой: фиксированной паузы на холодном старте Chrome и предпросмотра не хватало.
+      await sleep(300);
+      for (let i = 0; i < 100; i++) {
+        const ready = await evalJs(`!!document.querySelector("#app") && !document.querySelector("#app .boot")`).catch(() => false);
+        if (ready) break;
+        await sleep(150);
+      }
+      await sleep(400);
       await evalJs(`document.documentElement.dataset.theme=${JSON.stringify(theme)}; 1`);
       for (const screen of SCREENS) {
         await evalJs(`location.hash=${JSON.stringify("#" + screen)}; 1`);
@@ -172,9 +180,13 @@ async function main() {
         for (const value of ["0", "1", "0.5"]) slider[value] = await evalJs(SLIDER(value));
         report[`${name}-slider`] = slider;
         await evalJs(SLIDER("1"));
-        await sleep(300);
-        const shot = await S("Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width: v.width, height: Math.min(1500, v.height * 2), scale: 1 } });
+        // Окно — на высоту снимка: за пределами окна Chrome не отрисовывает страницу (пустой низ).
+        const lamH = Math.min(1500, v.height * 2);
+        await S("Emulation.setDeviceMetricsOverride", { width: v.width, height: lamH, deviceScaleFactor: v.dpr, mobile: v.mobile });
+        await sleep(350);
+        const shot = await S("Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width: v.width, height: lamH, scale: 1 } });
         writeFileSync(path.join(OUT, `${name}-light-overview-lambda1.png`), Buffer.from(shot.data, "base64"));
+        await S("Emulation.setDeviceMetricsOverride", { width: v.width, height: v.height, deviceScaleFactor: v.dpr, mobile: v.mobile });
         await evalJs(SLIDER("0.5"));
       }
     }

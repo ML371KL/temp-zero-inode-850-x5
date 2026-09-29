@@ -1,6 +1,7 @@
-# Фрагмент книги X5 — область «СЕТЬ И ВЫРУЧКА» (network-revenue). Только ключи своей области в структуре
-# assumptions.draft.yaml. Обоснования — data/assumptions/sections/network-revenue.md, расчёты —
-# data/assumptions/evidence/network-revenue/ (README.md). Доли — годовые, доли единицы.
+# Фрагмент книги X5 — выход листа network-revenue: область «СЕТЬ И ВЫРУЧКА». Только ключи своей области в
+# структуре assumptions.draft.yaml. Значения = выходам листа = книге (assumptions.yaml) — сверяет check_fragment.py;
+# обоснования — ASSUMPTIONS-BOOK.md, раздел 2; расчёты — README.md листа. Правится только новой версией книги
+# (data/assumptions/README.md). Доли — годовые, доли единицы.
 # LFL книги (чек и трафик) — LFL зрелой сети: созревание новых магазинов сидит в эффективной площади (§4.1);
 # отчётный LFL X5 выше на m ≈ 1,4 п.п. (2П2026) → 0,9 (2028) → 0,27 п.п. (терминал) — density.py, ticket.py.
 
@@ -26,8 +27,9 @@ network:
   close_rate: {"2026H2": 0.025, "2027": 0.022, "LT": 0.020, "LT_from": 2028}
   # A-R5: созревание по полугодиям возраста (как в черновике; форма — суждение, отчётность её не различает)
   maturity_curve: [0.75, 0.90, 1.0]
-  # A-R5d: зрелая плотность новой площади — подбор по вкладу не-LFL 2024H1–2026H1 (RMSE 0,6 п.п., СО 0,04). density.py
-  new_space_density: 0.84
+  # A-R5d: зрелая плотность новой площади — подбор по вкладу не-LFL 2024H1–2026H1 (RMSE 0,6 п.п., СО 0,04). density.py;
+  # старт индекса с 1.1.1 — когорты 2022H1–2022H2 созревают до d (аудит раунда 2 [2]): d* 0,842 → 0,833
+  new_space_density: 0.83
   # A-R6: продуктивность закрываемой площади к средней — не раскрыта (суждение, как у Магнита)
   closed_productivity: 0.6
 
@@ -60,7 +62,7 @@ axes_proposals:
      low: -0.010, high: 0.008}
   - {name: "Трафик LFL (сдвиг всех состояний)", kind: shift,
      paths: [revenue.traffic.bear, revenue.traffic.base, revenue.traffic.bull], low: -0.008, high: 0.004}
-  - {name: "Плотность новой площади", kind: value, paths: [network.new_space_density], low: 0.74, high: 0.94}
+  - {name: "Плотность новой площади", kind: value, paths: [network.new_space_density], low: 0.73, high: 0.93}
   - {name: "Продуктивность закрываемой площади", kind: value, paths: [network.closed_productivity], low: 0.4, high: 0.8}
 
 reverse_dcf_proposals:

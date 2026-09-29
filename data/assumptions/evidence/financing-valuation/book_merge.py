@@ -1,12 +1,16 @@
-"""Сборка книги прогона: черновик assumptions.draft.yaml + все фрагменты fragments/*.yaml.
+"""Книга прогона листа и сборка «черновик + фрагменты».
 
-Блоки сливаются рекурсивно, траектории и листья заменяются целиком (траектория фрагмента не смешивается с
-ключами черновика); предложения осей (axes_proposals, reverse_dcf_proposals) в книгу не идут.
+build_book() — канон: data/assumptions/assumptions.yaml (его читает ядро); на нём меряют model_check.py и
+band_check.py. merged_book() — черновик assumptions.draft.yaml + фрагменты листов evidence/<область>/fragment.yaml
+(выходы листов): check_fragment.py сверяет, что сборка совпадает с каноном. Блоки сливаются рекурсивно, траектории
+и листья заменяются целиком (траектория фрагмента не смешивается с ключами черновика); предложения осей
+(axes_proposals, reverse_dcf_proposals) в книгу не идут.
 """
 from __future__ import annotations
 
 import copy
 import sys
+from pathlib import Path
 
 import yaml
 
@@ -16,7 +20,13 @@ sys.path.insert(0, str(REPO))
 from model.book_schema import is_trajectory  # noqa: E402
 
 ASSUME = REPO / "data" / "assumptions"
-MINE = "financing-valuation.yaml"
+EVIDENCE = ASSUME / "evidence"
+MINE = "financing-valuation"
+
+
+def fragments() -> list[Path]:
+    """Фрагменты листов evidence/<область>/fragment.yaml; свой — последним (итоговые списки осей)."""
+    return sorted(EVIDENCE.glob("*/fragment.yaml"), key=lambda p: (p.parent.name == MINE, p.parent.name))
 
 
 def merge(base: dict, frag: dict) -> dict:
@@ -30,12 +40,19 @@ def merge(base: dict, frag: dict) -> dict:
 
 
 def build_book() -> tuple[dict, list[str]]:
+    """Канон книги (assumptions.yaml) и подпись источника."""
+    A = yaml.safe_load((ASSUME / "assumptions.yaml").read_text(encoding="utf-8"))
+    return A, ["assumptions.yaml"]
+
+
+def merged_book() -> tuple[dict, list[str]]:
+    """Черновик + все фрагменты листов (для сверки с каноном)."""
     A = yaml.safe_load((ASSUME / "assumptions.draft.yaml").read_text(encoding="utf-8"))
     used = []
-    for path in sorted((ASSUME / "fragments").glob("*.yaml"), key=lambda p: (p.name == MINE, p.name)):
+    for path in fragments():
         F = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         F.pop("axes_proposals", None)
         F.pop("reverse_dcf_proposals", None)
         merge(A, F)
-        used.append(path.name)
+        used.append(f"{path.parent.name}/{path.name}")
     return A, used

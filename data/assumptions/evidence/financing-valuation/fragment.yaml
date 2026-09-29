@@ -1,11 +1,10 @@
-# Фрагмент книги X5 — области «ФИНАНСИРОВАНИЕ И ДИВИДЕНДЫ», «МОСТ И АКЦИИ», «ОЦЕНКА», «ГЕЙТЫ»
-# (financing-valuation). Только ключи своей области в структуре assumptions.draft.yaml.
-# Обоснования — data/assumptions/sections/financing-valuation.md, расчёты —
-# data/assumptions/evidence/financing-valuation/ (rates.py, leverage.py, bridge.py, valuation.py, gates.py,
-# model_check.py; сверка фрагмента с их выходами — check_fragment.py).
+# Фрагмент книги X5 — выход листа financing-valuation: области «ФИНАНСИРОВАНИЕ И ДИВИДЕНДЫ», «МОСТ И АКЦИИ»,
+# «ОЦЕНКА», «ГЕЙТЫ». Только ключи своей области в структуре assumptions.draft.yaml. Значения = выходам листа
+# (rates.py, leverage.py, bridge.py, valuation.py, gates.py) = книге (assumptions.yaml) — сверяет check_fragment.py;
+# обоснования — ASSUMPTIONS-BOOK.md, разделы 1 и 9–12. Правится только новой версией книги (data/assumptions/README.md).
 # joint.world_links — только кредитное состояние (рост сети — область network-revenue).
 # valuation.uncertainty.axes и reverse_dcf.axes — ИТОГОВЫЕ списки: свои оси + предложения областей margin,
-# capex-wc-tax, network-revenue (fragments/*.yaml на 28.09.2026 19:05) в порядке оси черновика.
+# capex-wc-tax, network-revenue (evidence/<область>/fragment.yaml) в порядке оси черновика.
 
 joint:
   world_prob: {N: 0.35, H: 0.45, M: 0.20}           # A-P1: общие с книгой Магнита 1.6 (joint.world_prob)
@@ -59,7 +58,7 @@ valuation:                                          # A-V (valuation.py)
          low: -0.010, high: 0.008}
       - {name: "Стоимость открытия, млрд ₽ на тыс. м²", kind: value, paths: [capex.price_per_m2], low: 0.047, high: 0.064}
       - {name: "Инфраструктура на м² прироста, млрд ₽ на тыс. м²", kind: value, paths: [capex.infra_per_m2], low: 0.019, high: 0.037}
-      - {name: "Плотность новой площади", kind: value, paths: [network.new_space_density], low: 0.74, high: 0.94}
+      - {name: "Плотность новой площади", kind: value, paths: [network.new_space_density], low: 0.73, high: 0.93}
       - {name: "Продуктивность закрываемой площади", kind: value, paths: [network.closed_productivity], low: 0.4, high: 0.8}
       - {name: "Операционная касса", kind: value, paths: [working_capital.operating_cash_pct], low: 0.006, high: 0.0145}
       - {name: "Оборотный капитал, долгосрочный уровень (сдвиг)", kind: shift, paths: [working_capital.nwc_pct.LT], low: -0.005, high: 0.005}
@@ -100,5 +99,5 @@ checks:                                             # коридоры гейт�
   terminal_share: [0.15, 0.65]                      # ровный поток ((1+g)/(1+r))^10,27: 0,38–0,45 по мирам; ± 0,2 на форму пути
   real_rate: [0.02, 0.13]                           # как у Магнита (общая макро-основа); миры книги 8,3–10,5 %, концы полосы 7,2–12,1 %
   max_leverage: 4.0                                 # ковенант ЧД/EBITDA до МСФО 16 ≤ 4,0×
-  min_v0_to_d: 1.5                                  # при V0/D 1,5 кредитный пут слоя < 25 ₽ (полшага печати) на сроке до 2,6 года
+  min_v0_to_d: 1.5                                  # при V0/D 1,5 кредитный пут слоя < 25 ₽ (полшага печати) на сроке до ≈3,0 года
   book_update: {shift_bp: 50, max_age_days: 45}     # как у Магнита: миры общие, пересборка — вместе

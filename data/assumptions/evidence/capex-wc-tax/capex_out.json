@@ -159,15 +159,15 @@
  },
  "checks": {
   "capex_2026": {
-   "high/base": 0.038878,
-   "high/high": 0.042184,
-   "high/low": 0.036502,
-   "low/base": 0.037555,
-   "low/high": 0.040861,
-   "low/low": 0.035178,
-   "mid/base": 0.038166,
-   "mid/high": 0.041472,
-   "mid/low": 0.035789
+   "high/base": 0.038979,
+   "high/high": 0.042255,
+   "high/low": 0.036559,
+   "low/base": 0.037625,
+   "low/high": 0.040895,
+   "low/low": 0.03521,
+   "mid/base": 0.03825,
+   "mid/high": 0.041523,
+   "mid/low": 0.035833
   },
   "model_stationary_total": 0.030403,
   "replacement_corridor": {
@@ -178,10 +178,10 @@
   "run_rate_1h26": 0.037357
  },
  "checks_2026": {
-  "expected_mid": 0.038198,
-  "h2_bn": 103.175247,
-  "h2_pct": 0.038922,
-  "h2_to_h1": 1.041907,
+  "expected_mid": 0.038267,
+  "h2_bn": 103.607303,
+  "h2_pct": 0.039085,
+  "h2_to_h1": 1.04627,
   "p_levels": {
    "base": 0.57925,
    "high": 0.18175,
@@ -399,6 +399,30 @@
    "h2": 0.986887
   }
  },
+ "near_term": {
+  "core_basis_pct": 0.02906,
+  "factor": 1.029511,
+  "gap_to_stationary_pp": 0.000194,
+  "halves": {
+   "2025H2": {
+    "area_mid": 11694.569085,
+    "area_to_anchor": 1.039563,
+    "cpi_to_anchor": 1.03796,
+    "factor": 1.051366,
+    "maint_core_basis": 74.066878,
+    "maint_nominal": 70.448215
+   },
+   "2026H1": {
+    "area_mid": 12034.6705,
+    "area_to_anchor": 1.010185,
+    "cpi_to_anchor": 1.0,
+    "factor": 1.00662,
+    "maint_core_basis": 67.705366,
+    "maint_nominal": 67.260101
+   }
+  },
+  "nominal_ltm_pct": 0.028227
+ },
  "network_flows": {
   "2024": {
    "closed_area": 168.520018,
@@ -485,20 +509,20 @@
  "other_net_ltm_pct": 0.002022,
  "paths": {
   "base": {
-   "2026H2": 0.0282,
-   "2027": 0.0282,
+   "2026H2": 0.0291,
+   "2027": 0.0291,
    "LT": 0.0293,
    "LT_from": 2029
   },
   "high": {
-   "2026H2": 0.0346,
-   "2027": 0.0346,
+   "2026H2": 0.0356,
+   "2027": 0.0356,
    "LT": 0.0359,
    "LT_from": 2029
   },
   "low": {
-   "2026H2": 0.0236,
-   "2027": 0.0236,
+   "2026H2": 0.0243,
+   "2027": 0.0243,
    "LT": 0.0244,
    "LT_from": 2029
   }

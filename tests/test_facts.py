@@ -249,20 +249,24 @@ def test_history_da_and_other_investing():
     assert v(halves["2026H1"]["other_investing_payments"]) > 0
 
 
-@pytest.mark.ci_only
-@pytest.mark.filterwarnings("ignore:DrawingML support is incomplete")
-def test_builder_reproduces_facts(tmp_path):
-    """Сборщик `ops/tools/build_facts.py` на первичке воспроизводит `data/facts/*.json` и
-    `data/calendar.json` байт в байт (перевод строки — LF, как их хранит git)."""
-    pytest.importorskip("openpyxl", reason="сборщику фактов нужен openpyxl")
+def builder_module():
     spec = importlib.util.spec_from_file_location("build_facts", BUILDER)
     builder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(builder)
-    src = builder.sources()
-    lost = builder.missing(src)
-    if lost:
-        pytest.skip("первички рядом с репозиторием нет: " + "; ".join(lost))
-    written = builder.write(builder.build(src), tmp_path)
+    return builder
+
+
+@pytest.mark.primary
+@pytest.mark.filterwarnings("ignore:DrawingML support is incomplete")
+def test_builder_reproduces_facts(tmp_path):
+    """Сборщик `ops/tools/build_facts.py` на первичке воспроизводит `data/facts/*.json` (кроме
+    `actuals.json`) и `data/calendar.json` байт в байт (перевод строки — LF, как их хранит git).
+
+    Метка `primary`: без openpyxl или первички рядом тест пропускается с причиной
+    (`tests/conftest.py`) — так на раннерах GitHub; на ноутбуке с первичкой он идёт в любом
+    прогоне, в том числе в тестах такта перед push."""
+    builder = builder_module()
+    written = builder.write(builder.build(builder.sources()), tmp_path)
     got = {p.relative_to(tmp_path).as_posix(): p.read_bytes() for p in written}
     # actuals.json ведёт человек (факты отчётов); сборщик его не перезаписывает
     built = [name for name in FILES if name != "actuals"]
@@ -271,6 +275,35 @@ def test_builder_reproduces_facts(tmp_path):
     assert {p.name for p in FACTS.glob("*.json")} == {f"{name}.json" for name in FILES}
     for rel, data in sorted(got.items()):
         assert data == (ROOT / rel).read_bytes().replace(b"\r\n", b"\n"), f"{rel}: пересборка отличается"
+
+
+def test_builder_never_overwrites_actuals(tmp_path):
+    """`actuals.json` ведёт человек: сборщик пишет его шаблон, только если файла нет, внесённые
+    факты не трогает и в записанные файлы его не включает. Поэтому факт журнала вносится
+    только в `data/facts/actuals.json` — дублировать его в сборщик не нужно."""
+    builder = builder_module()
+    template = {"description": "формат", "actuals": []}
+    out = {"accounting": {"as_of": ANCHOR_DATE}, "actuals": template, "_calendar": {"events": []}}
+    facts = tmp_path / "data" / "facts"
+    written = builder.write(out, tmp_path)
+    assert (facts / "actuals.json").read_bytes() == builder.dump(template)
+    assert facts / "actuals.json" not in written
+    entered = builder.dump({"description": "формат", "actuals": [
+        {"target": "x5.adj_margin", "period": "2026H2", "value": {"v": 0.061, "src": "файл › место"},
+         "reported_on": "2027-03-19"}]})
+    (facts / "actuals.json").write_bytes(entered)
+    written = builder.write(out, tmp_path)
+    assert (facts / "actuals.json").read_bytes() == entered
+    assert {p.name for p in written} == {"accounting.json", "calendar.json"}
+
+
+def test_undisclosed_values_carry_calc():
+    """Нераскрытое — `{"v": null, "calc": "почему нет числа"}` (`data/facts/SCHEMA.md`):
+    пояснение в `calc`, поля `note` у узла без числа нет."""
+    for name in FILES:
+        for path, _, node in walk(load(name)):
+            if isinstance(node, dict) and "v" in node and node["v"] is None:
+                assert node.get("calc") and "note" not in node, f"{name}{path}"
 
 
 def test_peers_and_brokers():

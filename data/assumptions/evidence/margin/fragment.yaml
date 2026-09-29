@@ -1,5 +1,6 @@
-# Фрагмент книги X5 — область «МАРЖА И РЕЖИМЫ» (margin). Только ключи своей области в структуре
-# assumptions.draft.yaml. Обоснования — data/assumptions/sections/margin.md, расчёты — evidence/margin/.
+# Фрагмент книги X5 — выход листа margin: область «МАРЖА И РЕЖИМЫ». Только ключи своей области в структуре
+# assumptions.draft.yaml. Значения = выходам листа = книге (assumptions.yaml) — сверяет check_fragment.py;
+# обоснования — ASSUMPTIONS-BOOK.md, раздел 3. Правится только новой версией книги (data/assumptions/README.md).
 # Маржа — скорр. EBITDA до МСФО 16 без LTI (определение X5 и её прогноза «6+ %»); LTI — отдельная строка.
 
 joint:

@@ -1,4 +1,4 @@
-"""Проверка фрагмента книги fragments/margin.yaml против листа (выходы скриптов) и схемы черновика.
+"""Проверка фрагмента книги fragment.yaml (выход листа margin) против листа (выходы скриптов) и схемы черновика.
 
 Проверяет: только ключи области; те же имена режимов и ключи траекторий, что в assumptions.draft.yaml;
 набор ключей joint.regime_update — как в книге (assumptions.yaml, закрытая схема: sigma_pp, cap_pp,
@@ -21,7 +21,7 @@ import yaml
 from common import HERE, REGIMES
 
 REPO_ASSUMPTIONS = HERE.parents[1]
-FRAG = REPO_ASSUMPTIONS / "fragments" / "margin.yaml"
+FRAG = HERE / "fragment.yaml"
 DRAFT = REPO_ASSUMPTIONS / "assumptions.draft.yaml"
 BOOK = REPO_ASSUMPTIONS / "assumptions.yaml"
 ALLOWED = {"joint": {"regime_prob", "regime_demand", "regime_update"},

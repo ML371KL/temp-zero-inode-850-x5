@@ -118,10 +118,15 @@ def main(out: Path) -> None:
         eq = v0 - CLAIMS
         pv_terminal = v0 * 0.44
         pv_shield = v0 * 0.035
+        # Вычеты финансирования и их терминальная часть; доля терминала — чистая.
+        pv_financing = v0 * 0.012
+        pv_terminal_financing = v0 * 0.004
         titles = {"analytical": "Свой макро-взгляд", "market_implied": "Веса, вменённые рынком", "macro_neutral": "Рыночные ставки как есть"}
         return {"title": titles[name], "world_weights": wts, "v0": r(v0, 2), "d": CLAIMS, "equity": r(eq, 2),
-                "price": r(price_of(eq), 1), "pv_fcff": r(v0 - pv_terminal - pv_shield, 2), "pv_shield": r(pv_shield, 2),
-                "pv_terminal": r(pv_terminal, 2), "terminal_share": r(pv_terminal / v0, 3), "ev_ebitda_fwd": r(v0 / 300.0, 2),
+                "price": r(price_of(eq), 1), "pv_fcff": r(v0 - pv_terminal - pv_shield + pv_financing, 2), "pv_shield": r(pv_shield, 2),
+                "pv_terminal": r(pv_terminal, 2), "pv_financing": r(pv_financing, 2),
+                "pv_terminal_financing": r(pv_terminal_financing, 2),
+                "terminal_share": r((pv_terminal - pv_terminal_financing) / v0, 3), "ev_ebitda_fwd": r(v0 / 300.0, 2),
                 "ebitda_ntm": 300.0, "v0_to_d": r(v0 / CLAIMS, 2)}
 
     layers = {k: layer(k) for k in ("analytical", "market_implied", "macro_neutral")}
@@ -258,7 +263,9 @@ def main(out: Path) -> None:
     regimes["history"] = [{"period": h["period"], "adj_margin": h["adj_margin"], "rep_margin": h["rep_margin"]} for h in halves_hist]
     regimes["annual_history"] = [{"year": a["year"], "adj_margin": a["adj_margin"]} for a in annual_hist]
     regimes["expected_lt"] = r(sum(p_reg[g] * lt[g] for g in REG), 5)
-    regimes["update"] = {"sigma_pp": joint["regime_update"]["sigma_pp"], "rho": joint["regime_update"]["rho"],
+    # Затухание отклонения — ключ книги margin.deviation_persistence (как в model/payload.py).
+    rho = book["margin"].get("deviation_persistence", joint["regime_update"].get("rho"))
+    regimes["update"] = {"sigma_pp": joint["regime_update"]["sigma_pp"], "rho": rho,
                          "cap_pp": joint["regime_update"]["cap_pp"], "observations": []}
 
     # ── capex ──
@@ -342,8 +349,9 @@ def main(out: Path) -> None:
                       "put_date": b.get("next_put_or_offer"), "maturity": b.get("legal_maturity"),
                       "price": mkt.get("price_last_pct"), "ytm": r((mkt.get("yield_eff_pct") or 0) / 100, 4), "as_of": "2026-09-28"})
     sched = (dr.get("derived") or {}).get("bonds_repayment_schedule_by_quarter_2026_09_28") or {}
-    banks_q = {"2026Q4": 14.0, "2027Q1": 14.0, "2027Q2": 13.9, "2027Q3": 20.0, "2027Q4": 40.0, "2028Q1": 30.0, "2028Q2": 30.0, "2028Q3": 25.0, "2028Q4": 28.5}
-    wall = [{"period": q, "bonds": sched.get(q, 0.0), "banks": banks_q.get(q, 0.0)} for q in sorted(set(sched) | set(banks_q))]
+    # Как в фактах: график банковских кредитов по срокам не раскрыт (banks = null).
+    quarters = ["2026Q4", "2027Q1", "2027Q2", "2027Q3", "2027Q4", "2028Q1", "2028Q2", "2028Q3", "2028Q4"]
+    wall = [{"period": q, "bonds": sched.get(q, 0.0), "banks": None} for q in sorted(set(sched) | set(quarters))]
     bridge_lines = [
         {"key": "accrued_interest", "label": "Начисленные проценты", "amount": 1.719, "included": True, "src": "МСФО 1П2026, прим. 15, с. 20"},
         {"key": "nci_put", "label": "Пут на неконтролирующую долю", "amount": 0.698, "included": True, "src": "МСФО 1П2026, прим. 27, с. 26"},
@@ -377,6 +385,8 @@ def main(out: Path) -> None:
         "bonds": bonds,
         "bank_loans": {"short": 41.913, "long": 173.501, "total": 215.414},
         "wall": wall,
+        "wall_note": dr.get("wall_note") if isinstance(dr.get("wall_note"), str) else
+        "облигации — по оферте, если её нет — по погашению; банковские кредиты по срокам не раскрыты",
     }
 
     # ── дивиденды ──
@@ -538,6 +548,9 @@ def main(out: Path) -> None:
         ],
         "rule": "прогноз допускается к цене после четырёх отчётных полугодий вне выборки, если его средняя квадратичная ошибка не больше 0,8 лучшего эталона",
         "status": "копим зачёт: 1 из 4 полугодий",
+        # Книга выпусков, записавших прогнозы (записи неизменяемы — книга рядом).
+        "releases": {"0" * 12: {"book_version": "0.9", "generated_at": "2026-09-27T13:25:08Z"},
+                     "f" * 12: {"book_version": "0.8", "generated_at": "2026-03-20T13:25:08Z"}},
     }
     calendar = {"events": events_nr[:3] + [
         {"date": "2026-11-13", "title": "Рекомендация дивиденда за 9 месяцев 2026", "kind": "dividend", "confirmed": False, "note": "в 2025 году — 13.11"},

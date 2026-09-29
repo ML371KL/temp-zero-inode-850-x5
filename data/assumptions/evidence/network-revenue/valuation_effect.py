@@ -2,7 +2,7 @@
 значениями черновика по сети и выручке, точка на концах осей области и чувствительности.
 
 Концы осей — те же числа, что «Суждения по цене ошибки» в data/assumptions/run_output.txt (точка при low и high
-оси). Раздел 3 печатает все цены, на которые ссылается текст раздела sections/network-revenue.md, — после
+оси). Раздел 3 печатает все цены, на которые ссылается раздел 2 книги (ASSUMPTIONS-BOOK.md), — после
 пересборки книги скрипт перезапускается и числа раздела берутся отсюда.
 Запуск: python -B valuation_effect.py (нужны PyYAML и пакет model/ репозитория). Выход: valuation_effect_out.*
 """
@@ -15,7 +15,7 @@ import warnings
 import yaml
 
 from check_2026h2 import ASSUMPTIONS, REPO, build_book
-from common import Report, r6
+from common import HERE, Report, r6
 
 sys.path.insert(0, str(REPO))
 from model.book import override  # noqa: E402
@@ -55,7 +55,7 @@ def main() -> None:
     R.table(["шаг", "точка, ₽", "изменение, ₽"], drows)
 
     R.h("2. Точка на концах осей области и чувствительности (остальное — книга)")
-    fr = yaml.safe_load((ASSUMPTIONS / "fragments" / "network-revenue.yaml").read_text(encoding="utf-8"))
+    fr = yaml.safe_load((HERE / "fragment.yaml").read_text(encoding="utf-8"))
     rows, axes = [], {}
     for ax in fr["axes_proposals"]:
         lo = evaluate(override(A, ax["paths"], ax["kind"], ax["low"]), facts).point.central
@@ -77,7 +77,7 @@ def main() -> None:
     p_alt = evaluate(alt, facts).point.central
     R.p(f"Альтернатива stress_growth = mid: точка {round(p_alt)} ₽ ({round(p_alt - base):+d} ₽ к книге {round(base)} ₽).")
 
-    R.h("3. Цены для текста раздела sections/network-revenue.md")
+    R.h("3. Цены для текста раздела 2 книги (ASSUMPTIONS-BOOK.md, сеть и выручка)")
     net, traf = axes["Чистый рост площади 2027–2030 (сдвиг всех тарифов)"], axes["Трафик LFL (сдвиг всех состояний)"]
     dd_, kk = axes["Плотность новой площади"], axes["Продуктивность закрываемой площади"]
     R.p(f"A-R7 «Обоснование», рост сети: ось −1,0…+0,8 п.п. меняет точку на {abs(net['high'] - net['low']):.0f} ₽.")

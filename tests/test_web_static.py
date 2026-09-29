@@ -169,3 +169,57 @@ def test_free_text_is_not_parsed_as_a_date():
     app = (WEB / "app.js").read_text(encoding="utf-8")
     body = re.search(r"function parseDay\(iso\) \{(.*?)\n\}", app, re.S).group(1)
     assert r"if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(iso)) return null;" in body
+
+
+def test_two_503_answers_get_their_own_titles():
+    # «not published yet» — выпуска нет (и строки о прежнем выпуске нет);
+    # «upstream unavailable» — выпуск есть, источник не ответил.
+    app = (WEB / "app.js").read_text(encoding="utf-8")
+    boot = re.search(r"async function boot\(\) \{(.*?)\n\}", app, re.S).group(1)
+    assert '"not published yet"' in boot
+    assert "Выпуск ещё не опубликован" in boot and "Источник данных временно недоступен" in boot
+    assert "API_TIMEOUT_MS" in boot, "витрина не ждёт дверь бесконечно"
+
+
+def _tokens(css: str, selector: str) -> dict:
+    block = re.search(re.escape(selector) + r"\s*\{(.*?)\n\}", css, re.S).group(1)
+    return dict(re.findall(r"(--[\w-]+):\s*(#[0-9a-fA-F]{6})", block))
+
+
+def _contrast(a: str, b: str) -> float:
+    def lum(h):
+        c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+        c = [x / 12.92 if x <= 0.03928 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    hi, lo = sorted((lum(a), lum(b)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def test_series_colours_hold_3_to_1_on_cards_in_both_themes():
+    # Ряды графиков (линии, отметки, столбики) — не меньше 3 : 1 к карточке; --axis — цвет
+    # оси (1,7 : 1), рядом им не рисуют (режим «Дно» — --series-neutral).
+    css = (WEB / "styles.css").read_text(encoding="utf-8")
+    light, dark = _tokens(css, ":root"), {**_tokens(css, ":root"), **_tokens(css, ':root[data-theme="dark"]')}
+    for name, theme in (("светлая", light), ("тёмная", dark)):
+        for token in ("--model", "--market", "--third", "--neg", "--series-neutral"):
+            ratio = _contrast(theme[token], theme["--surface"])
+            assert ratio >= 3.0, f"{name} тема: {token} {theme[token]} к карточке {ratio:.2f} : 1"
+    app = (WEB / "app.js").read_text(encoding="utf-8")
+    colors = re.search(r"const REGIME_COLORS = \{(.*?)\};", app).group(1)
+    assert "--axis" not in colors, "режим маржи нарисован цветом оси"
+
+
+def test_sources_keep_file_names():
+    # Имя файла-источника не переводится как текст (дата ISO в имени, «1.4» в пути).
+    app = (WEB / "app.js").read_text(encoding="utf-8")
+    assert not re.search(r"ruText\(\w+\.src\)", app)
+    assert re.search(r"srcText\(\w+\.src\)", app)
+
+
+def test_point_is_described_by_book_values_not_range_centres():
+    # Точка — при значениях книги (мода, MODEL.md §9); диапазоны несимметричны. Обратный
+    # DCF: остальные суждения разыгрываются как в полосе, а не «как в книге».
+    app = (WEB / "app.js").read_text(encoding="utf-8")
+    for phrase in ("в центре своих диапазонов", "остальных в центре", "остальные в центре",
+                   "Все суждения в центре", "остальные — как в книге", "остальные суждения — как в книге"):
+        assert phrase not in app, phrase

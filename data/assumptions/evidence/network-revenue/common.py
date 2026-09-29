@@ -193,7 +193,9 @@ def network_history() -> dict:
     if "2023H2" not in O:
         O["2023H2"] = A["2023H2"] - A["2023H1"] + C["2023H2"]
     # 2022: органический чистый прирост трёх форматов (без «Карусели» и без покупки КЯ/Слаты)
-    # + закрытия; 3 кв. 2022 не раскрыт (ТА на x5.ru нет) — закрытия полугодий приняты = 2 × 4 кв. 2022
+    # + закрытия; из трейдинг-апдейтов 2022 г. в первичке только 4 кв. (1–3 кв. нет) — закрытия
+    # каждого полугодия 2022 г. = 2 × 4 кв. 2022, средний магазин на 30.06.2022 (для 2022H2 — начало
+    # полугодия, для 2022H1 — отступление от правила «на начало полугодия»; как в build_facts.py)
     c22 = 2 * (v(T["2022Q4"]["pyaterochka_closed"]) * avg_store("2022Q2", "pyaterochka")
                + v(T["2022Q4"]["perekrestok_closed"]) * avg_store("2022Q2", "perekrestok"))
     net22 = {}
@@ -223,12 +225,14 @@ def mu_avg(mu: list[float], age: int) -> float:
 
 def eff_consistent(order: list[str], A0: float, O: dict, C: dict, mu: list[float], d: float,
                    kappa: float) -> dict:
-    """Индекс эффективной площади MODEL §4.1 (так же его ведёт ядро, model/core.py): все когорты
-    созревают с плотностью d, закрытия уходят с κ.
+    """Индекс эффективной площади MODEL §4.1 (так же его ведёт ядро, model/core.py): все когорты с
+    S − n + 1 — и открытые до старта, и позже — созревают до плотности d, закрытия уходят с κ.
 
-    Старт — конец order[0]: A_eff = A − Σ незрелой части последних когорт (с плотностью d);
-    дальше рекурсия §4.1. Возвращает концы, средние и разложение роста г/г на части «вне LFL»
-    (когорты моложе 12 полных месяцев и закрытия) и «созревание в отчётном LFL».
+    Старт — конец S = order[0]: зрелая площадь S (старше n = len(μ) − 1 полугодий) — с плотностью 1,
+    когорты S − n + 1 … S — с d × μ_возраста: A_eff(S) = A(S) − Σ_{a<n} O(S − a)·(1 − d·μ_a) (книга 1.1.1,
+    аудит раунда 2 [2]; до неё две молодые когорты старта дозревали до 1, а не до d); дальше рекурсия §4.1.
+    Возвращает концы, средние и разложение роста г/г на части «вне LFL» (когорты моложе 12 полных месяцев
+    и закрытия) и «созревание в отчётном LFL».
     """
     idx = {p: i for i, p in enumerate(order)}
     start = order[0]
@@ -238,8 +242,8 @@ def eff_consistent(order: list[str], A0: float, O: dict, C: dict, mu: list[float
     def older(p, a):
         return half_name(half_index(p) - a)
 
-    eff = {start: A0 - sum(cohorts[older(start, a)] * d * (1.0 - mu_at(mu, a))
-                           for a in range(len(mu)) if older(start, a) in cohorts)}
+    eff = {start: A0 - sum(cohorts[older(start, a)] * (1.0 - d * mu_at(mu, a))
+                           for a in range(len(mu) - 1) if older(start, a) in cohorts)}
     for p in order[1:]:
         mat = sum(cohorts[older(p, a)] * d * (mu_at(mu, a) - mu_at(mu, a - 1))
                   for a in range(1, len(mu)) if older(p, a) in cohorts)

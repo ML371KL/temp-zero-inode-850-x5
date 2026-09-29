@@ -7,11 +7,13 @@
 from __future__ import annotations
 
 import copy
+import dataclasses
 import datetime as dt
 
 import pytest
 
-from model.book import half_rate, interp_curve, next_period, path_value, period_start, prev_period
+from model.book import (half_rate, interp_curve, next_period, path_value, period_index,
+                        period_start, prev_period)
 from model.core import Context, run_cell
 from model.facts import core_facts
 
@@ -33,8 +35,8 @@ def test_first_half_year_by_hand(book, facts, world):
     credit = J["world_links"][WORLD]["credit"]
     demand = J["regime_demand"][REGIME]
 
-    # §4.1 сеть: индекс от конца S — площадь минус незрелая часть последних n когорт
-    # (плотность d), дальше рекурсия с закрытиями (κ) по историческим полугодиям до якоря
+    # §4.1 сеть: индекс от конца S — зрелая площадь S с плотностью 1 плюс последние n когорт
+    # с d × μ_возраста, дальше рекурсия с закрытиями (κ) по историческим полугодиям до якоря
     mu = NW["maturity_curve"]
     n = len(mu) - 1
     O = cf.gross_opened
@@ -46,7 +48,7 @@ def test_first_half_year_by_hand(book, facts, world):
         return q
 
     S = cf.eff_start
-    eff_hist = {S: cf.area_end[S] - sum(O[back(S, a)] * d * (1 - mu[a]) for a in range(n))}
+    eff_hist = {S: cf.area_end[S] - sum(O[back(S, a)] * (1 - d * mu[a]) for a in range(n))}
     q = S
     while q != anchor:
         q = next_period(q)
@@ -190,6 +192,34 @@ def test_history_index_at_unit_density_is_area_minus_immature(book, facts):
     for q, eff in net.eff_hist.items():
         assert eff == pytest.approx(area[q] - sum(O[back(q, a)] * (1 - mu[a]) for a in range(n)),
                                     abs=1e-5), q
+
+
+def test_history_cohorts_mature_to_density_d(book, facts):
+    """§4.1 (книга 1.1.1, [2] раунда 2): индекс истории в закрытой форме при d и κ книги —
+    зрелая площадь S (без последних n когорт) с плотностью 1, минус закрытия с κ, плюс
+    КАЖДАЯ когорта с S − n + 1 с d × μ_возраста (к зрелости — d, как когорты прогноза).
+    Прежний старт (незрелая часть с d) давал когортам S − n + 1 … S зрелость 1."""
+    ctx = Context(book, facts)
+    net = ctx.network("mid")
+    NW = book["network"]
+    mu, d, kappa = NW["maturity_curve"], NW["new_space_density"], NW["closed_productivity"]
+    n = len(mu) - 1
+    cf = ctx.facts
+    S = cf.eff_start
+    O = cf.gross_opened
+    mature_S = cf.area_end[S] - sum(O[q] for q in list(O)[:n])
+    assert list(O)[n - 1] == S
+    for q, eff in net.eff_hist.items():
+        closed = sum(cf.closed_area[c] for c in cf.closed_area
+                     if period_index(c) <= period_index(q))
+        cohorts = sum(O[c] * d * mu[min(n, period_index(q) - period_index(c))]
+                      for c in O if period_index(c) <= period_index(q))
+        assert eff == pytest.approx(mature_S - kappa * closed + cohorts, rel=1e-13), q
+    # созревшая когорта S весит d, а не 1: +1 к O(S) при той же A(S) — −(1 − d) на якоре
+    assert period_index(ctx.anchor) - period_index(S) >= n
+    bumped_facts = dataclasses.replace(cf, gross_opened={**O, S: O[S] + 1.0})
+    bumped = Context(book, bumped_facts).network("mid").eff_hist[ctx.anchor]
+    assert bumped - net.eff_hist[ctx.anchor] == pytest.approx(-(1.0 - d), abs=1e-9)
 
 
 def test_terminal_by_hand(book, facts):

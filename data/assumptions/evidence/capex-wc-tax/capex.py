@@ -311,7 +311,8 @@ R.data["maint_seasonality"] = {y: {"h1": r6(a), "h2": r6(b)} for y, (a, b) in se
 # ============================================================ 7. A-K1 снизу вверх
 # База — якорь: рубли в ценах якоря (средний ИПЦ 1П2026) при площади и парке на 30.06.2026 делятся на
 # выручку якоря LTM (2П2025 + 1П2026) — это база физической части в ядре (MODEL §4.5: φ × mnt × R_ann(якорь) —
-# годовые рубли в площади A(якорь) и ценах якоря) и база ближнего участка (остаток тождества LTM, раздел 6).
+# годовые рубли в площади A(якорь) и ценах якоря). Ближний участок (остаток тождества LTM, раздел 6) потрачен
+# в ценах своих полугодий и на их средней площади — на эту базу его переводит раздел 8.
 R.h("7. A-K1. Стационарный поддерживающий capex снизу вверх (цены и площадь якоря, выручка якоря LTM)")
 g_1h = hy("2026H1", "revenue") / hy("2025H1", "revenue") - 1.0
 rev_2h26 = hy("2025H2", "revenue") * (1.0 + g_1h)
@@ -377,24 +378,51 @@ R.data["bottom_up"] = {"R_anchor_ltm": r6(RA), "R26": r6(R26), "g_1h26": r6(g_1h
                        "judgments": {k: v_ for k, v_ in J.items()}}
 
 # ============================================================ 8. пути уровней
-R.h("8. Пути capex.maintenance (доля выручки): ближний участок = LTM, стационар = снизу вверх")
+# Ближний участок — остаток тождества LTM (раздел 6) в базисе ядра (MODEL §4.5). Ядро читает уровень так:
+# физическая часть φ × mnt × R_ann(якорь)/2 × A_mid × index / A(якорь), прочая (1 − φ) × mnt × R. Номинальный
+# остаток полугодия h потрачен в ценах h и на средней площади h, поэтому его физическая часть переводится в цены
+# якоря (to_anchor) и на площадь 30.06.2026 (× A(якорь) / A_mid(h)); прочая остаётся долей выручки:
+#   near = Σ_h остаток_h × [φ × to_anchor(h) × A(якорь) / A_mid(h) + (1 − φ)] / выручка якоря LTM.
+# A_mid(h) = (A(h−1) + A(h)) / 2 — как в ядре; площадь — базис листа (с «Красным Яром» и «Слатой»).
+R.h("8. Пути capex.maintenance (доля выручки): ближний участок = LTM в базисе ядра, стационар = снизу вверх")
 base_ss = levels["base"]["pct"]
+phi = round(levels["base"]["phys_share"], 2)
+R.p(f"Физическая доля φ (базовый стационар): {levels['base']['phys_share']:.4f} → {phi}")
+HALF_ENDS = {"2025H2": ("2025Q2", "2025Q4"), "2026H1": ("2025Q4", "2026Q2")}
+near_rows, near_parts = [], {}
+near_rub = 0.0
+for h, (q0, q1) in HALF_ENDS.items():
+    a_mid = 0.5 * (net_q(q0, "space_total") + net_q(q1, "space_total"))
+    conv = phi * to_anchor(h) * area_now / a_mid + (1.0 - phi)
+    rub = resid[h]["maint"] * conv
+    near_rub += rub
+    near_parts[h] = {"maint_nominal": resid[h]["maint"], "cpi_to_anchor": to_anchor(h), "area_mid": a_mid,
+                     "area_to_anchor": area_now / a_mid, "factor": conv, "maint_core_basis": rub}
+    near_rows.append([h, resid[h]["maint"], to_anchor(h), a_mid, area_now / a_mid, conv, rub])
+R.table(["полугодие", "остаток, номинал", "ИПЦ к якорю", "A_mid", "A(якорь)/A_mid", "множитель",
+         "в базисе ядра"], near_rows)
+near_base = near_rub / RA
+R.p(f"Ближний участок базового уровня: номинал {100 * maint_ltm:.3f} % → в базисе ядра {100 * near_base:.3f} % "
+    f"(×{near_base / maint_ltm:.4f}); стационар {100 * base_ss:.3f} % — разрыв {100 * (base_ss - near_base):.3f} п.п.")
 paths = {}
 for L in ("low", "base", "high"):
     k = levels[L]["pct"] / base_ss
-    near, ss = maint_ltm * k, levels[L]["pct"]
+    near, ss = near_base * k, levels[L]["pct"]
     paths[L] = {"2026H2": round(near, 4), "2027": round(near, 4), "LT": round(ss, 4),
                 "LT_from": 2029}
-    R.p(L, paths[L])
-phi = round(levels["base"]["phys_share"], 2)
-R.p(f"Физическая доля φ (базовый стационар): {levels['base']['phys_share']:.4f} → {phi}")
+    R.p(L, paths[L], f"(2028 — середина: {100 * (round(near, 4) + round(ss, 4)) / 2:.3f} %)")
+R.data["near_term"] = {"nominal_ltm_pct": r6(maint_ltm), "core_basis_pct": r6(near_base),
+                       "factor": r6(near_base / maint_ltm), "gap_to_stationary_pp": r6(base_ss - near_base),
+                       "halves": {h: {k: r6(v_) for k, v_ in d.items()} for h, d in near_parts.items()}}
 R.data["paths"] = paths
 R.data["phi"] = phi
 
 # ============================================================ 9. проверки
 R.h("9. Проверки")
 # 9.1 capex 2026 года при сети итоговой книги (рост и закрытия 2П2026) и уровнях — в определении
-# компании (ОС + НМА, без прочих инвестиционных платежей): с ним сравнимы факт 1П и прогноз компании
+# компании (ОС + НМА, без прочих инвестиционных платежей): с ним сравнимы факт 1П и прогноз компании.
+# Поддерживающий 2П2026 — формулой ядра (MODEL §4.5): mnt × [(1 − φ) × R + φ × R_ann(якорь)/2 × A_mid / A(якорь)
+# × index]; прочие платежи вычитаются их долей выручки LTM.
 A0 = area_now
 idx = 1.0 + half(BOOK["cpi_2026H2"]["N"])
 close_2h = BOOK["network"]["close_rate"]["2026H2"]
@@ -403,8 +431,10 @@ for tariff in ("low", "mid", "high"):
     gn = BOOK["network"]["net_growth"][tariff]["2026H2"]
     net2h = A0 * gn / 2.0
     opened = net2h + A0 * close_2h / 2.0
+    a_mid_2h = A0 + net2h / 2.0
     for L in ("low", "base", "high"):
-        cap2h = ((paths[L]["2026H2"] - other_ltm) * rev_2h26 + opened * price_center * idx
+        maint2h = paths[L]["2026H2"] * ((1.0 - phi) * rev_2h26 + phi * RA / 2.0 * a_mid_2h / A0 * idx)
+        cap2h = (maint2h - other_ltm * rev_2h26 + opened * price_center * idx
                  + net2h * infra_center * idx)
         cap2h_c[f"{tariff}/{L}"] = cap2h
         chk26[f"{tariff}/{L}"] = (-hy("2026H1", "capex_total") + cap2h) / R26

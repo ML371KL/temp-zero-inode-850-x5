@@ -5,7 +5,9 @@
  * (его кладёт конвейер). Запрос к GitHub кэшируется краем на ~60 с
  * (`cf.cacheTtl`): витрина не бьёт в raw.githubusercontent.com каждым заходом.
  *
- * Порядок при сбое GitHub (сеть, 5xx, 404, не-JSON):
+ * Порядок при сбое GitHub (сеть, 5xx, 404, не-JSON, ответа нет дольше
+ * UPSTREAM_TIMEOUT_MS — зависшее соединение отменяется, а не ждёт предела
+ * платформы):
  *   1) запасная копия из Cache API края — кладётся фоном (waitUntil) при
  *      каждом удачном ответе, с долгим max-age: копия с max-age=60 жила бы
  *      минуту и не спасала бы от сбоя дольше минуты;
@@ -30,6 +32,8 @@ const FALLBACK_KEY = "https://tzi-850-x5.internal/fallback/latest.json";
 const BUNDLED_PATH = "/fallback/latest.json";
 const CACHE_SECONDS = 60;
 const FALLBACK_SECONDS = 60 * 60 * 24 * 30;
+// Сколько ждать GitHub (заголовки и тело): дольше — сбой, дальше запасные копии.
+const UPSTREAM_TIMEOUT_MS = 8000;
 
 export async function onRequest({ request, env, waitUntil }) {
   if (request.method !== "GET" && request.method !== "HEAD") {
@@ -42,6 +46,9 @@ export async function onRequest({ request, env, waitUntil }) {
     const upstream = await fetch(SOURCE, {
       headers: { accept: "application/json", "user-agent": "tzi-850-x5-pages" },
       cf: { cacheTtl: CACHE_SECONDS, cacheEverything: true },
+      // Отмена по таймеру попадает в catch — тот же путь, что у сбоя сети;
+      // тот же сигнал ограничивает и чтение тела (upstream.text()).
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
     if (upstream.ok) {
       const text = await upstream.text();
@@ -60,7 +67,9 @@ export async function onRequest({ request, env, waitUntil }) {
       detail = `источник ответил ${upstream.status}`;
     }
   } catch (error) {
-    detail = String(error).slice(0, 200);
+    detail = error && error.name === "TimeoutError"
+      ? `источник не ответил за ${UPSTREAM_TIMEOUT_MS / 1000} с`
+      : String(error).slice(0, 200);
   }
 
   const cached = await readFallback();

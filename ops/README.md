@@ -22,8 +22,11 @@ raw.githubusercontent.com.
 (`--ref`) задание пропускает; прогнать ветку — `gh workflow run ci.yml --ref
 <ветка>`.
 
-«Сегодня» прогона — день по Москве: сборщики считают его сами (UTC+3), ядро
-берёт местную дату раннера (`TZ: Europe/Moscow` в `pipeline.yml` и `ci.yml`).
+«Сегодня» прогона — день по Москве: ядро (`model.book.today()`) и сборщики
+(`indicators.live.msk_today()`) считают его сами по фиксированному UTC+3, так что
+от пояса машины оно не зависит (подмена для ядра — `FAKE_TODAY`). `TZ:
+Europe/Moscow` в `pipeline.yml` и `ci.yml` — только для отметок времени
+инструментов (пояс в дате коммита ветки `data`); дату выпуска он не определяет.
 
 ## Шаги конвейера
 
@@ -32,9 +35,10 @@ raw.githubusercontent.com.
 | зависимости | `python -m pip install -r requirements.txt` (версии закреплены) | PyPI не ответил |
 | состояние из ветки `data` | `python ops/publish.py --fetch-state var/state` (файлы ветки и её коммит в `var/state/.commit`) | GitHub не ответил |
 | сбор живых входов | `python -m indicators.live --previous var/state/latest.json --out var/live/live.json` | нет годной цены X5 и нет запасной |
-| тесты такта | `python -m pytest -q -m "not network and not ci_only and not docs"` | сломан код или данные |
-| сборка выпуска | `python ops/build_release.py --live-file var/live/live.json --previous var/state/latest.json --journal var/state/journal.json --out var/release/latest.json` | ядро упало, инвариант, необъяснённый гейт, скачок заголовка, контракт, закрытая запись журнала расходится с `actuals.json` |
+| тесты такта | `python -m pytest -q -rs -m "not network and not ci_only and not docs"`; пропуски с причиной — строками «пропуск теста такта» в сводке (на раннере так пропускается тест пересборки фактов с меткой `primary`: первички там нет) | сломан код или данные |
+| сборка выпуска | `python ops/build_release.py --live-file var/live/live.json --previous var/state/latest.json --journal var/state/journal.json --history var/state/history.json --out var/release/latest.json` | ядро упало, инвариант, необъяснённый гейт, скачок заголовка, контракт, закрытая запись журнала расходится с `actuals.json` |
 | проверка контракта | `python ops/build_release.py --check var/release/latest.json` | записанный файл не проходит `model.payload.validate` |
+| код прогона и голова `main` | `git ls-remote` — голова `main`; не равна коммиту прогона — `gh api …/compare/<коммит прогона>...<голова>`: изменены ли пути push-триггера (`model/`, `data/`, `indicators/`, `ops/`, `requirements.txt`, кроме `*.md`) | `main` ушёл вперёд правкой того, что собирает выпуск: выпуск на устаревшем коде не публикуется (так ловится Re-run старого прогона); выпуск на новом коде публикует его прогон |
 | публикация | `python ops/publish.py --release var/release/latest.json --expect-commit "$(cat var/state/.commit)"` | ветка `data` изменилась с начала прогона; журнал переписан задним числом; GitHub не принял push |
 | сверка через боевую дверь | `python ops/publish.py --verify https://tzi-850-x5.pages.dev/api/model --release var/release/latest.json` | за 20 попыток × 30 с дверь не отдала новый `payload_sha256` |
 | сырые ответы и выпуск | артефакт `run-<id>-<попытка>` (14 дней) | — (идёт всегда) |
@@ -135,6 +139,12 @@ gh run watch --repo ML371KL/temp-zero-inode-850-x5
 Публикует только запуск с `main` (ветка по умолчанию); с другой ветки задание
 пропускается.
 
+Повторить красный прогон — этой же командой, а не кнопкой Re-run: повтор идёт
+на исходном коммите и исходном workflow. Если `main` с тех пор ушёл вперёд
+правкой кода, книги или фактов, такой повтор упадёт на шаге «код прогона и
+голова main» и ничего не опубликует; `gh workflow run` соберёт выпуск на
+текущем `main`.
+
 ### Прочитать журнал прогона
 
 ```
@@ -147,7 +157,8 @@ gh run download <id> --repo ML371KL/temp-zero-inode-850-x5         # артеф�
 Сводка прогона (Summary) — итоговая строка каждого шага, кроме загрузки
 артефакта: `готово: …` или `ПРОВАЛ на шаге <шаг>: <причина>`; от шага сбора
 ещё цена X5 (принятая или «ЗАПАСНАЯ … — причина», пометка о снятой проверке
-скачка) и строки `ОТКАЗ ИСТОЧНИКА <имя>: …`. Подробности — в журнале шагов:
+скачка) и строки `ОТКАЗ ИСТОЧНИКА <имя>: …`, от тестов такта — строки
+`пропуск теста такта: …` с причиной. Подробности — в журнале шагов:
 сборка печатает строки `КОНТРАКТ: …` и `ЖУРНАЛ: …`, публикация — `ЖУРНАЛ: …`,
 сверка — попытки с причиной ожидания, тесты такта — упавшие тесты.
 
@@ -198,8 +209,10 @@ Keepalive отключённый workflow не включает. Обратно 
  "reported_on": "<ГГГГ-ММ-ДД>"}
 ```
 
-Ту же запись — в блок `actuals.json` сборщика `ops/tools/build_facts.py`:
-тест пересборки фактов сверяет файлы байт в байт.
+`actuals.json` ведёт только человек: сборщик фактов `ops/tools/build_facts.py`
+пишет его шаблон (описание формата и пустой список), лишь если файла нет, и
+внесённые факты не перезаписывает; тест пересборки фактов его не сверяет.
+Дублировать запись в сборщик не нужно.
 
 Коммит в `main` запускает конвейер (`data/**`): выпуск закроет запись журнала
 (`actual` из `null` в значение, ошибки прогноза и эталонов).
@@ -243,9 +256,14 @@ npx wrangler@4.135.0 pages deploy web --project-name tzi-850-x5 --branch main
 ```
 python -m indicators.live --out var/live/live.json
 python ops/build_release.py --live-file var/live/live.json --fast
-python -m pytest -q -m "not network and not ci_only and not docs"
+python -m pytest -q -rs -m "not network and not ci_only and not docs"
 X5_NETWORK=1 python -m pytest -q -m network        # живые ISS и ЦБ
 ```
+
+На ноутбуке с первичкой рядом (`../x5-850-handoff/reference/primary`, соседи
+`magnit-850oa` и `lenta-850-handoff`) и openpyxl тесты такта включают пересборку
+фактов (`tests/test_facts.py::test_builder_reproduces_facts`, метка `primary`);
+без них она пропускается с причиной в строке `SKIPPED`.
 
 На ноутбуке с Python из Microsoft Store системный temp для pytest закрыт —
 добавлять `--basetemp var/pytest-tmp`.
@@ -279,6 +297,15 @@ GitHub отключает расписание публичного репози
   23:50 МСК — в 19:50 МСК `LAST` — сделка вечерней сессии.
 * Push токеном `GITHUB_TOKEN` (в ветку `data`) других workflow не запускает —
   так и задумано.
+* Re-run прогона GitHub выполняет на его исходном коммите (`GITHUB_SHA`) и с его
+  workflow, 30 дней после прогона. Сверка с головой `main` есть только в
+  прогонах с workflow книги 1.1.1 и новее: прогоны, созданные раньше, не
+  перезапускать — Re-run такого прогона опубликовал бы выпуск на старом коде
+  поверх текущего (исправление — `python ops/publish.py --rollback --note …`).
+* Если за время прогона в `main` пришла правка кода, книги или фактов, прогон
+  падает на шаге «код прогона и голова main», а выпуск публикует прогон на
+  новом коде: push по этим путям уже поставил его в очередь (`concurrency:
+  pipeline`). Письмо о таком красном прогоне — не авария.
 * Публикация сверяет голову ветки `data` с коммитом, прочитанным шагом
   «Состояние из ветки data» (`var/state/.commit`), и пушит с
   `--force-with-lease` на него же: любая запись в ветку после этого шага

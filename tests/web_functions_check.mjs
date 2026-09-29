@@ -29,9 +29,25 @@ function upstream(kind) {
     if (kind === "404") return new Response("404: Not Found", { status: 404 });
     if (kind === "500") return new Response("oops", { status: 500 });
     if (kind === "html") return new Response("<html>not json</html>", { status: 200 });
+    // Соединение открыто, ответа нет: промис не завершается сам, только по
+    // отмене сигналом (как настоящий fetch).
+    if (kind === "hang") {
+      return new Promise((resolve, reject) => {
+        const signal = init && init.signal;
+        if (!signal) return;
+        if (signal.aborted) reject(signal.reason);
+        signal.addEventListener("abort", () => reject(signal.reason));
+      });
+    }
     throw new TypeError("network down");
   };
 }
+// Таймер двери подменяется коротким: проверка не ждёт 8 с, но видит, какой
+// предел дверь просила.
+const realTimeout = AbortSignal.timeout.bind(AbortSignal);
+let askedTimeout = null;
+AbortSignal.timeout = (ms) => { askedTimeout = ms; return realTimeout(50); };
+const within = (promise, ms) => Promise.race([promise, new Promise((resolve) => setTimeout(() => resolve("pending"), ms))]);
 const assets = (text, status = 200) => ({ fetch: async () => new Response(text, { status }) });
 let waits = [];
 const call = (method, headers = {}, env = {}) => model.onRequest({
@@ -78,6 +94,16 @@ res = await call("GET");
 check("сбой сети — копия из кэша", res.status === 200 && res.headers.get("x-data-source") === "cache-fallback", [res.status, res.headers.get("x-data-source")]);
 check("копия клиенту — на 60 с", res.headers.get("cache-control") === "public, max-age=60", res.headers.get("cache-control"));
 
+// 3а. источник завис: отмена по таймеру → запасная копия, а не ожидание предела платформы
+upstream("hang");
+calls.length = 0;
+res = await within(call("GET"), 2000);
+check("источник завис — копия из кэша быстрее таймаута проверки", res !== "pending" && res.status === 200
+  && res.headers.get("x-data-source") === "cache-fallback", res === "pending" ? "ответа нет за 2 с" : [res.status, res.headers.get("x-data-source")]);
+check("запрос к источнику идёт с сигналом отмены", calls[0] && calls[0].init && calls[0].init.signal instanceof AbortSignal, calls[0] && calls[0].init);
+check("предел ожидания источника — 5–8 с", askedTimeout >= 5000 && askedTimeout <= 8000, askedTimeout);
+upstream("down");
+
 // 4. кэша нет: статическая копия деплоя, затем 503
 store = new Map();
 res = await call("GET", {}, { ASSETS: assets(older) });
@@ -87,6 +113,11 @@ res = await call("GET", {}, { ASSETS: assets("<html>404</html>", 404) });
 let out = await json(res);
 check("сбой сети без копий — 503 upstream unavailable", res.status === 503 && out && out.error === "upstream unavailable", [res.status, out]);
 check("503 не кэшируется", res.headers.get("cache-control") === "no-store", res.headers.get("cache-control"));
+upstream("hang");
+res = await within(call("GET", {}, { ASSETS: assets("<html>404</html>", 404) }), 2000);
+out = res === "pending" ? null : await json(res);
+check("источник завис, копий нет — 503 upstream unavailable с причиной", res !== "pending" && res.status === 503
+  && out && out.error === "upstream unavailable" && /не ответил/.test(out.detail || ""), res === "pending" ? "ответа нет за 2 с" : [res.status, out]);
 
 upstream("404");
 res = await call("GET");

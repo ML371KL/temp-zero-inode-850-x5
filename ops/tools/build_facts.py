@@ -10,9 +10,11 @@
 рядом с репозиторием), реестр облигаций из research/facts папки передачи, аналогов — из
 databook Ленты/Fix Price/О'Кей и фактов модели Магнита 850oa (только чтение; соседние
 папки рабочего каталога, `--workspace` или X5_WORKSPACE). Каждое число — узел
-{"v", "src"} или {"v", "calc"}; нераскрытое — null. Деньги — млрд ₽, площадь — тыс. м²,
+{"v", "src"} или {"v", "calc"}; нераскрытое — {"v": null, "calc": "почему нет числа"}. Деньги — млрд ₽, площадь — тыс. м²,
 акции — млн шт. Файлы пишутся в UTF-8 с переводом строки LF (как их хранит git).
-Проверка «пересборка = data/facts байт в байт» — tests/test_facts.py (ci_only).
+actuals.json (факты журнала) ведёт человек: сборщик пишет его шаблон, только если файла нет,
+и не перезаписывает. Проверка «пересборка = data/facts байт в байт» (кроме actuals.json) —
+tests/test_facts.py::test_builder_reproduces_facts (метка primary: идёт при первичке рядом).
 """
 
 from __future__ import annotations
@@ -23,8 +25,8 @@ import json
 import os
 from pathlib import Path
 
-import openpyxl
-from openpyxl.utils import get_column_letter
+# openpyxl импортируется там, где читаются книги Excel: sources(), missing() и write() работают
+# и без него (tests/conftest.py решает по ним, пропустить ли тест с меткой primary).
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -46,17 +48,16 @@ AS_OF = "2026-06-30"
 
 # ------------------------------------------------------------------ узлы
 
-def V(v, src=None, calc=None, note=None, **extra):
-    """Узел факта: значение + источник и/или формула."""
+def V(v, src=None, calc=None, **extra):
+    """Узел факта: значение + источник и/или формула. Нераскрытое — null с пояснением
+    в calc (data/facts/SCHEMA.md); без пояснения — «не раскрыто»."""
     if v is None and not (src or calc):
-        calc, note = (note or "не раскрыто"), None
+        calc = "не раскрыто"
     node = {"v": v}
     if src:
         node["src"] = src
     if calc:
         node["calc"] = calc
-    if note:
-        node["note"] = note
     node.update(extra)
     if v is not None and not (src or calc):
         raise ValueError(f"узел без src и calc: {v}")
@@ -83,6 +84,8 @@ class Book:
     """Книга Excel с картой столбцов по заголовкам строки 5 (первое вхождение = IAS 17)."""
 
     def __init__(self, path: Path, name: str):
+        import openpyxl
+
         self.name = name
         self.wb = openpyxl.load_workbook(path, data_only=True)
 
@@ -103,6 +106,8 @@ class Book:
 
     def colmap(self, sheet, row=5, prefer_adj_row=None):
         """{заголовок: буква столбца}; при повторе берётся первый (IAS 17), либо «Скорр.»."""
+        from openpyxl.utils import get_column_letter
+
         ws = self.wb[sheet]
         out = {}
         for cell in ws[row]:
@@ -240,18 +245,24 @@ def network_history_est(b24, orq: dict, area_end: dict, area_by_fmt: dict):
             f"{sheet}: закрытые магазины (трейдинг-апдейты) × средняя площадь магазина формата на "
             f"начало полугодия (databook «как отчитано»): П {n_p} маг. × {m2(avg_store(q0, 'pyaterochka'))} м² + "
             f"Пер {n_e} маг. × {m2(avg_store(q0, 'perekrestok'))} м²; «Чижик» закрытий не раскрывал — 0")
-    # 2022: 3 кв. 2022 не раскрыт (трейдинг-апдейта на x5.ru нет) — закрытия каждого полугодия = 2 × 4 кв. 2022
+    # 2022: из трейдинг-апдейтов 2022 г. в первичке только 4 кв. (1–3 кв. нет) — закрытия каждого
+    # полугодия 2022 г. = 2 × 4 кв. 2022, средний магазин на 30.06.2022 (для 2022H1 — не начало полугодия)
     n_p22, n_e22 = tv("2022Q4", "pyaterochka_closed"), tv("2022Q4", "perekrestok_closed")
     c22 = 2 * (n_p22 * avg_store("2022Q2", "pyaterochka") + n_e22 * avg_store("2022Q2", "perekrestok"))
-    c22_text = (f"{sheet}: 3 кв. 2022 не раскрыт — закрытия полугодия = 2 × закрытия 4 кв. 2022: "
-                f"2 × (П {n_p22} маг. × {m2(avg_store('2022Q2', 'pyaterochka'))} м² + Пер {n_e22} маг. × "
-                f"{m2(avg_store('2022Q2', 'perekrestok'))} м²), средний магазин на 30.06.2022 (databook «как "
-                f"отчитано»); «Чижик» закрытий не раскрывал — 0")
+    c22_why = {"2022H1": "трейдинг-апдейтов 1–2 кв. 2022 г. в первичке нет",
+               "2022H2": "трейдинг-апдейта 3 кв. 2022 г. в первичке нет"}
+    c22_date = {"2022H1": "средний магазин на 30.06.2022 (для 2022H1 — отступление от правила «на начало "
+                          "полугодия»; databook «как отчитано»)",
+                "2022H2": "средний магазин на 30.06.2022 — начало полугодия (databook «как отчитано»)"}
     c22_src = (f"{ts(('2022Q4',), 'pyaterochka_closed')}; {ts(('2022Q4',), 'perekrestok_closed')}; "
                f"{refs('2022Q2', (70, 62, 71, 63))}")
     gross_est = {}
     for p, q1, q0 in (("2022H1", "2022Q2", "2021Q4"), ("2022H2", "2022Q4", "2022Q2")):
         net = sum(space(q1, f) - space(q0, f) for f in fmts3)
+        c22_text = (f"{sheet}: {c22_why[p]} — закрытия полугодия = 2 × закрытия 4 кв. 2022: "
+                    f"2 × (П {n_p22} маг. × {m2(avg_store('2022Q2', 'pyaterochka'))} м² + Пер {n_e22} маг. × "
+                    f"{m2(avg_store('2022Q2', 'perekrestok'))} м²), {c22_date[p]}; «Чижик» закрытий не "
+                    f"раскрывал — 0")
         closed_est[p] = V(r6(c22), c22_src, c22_text)
         gross_est[p] = V(
             r6(net + c22), f"{refs(q1, space_row.values())}; {refs(q0, space_row.values())}",
@@ -528,8 +539,8 @@ def build(src: dict):
             o, c, n = data[f]
             s = f"{doc}, {pages}"
             row[f] = {
-                "opened": V(o, s, how) if o is not None else V(None, note="не раскрыто"),
-                "closed": V(c, s, how) if c is not None else V(None, note="не раскрыто"),
+                "opened": V(o, s, how) if o is not None else V(None, calc="не раскрыто"),
+                "closed": V(c, s, how) if c is not None else V(None, calc="не раскрыто"),
                 "net": V(n, s, how),
             }
         oc[qk] = row
@@ -734,11 +745,13 @@ def build(src: dict):
             "lease_liabilities_ifrs16": V(bn(lease), s_lease, "базис до МСФО 16: аренда внутри EBITDA, вне моста"),
             "capital_commitments": V(29.882, f"{IFRS26} прим. 26, с. 26", "обязательства по капвложениям — "
                                                                           "это capex прогноза, не мост"),
-            "treasury_shares_mln": V(25.591692, f"{IFRS26} прим. 17, с. 21", "не актив моста; знаменатель — "
-                                                                            "акции в обращении"),
-            "deferred_consideration": V(None, note="остаток отложенных платежей по сделкам не раскрыт (внутри "
+            "treasury_shares_mln": V(25.591692, f"{IFRS26} прим. 17, с. 21",
+                                     "не актив моста; в формуле цены — выручка от продажи пакета n·k·P_рынок, "
+                                     "знаменатель — выпущенные акции N + n (docs/MODEL.md §7.2; ядро читает n "
+                                     "из shares.treasury)"),
+            "deferred_consideration": V(None, calc="остаток отложенных платежей по сделкам не раскрыт (внутри "
                                                    "кредиторки за ОС, НМА и бизнесы 24 917)"),
-            "gorod77_consideration": V(None, note="цена «Города 77» (20.07.2026) не раскрыта; после отчётной даты"),
+            "gorod77_consideration": V(None, calc="цена «Города 77» (20.07.2026) не раскрыта; после отчётной даты"),
             "obligation_to_x5_retail_group_nv": V(0.0, f"{IFRS26} прим. 17, с. 22; ОДДС с. 7 (выплачено 4 638 во "
                                                        "2 кв. 2026)", "обязательств перед бывшей материнской нет"),
         },
@@ -894,7 +907,7 @@ def build(src: dict):
                                         + ("остаток после оферты 25.09.2025 — по балансу МСФО (число бумаг не "
                                            "раскрыто; объём выпуска в ISS 21,0 — до оферты)" if put_left else
                                            "номинал = объём выпуска (ISS ISSUESIZEPLACED)"))
-            if b["outstanding_2026_06_30_rub_bn"] is not None else V(None, note="размещён после 30.06.2026"),
+            if b["outstanding_2026_06_30_rub_bn"] is not None else V(None, calc="размещён после 30.06.2026"),
             "outstanding_2026_09_28": V(b["outstanding_2026_09_28_rub_bn"],
                                         (f"{IFRS26} прим. 15, с. 20: остаток после оферты 25.09.2025 по балансу "
                                          "МСФО; новых оферт до 28.09.2026 не было (следующая — 19.07.2027)"
@@ -902,7 +915,7 @@ def build(src: dict):
                                          f"{ISSB} › securities.ISSUESIZEPLACED; пресс-релизы о размещениях 003P-20/21")
                                         if live else f"{ISSB}; торги 003P-04 прекращены 07.09.2026 (оферта 11.09.2026)"),
             "carrying_2026_06_30": V(b["carrying_2026_06_30_rub_bn"], f"{IFRS26} прим. 15, с. 20")
-            if b["carrying_2026_06_30_rub_bn"] is not None else V(None, note="размещён после 30.06.2026"),
+            if b["carrying_2026_06_30_rub_bn"] is not None else V(None, calc="размещён после 30.06.2026"),
             "coupon_type": b["coupon_type"],
             "coupon_formula": c.get("formula"),
             "spread_to_key_rate": V(round(c.get("spread_pp") / 100.0, 6), b["source"]) if c.get("spread_pp") is not None
@@ -913,7 +926,7 @@ def build(src: dict):
                            if live and s.get("COUPONPERCENT") else
                            V(round(b["coupon_now_pct_est"] / 100.0, 6),
                              calc="оценка: ключевая ставка 14,00 % + спред выпуска (research/X2 §3.2)")
-                           if live and b.get("coupon_now_pct_est") else V(None, note="выпуск выбыл")),
+                           if live and b.get("coupon_now_pct_est") else V(None, calc="выпуск выбыл")),
             "put_date": b.get("next_put_or_offer"),
             "maturity": b.get("legal_maturity"),
             "repayment_date_for_model": b.get("repayment_date_for_model"),
@@ -927,7 +940,7 @@ def build(src: dict):
     der = rd["derived"]
     wall = [{"period": k, "bonds": V(v, calc="номинал облигаций к оферте/погашению по кварталам "
                                              "(реестр выпусков, 28.09.2026)"),
-             "banks": V(None, note="график банковских кредитов по кварталам не раскрыт")}
+             "banks": V(None, calc="график банковских кредитов по кварталам не раскрыт")}
             for k, v in der["bonds_repayment_schedule_by_quarter_2026_09_28"].items()]
     out["debt_register"] = {
         "as_of": AS_OF,
@@ -1015,7 +1028,7 @@ def build(src: dict):
     def cf_node(x, s, sign, what):
         """Строка ОДДС в млрд ₽ (пустая ячейка databook — строки в периоде нет)."""
         if x is None:
-            return V(None, note=f"строки в ОДДС за период нет — появилась в 4 кв. 2023 г. ({s})")
+            return V(None, calc=f"строки в ОДДС за период нет — появилась в 4 кв. 2023 г. ({s})")
         return V(bn(sign * x) + 0.0, s, what)
 
     for y in years:
@@ -1068,14 +1081,14 @@ def build(src: dict):
         row = {"year": y,
                "revenue": V(bn(rev), refs["rev"]),
                "growth": V(r6(rev / prev[0] - 1), calc=f"выручка {y} / {y - 1} − 1"
-                           + (" (2021 г. — новый databook к старому)" if y == 2021 else "")) if prev else V(None, note="нет 2010 г."),
+                           + (" (2021 г. — новый databook к старому)" if y == 2021 else "")) if prev else V(None, calc="нет 2010 г."),
                "adj_margin": V(r6(adj / rev), refs["adj"] + " / " + refs["rev"].split(" › ")[1], "скорр. EBITDA / выручка"),
                "rep_margin": V(r6(ebr / rev), refs["ebr"] + " / " + refs["rev"].split(" › ")[1], "EBITDA / выручка"),
                "capex_pct": V(r6(cx / rev), refs["cx"], "(ОС + НМА) / выручка"),
                "da_pct": V(r6(da / rev), refs["da"], DA_ALL),
                "da_excl_impairment_pct": (V(r6((da - imp_year[y][0]) / rev), refs["da"] + "; " + imp_year[y][1],
                                             DA_EXCL + f": обесценение {ru(bn(imp_year[y][0]))}")
-                                          if y in imp_year else V(None, note=NO_IMP)),
+                                          if y in imp_year else V(None, calc=NO_IMP)),
                "other_investing_payments": cf_node(ann_cf[y][0], refs["oip"], -1.0, OIP),
                "finance_lease_receipts": cf_node(ann_cf[y][1], refs["flr"], 1.0, FLR),
                "leverage": V(r6(lev), refs["lev"], "чистый долг / EBITDA до МСФО 16 на 31.12"),
@@ -1127,17 +1140,17 @@ def build(src: dict):
         tot = 0.0
         for k in ("pyaterochka", "perekrestok", "chizhik", "karusel"):
             v, s = vals[k]
-            frow[k] = V(bn(v) if v is not None else None, s) if v is not None else V(None, note="формата нет")
+            frow[k] = V(bn(v) if v is not None else None, s) if v is not None else V(None, calc="формата нет")
             tot += v or 0.0
         frow["other"] = V(bn(rev - tot), calc="выручка − сумма форматов (цифровые без экспресс-доставки, опт, "
                                               "франшиза, прочие бизнесы; до 2024 г. — и «Красный Яр»/«Слата»)")
         frow["digital"] = V(bn(dg[0]), dg[1], "справочно: выручка цифровых бизнесов (пересекается с форматами — "
-                                              "экспресс-доставка)") if dg[0] is not None else V(None, note="не раскрыто")
+                                              "экспресс-доставка)") if dg[0] is not None else V(None, calc="не раскрыто")
         history["formats"].append(frow)
         arow = {"year": y}
         for k in ("pyaterochka", "perekrestok", "chizhik", "karusel"):
             v, s = areas[k]
-            arow[k] = V(r6(v), s) if v is not None else V(None, note="формата нет")
+            arow[k] = V(r6(v), s) if v is not None else V(None, calc="формата нет")
         history["format_area"].append(arow)
 
     # --- полугодия 2018H1–2026H1 (+ 2017 для роста 2018)
@@ -1168,7 +1181,7 @@ def build(src: dict):
                "da_excl_impairment_pct": (V(r6((da - imp_hv[p][0]) / rev), s_da + "; " + imp_hv[p][1],
                                             DA_EXCL + f": обесценение {ru(bn(imp_hv[p][0]))}"
                                             + (f" ({imp_hv[p][2]})" if imp_hv[p][2] else ""))
-                                          if p in imp_hv else V(None, note=NO_IMP)),
+                                          if p in imp_hv else V(None, calc=NO_IMP)),
                "other_investing_payments": cf_node(oip, s_oip, -1.0, OIP),
                "finance_lease_receipts": cf_node(flr, s_flr, 1.0, FLR),
                }
@@ -1190,7 +1203,7 @@ def build(src: dict):
         else:
             dcol = c24["Debt"][q_old(2 if h == 1 else 4, y)]
             lv = b24.val("Debt", f"{dcol}12")
-            row["leverage"] = V(r6(lv), b24.ref("Debt", f"{dcol}12")) if lv is not None else V(None, note="не раскрыто")
+            row["leverage"] = V(r6(lv), b24.ref("Debt", f"{dcol}12")) if lv is not None else V(None, calc="не раскрыто")
         history["halves"].append(row)
     out["history"] = {
         "unit": "выручка — млрд ₽; доли — доли единицы; площадь — тыс. м²",
@@ -1205,7 +1218,7 @@ def build(src: dict):
     fp_ebitda = fpb.val("5", "G23") - fpb.val("5", "M23") + fpb.val("5", "N23")
     fp_np = fpb.val("1", "G22") - fpb.val("1", "M22") + fpb.val("1", "N22")
     fp_rev = fpb.val("1", "G6") - fpb.val("1", "M6") + fpb.val("1", "N6")
-    lb = openpyxl.load_workbook(LENTA_DB, data_only=True)
+    lb = Book(LENTA_DB, LENTA_DB.name).wb
     lpl, lbs = lb["PL"], lb["BS"]
     l_nd = (lbs["AF54"].value + lbs["AF62"].value - lbs["AF34"].value) / 1e6
     l_eb = (lpl["AD49"].value - lpl["AC49"].value + lpl["AE49"].value) / 1e6
@@ -1285,18 +1298,18 @@ def build(src: dict):
              "ebitda_ltm": V(round(fp_ebitda / 1000.0, 6), f"{FP} › 5!G23 − M23 + N23 («EBITDA по МСФО (IAS) 17»)"),
              "revenue_ltm": V(round(fp_rev / 1000.0, 6), f"{FP} › 1!G6 − M6 + N6"),
              "net_profit_ltm": V(round(fp_np / 1000.0, 6), f"{FP} › 1!G22 − M22 + N22 (МСФО 16)"),
-             "net_profit_ltm_pre16": V(None, note="не раскрыта"),
+             "net_profit_ltm_pre16": V(None, calc="не раскрыта"),
              "reported_on": "2026-08-27"},
             {"ticker": "OKEY", "name": "О'Кей («ДА!»)",
              "shares_outstanding": V(269.074, "peer-okey-1h2026-ifrs-fs.pdf, с. 21 (средневзвешенное число акций "
                                               "269 074 тыс.)"),
              "net_debt": V(-8.987381, "peer-okey-1h2026-ifrs-fs.pdf, с. 3–4 (кредитов и займов нет; денежные "
                                       "средства 8 987 381 тыс. ₽)", "0 − денежные средства (чистая касса)"),
-             "dividends_after_balance": V(None, note="не раскрыто"),
-             "ebitda_ltm": V(None, note="EBITDA до МСФО 16 не раскрыта (только МСФО 16: 6М2026 4,152 млрд)"),
-             "revenue_ltm": V(None, note="LTM на одной базе не собрана: гипермаркеты проданы в ноябре 2025 г."),
-             "net_profit_ltm": V(None, note="за 2025 г. на базе продолжающейся деятельности не найдена"),
-             "net_profit_ltm_pre16": V(None, note="не раскрыта"),
+             "dividends_after_balance": V(None, calc="не раскрыто"),
+             "ebitda_ltm": V(None, calc="EBITDA до МСФО 16 не раскрыта (только МСФО 16: 6М2026 4,152 млрд)"),
+             "revenue_ltm": V(None, calc="LTM на одной базе не собрана: гипермаркеты проданы в ноябре 2025 г."),
+             "net_profit_ltm": V(None, calc="за 2025 г. на базе продолжающейся деятельности не найдена"),
+             "net_profit_ltm_pre16": V(None, calc="не раскрыта"),
              "reported_on": "2026-08-21",
              "note": "после продажи гипермаркетов осталась сеть дискаунтеров «ДА!»; торгуются ГДР (OKEY)"},
         ],
@@ -1321,7 +1334,7 @@ def build(src: dict):
         f = f"analyst-finmarket-{fid}.html"
         rows.append({"broker": name, "date": d, "rating": rating,
                      "target": V(tgt, f"{f} (Интерфакс/Финмаркет; research/X4 §4)") if tgt is not None
-                     else V(None, note=f"цель не раскрыта ({f})"),
+                     else V(None, calc=f"цель не раскрыта ({f})"),
                      "horizon": hor, "src": f})
     t12 = sorted(r["target"]["v"] for r in rows if r["target"]["v"] and r["horizon"] == "12 мес."
                  and r["date"] >= "2026-08-13")

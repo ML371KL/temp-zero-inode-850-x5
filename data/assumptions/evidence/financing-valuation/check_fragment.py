@@ -1,8 +1,11 @@
-"""Сверка фрагмента fragments/financing-valuation.yaml с выходами листа и схемой книги.
+"""Сверка фрагмента fragment.yaml (выход листа financing-valuation) с выходами листа, книгой и схемой.
 
 1) ключи фрагмента — только ключи области; 2) числа фрагмента = выходы скриптов листа (*_out.json);
-3) итоговые списки осей полосы и обратного DCF покрывают предложения всех фрагментов и оси черновика;
-4) черновик + все фрагменты проходят закрытую схему ядра (model/book_schema.py::validate_book).
+3) итоговые списки осей полосы и обратного DCF покрывают предложения фрагментов всех листов
+   (evidence/<область>/fragment.yaml) и оси черновика;
+4) книга (assumptions.yaml) проходит закрытую схему ядра (model/book_schema.py::validate_book), а черновик + все
+   фрагменты листов совпадают с ней по значениям (кроме meta; траектории — по всем полугодиям и LT):
+   фрагменты — выходы листов, книга — их итог, расхождение значит, что книгу или фрагмент не обновили.
 Нужен PyYAML и код ядра репозитория. Код выхода 1 — расхождение.
 """
 from __future__ import annotations
@@ -12,14 +15,15 @@ import sys
 
 import yaml
 
-from book_merge import build_book
+from book_merge import build_book, fragments, merged_book
 from common import HERE, REPO
 
 sys.path.insert(0, str(REPO))
-from model.book_schema import BookError, validate_book  # noqa: E402
+from model.book import path_value  # noqa: E402
+from model.book_schema import BookError, is_trajectory, validate_book  # noqa: E402
 
 ASSUME = REPO / "data" / "assumptions"
-FRAG = yaml.safe_load((ASSUME / "fragments" / "financing-valuation.yaml").read_text(encoding="utf-8"))
+FRAG = yaml.safe_load((HERE / "fragment.yaml").read_text(encoding="utf-8"))
 bad: list[str] = []
 
 
@@ -101,25 +105,25 @@ eq("ось инфляции M = Магнит", [axes["Инфляция мира 
 
 # 3. покрытие предложений других областей и осей черновика
 draft = yaml.safe_load((ASSUME / "assumptions.draft.yaml").read_text(encoding="utf-8"))
-for path in sorted((ASSUME / "fragments").glob("*.yaml")):
-    if path.name == "financing-valuation.yaml":
+for path in fragments():
+    if path.parent == HERE:
         continue
     other = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     for prop in other.get("axes_proposals", []):
         mine = axes.get(prop["name"])
         if mine is None:
-            bad.append(f"ось «{prop['name']}» ({path.name}) не в итоговом списке")
+            bad.append(f"ось «{prop['name']}» ({path.parent.name}) не в итоговом списке")
         elif {k: mine[k] for k in prop} != prop:
-            bad.append(f"ось «{prop['name']}» ({path.name}) изменена")
+            bad.append(f"ось «{prop['name']}» ({path.parent.name}) изменена")
     rev = {a["name"]: a for a in V["reverse_dcf"]["axes"]}
     for prop in other.get("reverse_dcf_proposals", []):
         mine = rev.get(prop["name"])
         if mine is None:
-            bad.append(f"обратный DCF «{prop['name']}» ({path.name}) не в итоговом списке")
+            bad.append(f"обратный DCF «{prop['name']}» ({path.parent.name}) не в итоговом списке")
         else:
             diff = [k for k in prop if mine.get(k) != prop[k] and k != "unit"]
             if diff:
-                bad.append(f"обратный DCF «{prop['name']}» ({path.name}): отличаются {diff}")
+                bad.append(f"обратный DCF «{prop['name']}» ({path.parent.name}): отличаются {diff}")
 covered = {tuple(a["paths"]) for a in V["uncertainty"]["axes"]}
 for a in draft["valuation"]["uncertainty"]["axes"]:
     hits = [p for p in a["paths"] if any(p == q or q.startswith(p + ".") or p.startswith(q + ".")
@@ -127,13 +131,46 @@ for a in draft["valuation"]["uncertainty"]["axes"]:
     if not hits:
         bad.append(f"ось черновика «{a['name']}» не покрыта итоговым списком")
 
-# 4. схема на собранной книге
+# 4. схема книги и «черновик + фрагменты = книга»
 A, _ = build_book()
 try:
     validate_book(A)
-    print("схема: черновик + все фрагменты читаются ядром")
+    print("схема: книга assumptions.yaml читается ядром")
 except BookError as e:
     bad.append("схема: " + str(e).replace("\n", "; "))
+Mg, used = merged_book()
+try:
+    validate_book(Mg)
+except BookError as e:
+    bad.append("схема сборки «черновик + фрагменты»: " + str(e).replace("\n", "; "))
+periods = [f"{y}H{h}" for y in range(int(A["meta"]["first_period"][:4]), int(A["meta"]["last_period"][:4]) + 1)
+           for h in (1, 2) if A["meta"]["first_period"] <= f"{y}H{h}" <= A["meta"]["last_period"]]
+
+
+def same(a, b, where: str) -> None:
+    """Значения сборки = значения книги; траектории — по всем прогнозным полугодиям и LT (форма записи свободна)."""
+    if isinstance(a, dict) and isinstance(b, dict) and (is_trajectory(a) or is_trajectory(b)):
+        if not (is_trajectory(a) and is_trajectory(b)):
+            bad.append(f"{where}: траектория против не-траектории")
+        elif (any(abs(path_value(a, p) - path_value(b, p)) > 1e-12 for p in periods)
+              or a.get("LT") != b.get("LT")):
+            bad.append(f"{where}: сборка ≠ книга")
+    elif isinstance(a, dict) and isinstance(b, dict):
+        for k in sorted(set(a) | set(b), key=str):
+            if k not in a or k not in b:
+                bad.append(f"{where}.{k}: ключ только в {'книге' if k in b else 'сборке'}")
+            else:
+                same(a[k], b[k], f"{where}.{k}")
+    elif a != b:
+        bad.append(f"{where}: сборка {a!r} ≠ книга {b!r}")
+
+
+n_bad = len(bad)
+for block in sorted(set(Mg) | set(A)):
+    if block != "meta":
+        same(Mg.get(block), A.get(block), block)
+if len(bad) == n_bad:
+    print(f"черновик + фрагменты ({', '.join(used)}) = книга assumptions.yaml по значениям (кроме meta)")
 
 if bad:
     print("РАСХОЖДЕНИЯ:")

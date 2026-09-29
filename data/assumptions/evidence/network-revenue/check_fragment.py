@@ -1,4 +1,4 @@
-"""Проверка фрагмента fragments/network-revenue.yaml против листа (выходы скриптов) и схемы черновика.
+"""Проверка фрагмента fragment.yaml (выход листа network-revenue) против листа (выходы скриптов) и схемы черновика.
 
 Проверяет: только ключи области (joint.world_links[*].growth, joint.stress_growth, network.*, revenue.*,
 axes_proposals, reverse_dcf_proposals); те же тарифы, состояния спроса и набор ключей блоков, что в черновике;
@@ -19,7 +19,7 @@ import yaml
 from common import HERE, path_value
 
 ASSUMPTIONS = HERE.parents[1]
-FRAG = ASSUMPTIONS / "fragments" / "network-revenue.yaml"
+FRAG = HERE / "fragment.yaml"
 DRAFT = ASSUMPTIONS / "assumptions.draft.yaml"
 BOOK = ASSUMPTIONS / "assumptions.yaml"
 ALLOWED = {"joint": {"world_links", "stress_growth"},
@@ -77,6 +77,8 @@ def main() -> int:
     need(fr["network"]["close_rate"] == nw["close_rate"], "close_rate ≠ network.py")
     need(fr["network"]["maturity_curve"] == de["mu_book"], "maturity_curve ≠ density.py")
     need(fr["network"]["new_space_density"] == de["d_book"], "new_space_density ≠ density.py")
+    d_ax = next((a for a in fr["axes_proposals"] if a["paths"] == ["network.new_space_density"]), None)
+    need(d_ax is not None and [d_ax["low"], d_ax["high"]] == de["d_axis"], "ось d ≠ density.py (d ± 0,10)")
     need(fr["network"]["closed_productivity"] == de["kappa_book"], "closed_productivity ≠ density.py")
     need(fr["revenue"]["ticket_k"] == tk["ticket_k"], "ticket_k ≠ ticket.py")
     need(fr["revenue"]["ticket_shift"] == tk["ticket_shift"], "ticket_shift ≠ ticket.py")

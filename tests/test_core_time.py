@@ -133,6 +133,23 @@ def test_discount_by_hand(book, facts):
     assert res.ev == pytest.approx(pv, rel=1e-12)
 
 
+def test_fixed_coupon_joins_terminal_lt(book, facts):
+    """§0.2, §4.9, §6 (книга 1.1.1, [3] раунда 2): за последним узлом кривой форвард равен LT,
+    поэтому трёхлетний форвард купона нового фикса к концу явного участка подходит к узлу LT
+    фиксированной ноги терминала без скачка (≤ 0,1 п.п.), а форвард, целиком лежащий за
+    последним узлом, — ровно LT. Прежний линейный сход бескупонной ставки к LT к 15 годам
+    ронял купон мира N до 7,7 % и давал скачок +1,3 п.п. на стыке с терминалом."""
+    from model.core import forward_rate
+
+    ctx = Context(book, facts)
+    for w in ("N", "H", "M"):
+        W = ctx.world(w)
+        curve = book["worlds"][w]["zero_curve"]
+        last_node = max(float(k) for k in curve if k != "LT")
+        assert abs(W.z_fix[-1] - W.z_lt) <= 0.001, (w, W.z_fix[-1], W.z_lt)
+        assert forward_rate(curve, last_node, 3.0) == pytest.approx(W.z_lt, abs=1e-13), w
+
+
 def test_today_is_moscow_date(monkeypatch):
     """«Сегодня» ядра — дата по Москве (UTC+3 круглый год), та же, что у сборщиков живых
     входов, при любом поясе машины; `FAKE_TODAY` подменяет её."""

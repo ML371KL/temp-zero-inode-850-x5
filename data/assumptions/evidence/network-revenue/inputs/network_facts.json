@@ -2,7 +2,7 @@
  "_about": "Выписка data/facts/network.json (факты X5, сопоставимый базис трёх форматов без дарксторов).",
  "source": {
   "file": "data/facts/network.json",
-  "sha256": "6220765e9c6b13d586f58c184c63293b63579d9f5d3c02568457a8e32dead681"
+  "sha256": "3cc3d25abe298ade27c0093e700847707fc8b443d3ee1c2a9fd9a98ac3be259b"
  },
  "as_of": "2026-06-30",
  "basis": "сопоставимый: «Пятёрочка» с «Красным Яром» и «Слатой», «Перекрёсток», «Чижик»; без дарксторов Vprok.ru, совместных дарксторов и «тёмных» кухонь «Много лосося» (они были в итоге databook со 2 кв. 2024 по 3 кв. 2025)",
@@ -779,6 +779,26 @@
   }
  },
  "closed_area_est": {
+  "2022H1": {
+   "v": 53.18152,
+   "src": "q4_2022_trading_update_rus.txt, стр. 368–369 («закрыла 42 магазина «у дома»»); q4_2022_trading_update_rus.txt, стр. 369 («9 супермаркетов»); financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK70 + BK62 + BK71 + BK63",
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: трейдинг-апдейтов 1–2 кв. 2022 г. в первичке нет — закрытия полугодия = 2 × закрытия 4 кв. 2022: 2 × (П 42 маг. × 392 м² + Пер 9 маг. × 1 126 м²), средний магазин на 30.06.2022 (для 2022H1 — отступление от правила «на начало полугодия»; databook «как отчитано»); «Чижик» закрытий не раскрывал — 0"
+  },
+  "2022H2": {
+   "v": 53.18152,
+   "src": "q4_2022_trading_update_rus.txt, стр. 368–369 («закрыла 42 магазина «у дома»»); q4_2022_trading_update_rus.txt, стр. 369 («9 супермаркетов»); financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK70 + BK62 + BK71 + BK63",
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: трейдинг-апдейта 3 кв. 2022 г. в первичке нет — закрытия полугодия = 2 × закрытия 4 кв. 2022: 2 × (П 42 маг. × 392 м² + Пер 9 маг. × 1 126 м²), средний магазин на 30.06.2022 — начало полугодия (databook «как отчитано»); «Чижик» закрытий не раскрывал — 0"
+  },
+  "2023H1": {
+   "v": 50.078028,
+   "src": "q1_2023_trading_update_rus.txt, стр. 289–291; q2_2023_trading_update_rus.txt, стр. 323–325; q1_2023_trading_update_rus.txt, стр. 290; q2_2023_trading_update_rus.txt, стр. 324; financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM70 + BM62 + BM71 + BM63",
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: закрытые магазины (трейдинг-апдейты) × средняя площадь магазина формата на начало полугодия (databook «как отчитано»): П 68 маг. × 391 м² + Пер 21 маг. × 1 118 м²; «Чижик» закрытий не раскрывал — 0"
+  },
+  "2023H2": {
+   "v": 68.894996,
+   "src": "q3_2023_trading_update_rus.txt, стр. 302–304 (76 «у дома» + 8 «Покупочка» + 1 «Виктория»); q4_2023_trading_update_rus.txt, стр. 420–421; q3_2023_trading_update_rus.txt, стр. 304; q4_2023_trading_update_rus.txt, стр. 420–422 (закрытий супермаркетов не названо); financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BO70 + BO62 + BO71 + BO63",
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: закрытые магазины (трейдинг-апдейты) × средняя площадь магазина формата на начало полугодия (databook «как отчитано»): П 168 маг. × 390 м² + Пер 3 маг. × 1 116 м²; «Чижик» закрытий не раскрывал — 0"
+  },
   "2024H1": {
    "v": 83.83404,
    "calc": "закрытые магазины (трейдинг-апдейты) × средняя площадь магазина формата на начало полугодия; pyaterochka: 182 маг. × 392 м²; perekrestok: 11 маг. × 1116 м²; chizhik: 1 маг. × 295 м²"
@@ -801,6 +821,24 @@
   }
  },
  "gross_opened_hist": {
+  "2022H1": {
+   "v": 310.05111,
+   "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK70 + BK71 + BK73; financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BI70 + BI71 + BI73",
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: органический чистый прирост площади трёх форматов (databook «как отчитано», без «Карусели» и без покупки «Красного Яра»/«Слаты») 256,870 + закрытая площадь 53,182 (network.closed_area_est[2022H1])"
+  },
+  "2022H2": {
+   "v": 363.50122,
+   "src": "financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BM70 + BM71 + BM73; financial_and_operating_results_q1_2024.xlsx › Operating Results_Q!BK70 + BK71 + BK73",
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: органический чистый прирост площади трёх форматов (databook «как отчитано», без «Карусели» и без покупки «Красного Яра»/«Слаты») 310,320 + закрытая площадь 53,182 (network.closed_area_est[2022H2])"
+  },
+  "2023H1": {
+   "v": 522.15592,
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: area_end_est[2023H1] − area_end_est[2022H2] + closed_area_est[2023H1] = 9443,734 − 8971,656 + 50,078"
+  },
+  "2023H2": {
+   "v": 734.102336,
+   "calc": "оценка листа data/assumptions/evidence/network-revenue, common.py::network_history: area_end[2023H2] − area_end_est[2023H1] + closed_area_est[2023H2] = 10108,941 − 9443,734 + 68,895"
+  },
   "2024H1": {
    "v": 414.22204,
    "calc": "оценка: чистый прирост площади 330,388 + закрытая площадь 83,834 (network.closed_area_est[2024H1])"

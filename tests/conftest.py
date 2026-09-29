@@ -1,8 +1,11 @@
 """Общие настройки тестов X5.
 
 * **Маркеры** (`pytest.ini`, `--strict-markers`): `network` — только при
-  `X5_NETWORK=1`; `ci_only` — только в CI (переменная `CI`); `docs`, `slow` —
-  для отбора (`-m "not slow"`).
+  `X5_NETWORK=1`; `ci_only` — только в CI (переменная `CI`); `primary` — только
+  там, где есть openpyxl и первичка рядом с репозиторием (входы сборщика фактов,
+  `ops/tools/build_facts.py::missing`): на ноутбуке идёт в любом прогоне, на
+  раннерах GitHub пропускается с причиной (`-rs` печатает её в сводке);
+  `docs`, `slow` — для отбора (`-m "not slow"`).
 * **Пропуск без маркера — ошибка.** Тест, пропущенный (`skip`/`skipif`/
   `importorskip`) без одного из маркеров выше, считается упавшим: молчаливый
   пропуск прятал бы непроверенное.
@@ -21,7 +24,33 @@ from pathlib import Path
 
 import pytest
 
-SKIP_MARKERS = ("network", "ci_only", "docs", "slow")
+SKIP_MARKERS = ("network", "ci_only", "primary", "docs", "slow")
+BUILD_FACTS = Path(__file__).resolve().parents[1] / "ops" / "tools" / "build_facts.py"
+
+
+def load_build_facts():
+    """Модуль сборщика фактов (`ops/tools/build_facts.py`; openpyxl ему нужен только для чтения книг)."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("build_facts", BUILD_FACTS)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def primary_missing() -> str:
+    """Почему тестам на первичке здесь не на чем идти; пустая строка — всё есть."""
+    import importlib.util
+
+    builder = load_build_facts()
+    lost = builder.missing(builder.sources())
+    why = []
+    if lost:
+        more = f" и ещё {len(lost) - 1}" if len(lost) > 1 else ""
+        why.append(f"первички рядом с репозиторием нет ({lost[0]}{more}; X5_WORKSPACE, X5_PRIMARY)")
+    if importlib.util.find_spec("openpyxl") is None:
+        why.append("нет openpyxl (README.md, «Запуск»)")
+    return "; ".join(why)
 
 
 def _temp_root_usable() -> bool:
@@ -59,11 +88,16 @@ def pytest_report_header(config):
 def pytest_collection_modifyitems(config, items):
     network = os.environ.get("X5_NETWORK") == "1"
     ci = bool(os.environ.get("CI"))
+    primary = None
     for item in items:
         if item.get_closest_marker("network") and not network:
             item.add_marker(pytest.mark.skip(reason="сеть: X5_NETWORK=1"))
         if item.get_closest_marker("ci_only") and not ci:
             item.add_marker(pytest.mark.skip(reason="только в CI"))
+        if item.get_closest_marker("primary"):
+            primary = primary_missing() if primary is None else primary
+            if primary:
+                item.add_marker(pytest.mark.skip(reason=f"первичка: {primary}"))
 
 
 @pytest.hookimpl(hookwrapper=True)

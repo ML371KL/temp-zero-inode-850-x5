@@ -29,6 +29,9 @@
   --line-2: #ecebe6;
   --grid: #e7e5df;
   --axis: #c3c2b7;
+  /* Нейтральный ряд графика (режим «Дно», отметки режимов): --axis — цвет оси,
+     1,7 : 1 к карточке; ряду нужно не меньше 3 : 1 (здесь 4,1 : 1). */
+  --series-neutral: #7d7b74;
 
   --model: #2a78d6;
   --model-ink: #1f5fae;
@@ -38,7 +41,7 @@
   --market: #eb6834;
   --market-ink: #b8481c;
   --market-wash: rgba(235, 104, 52, 0.12);
-  --third: #1baf7a;
+  --third: #179f6f;   /* 3,3 : 1 к карточке (было #1baf7a — 2,7 : 1) */
   --third-ink: #0e7a54;
   --pos: #2a78d6;
   --neg: #e34948;
@@ -79,6 +82,7 @@
   --line-2: #262624;
   --grid: #2c2c2a;
   --axis: #4a4944;
+  --series-neutral: #8a887f;   /* 4,9 : 1 к карточке, 3,1 : 1 к линии факта (--ink) */
 
   --model: #3987e5;
   --model-ink: #6aa6f0;
@@ -713,7 +717,9 @@ td .indent { display: inline-block; padding-left: 14px; }
 
 @media (max-width: 720px) {
   .minis { grid-template-columns: minmax(0, 1fr); }
-  .tn-row { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; }
+  /* Столбец чисел — постоянной ширины: у каждой строки своя сетка, и при `auto` дорожки
+     строк и ось под ними были бы разной длины (разный масштаб). */
+  .tn-row { grid-template-columns: minmax(0, 1fr) 124px; gap: 6px 12px; }
   .tn-row .tn-name { grid-column: 1 / -1; }
   .tn-row .tn-bar { grid-column: 1; }
   .tn-axis-row > span:first-child { display: none; }
@@ -731,6 +737,7 @@ td .indent { display: inline-block; padding-left: 14px; }
 /* ───────────────────────────── дополнения X5 ───────────────────────────── */
 
 .key-axis { background: var(--axis); border-color: var(--axis); }
+.key-neutral { background: var(--series-neutral); border-color: var(--series-neutral); }
 .key-seq { background: var(--seq-1); border-color: var(--seq-1); }
 .list li.total { border-top: 1px solid var(--line); }
 .list li.total .v { font-weight: 660; }

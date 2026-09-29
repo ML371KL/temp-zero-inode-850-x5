@@ -375,14 +375,14 @@
  },
  "masses": {
   "ev_ebitda": {
-   "mass": 0.034,
+   "mass": 0.0691,
    "cells": [
+    "N|stress|high",
     "N|full|low",
-    "M|floor|low",
+    "H|stress|high",
     "M|partial|low",
     "M|full|low",
-    "M|full|base",
-    "M|full|high"
+    "M|full|base"
    ]
   },
   "margin_range": {
@@ -406,8 +406,10 @@
    "cells": []
   },
   "equity_cushion": {
-   "mass": 0,
-   "cells": []
+   "mass": 0.028,
+   "cells": [
+    "H|stress|high"
+   ]
   }
  }
 }

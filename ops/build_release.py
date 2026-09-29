@@ -1,14 +1,16 @@
 """Сборка выпуска X5 (контракт `x5-v1`, docs/PAYLOAD.md).
 
     python ops/build_release.py --live-file var/live/live.json \
-        --previous var/state/latest.json --journal var/state/journal.json
+        --previous var/state/latest.json --journal var/state/journal.json \
+        --history var/state/history.json
     python ops/build_release.py --live [...]         собрать живые входы здесь же
     python ops/build_release.py --book --fast        на входах книги (CI)
     python ops/build_release.py --check var/release/latest.json
                                                      проверить готовый файл
 
 `--previous PATH|URL` — прошлый выпуск (эталон цены, защита заголовка, «что
-изменилось»); `--journal PATH` — журнал прогнозов из ветки `data`.
+изменилось»); `--journal PATH` — журнал прогнозов из ветки `data`; `--history PATH` —
+`history.json` ветки `data` (книга каждого опубликованного выпуска — для `journal.releases`).
 
 Шаги: чтение входов → импорт ядра → `model.payload.build_payload` →
 `model.payload.validate` → строгий JSON и потолок размера → закрытые записи
@@ -63,20 +65,21 @@ def load_model():
     return module
 
 
-def call_build_payload(build, *, live, previous, journal, fast: bool):
+def call_build_payload(build, *, live, previous, journal, fast: bool, release_history=None):
     """Зовёт `build_payload` с теми входами, которые она объявляет.
 
     Предложенный вход, которого ядро не принимает, — провал, а не молчание:
     иначе живые входы или журнал тихо не попали бы в выпуск.
     """
-    offered = {"live": live, "previous": previous, "journal": journal, "fast": fast}
+    offered = {"live": live, "previous": previous, "journal": journal, "fast": fast,
+               "release_history": release_history}
     params = inspect.signature(build).parameters
     if any(p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values()):
         return build(**offered)
     kwargs = {name: value for name, value in offered.items() if name in params}
     if "with_slow" in params:
         kwargs["with_slow"] = not fast
-    lost = [name for name in ("live", "previous", "journal")
+    lost = [name for name in ("live", "previous", "journal", "release_history")
             if offered[name] is not None and name not in params]
     if lost:
         raise StepFailed("сборка выпуска", "build_payload() не принимает "
@@ -184,6 +187,9 @@ def build(args) -> str:
     journal = _read("чтение журнала", args.journal, url_ok=False)
     if journal is not None and not isinstance(journal, (dict, list)):
         raise StepFailed("чтение журнала", f"{args.journal}: ожидался объект или список")
+    history = _read("чтение истории выпусков", args.history, url_ok=False)
+    if history is not None and not isinstance(history, list):
+        raise StepFailed("чтение истории выпусков", f"{args.history}: ожидался список")
 
     live = None
     if args.live:
@@ -203,7 +209,7 @@ def build(args) -> str:
     print("шаг: сборка выпуска")
     try:
         payload = call_build_payload(model.build_payload, live=live, previous=previous,
-                                     journal=journal, fast=args.fast)
+                                     journal=journal, fast=args.fast, release_history=history)
     except StepFailed:
         raise
     except Exception as exc:  # noqa: BLE001 — любое исключение ядра = провал шага
@@ -255,6 +261,8 @@ def parse_args(argv: list[str] | None = None):
     source.add_argument("--check", metavar="FILE", help="только проверить готовый выпуск")
     parser.add_argument("--previous", metavar="PATH|URL", help="прошлый выпуск")
     parser.add_argument("--journal", metavar="PATH", help="журнал прогнозов (journal.json)")
+    parser.add_argument("--history", metavar="PATH",
+                        help="история выпусков ветки data (history.json): книга выпусков журнала")
     parser.add_argument("--out", default=str(DEFAULT_OUT), help="куда записать выпуск")
     parser.add_argument("--fast", action="store_true", help="без медленных блоков ядра")
     return parser.parse_args(argv)

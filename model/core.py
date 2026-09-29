@@ -458,12 +458,13 @@ class Context:
         d = float(NW["new_space_density"])
         kappa = float(NW["closed_productivity"])
         growth = trajectory(NW["net_growth"][tariff], P)
-        # Все когорты — исторические (S − n + 1 … якорь) и прогнозные — созревают с плотностью d,
-        # закрытия — с κ; индекс ведётся от конца S, как при подборе d (§4.1): площадь минус
-        # незрелая часть последних n когорт, дальше одна рекурсия для истории и прогноза.
+        # Все когорты — исторические (S − n + 1 … якорь) и прогнозные — созревают до плотности d,
+        # закрытия — с κ; индекс ведётся от конца S, как при подборе d (§4.1): зрелая площадь S
+        # (старше n полугодий) — с плотностью 1, когорты S − n + 1 … S — с d × μ_возраста,
+        # дальше одна рекурсия для истории и прогноза.
         cohorts = list(cf.gross_opened.values())    # от S − n + 1; S — позиция n − 1
         start = cf.eff_start
-        eff = cf.area_end[start] - fsum(cohorts[n - 1 - a] * d * (1.0 - mu[a]) for a in range(n))
+        eff = cf.area_end[start] - fsum(cohorts[n - 1 - a] * (1.0 - d * mu[a]) for a in range(n))
         eff_hist = {start: eff}
         for j, q in enumerate(periods(next_period(start), self.anchor)):
             i = n + j                                # позиция когорты q

@@ -1,11 +1,12 @@
-# Лист «Маржа и режимы» (область margin) — книга X5 1.1
+# Лист «Маржа и режимы» (область margin) — книга X5 1.1.1
 
 28.09.2026. Ключи книги: `margin.targets` (4 режима, якорь 2026H1…LT), `joint.regime_prob`, `joint.regime_demand`,
 `margin.deviation_persistence` (единственный ключ ρ — и хвоста якоря, и правила A-P2u), `margin.seasonal_h1_pp`,
 `margin.lti_pct`, `joint.regime_update` (`sigma_pp`, `cap_pp`, `observations`), `valuation.next_report` (`period`,
 `demo_values`). Семантика — `docs/MODEL.md` §3, §4.3,
 §4.4, §10, §12. Маржа — скорр. EBITDA до МСФО 16 **без LTI** (так X5 раскрывает её и так дан прогноз «6+ %»);
-LTI — отдельная строка. Фрагмент книги — `../../fragments/margin.yaml`, текст раздела — `../../sections/margin.md`.
+LTI — отдельная строка. Фрагмент книги — выход листа `fragment.yaml` (значения = выходам скриптов = `assumptions.yaml`);
+текст раздела — `../../ASSUMPTIONS-BOOK.md`, раздел 3.
 
 ## Как перезапустить
 

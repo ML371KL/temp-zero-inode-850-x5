@@ -33,8 +33,10 @@ concurrency:
 env:
   PYTHONUNBUFFERED: "1"
   PYTHONIOENCODING: utf-8
-  # Одно «сегодня» у сборщиков и ядра — день по Москве: местная дата раннера
-  # (её берёт ядро) = дата сборщиков (UTC+3).
+  # «Сегодня» прогона — день по Москве: ядро (model.book.today) и сборщики
+  # (indicators.live.msk_today) считают его сами по фиксированному UTC+3, от
+  # пояса машины не зависят. TZ — только для отметок времени инструментов
+  # (пояс в дате коммита ветки data); дату выпуска он не определяет.
   TZ: Europe/Moscow
   PUBLIC_DATA_URL: https://tzi-850-x5.pages.dev/api/model
 
@@ -80,9 +82,14 @@ jobs:
           python -m indicators.live "${args[@]}"
 
       - name: Тесты такта
+        # -rs: причина каждого пропуска — в журнале шага и строкой в сводке (на раннере
+        # пропускается тест пересборки фактов с меткой primary: первички здесь нет).
         run: |
-          if python -m pytest -q -m "not network and not ci_only and not docs"; then
+          set -o pipefail
+          log="$RUNNER_TEMP/tact-tests.log"
+          if python -m pytest -q -rs -m "not network and not ci_only and not docs" 2>&1 | tee "$log"; then
             echo "- готово: тесты такта" >> "$GITHUB_STEP_SUMMARY"
+            { grep '^SKIPPED' "$log" || true; } | sed 's/^SKIPPED /- пропуск теста такта: /' >> "$GITHUB_STEP_SUMMARY"
           else
             echo "- ПРОВАЛ на шаге тесты такта: упавшие тесты — в журнале шага" >> "$GITHUB_STEP_SUMMARY"
             exit 1
@@ -93,10 +100,39 @@ jobs:
           args=(--live-file var/live/live.json --out var/release/latest.json)
           if [ -f var/state/latest.json ]; then args+=(--previous var/state/latest.json); fi
           if [ -f var/state/journal.json ]; then args+=(--journal var/state/journal.json); fi
+          # history.json: книга каждого опубликованного выпуска — для journal.releases
+          if [ -f var/state/history.json ]; then args+=(--history var/state/history.json); fi
           python ops/build_release.py "${args[@]}"
 
       - name: Проверка контракта
         run: python ops/build_release.py --check var/release/latest.json
+
+      - name: Код прогона и голова main
+        # Повтор прогона (Re-run) идёт на исходном коммите. Если main ушёл вперёд правкой
+        # того, что собирает выпуск (пути push-триггера: model/, data/, indicators/, ops/,
+        # requirements.txt, кроме *.md), выпуск на устаревшем коде не публикуется — провал,
+        # ветка data не тронута; новый код публикует свой прогон (push по этим путям его
+        # запускает; иначе — gh workflow run pipeline.yml). Правки вне этих путей (документы,
+        # витрина, тесты) публикации не мешают.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          fail() { echo "- ПРОВАЛ на шаге код прогона и голова main: $1" | tee -a "$GITHUB_STEP_SUMMARY"; exit 1; }
+          main_sha=$(git ls-remote "https://github.com/$GITHUB_REPOSITORY" refs/heads/main | cut -f1)
+          [ -n "$main_sha" ] || fail "голова main не прочитана (git ls-remote)"
+          if [ "$main_sha" = "$GITHUB_SHA" ]; then
+            echo "- готово: код прогона ${GITHUB_SHA:0:7} = голова main" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          compare=$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$main_sha" --jq '.status, .files[]?.filename') \
+            || fail "сравнение ${GITHUB_SHA:0:7}...${main_sha:0:7} не прочитано"
+          status=$(printf '%s\n' "$compare" | head -n 1)
+          stale=$(printf '%s\n' "$compare" | tail -n +2 \
+            | grep -E '^(model|data|indicators|ops)/|^requirements\.txt$' | grep -v '\.md$' || true)
+          if [ "$status" != ahead ] || [ -n "$stale" ]; then
+            fail "main ушёл вперёд (${main_sha:0:7}) — выпуск на устаревшем коде ${GITHUB_SHA:0:7} не публикуется; повтор прогона — gh workflow run pipeline.yml, не Re-run"
+          fi
+          echo "- готово: main впереди (${main_sha:0:7}) только правками вне конвейера — публикуется выпуск на коде ${GITHUB_SHA:0:7}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Публикация в ветку data
         # Ветка изменилась после шага «Состояние из ветки data» (ручной откат,

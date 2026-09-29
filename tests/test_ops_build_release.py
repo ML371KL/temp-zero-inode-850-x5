@@ -214,8 +214,9 @@ def test_engine_with_kwargs_gets_everything():
     def build_payload(**kw):
         seen.update(kw)
         return payload()
-    build_release.call_build_payload(build_payload, live=1, previous=2, journal=3, fast=True)
-    assert seen == {"live": 1, "previous": 2, "journal": 3, "fast": True}
+    build_release.call_build_payload(build_payload, live=1, previous=2, journal=3, fast=True,
+                                     release_history=4)
+    assert seen == {"live": 1, "previous": 2, "journal": 3, "fast": True, "release_history": 4}
 
 
 def test_with_slow_is_the_inverse_of_fast():

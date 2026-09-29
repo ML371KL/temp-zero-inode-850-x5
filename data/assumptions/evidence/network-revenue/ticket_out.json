@@ -72,7 +72,7 @@
  "h2_2026": {
   "food_weighted": 0.0521,
   "ticket_center": 0.049823,
-  "traffic_reported": 0.002698
+  "traffic_reported": 0.002711
  },
  "k_book": 0.63,
  "k_ols": 0.625749,
@@ -83,9 +83,9 @@
   "bull": 0.05
  },
  "terminal_real_weighted": {
-  "H": 0.001058,
-  "M": 0.001008,
-  "N": -0.000135
+  "H": 0.000859,
+  "M": 0.000809,
+  "N": -0.000334
  },
  "ticket_k": {
   "base": 0.63,

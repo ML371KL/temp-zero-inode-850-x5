@@ -47,14 +47,22 @@ def test_before_first_year_takes_first_year():
     assert path_value({"2028": 0.3, "LT": 0.1}, "2026H2") == 0.3
 
 
-def test_curve_nodes_and_convergence():
+def test_curve_nodes_and_forward_lt_beyond_last_node():
+    """§0.2: за последним узлом форвард равен LT — (1 + z(t))^t = (1 + z10)^10 (1 + LT)^(t − 10);
+    бескупонная ставка сходится к LT только асимптотически (книга 1.1.1, [3] раунда 2)."""
     curve = {"1": 0.10, "3": 0.12, "5": 0.13, "10": 0.14, "LT": 0.09}
     assert interp_curve(curve, 0.25) == 0.10
     assert interp_curve(curve, 2.0) == pytest.approx(0.11, abs=1e-15)
     assert interp_curve(curve, 10.0) == 0.14
-    assert interp_curve(curve, 12.5) == pytest.approx(0.115, abs=1e-15)
-    assert interp_curve(curve, 15.0) == 0.09
-    assert interp_curve(curve, 30.0) == 0.09
+    for t in (10.5, 12.5, 15.0, 30.0):
+        grow = (1 + interp_curve(curve, t)) ** t
+        assert grow == pytest.approx(1.14 ** 10 * 1.09 ** (t - 10), rel=1e-13), t
+    # форвард между любыми сроками за 10 годами — ровно LT
+    for s, T in ((10.0, 3.0), (12.0, 5.0), (20.0, 1.0)):
+        fwd = ((1 + interp_curve(curve, s + T)) ** (s + T) / (1 + interp_curve(curve, s)) ** s) ** (1 / T) - 1
+        assert fwd == pytest.approx(0.09, abs=1e-13), (s, T)
+    z = [interp_curve(curve, t) for t in (10.0, 12.5, 15.0, 30.0, 200.0)]
+    assert all(a > b > 0.09 for a, b in zip(z, z[1:]))
 
 
 def test_half_rate_is_root_not_half():

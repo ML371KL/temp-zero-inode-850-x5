@@ -3,7 +3,10 @@
 
 from __future__ import annotations
 
+import os
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 import yaml
@@ -64,6 +67,7 @@ def test_pipeline_step_order():
              run_index(s, "pytest"),
              run_index(s, "--live-file"),
              run_index(s, "build_release.py --check"),
+             run_index(s, "git ls-remote"),
              run_index(s, "publish.py --release"),
              run_index(s, "publish.py --verify"),
              run_index(s, "/actions/workflows/pipeline.yml/enable")]
@@ -73,6 +77,37 @@ def test_pipeline_step_order():
 def test_pipeline_tick_tests_exclude_exactly_three_markers():
     s = steps("pipeline.yml")
     assert '-m "not network and not ci_only and not docs"' in s[run_index(s, "pytest")]["run"]
+
+
+def test_skip_reasons_are_printed():
+    """Причина пропуска видна: `-rs` у pytest в конвейере и CI; такт пишет строки пропусков
+    в сводку (на раннере так виден пропуск теста пересборки фактов с меткой primary)."""
+    tick = steps("pipeline.yml")[run_index(steps("pipeline.yml"), "pytest")]["run"]
+    assert "pytest -q -rs " in tick and "set -o pipefail" in tick
+    assert "^SKIPPED" in tick and "$GITHUB_STEP_SUMMARY" in tick
+    assert "pytest -q -rs " in steps("ci.yml")[run_index(steps("ci.yml"), "pytest")]["run"]
+
+
+def test_stale_code_is_not_published():
+    """Повтор прогона (Re-run) идёт на исходном коммите: перед публикацией код прогона
+    сверяется с головой main, и если main ушёл вперёд правкой путей push-триггера, шаг
+    падает — ветка data не тронута. Пути сверки = пути push-триггера конвейера."""
+    s = steps("pipeline.yml")
+    guard = s[run_index(s, "git ls-remote")]
+    run = guard["run"]
+    assert guard["env"]["GH_TOKEN"] == "${{ github.token }}"
+    assert "refs/heads/main" in run and '= "$GITHUB_SHA"' in run
+    assert "compare/$GITHUB_SHA..." in run and '"$status" != ahead' in run
+    assert "exit 1" in run and "не Re-run" in run
+    pattern = re.search(r"grep -E '([^']+)'", run).group(1)
+    for path in load("pipeline.yml")["on"]["push"]["paths"]:
+        if path.startswith("!"):
+            assert path == "!**/*.md" and "grep -v '\\.md$'" in run
+            continue
+        sample = path.replace("**", "x.py")
+        assert re.search(pattern, sample), f"путь push-триггера {path} не сверяется"
+    for other in ("docs/MANUAL.md", "web/app.js", "tests/test_x.py", "functions/api/model.js"):
+        assert not re.search(pattern, other), other
 
 
 def test_pipeline_verifies_through_the_live_door():
@@ -113,9 +148,20 @@ def test_publication_expects_the_commit_read_at_the_start():
     assert '--expect-commit "$(cat var/state/.commit)"' in s[run_index(s, "publish.py --release")]["run"]
 
 
-def test_one_today_moscow_day():
-    for name in ("pipeline.yml", "ci.yml"):
-        assert load(name)["env"]["TZ"] == "Europe/Moscow", name
+def test_today_does_not_depend_on_tz():
+    """«Сегодня» ядра (`model.book.today`) и сборщиков (`indicators.live.msk_today`) — день по
+    Москве, фиксированное UTC+3 в коде: от пояса машины (TZ) не зависит. `TZ: Europe/Moscow`
+    в workflow — только для отметок времени инструментов, дату выпуска он не определяет."""
+    code = ("import datetime as dt; from model.book import today; from indicators.live import msk_today; "
+            "a = dt.datetime.now(dt.timezone.utc); t, m = today(), msk_today(); "
+            "b = dt.datetime.now(dt.timezone.utc); h = dt.timedelta(hours=3); "
+            "print(t, m, (a + h).date(), (b + h).date())")
+    env = {k: x for k, x in os.environ.items() if k not in ("FAKE_TODAY", "TZ")}
+    env["PYTHONPATH"] = str(ROOT)
+    for tz in ("UTC0", "XYZ-14", "XYZ+12", "Europe/Moscow"):
+        out = subprocess.run([sys.executable, "-c", code], env={**env, "TZ": tz}, cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout.split()
+        assert out[0] == out[1] and out[0] in out[2:], (tz, out)
 
 
 def test_no_secrets_and_pinned_actions():

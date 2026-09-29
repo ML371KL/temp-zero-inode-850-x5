@@ -158,14 +158,14 @@ def main() -> None:
     # 5. ссылки на книгу (чужие ключи — только чтение)
     import yaml  # PyYAML — единственная внешняя зависимость
     draft_p = REPO / "data" / "assumptions" / "assumptions.draft.yaml"
-    frag_p = REPO / "data" / "assumptions" / "fragments" / "margin.yaml"
+    frag_p = REPO / "data" / "assumptions" / "evidence" / "margin" / "fragment.yaml"
     dr = yaml.safe_load(draft_p.read_text(encoding="utf-8"))
     fr = yaml.safe_load(frag_p.read_text(encoding="utf-8"))
     refs = {
         "_about": "Снимок чужих ключей книги для проверок листа: миры (прод. ИПЦ, ИПЦ, инфляция LT), веса слоёв, "
                   "привязки мира; вероятности режимов — из фрагмента «маржа».",
         "draft": {"file": "data/assumptions/assumptions.draft.yaml", "sha256": sha256(draft_p)},
-        "margin_fragment": {"file": "data/assumptions/fragments/margin.yaml", "sha256": sha256(frag_p)},
+        "margin_fragment": {"file": "data/assumptions/evidence/margin/fragment.yaml", "sha256": sha256(frag_p)},
         "meta": {k: dr["meta"][k] for k in ("anchor_period", "first_period", "last_period")},
         "worlds": {w: {"food_cpi": dr["worlds"][w]["food_cpi"], "cpi": dr["worlds"][w]["cpi"],
                        "lt_inflation": dr["worlds"][w]["lt"]["inflation"]} for w in ("N", "H", "M")},

@@ -78,15 +78,15 @@
 6. Остальные коридоры
 ---------------------
   max_leverage = 4.0: ковенант 4.0× (история — до 3.7148×) — leverage.py
-  min_v0_to_d = 1.5: при V0/D 1,5 кредитный пут слоя (σ_EV книги, T 1,24 / 3 года) — 3.9 / 31.7 ₽ на акцию, меньше полушага печати (25 ₽) — model_check.py
-  book_update = {shift_bp: 50, max_age_days: 45}: ASSUMPTIONS-BOOK.md §17: сдвиг ≥50 б.п. на узлах 5–10 лет или книга старше 45 дней — миры общие, правило общее
+  min_v0_to_d = 1.5: при V0/D 1,5 кредитный пут слоя (σ_EV книги) на сроке долга 1,24 года — 2.6 ₽ на акцию (меньше полушага печати 25 ₽), на 3 года — 24.3 ₽; полшага печати пут достигает на сроке 3.05 года — model_check.py
+  book_update = {shift_bp: 50, max_age_days: 45}: правило справочника книги Магнита (ASSUMPTIONS-BOOK.md §17: сдвиг ≥50 б.п. на узлах 5–10 лет или книга старше 45 дней) — миры общие, правило общее
 
 7. Массы гейтов на книге (клетки model_check_out.json, слой «свой взгляд»)
 --------------------------------------------------------------------------
-  ev_ebitda       масса 0.0340  ['N|full|low', 'M|floor|low', 'M|partial|low', 'M|full|low', 'M|full|base', 'M|full|high']
+  ev_ebitda       масса 0.0691  ['N|stress|high', 'N|full|low', 'H|stress|high', 'M|partial|low', 'M|full|low', 'M|full|base']
   margin_range    масса 0.0000  []
   capex_range     масса 0.0000  []
   terminal_share  масса 0.0000  []
   real_rate       масса 0.0000  []
   leverage_path   масса 0.0000  []
-  equity_cushion  масса 0.0000  []
+  equity_cushion  масса 0.0280  ['H|stress|high']

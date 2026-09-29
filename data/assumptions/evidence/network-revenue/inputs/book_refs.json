@@ -2,11 +2,11 @@
  "_about": "Снимок чужих ключей книги для проверок листа: миры (прод. ИПЦ, ИПЦ, инфляция LT), веса слоёв, привязки мира; вероятности режимов — из фрагмента «маржа».",
  "draft": {
   "file": "data/assumptions/assumptions.draft.yaml",
-  "sha256": "23a557ff1328eac611bd56e093ca80e82b61c27e965870fb0d973f7783f7a825"
+  "sha256": "194aac205d5649a36a8e4aeb65657bd7a25f850bde4605099215577ceff6cfc0"
  },
  "margin_fragment": {
-  "file": "data/assumptions/fragments/margin.yaml",
-  "sha256": "810999a38c8207e4a7bde861147a6ced2854c24f66421ceea23ebef413725ca3"
+  "file": "data/assumptions/evidence/margin/fragment.yaml",
+  "sha256": "9aa0defb967798042997a5714c36623f0622dfdbe9bdf390132692d02b95ea21"
  },
  "meta": {
   "anchor_period": "2026H1",

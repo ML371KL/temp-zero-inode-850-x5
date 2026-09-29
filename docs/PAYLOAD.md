@@ -23,8 +23,8 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 факта), `curve_as_of`, `closed_periods`, `elapsed`, `payload_sha256`, `bytes`,
 `previous_sha256` (или null), `fast` (быстрая сборка на 200 прогонах — в выпуск не идёт).
 **Хэш** — sha256 канонического JSON без `meta.generated_at`, `meta.payload_sha256`,
-`meta.bytes`, `meta.previous_sha256`, `live.fetched_at`, блока `changes` и
-`journal.entries[].release_sha`: время сборки и ссылки на выпуски вне хэша, иначе
+`meta.bytes`, `meta.previous_sha256`, `live.fetched_at`, блока `changes`,
+`journal.entries[].release_sha` и `journal.releases`: время сборки и ссылки на выпуски вне хэша, иначе
 каждая пересборка на тех же входах — новый выпуск. Числа выпуска — 9 значащих цифр.
 
 ## market
@@ -78,8 +78,10 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 `v0`, `d`, `equity`, `price`, `pv_fcff`, `pv_shield`, `pv_terminal`, `pv_financing`
 (PV вычетов финансирования — издержки размещения, проценты сверх справедливого спреда,
 кэрри подушки, положительным числом: `v0` = `pv_fcff` + `pv_shield` + `pv_terminal` −
-`pv_financing`), `terminal_share`, `ev_ebitda_fwd`, `ebitda_ntm` (скорр. EBITDA следующих
-12 мес.), `v0_to_d`.
+`pv_financing`), `pv_terminal_financing` (терминальная часть `pv_financing`: Σp·TV_fin·df =
+`pv_terminal` − `terminal_share`·`v0`), `terminal_share` (доля терминала **чистая** —
+(`pv_terminal` − `pv_terminal_financing`) / `v0`), `ev_ebitda_fwd`, `ebitda_ntm` (скорр.
+EBITDA следующих 12 мес.), `v0_to_d`.
 
 ## grid
 `cells`: 36 × {`world`, `regime`, `capex`, `p_analytical`, `p_market_implied`,
@@ -91,7 +93,8 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 `key_rate` [{year, value}] (среднее за год), `cpi`, `food_cpi` (то же),
 `zero_curve` {1, 3, 5, 10, LT}, `lt_inflation`, `r_terminal` (z_LT + β_u·ERP),
 `real_terminal`, `price` (цена слоя «только этот мир»), `v0`. `source` —
-происхождение миров (книга Магнита 1.6, дата кривой).
+`worlds.source` книги как есть: {`book` (книга Магнита и её тег), `curve_date`,
+`tag_commit`, `kernel_sha256`}.
 
 ## regimes
 По stress, floor, partial, full: `title` («Стресс», «Дно», «Частичный возврат», «Полный
@@ -142,14 +145,19 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
   бумаги, выкупленные по оферте; размещённый объём ISS — только без факта),
   `outstanding_anchor` (на дату баланса якоря), `coupon_type`, `coupon`, `spread`,
   `put_date`, `maturity`, `price`, `ytm`, `as_of`}]; `bank_loans` {short, long, total}.
-* `wall`: [{`period` (квартал/год), `bonds`, `banks`}] — график погашений/оферт.
+* `wall`: [{`period` (квартал/год), `bonds`, `banks` (null — график кредитов по срокам не
+  раскрыт)}] — график погашений/оферт; `wall_note` — как построена стена, словами из
+  реестра фактов (`debt_register.wall_note`; null — нет).
 
 ## dividends
 `policy` {target_leverage [lo, hi], no_pay_above, frequency, text}; `register`
 [{id, label, dps, amount, record_date, ex_date, pay_until, status (declared | paying |
 paid | unclaimed), paid_share, in_claims}]; `history` [{period, label, dps, amount,
 record_date}] — по времени, от старых к новым (9M раньше FY того же года); `model`
-[{year, amount, dps}] — ожидаемые выплаты модели по годам (слой «свой взгляд»);
+[{year, amount, dps}] — ожидаемые выплаты модели по **году выплаты** (слой «свой взгляд»;
+за 9 мес. — 1П следующего года, финал — 2П); год якоря — только прогнозные полугодия
+(`paths.annual[].forecast_only` содержит `dividends`), дивиденды с отсечкой до даты оценки
+— в требованиях (`register[].in_claims`), а не здесь;
 `next_expected` {label, record_date_est (дата ISO или null: из фактов, иначе ближайшая
 отсечка календаря), record_date_note (текст оценки), pay_period (полугодие выплаты:
 за 9 мес. — 1П следующего года, финал — 2П), dps_model (дивиденд модели в `pay_period`,
@@ -198,7 +206,12 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 `entries`: [{`id`, `target` ("x5.adj_margin" | "x5.revenue_growth"), `period`,
 `recorded_at`, `release_sha`, `forecast`, `benchmarks` {name: value},
 `actual` (или null), `errors` {forecast, benchmarks}}]; `rule` (текст правила
-допуска); `status`.
+допуска); `status`; `releases` {`release_sha`: {`book_version`, `generated_at`}} — книга
+выпусков, записавших прогнозы (записи неизменяемы, поэтому версия книги — рядом, а не в
+них): перенос из прошлого журнала, `meta` прошлого выпуска и его `changes.vs_previous`,
+строки публикаций `history.json` ветки `data` (`build_release.py --history`);
+только выпуски, на которые ссылаются записи; текущего выпуска в карте нет (его книга —
+`meta.book_version`).
 
 ## calendar
 `events`: [{`date`, `title`, `kind`, `confirmed`, `note`}] ближайших 12 месяцев.

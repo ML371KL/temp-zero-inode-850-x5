@@ -80,7 +80,7 @@
   "treasury_shares_mln": {
    "v": 25.591692,
    "src": "finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf прим. 17, с. 21",
-   "calc": "не актив моста; знаменатель — акции в обращении"
+   "calc": "не актив моста; в формуле цены — выручка от продажи пакета n·k·P_рынок, знаменатель — выпущенные акции N + n (docs/MODEL.md §7.2; ядро читает n из shares.treasury)"
   },
   "deferred_consideration": {
    "v": null,

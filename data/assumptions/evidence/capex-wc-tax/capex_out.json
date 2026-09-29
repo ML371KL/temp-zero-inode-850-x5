@@ -80,11 +80,11 @@
     "fleet": 14.705034,
     "it": 26.832052,
     "other_net": 7.889885,
-    "pct": 0.029255,
-    "phys_share": 0.65368,
+    "pct": 0.02923,
+    "phys_share": 0.653384,
     "refurb_m2eq": 930.81268,
-    "store": 77.194222,
-    "total": 142.720424
+    "store": 77.072458,
+    "total": 142.59866
    },
    "high": {
     "cvp": 10.732821,
@@ -92,11 +92,11 @@
     "fleet": 16.805753,
     "it": 31.710608,
     "other_net": 7.889885,
-    "pct": 0.035874,
-    "phys_share": 0.677705,
+    "pct": 0.035793,
+    "phys_share": 0.676976,
     "refurb_m2eq": 1221.691643,
-    "store": 95.67887,
-    "total": 175.014324
+    "store": 95.284103,
+    "total": 174.619556
    },
    "low": {
     "cvp": 4.878555,
@@ -116,14 +116,14 @@
   "store_2025": 55.952,
   "store_2025_now": 62.323176,
   "unit_refurb": {
-   "base": 0.03175,
-   "high": 0.043932,
+   "base": 0.03149,
+   "high": 0.043412,
    "low": 0.019569
   }
  },
  "capex_prob": {
   "book": {
-   "expected_ss": 0.029309,
+   "expected_ss": 0.02928,
    "unconditional": {
     "base": 0.57925,
     "high": 0.18175,
@@ -155,21 +155,21 @@
  },
  "capex_to_da": {
   "da_2025_ex_impairment_pct": 0.023246,
-  "ratio": 1.307872
+  "ratio": 1.305391
  },
  "checks": {
   "capex_2026": {
-   "high/base": 0.038979,
-   "high/high": 0.042255,
-   "high/low": 0.036559,
-   "low/base": 0.037625,
-   "low/high": 0.040895,
-   "low/low": 0.03521,
-   "mid/base": 0.03825,
-   "mid/high": 0.041523,
-   "mid/low": 0.035833
+   "high/base": 0.038965,
+   "high/high": 0.042241,
+   "high/low": 0.036545,
+   "low/base": 0.037621,
+   "low/high": 0.040891,
+   "low/low": 0.035207,
+   "mid/base": 0.038241,
+   "mid/high": 0.041514,
+   "mid/low": 0.035825
   },
-  "model_stationary_total": 0.030403,
+  "model_stationary_total": 0.030345,
   "replacement_corridor": {
    "accounting": 0.031611,
    "economic": 0.024316,
@@ -178,10 +178,10 @@
   "run_rate_1h26": 0.037357
  },
  "checks_2026": {
-  "expected_mid": 0.038267,
-  "h2_bn": 103.607303,
-  "h2_pct": 0.039085,
-  "h2_to_h1": 1.04627,
+  "expected_mid": 0.038259,
+  "h2_bn": 103.564913,
+  "h2_pct": 0.039069,
+  "h2_to_h1": 1.045842,
   "p_levels": {
    "base": 0.57925,
    "high": 0.18175,
@@ -189,8 +189,8 @@
   }
  },
  "closure_rate_annual": {
-  "2024": 0.015847,
-  "2025": 0.015417,
+  "2024": 0.016768,
+  "2025": 0.017383,
   "2026H1": 0.025663
  },
  "disposal_nbv": {
@@ -299,77 +299,77 @@
   "2024": {
    "capex": 158.488,
    "infra": 20.966931,
-   "maint": 90.398325,
-   "maint_company": 87.450325,
-   "maint_pct": 0.023131,
-   "openings": 50.070744,
+   "maint": 90.792715,
+   "maint_company": 87.844715,
+   "maint_pct": 0.023232,
+   "openings": 49.676353,
    "other_net": 2.948,
    "revenue": 3908.047
   },
   "2024H1": {
    "capex": 72.754,
    "infra": 8.06331,
-   "maint": 44.82505,
-   "maint_company": 44.68405,
-   "maint_pct": 0.024207,
-   "openings": 20.006639,
+   "maint": 45.011045,
+   "maint_company": 44.870045,
+   "maint_pct": 0.024308,
+   "openings": 19.820645,
    "other_net": 0.141,
    "revenue": 1851.711
   },
   "2024H2": {
    "capex": 85.734,
    "infra": 12.998123,
-   "maint": 45.300357,
-   "maint_company": 42.493357,
-   "maint_pct": 0.02203,
-   "openings": 30.24252,
+   "maint": 45.509207,
+   "maint_company": 42.702207,
+   "maint_pct": 0.022131,
+   "openings": 30.03367,
    "other_net": 2.807,
    "revenue": 2056.336
   },
   "2024_company_ex_mna": {
    "capex": 161.408,
-   "maint": 93.318325,
-   "maint_company": 90.370325,
-   "maint_pct": 0.023879,
+   "maint": 93.712715,
+   "maint_company": 90.764715,
+   "maint_pct": 0.023979,
    "other_net": 2.948
   },
   "2025": {
    "capex": 215.225,
    "infra": 25.22932,
-   "maint": 138.182835,
-   "maint_company": 130.246835,
-   "maint_pct": 0.029768,
-   "openings": 59.748845,
+   "maint": 137.754149,
+   "maint_company": 129.818149,
+   "maint_pct": 0.029675,
+   "openings": 60.177531,
    "other_net": 7.936,
    "revenue": 4642.034
   },
   "2025H1": {
    "capex": 101.58,
    "infra": 10.907636,
-   "maint": 67.638532,
-   "maint_company": 65.982532,
-   "maint_pct": 0.030142,
-   "openings": 24.689832,
+   "maint": 67.189121,
+   "maint_company": 65.533121,
+   "maint_pct": 0.029942,
+   "openings": 25.139243,
    "other_net": 1.656,
    "revenue": 2243.992
   },
   "2025H2": {
    "capex": 113.645,
    "infra": 14.352179,
-   "maint": 70.448215,
-   "maint_company": 64.168215,
-   "maint_pct": 0.029377,
-   "openings": 35.124606,
+   "maint": 70.474635,
+   "maint_company": 64.194635,
+   "maint_pct": 0.029388,
+   "openings": 35.098186,
    "other_net": 6.28,
    "revenue": 2398.042
   },
   "2026H1": {
    "capex": 92.664,
    "infra": 6.813819,
-   "maint": 67.260101,
-   "maint_company": 63.677101,
-   "maint_pct": 0.027115,
-   "openings": 22.173081,
+   "maint": 67.522521,
+   "maint_company": 63.939521,
+   "maint_pct": 0.027221,
+   "openings": 21.91066,
    "other_net": 3.583,
    "revenue": 2480.513
   }
@@ -388,70 +388,70 @@
    "low": 0.018736
   }
  },
- "maint_ltm_pct": 0.028227,
+ "maint_ltm_pct": 0.028286,
  "maint_seasonality": {
   "2024": {
-   "h1": 1.046519,
-   "h2": 0.952373
+   "h1": 1.046296,
+   "h2": 0.952607
   },
   "2025": {
-   "h1": 1.012575,
-   "h2": 0.986887
+   "h1": 1.008977,
+   "h2": 0.990329
   }
  },
  "near_term": {
-  "core_basis_pct": 0.02906,
-  "factor": 1.029511,
-  "gap_to_stationary_pp": 0.000194,
+  "core_basis_pct": 0.029164,
+  "factor": 1.031023,
+  "gap_to_stationary_pp": 6.6e-05,
   "halves": {
    "2025H2": {
-    "area_mid": 11694.569085,
-    "area_to_anchor": 1.039563,
+    "area_mid": 11644.12836,
+    "area_to_anchor": 1.044066,
     "cpi_to_anchor": 1.03796,
-    "factor": 1.051366,
-    "maint_core_basis": 74.066878,
-    "maint_nominal": 70.448215
+    "factor": 1.054405,
+    "maint_core_basis": 74.308772,
+    "maint_nominal": 70.474635
    },
    "2026H1": {
     "area_mid": 12034.6705,
     "area_to_anchor": 1.010185,
     "cpi_to_anchor": 1.0,
     "factor": 1.00662,
-    "maint_core_basis": 67.705366,
-    "maint_nominal": 67.260101
+    "maint_core_basis": 67.969524,
+    "maint_nominal": 67.522521
    }
   },
-  "nominal_ltm_pct": 0.028227
+  "nominal_ltm_pct": 0.028286
  },
  "network_flows": {
   "2024": {
-   "closed_area": 168.520018,
-   "gross_area": 1027.659248,
+   "closed_area": 172.636649,
+   "gross_area": 1031.775879,
    "net_area": 859.13923
   },
   "2024H1": {
-   "closed_area": 81.940784,
-   "gross_area": 419.439514,
+   "closed_area": 83.018254,
+   "gross_area": 420.516984,
    "net_area": 337.49873
   },
   "2024H2": {
-   "closed_area": 86.277582,
-   "gross_area": 607.918082,
+   "closed_area": 89.310047,
+   "gross_area": 610.950547,
    "net_area": 521.6405
   },
   "2025": {
-   "closed_area": 177.099386,
-   "gross_area": 1128.189386,
+   "closed_area": 198.802992,
+   "gross_area": 1149.892992,
    "net_area": 951.09
   },
   "2025H1": {
-   "closed_area": 55.532767,
-   "gross_area": 470.677487,
+   "closed_area": 69.840012,
+   "gross_area": 484.984732,
    "net_area": 415.14472
   },
   "2025H2": {
-   "closed_area": 121.032195,
-   "gross_area": 656.977475,
+   "closed_area": 128.400622,
+   "gross_area": 664.345902,
    "net_area": 535.94528
   },
   "2026H1": {
@@ -509,27 +509,27 @@
  "other_net_ltm_pct": 0.002022,
  "paths": {
   "base": {
-   "2026H2": 0.0291,
-   "2027": 0.0291,
-   "LT": 0.0293,
+   "2026H2": 0.0292,
+   "2027": 0.0292,
+   "LT": 0.0292,
    "LT_from": 2029
   },
   "high": {
-   "2026H2": 0.0356,
-   "2027": 0.0356,
-   "LT": 0.0359,
+   "2026H2": 0.0357,
+   "2027": 0.0357,
+   "LT": 0.0358,
    "LT_from": 2029
   },
   "low": {
-   "2026H2": 0.0243,
-   "2027": 0.0243,
+   "2026H2": 0.0244,
+   "2027": 0.0244,
    "LT": 0.0244,
    "LT_from": 2029
   }
  },
  "phi": 0.65,
  "price_per_m2": {
-  "center": 0.055493,
+  "center": 0.054837,
   "chizhik_all_in_per_net_m2": {
    "2024": 0.084689,
    "2025": 0.077849,
@@ -538,17 +538,17 @@
   },
   "obs": {
    "2024": {
-    "anchor_prices": 0.057171,
+    "anchor_prices": 0.056942,
     "cpi_to_anchor": 1.138956,
-    "gross_area": 1027.659248,
-    "nominal": 0.050196,
+    "gross_area": 1031.775879,
+    "nominal": 0.049995,
     "openings_capex": 51.584
    },
    "2025": {
-    "anchor_prices": 0.053966,
+    "anchor_prices": 0.052947,
     "cpi_to_anchor": 1.047838,
-    "gross_area": 1128.189386,
-    "nominal": 0.051502,
+    "gross_area": 1149.892992,
+    "nominal": 0.05053,
     "openings_capex": 58.104
    }
   }

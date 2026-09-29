@@ -56,7 +56,7 @@ valuation:                                          # A-V (valuation.py)
                  network.net_growth.mid.2027, network.net_growth.mid.2028, network.net_growth.mid.2029, network.net_growth.mid.2030,
                  network.net_growth.high.2027, network.net_growth.high.2028, network.net_growth.high.2029, network.net_growth.high.2030],
          low: -0.010, high: 0.008}
-      - {name: "Стоимость открытия, млрд ₽ на тыс. м²", kind: value, paths: [capex.price_per_m2], low: 0.047, high: 0.064}
+      - {name: "Стоимость открытия, млрд ₽ на тыс. м²", kind: value, paths: [capex.price_per_m2], low: 0.047, high: 0.063}
       - {name: "Инфраструктура на м² прироста, млрд ₽ на тыс. м²", kind: value, paths: [capex.infra_per_m2], low: 0.019, high: 0.037}
       - {name: "Плотность новой площади", kind: value, paths: [network.new_space_density], low: 0.73, high: 0.93}
       - {name: "Продуктивность закрываемой площади", kind: value, paths: [network.closed_productivity], low: 0.4, high: 0.8}
@@ -77,7 +77,7 @@ valuation:                                          # A-V (valuation.py)
          paths: [capex.maintenance.low, capex.maintenance.base, capex.maintenance.high],
          search: [-0.02, 0.04], range: [-0.004, 0.004], unit: "п.п."}
       - {name: "Стоимость открытия, млрд ₽ на тыс. м²", kind: value, paths: [capex.price_per_m2],
-         search: [0.0, 0.20], range: [0.047, 0.064], unit: "bn_per_m2"}
+         search: [0.0, 0.20], range: [0.047, 0.063], unit: "bn_per_m2"}
       - {name: "Бета активов β_u", kind: value, paths: [valuation.beta_u], search: [0.2, 2.0], range: [0.45, 0.75], unit: ""}
       - {name: "Премия за риск ERP", kind: value, paths: [valuation.erp], search: [0.0, 0.20], range: [0.049, 0.065], unit: "%"}
       - {name: "Дисконт за управление", kind: value, paths: [valuation.governance_discount], search: [0.0, 0.9], range: [0.0, 0.05], unit: "%"}

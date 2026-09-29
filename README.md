@@ -8,9 +8,9 @@
 
 На входах книги (версия и дата оценки — `data/assumptions/results.json`, блоки `book` и `inputs`; рынок <!--=inputs.market_price r1-->1 808,5<!--/--> ₽):
 
-- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 100<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 350<!--/-->–<!--=band.printed.p90 r0-->3 900<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->2 700<!--/-->–<!--=band.printed.p75 r0-->3 550<!--/--> ₽;
-- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 200<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->1,00<!--/--> %;
-- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+41,2<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
+- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 150<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 400<!--/-->–<!--=band.printed.p90 r0-->3 900<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->2 750<!--/-->–<!--=band.printed.p75 r0-->3 550<!--/--> ₽;
+- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 250<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->1,00<!--/--> %;
+- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+41,8<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
 
 Живой выпуск считает на сегодняшней цене и печатает свои числа — экран «Оценка» и `/api/model`. Числа выше стоят в метках и перерисовываются из `data/assumptions/results.json` (`python -B ops/tools/render_numbers.py`).
 
@@ -90,7 +90,7 @@
 
 | Путь | Что |
 |---|---|
-| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журналы версий — `V1.1-CHANGES.md` (1.1) и `V1.1.1-CHANGES.md` (1.1.1, errata); состав и порядок новой версии — `data/assumptions/README.md` |
+| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журналы версий — `V1.1-CHANGES.md` (1.1), `V1.1.1-CHANGES.md` (1.1.1, errata) и `V1.1.2-CHANGES.md` (1.1.2, errata); состав и порядок новой версии — `data/assumptions/README.md` |
 | `facts/` | отчётные факты на якорь книги, у каждого числа источник: `accounting`, `network`, `balance`, `bridge`, `shares`, `dividends`, `history` (читает ядро; из `history` — выручку и capex/выручку полугодий до якоря, `docs/MODEL.md` §4.5; `dividends` и `history` читает и выпуск), `debt_register`, `peers`, `brokers`, `guidance` (читает выпуск), `actuals` (факты журнала, ведёт человек); поля — `data/facts/SCHEMA.md`, первичка и сверка — `docs/FACTS.md`; собирает `ops/tools/build_facts.py` (кроме `actuals`: его шаблон — только если файла нет) |
 | `calendar.json` | события на 12 месяцев: отчёты X5, дивиденды, заседания ЦБ; `confirmed` и прецедент в `note` |
 
@@ -175,7 +175,7 @@ TAG=<метка> BASE_URL=http://127.0.0.1:8872 OUT_ROOT=../x5-850-handoff/shots
 
 - `docs/MANUAL.md` — справочник владельца: с него начинать.
 - `docs/MODEL.md` — методика; `docs/PAYLOAD.md` — контракт выпуска `x5-v1`; `model/README.md` — API ядра.
-- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md` и `V1.1.1-CHANGES.md` — что изменилось в книгах 1.1 и 1.1.1 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
+- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md`, `V1.1.1-CHANGES.md` и `V1.1.2-CHANGES.md` — что изменилось в книгах 1.1, 1.1.1 и 1.1.2 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
 - `docs/FACTS.md` — факты и первичка; `data/facts/SCHEMA.md` — поля фактов.
 - `docs/DASHBOARD.md` — витрина; `docs/INDICATORS.md` — ближайший отчёт и журнал прогнозов.
 - `docs/CONTROL-MODEL.md` — сверка контрольной модели с ядром (генерируется).

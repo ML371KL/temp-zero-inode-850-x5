@@ -406,10 +406,8 @@
    "cells": []
   },
   "equity_cushion": {
-   "mass": 0.028,
-   "cells": [
-    "H|stress|high"
-   ]
+   "mass": 0,
+   "cells": []
   }
  }
 }

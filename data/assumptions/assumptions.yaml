@@ -1,11 +1,11 @@
-# Книга допущений X5 1.1.1 — машинный вид (канон вместе с ASSUMPTIONS-BOOK.md).
+# Книга допущений X5 1.1.2 — машинный вид (канон вместе с ASSUMPTIONS-BOOK.md).
 # Каждый ключ — суждение книги (код A-xx в ASSUMPTIONS-BOOK.md) или импорт общей макро-основы (worlds).
 # Единицы: деньги — млрд ₽, площадь — тыс. м², акции — млн шт., ставки и доли — доли единицы (годовые).
 # Траектории: {ключ: значение}; ключи — "2026H2" (полугодие), "2027" (год), "LT" и "LT_from" (год выхода на LT).
 # Правила чтения — docs/MODEL.md §0.1. Незнакомый ключ — отказ BookError (закрытая схема model/book_schema.py).
 # Менять только новой версией книги (data/assumptions/README.md); тег версии — book-<версия>.
 meta:
-  version: '1.1.1'
+  version: '1.1.2'
   date: '2026-09-29'
   facts_date: '2026-06-30'
   anchor_period: 2026H1
@@ -434,22 +434,22 @@ margin:
 capex:
   maintenance:
     low:
-      2026H2: 0.0243
-      '2027': 0.0243
+      2026H2: 0.0244
+      '2027': 0.0244
       LT: 0.0244
       LT_from: 2029
     base:
-      2026H2: 0.0291
-      '2027': 0.0291
-      LT: 0.0293
+      2026H2: 0.0292
+      '2027': 0.0292
+      LT: 0.0292
       LT_from: 2029
     high:
-      2026H2: 0.0356
-      '2027': 0.0356
-      LT: 0.0359
+      2026H2: 0.0357
+      '2027': 0.0357
+      LT: 0.0358
       LT_from: 2029
   maintenance_area_share: 0.65
-  price_per_m2: 0.0555
+  price_per_m2: 0.0548
   infra_per_m2: 0.0278
   infra_from_year: 2026
   asset_life_years: 7
@@ -575,7 +575,7 @@ valuation:
       paths:
       - capex.price_per_m2
       low: 0.047
-      high: 0.064
+      high: 0.063
     - name: Инфраструктура на м² прироста, млрд ₽ на тыс. м²
       kind: value
       paths:
@@ -683,7 +683,7 @@ valuation:
       - 0.2
       range:
       - 0.047
-      - 0.064
+      - 0.063
       unit: bn_per_m2
     - name: Бета активов β_u
       kind: value

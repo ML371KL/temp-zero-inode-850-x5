@@ -65,8 +65,20 @@ ENDS = {"2024": ("2023Q4", "2024Q4", "as_reported"), "2024H1": ("2023Q4", "2024Q
 FORMATS = ("pyaterochka", "perekrestok", "chizhik")
 
 
+def area3(q: str, basis: str = "as_reported") -> float:
+    """Площадь трёх форматов на конец квартала (базис «Пятёрочки» — basis), без дарксторов и «тёмных» кухонь:
+    так ядро ведёт площадь (facts.network.area_end). space_total databook до 3 кв. 2025 включает их (≈101 тыс. м²)."""
+    return (net_q(q, "space_pyaterochka", basis) + net_q(q, "space_perekrestok")
+            + net_q(q, "space_chizhik"))
+
+
 def network_flows(p: str) -> dict:
-    """Чистый прирост, закрытия и валовое открытие площади по форматам за период."""
+    """Чистый прирост, закрытия и валовое открытие площади по форматам за период.
+
+    Открытия «Пятёрочки» и «Перекрёстка» — все открытия «без учёта закрытий» по трейдинг-апдейтам, закрытия —
+    открытия минус чистый прирост магазинов; «Чижик» — чистый прирост плюс раскрытые закрытия (с 4 кв. 2025 г. —
+    только чистый прирост). Так же закрытия считают факты (data/facts/network.json) и лист сети, по которому
+    откалибрована доля закрытий книги (network.close_rate): ядро умножает цену на валовое открытие в этом базисе."""
     q0, q1, basis = ENDS[p]
     qs = PERIOD_Q[p]
     gross_st = {"pyaterochka": qsum(TU["pyaterochka_opened_gross"], qs),
@@ -77,8 +89,8 @@ def network_flows(p: str) -> dict:
         a0, a1 = net_q(q0, f"space_{f}", b), net_q(q1, f"space_{f}", b)
         s0, s1 = net_q(q0, f"stores_{f}", b), net_q(q1, f"stores_{f}", b)
         net_st = s1 - s0
-        # «Чижик»: валовые открытия и закрытия не раскрыты — закрытия приняты нулевыми
-        gross = gross_st.get(f, net_st)
+        # «Чижик»: открытия «без учёта закрытий» раскрыты не за все кварталы — чистые + раскрытые закрытия
+        gross = gross_st.get(f, net_st + qsum(TU["chizhik_closed"], qs))
         closed_st = max(0.0, gross - net_st)
         closed_area = closed_st * a0 / s0          # средний магазин формата на начало периода
         net_area = a1 - a0
@@ -162,8 +174,8 @@ R.table(["период", "П: откр.", "П: закр.", "Пер: откр.", 
          "закрыто пл.", "валовая пл."], rows)
 closure_rate = {}
 for p in ("2024", "2025", "2026H1"):
-    q0, q1, _ = ENDS[p]
-    a_avg = 0.5 * (net_q(q0, "space_total") + net_q(q1, "space_total"))
+    q0, q1, basis = ENDS[p]
+    a_avg = 0.5 * (area3(q0, basis) + area3(q1, basis))        # площадь в базисе закрытий периода
     k = 1.0 if len(p) == 4 else 2.0
     closure_rate[p] = flows[p]["closed_area"] / a_avg * k
 R.p("Доля закрываемой площади, годовая:", {k: round(v_, 4) for k, v_ in closure_rate.items()},
@@ -383,7 +395,8 @@ R.data["bottom_up"] = {"R_anchor_ltm": r6(RA), "R26": r6(R26), "g_1h26": r6(g_1h
 # остаток полугодия h потрачен в ценах h и на средней площади h, поэтому его физическая часть переводится в цены
 # якоря (to_anchor) и на площадь 30.06.2026 (× A(якорь) / A_mid(h)); прочая остаётся долей выручки:
 #   near = Σ_h остаток_h × [φ × to_anchor(h) × A(якорь) / A_mid(h) + (1 − φ)] / выручка якоря LTM.
-# A_mid(h) = (A(h−1) + A(h)) / 2 — как в ядре; площадь — базис листа (с «Красным Яром» и «Слатой»).
+# A_mid(h) = (A(h−1) + A(h)) / 2 — как в ядре; площадь — три формата без дарксторов, как network.area_end
+# («Пятёрочка» с «Красным Яром» и «Слатой»).
 R.h("8. Пути capex.maintenance (доля выручки): ближний участок = LTM в базисе ядра, стационар = снизу вверх")
 base_ss = levels["base"]["pct"]
 phi = round(levels["base"]["phys_share"], 2)
@@ -392,7 +405,7 @@ HALF_ENDS = {"2025H2": ("2025Q2", "2025Q4"), "2026H1": ("2025Q4", "2026Q2")}
 near_rows, near_parts = [], {}
 near_rub = 0.0
 for h, (q0, q1) in HALF_ENDS.items():
-    a_mid = 0.5 * (net_q(q0, "space_total") + net_q(q1, "space_total"))
+    a_mid = 0.5 * (area3(q0, "restated_KY_Slata") + area3(q1, "restated_KY_Slata"))
     conv = phi * to_anchor(h) * area_now / a_mid + (1.0 - phi)
     rub = resid[h]["maint"] * conv
     near_rub += rub

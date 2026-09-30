@@ -518,11 +518,13 @@ def main(out: Path) -> None:
     events_nr = [
         {"date": "2026-10-16", "title": "Операционные результаты за 3 кв. 2026", "kind": "trading_update", "confirmed": False, "note": "по графику прошлых лет"},
         {"date": "2026-10-23", "title": "Заседание ЦБ по ключевой ставке", "kind": "cbr", "confirmed": True, "note": None},
-        {"date": "2026-10-29", "title": "Финансовые результаты за 9 месяцев 2026", "kind": "ifrs", "confirmed": True, "note": "календарь закрытых периодов X5"},
-        {"date": "2027-03-18", "title": "Финансовые результаты за 2026 год", "kind": "ifrs", "confirmed": False, "note": "факт маржи 2П 2026 войдёт в журнал"},
+        {"date": "2026-10-29", "title": "Финансовые результаты за 9 месяцев 2026", "kind": "ifrs", "covers": None, "confirmed": True, "note": "календарь закрытых периодов X5"},
+        {"date": "2027-03-18", "title": "Финансовые результаты за 2026 год", "kind": "ifrs", "covers": "2026H2", "confirmed": False, "note": "факт маржи 2П 2026 войдёт в журнал"},
     ]
     next_report = {
         "period": "2026H2", "events": events_nr,
+        # закрывающее МСФО полугодия (covers = period); published — вышло, а книга полугодие не закрыла
+        "closing": {"date": "2027-03-18", "title": "Финансовые результаты за 2026 год", "confirmed": False, "published": False},
         "expectation": {"revenue_growth": 0.121, "revenue": 2688.6, "margin": 0.0612, "adj_ebitda": 164.5,
                         "by_regime": [{"regime": "stress", "margin": 0.0594}, {"regime": "floor", "margin": 0.0612},
                                       {"regime": "partial", "margin": 0.0621}, {"regime": "full", "margin": 0.0630}]},
@@ -579,6 +581,7 @@ def main(out: Path) -> None:
         "flags": [
             {"name": "book_update", "title": "Книгу пора обновлять", "raised": False, "detail": "сдвиг кривой ОФЗ 5 лет +6 б.п., 10 лет +21 б.п. при пороге 50 б.п.; книге 0 дней"},
             {"name": "dividend_register", "title": "Нет объявленного дивиденда после ожидаемой отсечки", "raised": False, "detail": None},
+            {"name": "report_fact", "title": "Вышел отчёт за полугодие, факт не внесён", "raised": False, "detail": "отчёт за 2П 2026 по календарю — 2027-03-18"},
             {"name": "price_fallback", "title": "Живая цена не принята", "raised": False, "detail": None},
         ],
     }

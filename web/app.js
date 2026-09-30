@@ -1565,8 +1565,11 @@ function periodEnd(p) {
 }
 
 // События отчёта полугодия заголовка (`next_report.period`), от даты оценки.
-// `closing` — МСФО, которое закрывает полугодие: первое МСФО с датой позже его
-// конца (то же правило, что `until` выпуска в model/payload.py); к нему — отсчёт.
+// `closing` — МСФО, которое закрывает полугодие: `next_report.closing` выпуска (по
+// календарю — событие с `covers` = полугодию, model/payload.py::closing_event); у
+// выпуска без этого поля — первое МСФО с датой позже конца полугодия. К нему — отсчёт.
+// `published` — закрывающее МСФО по календарю уже вышло, а книга полугодие не закрыла:
+// вместо отсчёта — «отчёт вышел, факт не внесён», без событий «внутри полугодия».
 // `earlier` — отчёт раньше закрывающего (МСФО за 1/3 кв., иначе операционные
 // результаты): он внутри полугодия, журнал не закрывает и медиану сам не двигает.
 function reportEvents(d) {
@@ -1575,10 +1578,24 @@ function reportEvents(d) {
   const end = periodEnd(nr.period);
   const events = list(nr.events).filter((e) => (daysBetween(from, e.date) ?? -1) >= 0)
     .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  const closing = end ? events.find((e) => e.kind === "ifrs" && (daysBetween(end, e.date) ?? 0) > 0) || null : null;
+  const given = "closing" in nr;
+  const known = given && parseDay(obj(nr.closing).date) ? nr.closing : null;
+  if (known && known.published) return { closing: null, earlier: null, published: known };
+  const closing = given
+    ? (known ? events.find((e) => e.kind === "ifrs" && e.date === known.date) || known : null)
+    : (end ? events.find((e) => e.kind === "ifrs" && (daysBetween(end, e.date) ?? 0) > 0) || null : null);
   const before = closing ? events.filter((e) => (daysBetween(e.date, closing.date) ?? 0) > 0) : events;
   const earlier = before.find((e) => e.kind === "ifrs") || before.find((e) => e.kind === "trading_update") || null;
-  return { closing, earlier };
+  return { closing, earlier, published: null };
+}
+
+// Закрывающее МСФО по календарю уже вышло, а книга полугодие не закрыла.
+function reportPublished(d, ev) {
+  const p = periodName(obj(d.next_report).period);
+  return el("p", { class: "note-box", style: "margin-top:4px" },
+    el("strong", {}, `Отчёт за ${p} вышел ${ev.confirmed ? "" : "≈" + NBSP}${fmt.date(ev.date)}; факт ещё не внесён в модель — внести по справочнику, раздел 10.3.`),
+    ev.title ? ` По календарю — ${sentence(lowerFirst(ev.title))}` : "",
+    " До новой версии книги ожидание модели и «что даст отчёт» считаются без этого факта.");
 }
 
 // Отсчёт до закрывающего отчёта: «171 день до ≈ 19 марта 2027».
@@ -1619,13 +1636,13 @@ function neutralSentence(d) {
 function reportTeaser(d) {
   const nr = obj(d.next_report);
   if (!nr.period) return card({ title: "Ближайший отчёт", span: 6, link: ["report", "Подробно"] }, missing("ближайший отчёт"));
-  const { closing: ev, earlier } = reportEvents(d);
+  const { closing: ev, earlier, published } = reportEvents(d);
   const exp = obj(nr.expectation);
   const g = obj(nr.guidance);
   const bench = list(nr.benchmarks)[0];
   return card({ title: `Ближайший отчёт: ${periodName(nr.period)}`, span: 6, link: ["report", "Подробно"],
-    sub: ev ? `${ev.title}${ev.confirmed ? "" : " · ожидаемая дата"}` : "" },
-  ev ? countdown(d, ev) : empty(`Даты МСФО за ${periodName(nr.period)} в календаре выпуска нет.`),
+    sub: ev ? `${ev.title}${ev.confirmed ? "" : " · ожидаемая дата"}` : published ? "отчёт вышел, факт в модель не внесён" : "" },
+  published ? reportPublished(d, published) : ev ? countdown(d, ev) : empty(`Даты МСФО за ${periodName(nr.period)} в календаре выпуска нет.`),
   earlierReport(d, earlier),
   el("div", { class: "kpis", style: "margin-top:14px" },
     isNum(exp.margin) ? kpi(fmt.pct(exp.margin, 2), `ожидание модели: скорр. маржа за всё ${periodName(nr.period)}`) : null,
@@ -2386,20 +2403,22 @@ function reportCalendarCard(d) {
   const nr = obj(d.next_report);
   const from = obj(d.meta).valuation_date;
   const events = list(nr.events).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  const { closing: ev, earlier } = reportEvents(d);
+  const { closing: ev, earlier, published } = reportEvents(d);
   const p = periodName(nr.period);
   // Отчёт X5 до закрывающего МСФО — внутри полугодия (МСФО за 1/3 кв., операционные результаты).
   const inside = (e) => ev && (e.kind === "ifrs" || e.kind === "trading_update") && (daysBetween(e.date, ev.date) ?? 0) > 0;
+  const shut = ev || published;
+  const closes = (e) => shut && e.kind === "ifrs" && e.date === shut.date;
   return card({ title: "Календарь отчёта", span: 5, sub: nr.period ? `${p} · отсчёт от даты оценки ${fmt.date(from)}` : "" },
-    ev ? countdown(d, ev) : (nr.period ? empty(`Даты МСФО за ${p} в календаре выпуска нет.`) : null),
+    published ? reportPublished(d, published) : ev ? countdown(d, ev) : (nr.period ? empty(`Даты МСФО за ${p} в календаре выпуска нет.`) : null),
     ev ? el("p", { class: "ink-2", style: "margin-top:4px" }, el("strong", {}, ev.title), ` — закрывает ${p}`) : null,
     earlierReport(d, earlier),
     events.length ? el("ul", { class: "list", style: "margin-top:12px" }, events.map((e) => {
       const left = daysBetween(from, e.date);
       return el("li", {},
         el("span", { class: "t" }, e.title, el("span", { class: "muted" },
-          [KIND_NAMES[e.kind], e === ev ? `закрывает ${p}` : inside(e) ? "внутри полугодия" : "",
-            isNum(left) ? (left >= 0 ? `через ${fmt.days(left)}` : "прошло") : ""].filter(Boolean).join(" · "))),
+          [KIND_NAMES[e.kind], closes(e) ? `закрывает ${p}${published ? " · вышел" : ""}` : inside(e) ? "внутри полугодия" : "",
+            closes(e) && published ? "" : isNum(left) ? (left >= 0 ? `через ${fmt.days(left)}` : "прошло") : ""].filter(Boolean).join(" · "))),
         el("span", { class: "v" }, `${e.confirmed ? "" : "≈" + NBSP}${fmt.date(e.date)}`));
     })) : empty("Событий отчёта в выпуске нет."),
     events.some((e) => e.note) ? el("div", { class: "card-foot" }, detailsBlock("Примечания", el("div", {},
@@ -3172,7 +3191,7 @@ function banners(d) {
   }
   const flags = list(obj(d.checks).flags).filter((f) => f.raised);
   for (const f of flags) {
-    out.push(plain(f.name === "price_fallback" ? "banner-degraded" : f.name === "dividend_register" ? "banner-event" : "banner-book",
+    out.push(plain(f.name === "price_fallback" ? "banner-degraded" : f.name === "dividend_register" || f.name === "report_fact" ? "banner-event" : "banner-book",
       [el("strong", {}, sentence(f.title || "Флаг выпуска")), f.detail ? " " + sentence(upperFirst(ruText(f.detail))) : ""]));
   }
   const mk = obj(d.market);

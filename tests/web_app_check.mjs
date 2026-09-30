@@ -229,11 +229,15 @@ for (const hash of ["#%E0%A4%A", "#%", "#100%", "#%D0"]) {
 /* ── 2. «Ближайший отчёт»: отсчёт — до МСФО, закрывающего полугодие заголовка ── */
 
 // Выпуск с датой оценки `v`, полугодием `period` и событиями `events` (остальное — мок).
-function withReport(v, period, events) {
+// `closing` — поле `next_report.closing` выпуска; не задано — поля нет (выпуск до 1.1.3:
+// витрина ищет закрывающее МСФО прежним правилом среди `events`).
+function withReport(v, period, events, closing) {
   const d = sample();
   d.meta.valuation_date = v;
   d.next_report.period = period;
   d.next_report.events = events;
+  if (closing === undefined) delete d.next_report.closing;
+  else d.next_report.closing = closing;
   return d;
 }
 const ev = (date, kind, title, confirmed = true) => ({ date, kind, title, confirmed, note: null });
@@ -320,6 +324,90 @@ const H1_2027 = [
   const teaserNone = squash(visibleText(page.get("reportTeaser(globalThis.__d)")));
   check("нет закрывающего МСФО: так и сказано, отсчёта нет", teaserNone.includes("Даты МСФО за 2П 2026 в календаре выпуска нет.")
     && !/дн(я|ей|ь) до/.test(teaserNone) && teaserNone.includes("Раньше: 29.10.2026"), teaserNone.slice(0, 400));
+}
+
+/* ── 2б. закрывающее МСФО из выпуска (`next_report.closing`, covers календаря) ── */
+
+// События выпуска на дату оценки — как их отдаёт model/payload.py::report_events на
+// календаре репозитория (tests/test_payload.py::test_closing_report_of_the_open_half).
+const FY_2026 = { date: "2027-03-19", title: "Финансовые результаты X5 за 2026 г. (МСФО) и ориентиры на 2027 г.", confirmed: false };
+const AFTER_FY = [
+  ev("2027-04-16", "trading_update", "Операционные результаты X5 за 1 кв. 2027 г.", false),
+  ev("2027-04-23", "cbr", "Заседание Совета директоров Банка России по ключевой ставке", false),
+  { ...ev("2027-04-29", "ifrs", "Финансовые результаты X5 за 1 кв. 2027 г. (МСФО)", false), covers: null },
+  ev("2027-05-19", "dividend", "Рекомендация Наблюдательного совета по дивидендам за 2026 г.", false),
+  { ...ev("2027-08-13", "ifrs", "Финансовые результаты X5 за 2 кв. и 1П 2027 г. (МСФО)", false), covers: "2027H1" },
+];
+const upcoming = (v) => H2_2026.filter((e) => e.date >= v);
+{
+  const page = makePage();
+  const pick = (d) => {
+    page.ctx.__d = d;
+    const r = page.get("reportEvents(globalThis.__d)");
+    return { closing: r.closing && r.closing.date, earlier: r.earlier && r.earlier.date, published: r.published && r.published.date };
+  };
+  const open = { ...FY_2026, published: false };
+  const out = { ...FY_2026, published: true };
+  const cases = [
+    ["29.09.2026: отсчёт — годовое МСФО, раньше — МСФО за 3 кв.", withReport("2026-09-29", "2026H2", upcoming("2026-09-29"), open), "2027-03-19", "2026-10-29", null],
+    ["20.10.2026: раньше — всё ещё МСФО за 3 кв.", withReport("2026-10-20", "2026H2", upcoming("2026-10-20"), open), "2027-03-19", "2026-10-29", null],
+    ["01.11.2026: раньше — операционные результаты за 4 кв.", withReport("2026-11-01", "2026H2", upcoming("2026-11-01"), open), "2027-03-19", "2027-01-28", null],
+    ["20.03.2027: годовое МСФО вышло — ни отсчёта, ни «раньше»", withReport("2027-03-20", "2026H2", AFTER_FY, out), null, null, "2027-03-19"],
+    ["закрывающего МСФО в календаре нет (closing: null): МСФО за 1 кв. закрывающим не становится",
+      withReport("2027-03-20", "2026H2", AFTER_FY, null), null, "2027-04-29", null],
+  ];
+  for (const [name, d, closing, earlier, published] of cases) {
+    let got, error = null;
+    try { got = pick(d); } catch (e) { error = String(e); }
+    check(`событие отчёта (closing выпуска): ${name}`, !error && got.closing === closing && got.earlier === earlier
+      && got.published === published, error || got);
+  }
+
+  page.ctx.__d = withReport("2026-10-20", "2026H2", upcoming("2026-10-20"), open);
+  const t1020 = squash(visibleText(page.get("reportTeaser(globalThis.__d)")));
+  check("20.10.2026: 150 дней до годового МСФО, раньше — МСФО за 3 кв. с правилом A-P2u", /150 ?дней до ≈ 19 марта 2027/.test(t1020)
+    && t1020.includes("Раньше: 29.10.2026 (через 9 дней) — Финансовые результаты X5 за 3 кв. 2026 г. (МСФО). Внутри полугодия")
+    && t1020.includes("(правило A-P2u)."), t1020.slice(0, 500));
+
+  // 20.03.2027: книга не переведена (2П 2026 открыто), годовое МСФО вышло 19.03.
+  const late = withReport("2027-03-20", "2026H2", AFTER_FY, out);
+  page.ctx.__d = late;
+  const teaser = squash(visibleText(page.get("reportTeaser(globalThis.__d)")));
+  const cal = squash(visibleText(page.get("reportCalendarCard(globalThis.__d)")));
+  const NOTICE = "Отчёт за 2П 2026 вышел ≈ 19.03.2027; факт ещё не внесён в модель — внести по справочнику, раздел 10.3.";
+  check("20.03.2027, «Оценка»: вместо отсчёта — отчёт вышел, факт не внесён", teaser.includes(NOTICE)
+    && teaser.includes("отчёт вышел, факт в модель не внесён") && !/дн(я|ей|ь) до/.test(teaser), teaser.slice(0, 500));
+  check("20.03.2027, «Оценка»: МСФО за 1 кв. 2027 не «закрывает», строки «Раньше» нет",
+    !teaser.includes("закрывает") && !teaser.includes("Раньше:") && !teaser.includes("Внутри полугодия"), teaser.slice(0, 500));
+  check("20.03.2027, #report: то же, без пометок «закрывает» и «внутри полугодия»", cal.includes(NOTICE)
+    && !cal.includes("закрывает") && !cal.includes("внутри полугодия") && !cal.includes("Раньше:")
+    && cal.includes("Финансовые результаты X5 за 1 кв. 2027 г. (МСФО)"), cal.slice(0, 700));
+
+  // В день выхода (дата оценки = дата отчёта) событие ещё в списке — помечено «вышел», без «через 0 дней».
+  const onDay = withReport("2027-03-19", "2026H2", [{ ...ev("2027-03-19", "ifrs", FY_2026.title, false), covers: "2026H2" }, ...AFTER_FY], out);
+  page.ctx.__d = onDay;
+  const calDay = squash(visibleText(page.get("reportCalendarCard(globalThis.__d)")));
+  check("19.03.2027: закрывающее МСФО в списке — «закрывает 2П 2026 · вышел»", calDay.includes("закрывает 2П 2026 · вышел")
+    && !calDay.includes("через 0 дней") && calDay.includes(NOTICE), calDay.slice(0, 700));
+
+  // Плашка флага `report_fact` — в поясе, как у дивидендов.
+  late.checks.flags = [{ name: "report_fact", title: "вышел отчёт за полугодие, факт не внесён", raised: true,
+    detail: "Финансовые результаты X5 за 2026 г. (МСФО) и ориентиры на 2027 г. — 2027-03-19 по календарю; в книге 2П 2026 ещё открыто: внести факт — справочник, «Квартальный отчёт X5 и дивиденды»" }];
+  page.ctx.__d = late;
+  const belt = page.get("banners(globalThis.__d)")[0];
+  const beltText = squash(visibleText(belt));
+  check("плашка report_fact: заголовок и деталь с датой по-русски", beltText.includes("вышел отчёт за полугодие, факт не внесён.")
+    && beltText.includes("— 19.03.2027 по календарю; в книге 2П 2026 ещё открыто"), beltText);
+  check("плашка report_fact — вида «событие»", belt.children.some((b) => /banner-event/.test(b.attrs.class || "")),
+    belt.children.map((b) => b.attrs.class));
+
+  // Вся страница на таком выпуске: старт без ошибок, плашка и карточка на «Оценке».
+  const full = makePage({ payload: JSON.stringify(late) });
+  await full.boot();
+  await settle();
+  const text = full.text();
+  check("20.03.2027: страница стартует, плашка и «отчёт вышел» на «Оценке»", !full.bootError && !full.errors.length
+    && text.includes("вышел отчёт за полугодие, факт не внесён.") && text.includes(NOTICE), [full.bootError, full.errors.slice(0, 2), text.slice(0, 300)]);
 }
 
 /* ── 3. база мультипликатора EV / EBITDA — текущее и следующее полугодия, а не «12 месяцев» ── */

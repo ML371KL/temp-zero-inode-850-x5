@@ -1595,7 +1595,7 @@ function earlierReport(d, ev) {
   if (!ev) return null;
   const days = daysBetween(obj(d.meta).valuation_date, ev.date);
   return el("p", { class: "note-box", style: "margin-top:12px" },
-    el("strong", {}, `Раньше: ${ev.confirmed ? "" : "≈" + NBSP}${fmt.date(ev.date)}${isNum(days) ? ` (через ${fmt.days(days)})` : ""} — ${ev.title}.`),
+    el("strong", {}, `Раньше: ${ev.confirmed ? "" : "≈" + NBSP}${fmt.date(ev.date)}${isNum(days) ? ` (через ${fmt.days(days)})` : ""} — ${sentence(ev.title)}`),
     " Внутри полугодия: журнал не закрывает, медиану само не двигает; в цену — только новой версией книги ",
     el("span", { style: "white-space:nowrap" }, "(правило A-P2u)."));
 }

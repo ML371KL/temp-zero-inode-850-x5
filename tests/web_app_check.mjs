@@ -297,6 +297,15 @@ const H1_2027 = [
   check("#report: МСФО за 3 кв. — строкой «раньше»", cal.includes("Раньше: 29.10.2026 (через 30 дней) — Финансовые результаты X5 за 3 кв. 2026 г. (МСФО)."), cal.slice(0, 600));
   check("#report: промежуточные отчёты в списке помечены", (cal.match(/внутри полугодия · через/g) || []).length === 3, cal);
 
+  // Заголовки операционных результатов кончаются на «г.»: точка после них — одна.
+  page.ctx.__d = withReport("2026-11-01", "2026H2", H2_2026);
+  const teaserTu = squash(visibleText(page.get("reportTeaser(globalThis.__d)")));
+  const calTu = squash(visibleText(page.get("reportCalendarCard(globalThis.__d)")));
+  check("«Раньше» у операционных результатов — без второй точки (01.11.2026)",
+    teaserTu.includes("Раньше: ≈ 28.01.2027 (через 88 дней) — Операционные результаты X5 за 4 кв. и 2026 г. Внутри полугодия")
+    && calTu.includes("— Операционные результаты X5 за 4 кв. и 2026 г. Внутри полугодия") && !/г\.\./.test(teaserTu + calTu),
+    teaserTu.slice(0, 500));
+
   const none = withReport("2026-09-29", "2026H2", H2_2026.slice(0, 5));
   page.ctx.__d = none;
   const teaserNone = squash(visibleText(page.get("reportTeaser(globalThis.__d)")));

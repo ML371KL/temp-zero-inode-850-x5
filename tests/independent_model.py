@@ -82,8 +82,10 @@ SCENARIOS = [
              "revenue.vat_effect": {"2026H2": -0.006, "LT": 0.0, "LT_from": 2027}}},
     {"key": "g_guard", "title": "Защита терминала g ≥ r ⇒ g = r − 0,0001 (мир N, режим full)",
      "set": {"revenue.ticket_shift.bull.LT": 0.12}},
-    {"key": "negative_base", "title": "Отрицательная налоговая база стресса (max(0, ·), индикатор щита амортизации)",
+    {"key": "negative_base", "title": "Отрицательная налоговая база стресса: max(0, ·) в явном участке, в терминале при g < π налога нет ни в одном полугодии",
      "set": {"margin.targets.stress.2030": 0.02, "margin.targets.stress.LT": 0.01}},
+    {"key": "terminal_late_tax", "title": "Цель маржи full LT 2 %: g > π, база первого года терминала < 0 — налог хвоста только после смены знака в n_c (5–100 лет)",
+     "set": {"margin.targets.full.LT": 0.02}},
     {"key": "dividends_late", "title": "Дивиденды модели с 2028H1 при целевом рычаге 2,5×",
      "set": {"financing.dividends_from": "2028H1", "financing.target_leverage": 2.5}},
     {"key": "net_cash", "title": "Дивиденды модели только с 2036H2: долг уходит в чистую кассу, G⁺ = 0 (нет вычетов C_iss и X), щит отрицателен",
@@ -91,7 +93,7 @@ SCENARIOS = [
     {"key": "stress_credit_costs", "title": "Кредитное состояние stress во всех мирах и издержки размещения ×5: вычеты X и C_iss во всех клетках",
      "set": {"joint.world_links.N.credit": "stress", "joint.world_links.H.credit": "stress",
              "financing.issuance_cost": 0.0045}},
-    {"key": "short_horizon", "title": "Явный участок до 2029H2 (7 полугодий < 2L): база D&A якоря живёт в терминале, переходный член TV_tr",
+    {"key": "short_horizon", "title": "Явный участок до 2029H2 (7 полугодий < 2L): база D&A якоря живёт в терминале — в явной части налога TV_tax",
      "set": {"meta.last_period": "2029H2"}},
     {"key": "lt_inflation_gap", "title": "Долгосрочная инфляция мира M ниже последнего ИПЦ траектории: индекс цен терминала — по π, а не по ИПЦ",
      "set": {"worlds.M.lt.inflation": 0.085}},
@@ -128,19 +130,21 @@ INTERPRETATIONS = {
         "С 28.09.2026 §4.9 говорит это прямо."),
     "pi_guard": (
         "§6, защита π ≥ r ⇒ π = r − 0,0001 — во всём терминале: индекс цен, S_π(a) в D&A, "
-        "(1 + π)^n в переходном члене и Гордон части π (так текст уточнён 28.09.2026; прежний "
+        "(1 + π)^n в налоге TV_tax и Гордон части π (так текст уточнён 28.09.2026; прежний "
         "называл только разделение Гордона). В книге π < r во всех мирах, на числа не влияет."),
     "g_guard_scope": (
         "§6, при g ≥ r ⇒ g = r − 0,0001 защищённый g — везде в терминале: выручка T1/T2, "
-        "S_g(a) в D&A, (1 + g)^n переходного члена, Гордон части g, щита и вычетов."),
+        "S_g(a) в D&A, (1 + g)^n в налоге TV_tax и щите, Гордон части g и вычетов."),
     "terminal_halves": (
         "§6, T1 и T2 — «первое и второе полугодия года после `last_period`»: для `last_period` во "
         "втором полугодии это два полугодия сразу за явным участком. `last_period` в первом "
         "полугодии текст не определяет (между ним и T1 было бы пропущенное полугодие) — контрольная "
         "модель такую книгу отвергает."),
-    "terminal_base_indicator": (
-        "§6, индикатор [base_h > 0] в f_π и в переходном члене TV_tr — по базе налога первого "
-        "терминального года T_h для всех лет n (так написано: «base_h — база налога T_h»)."),
+    "terminal_tax_rows": (
+        "§6, строки T1, T2 (налог, FCFF, щит строки) — с установившейся D&A; в TV налог и щит — "
+        "суммой TV_tax по всем полугодиям, где первые 2L — с D&A по правилу когорт: доналоговый "
+        "поток P_h = FCFF строки + её налог от D&A не зависит, поэтому TV от выбора D&A строки не "
+        "зависит. Граничный год хвоста с base = 0 (n_c целое) налога не несёт — в сумму не входит."),
     "terminal_debt": (
         "§6, щит терминала: Lt, f_T, ℓ_T, ключевая, legacy_rate и ic — значения траекторий в "
         "`last_period`; OpCash_1 и Buf_1 — уровни модели на конец `last_period` (opc × R_ann, "
@@ -418,6 +422,34 @@ def disc_sum(x: float, n: int) -> float:
     if abs(x) < 1e-12:
         return float(n)
     return (1.0 - (1.0 + x) ** (-n)) / x
+
+
+def geo_sum(q: float, n1: int, n2: int | None) -> float:
+    """Σ_{n=n1}^{n2} q^n = (q^{n1} − q^{n2+1}) / (1 − q); n2 = None — до бесконечности (§6)."""
+    if n2 is not None and n2 < n1:
+        return 0.0
+    total = q ** n1 / (1.0 - q)
+    return total if n2 is None else total - q ** (n2 + 1) / (1.0 - q)
+
+
+def tax_tail(a: float, b: float, g: float, pi: float, r: float, n0: int) -> float:
+    """Хвост налога терминала полугодия (§6) без τ и множителя полугодия:
+    Σ [a × q_g^n − b × q_π^n] по годам n ≥ n0, где база a(1 + g)^n − b(1 + π)^n > 0.
+    a, b одного знака и g ≠ π — знак меняется в n_c = ln(b/a)/ln ρ, ρ = (1 + g)/(1 + π):
+    при a, b > 0 база положительна после n_c, если g > π, и до n_c, если g < π (при a, b < 0 —
+    наоборот); иначе знак базы постоянен — знак a − b."""
+    rho = (1.0 + g) / (1.0 + pi)
+    lo, hi = n0, None
+    if ((a > 0.0 and b > 0.0) or (a < 0.0 and b < 0.0)) and rho != 1.0:
+        n_c = math.log(b / a) / math.log(rho)
+        if (a > 0.0) == (g > pi):
+            lo = max(n0, math.floor(n_c) + 1)
+        else:
+            hi = math.ceil(n_c) - 1
+    elif a - b <= 0.0:
+        return 0.0
+    q_g, q_pi = (1.0 + g) / (1.0 + r), (1.0 + pi) / (1.0 + r)
+    return a * geo_sum(q_g, lo, hi) - b * geo_sum(q_pi, lo, hi)
 
 
 def steady_da(c1: float, c2: float, x: float, life: float, two_l: int) -> list:
@@ -923,7 +955,7 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
     c_g = [t["capex"] - t["capex_pi"] for t in t_rows]
     da_g = steady_da(c_g[0], c_g[1], g, ctx.life, ctx.two_l)
     da_p = steady_da(c_pi[0], c_pi[1], pi, ctx.life, ctx.two_l)
-    flows, f_pi, pos_base = [], [], []
+    pretax, before_da = [], []
     for h, t in enumerate(t_rows):
         da_h = da_g[h] + da_p[h]
         base = t["adj_ebitda"] - t["lti"] - da_h + t["padd"]
@@ -932,26 +964,35 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
                   - t["opcash_change"] + t["lease"] + t["proceeds"])
         t.update({"da": da_h, "da_g": da_g[h], "da_pi": da_p[h], "tax_base": base, "tax": tax,
                   "fcff": fcff_t})
-        flows.append(fcff_t)
-        pos_base.append(1.0 if base > 0 else 0.0)
-        f_pi.append(tau * da_p[h] * pos_base[h] - c_pi[h])
+        pretax.append(fcff_t + tax)                                   # P_h
+        before_da.append(t["adj_ebitda"] - t["lti"] + t["padd"])      # B_h
 
-    # переходный член D&A: когорты явного участка (и база якоря) доживают в терминале (§6)
+    # налог терминала TV_tax (§6): первые 2L полугодий — D&A по правилу когорт (когорты
+    # явного участка и база якоря доживают в терминале), дальше — хвост по области base > 0
     n_exp = ctx.n
     seq = list(capex_seq)
     two_l = ctx.two_l
     for j in range(1, two_l + 1):
         yr, h = (j - 1) // 2, (j - 1) % 2
         seq.append(c_g[h] * (1.0 + g) ** yr + c_pi[h] * (1.0 + pi) ** yr)
-    tv_tr = 0.0
-    for j in range(1, two_l + 1):
-        yr, h = (j - 1) // 2, (j - 1) % 2
-        da_steady = da_g[h] * (1.0 + g) ** yr + da_p[h] * (1.0 + pi) ** yr
-        gap = ctx.da_rule(n_exp + j, seq) - da_steady
-        tv_tr += tau * pos_base[h] * gap * (1.0 + r_t) ** (-(yr + 0.25 + 0.5 * h))
+    da_early = [ctx.da_rule(n_exp + j, seq) for j in range(1, two_l + 1)]
+    first_year = [math.ceil(ctx.life), math.floor(ctx.life)]        # n_0,1 и n_0,2
 
-    tv = (gordon(flows[0] - f_pi[0], flows[1] - f_pi[1], r_t, g)
-          + gordon(f_pi[0], f_pi[1], r_t, pi_gordon) + tv_tr)
+    def tv_tax_of(b_h: list) -> float:
+        """TV_tax при базах T_h до D&A b_h (для TV_tax(I) — за вычетом I_T,h)."""
+        total = 0.0
+        for j in range(1, two_l + 1):
+            yr, h = (j - 1) // 2, (j - 1) % 2
+            base_j = b_h[h] * (1.0 + g) ** yr - da_early[j - 1]
+            total += tau * max(0.0, base_j) * (1.0 + r_t) ** (-(yr + 0.25 + 0.5 * h))
+        for h in (0, 1):
+            total += (tau * (1.0 + r_t) ** (-(0.25 + 0.5 * h))
+                      * tax_tail(b_h[h] - da_g[h], da_p[h], g, pi, r_t, first_year[h]))
+        return total
+
+    tv_tax = tv_tax_of(before_da)
+    tv = (gordon(pretax[0] + c_pi[0], pretax[1] + c_pi[1], r_t, g)
+          + gordon(-c_pi[0], -c_pi[1], r_t, pi_gordon) - tv_tax)
 
     # щит и вычеты финансирования терминала: долг начала полугодия на целевом рычаге (§6)
     lev_t = path_value(fin["target_leverage"], last)
@@ -988,7 +1029,8 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
         i_t.append(int_h)
         t.update({"gross_debt": gross_h, "interest": int_h, "shield": s_t[-1],
                   "issuance_cost": c_t[-1], "excess_spread": x_t[-1], "buffer_carry": k_t[-1]})
-    tv_s = gordon(s_t[0], s_t[1], r_t, g)
+    # щит терминала: налог, сбережённый процентами I_T,h × (1 + g)^n, без переноса убытков (§6)
+    tv_s = tv_tax - tv_tax_of([before_da[h] - i_t[h] for h in (0, 1)])
     tv_c, tv_x, tv_k = (gordon(c_t[0], c_t[1], r_t, g), gordon(x_t[0], x_t[1], r_t, g),
                         gordon(k_t[0], k_t[1], r_t, g))
     tv_fin = tv_c + tv_x + tv_k
@@ -1048,7 +1090,7 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
         "demand": state, "ev": ev, "pv_fcff": pv["fcff"], "pv_shield": pv["shield"],
         "pv_tv": pv_tv, "pv_tv_shield": pv_tv_s, "pv_terminal": pv_tv + pv_tv_s,
         "pv_issuance": pv_iss, "pv_excess_spread": pv_x, "pv_buffer_carry": pv_k,
-        "pv_tv_fin": tv_fin * d_end, "tv_da_transition": tv_tr,
+        "pv_tv_fin": tv_fin * d_end, "tv_tax": tv_tax,
         "terminal_share": (pv_tv + pv_tv_s - tv_fin * d_end) / ev, "d": claims, "rolled": rolled,
         "opcash_anchor": opcash_anchor_level, "equity": equity, "price": ctx.price_of(equity),
         "terminal_growth": g, "r_terminal": r_t, "terminal_debt_rate": rt,
@@ -1496,7 +1538,7 @@ def compare(control: dict, core: dict) -> list:
                 k["terminal_share"], TOL_V0)
         # слагаемые EV и терминала клетки (§5, §6) — допуск строк; пол — доли EV
         for name in ("pv_fcff", "pv_shield", "pv_issuance", "pv_excess_spread", "pv_buffer_carry",
-                     "tv_da_transition", "terminal_debt_rate"):
+                     "tv_tax", "terminal_debt_rate"):
             if name in k:
                 add("cells.parts", f"{tag}.{name}", c[name], k[name], TOL_ROWS,
                     floor=1e-12 * abs(k["ev"]))
@@ -1863,7 +1905,8 @@ def render_report(control: dict, core: dict | None, book_path: Path, facts_dir: 
 
     # --- терминал
     L += ["## Терминал (клетки с capex base)", "",
-          "PV терминала — (TV + TV_S) × df(t_end); TV включает переходный член D&A TV_tr; "
+          "PV терминала — (TV + TV_S) × df(t_end); TV_tax — PV налога терминала без рычага на конец "
+          "явного участка (точная сумма τ × max(0, base) по всем полугодиям, §6); "
           "TV_fin — вычеты финансирования терминала.", ""]
     kcells = {(c["world"], c["regime"], c["capex"]): c for c in core["cells"]} if core else {}
     rows = []
@@ -1873,11 +1916,11 @@ def render_report(control: dict, core: dict | None, book_path: Path, facts_dir: 
         k = kcells.get((c["world"], c["regime"], c["capex"]))
         rows.append([f"{c['world']} · {c['regime']}", _pct(c["terminal_growth"], 3),
                      _pct(k["terminal_growth"], 3) if k else "—", _pct(c["r_terminal"], 3),
-                     _pct(c["terminal_debt_rate"], 3), _num(c["tv_da_transition"], 2),
-                     _num(k.get("tv_da_transition"), 2) if k else "—",
+                     _pct(c["terminal_debt_rate"], 3), _num(c["tv_tax"], 2),
+                     _num(k.get("tv_tax"), 2) if k else "—",
                      _num(c["pv_tv"], 1), _num(c["pv_tv_shield"], 1), _num(c["pv_tv_fin"], 2),
                      _signed_pct(c["pv_terminal"], k["pv_terminal"]) if k else "—"])
-    L += _table(["Клетка", "g контроль", "g ядро", "r", "r долга", "TV_tr", "TV_tr ядро",
+    L += _table(["Клетка", "g контроль", "g ядро", "r", "r долга", "TV_tax", "TV_tax ядро",
                  "PV TV", "PV TV_S", "PV TV_fin", "PV терминала: откл."], rows)
     L.append("")
 

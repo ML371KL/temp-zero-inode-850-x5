@@ -12,8 +12,10 @@ T0 = пик + 4 года при просадке ≥150 б.п.; исход — �
 Цель «стресс» — среднее двух шкал класса (f и п.п.): новое падение — новый удар по статьям затрат в п.п. выручки;
 шкала f для мелкой потери X5 сжимает его втрое, шкала п.п. переносит удары других рынков (британская ценовая
 война, Dia) целиком; середина — суждение (C).
-Центр E[m_LT] — точностно-взвешенное среднее двух оценок класса (шкала f и шкала п.п.), вероятности —
-частоты класса со сглаживанием Лапласа ½, минимально наклонённые (по KL), чтобы Σ p·цель = центр.
+Центр E[m_LT] — среднее двух оценок класса (шкала f и шкала п.п.) с весами обратно дисперсиям отдельных оценок
+(суждение: обе оценки — на одних эпизодах и одних бутстрэп-выборках, коррелированы ≈0,95, и комбинация не точнее
+оценки A; её se — с ковариацией по тем же выборкам), вероятности — частоты класса со сглаживанием Лапласа ½,
+минимально наклонённые (по KL), чтобы Σ p·цель = центр.
 
 Запуск: python -B refclass.py → refclass_out.json, печать.
 """
@@ -102,6 +104,26 @@ def tilt(q: dict, t: dict, target: float) -> tuple[dict, float]:
     return mean((lo + hi) / 2)[1], (lo + hi) / 2
 
 
+def t_quantile(p: float, df: int) -> float:
+    """Квантиль распределения Стьюдента (df степеней свободы): Симпсон по плотности + бисекция; p > 0,5."""
+    c = math.gamma((df + 1) / 2) / (math.sqrt(df * math.pi) * math.gamma(df / 2))
+
+    def cdf(x: float) -> float:
+        k = 2000
+        h = x / k
+        s = sum((1 if i in (0, k) else (4 if i % 2 else 2)) * c * (1 + (i * h) ** 2 / df) ** (-(df + 1) / 2)
+                for i in range(k + 1))
+        return 0.5 + s * h / 3
+    lo, hi = 0.0, 50.0
+    for _ in range(100):
+        mid = (lo + hi) / 2
+        if cdf(mid) < p:
+            lo = mid
+        else:
+            hi = mid
+    return (lo + hi) / 2
+
+
 def main():
     raw, eps = episodes()
     n = len(eps)
@@ -172,6 +194,19 @@ def main():
     est_b = t0 + ed + mix
     wa, wb = 1 / se_f ** 2, 1 / se_d ** 2
     center = (wa * est_a + wb * est_b) / (wa + wb)
+    # A и B посчитаны на одних эпизодах и одних бутстрэп-выборках (Δ п.п. эпизода = f × его потеря): не независимы.
+    # se центра — с ковариацией по тем же выборкам (от средних бутстрэпа); веса — фиксированное суждение.
+    w_a = wa / (wa + wb)
+    mbf, mbd = st.fmean(bf), st.fmean(bd)
+    cov_ab = st.fmean((x * loss - mbf * loss) * (y - mbd) for x, y in zip(bf, bd))
+    corr_ab = cov_ab / (se_f * se_d)
+    center_se = math.sqrt(w_a ** 2 * se_f ** 2 + (1 - w_a) ** 2 * se_d ** 2 + 2 * w_a * (1 - w_a) * cov_ab)
+    boot_c = sorted(t0 + w_a * x * loss + (1 - w_a) * y + mix for x, y in zip(bf, bd))
+    ci_c = (boot_c[int(0.025 * BOOT_N)], boot_c[int(0.975 * BOOT_N)])
+    # оговорка малой выборки: бутстрэп-se среднего = s_pop/√n = √((n−1)/n) · s/√n; честнее s/√n и t(n−1)
+    se_f_t = st.stdev(fs) * loss / math.sqrt(n)
+    center_se_t = st.stdev([w_a * f * loss + (1 - w_a) * d for f, d in zip(fs, ds)]) / math.sqrt(n)
+    t975 = t_quantile(0.975, n - 1)
     series = json.loads((HERE / "series_out.json").read_text(encoding="utf-8"))
     est_c = series["anchor"]["level_pp"] + mix
     lti_ltm = (h1["lti"] + h2["lti"]) / (h1["rev"] + h2["rev"]) * 100
@@ -182,7 +217,12 @@ def main():
     print(f"\nЦентр E[m_LT]:")
     print(f"  A. класс, шкала f: {t0:.2f} + ({ef:+.3f}) × {loss:.2f} {mix:+.2f} = {est_a:.3f} % (se {se_f:.3f}; бутстрэп 95 %: {ci_f[0]:.2f}–{ci_f[1]:.2f})")
     print(f"  B. класс, шкала п.п.: {t0:.2f} + ({ed:+.3f}) {mix:+.2f} = {est_b:.3f} % (se {se_d:.3f})")
-    print(f"  точностно-взвешенный центр A и B: {center:.3f} %")
+    print(f"  корреляция A и B по тем же бутстрэп-выборкам {corr_ab:.3f} (одни эпизоды; Δ п.п. = f × потеря эпизода)")
+    print(f"  центр A и B, веса обратно дисперсиям отдельных оценок (суждение; A {w_a:.3f}, B {1 - w_a:.3f}): {center:.3f} % "
+          f"(se {center_se:.3f} с ковариацией — не точнее одной A; бутстрэп 95 %: {ci_c[0]:.2f}–{ci_c[1]:.2f}, "
+          f"{ci_c[0] - center:+.2f}…{ci_c[1] - center:+.2f} п.п. от центра)")
+    print(f"  оговорка n = {n}: бутстрэп занижает se среднего в √(n/(n−1)) раз; по s/√n — A {se_f_t:.3f}, центр {center_se_t:.3f}; "
+          f"t({n - 1}) 95 %: ±{t975 * center_se_t:.2f} п.п. ({center - t975 * center_se_t:.2f}–{center + t975 * center_se_t:.2f})")
     print(f"  проверка C. уровень фильтра на якоре без изменения + смесь: {est_c:.3f} %")
     print(f"  проверка D. Т-Инвестиции 10.06.2026: отчётная 2027–2028 {tinv['margin']*100:.1f} % + LTI LTM {lti_ltm:.2f} = {est_d:.3f} % (скорр., класс B)")
 
@@ -204,7 +244,7 @@ def main():
     x3 = {"lt": {"stress": 5.3, "floor": 5.9, "partial": 6.5, "full": 7.1}, "p": {"stress": 0.25, "floor": 0.40, "partial": 0.30, "full": 0.05}}
     e_x3 = sum(x3["p"][r] * x3["lt"][r] for r in REGIMES)
     sd_x3 = math.sqrt(sum(x3["p"][r] * (x3["lt"][r] - e_x3) ** 2 for r in REGIMES))
-    z_x3 = (e_x3 - center) / math.sqrt(1 / (wa + wb))
+    z_x3 = (e_x3 - center) / center_se
     lo_s, hi_s = wilson(len(by["stress"]), n)
     print(f"\nПредложение X3 (5,3/5,9/6,5/7,1 %; 25/40/30/5 %): E {e_x3:.3f} %, σ {sd_x3:.3f}; выше центра на {e_x3-center:+.3f} п.п. "
           f"({z_x3:+.1f} se центра); стресс 25 % против класса {freq['stress']*100:.0f} % (Уилсон {lo_s*100:.0f}–{hi_s*100:.0f} %) — у нижнего края")
@@ -229,24 +269,32 @@ def main():
     ests = [est_a, est_b, est_c, est_d]
     sd_est = st.stdev(ests)
     sd_param = math.sqrt(se_f ** 2 + sd_est ** 2 + sd_mix ** 2)
+    sd_param_c = math.sqrt(center_se ** 2 + sd_est ** 2 + sd_mix ** 2)     # с se центра (шум B и в разбросе A–D: учтён дважды)
+    sd_param_t = math.sqrt(center_se_t ** 2 + sd_est ** 2 + sd_mix ** 2)   # то же по s/√n
     ax_lo, ax_hi = -0.5, 0.4
     sd_axis = math.sqrt((ax_lo ** 2 + ax_hi ** 2) / 12 - ((ax_hi + ax_lo) / 6) ** 2)  # MODEL §9: |s| треугольное, края low/high
-    print(f"\nОсь A-C0 (сдвиг LT всех режимов): se класса {se_f:.3f}, разброс оценок A–D {sd_est:.3f}, смесь форматов {sd_mix:.3f} "
-          f"→ σ среднего {sd_param:.3f} п.п.; ось [{ax_lo}; +{ax_hi}] п.п. по правилу MODEL §9 даёт σ {sd_axis:.3f}, среднее {(ax_hi+ax_lo)/6:+.3f}")
+    print(f"\nОсь A-C0 (сдвиг LT всех режимов): se оценки A {se_f:.3f}, разброс оценок A–D {sd_est:.3f}, смесь форматов {sd_mix:.3f} "
+          f"→ σ среднего {sd_param:.3f} п.п.; с se центра {center_se:.3f} — {sd_param_c:.3f}, по s/√n ({center_se_t:.3f}) — {sd_param_t:.3f}; "
+          f"ось [{ax_lo}; +{ax_hi}] п.п. по правилу MODEL §9 даёт σ {sd_axis:.3f}, среднее {(ax_hi+ax_lo)/6:+.3f}")
     pc = ext["price_cap"]
-    print(f"  σ оси ≈ σ среднего; асимметрия вниз: хвосты вниз — регуляторный потолок наценок (вероятность {pc['prob_5y']*100:.0f} % за 5 лет, "
+    print(f"  σ оси — суждение (C), меньше проверок σ среднего; асимметрия вниз: хвосты вниз — регуляторный потолок наценок (вероятность {pc['prob_5y']*100:.0f} % за 5 лет, "
           f"{pc['effect_pp'][0]:+.1f}…{pc['effect_pp'][1]:+.1f} п.п.; A-G1 X3) и структура стратегии-2028 ({a:+.2f}); вверх — реалистичная смесь 2030 ({b:+.2f}) "
-          f"и класс с Empire ({e11-center:+.2f}); бутстрэп класса 95 %: {ci_f[0]-center:+.2f}…{ci_f[1]-center:+.2f} п.п. от центра")
+          f"и класс с Empire ({e11-center:+.2f}); бутстрэп центра 95 %: {ci_c[0]-center:+.2f}…{ci_c[1]-center:+.2f} п.п. "
+          f"(одной оценки A: {ci_f[0]-center:+.2f}…{ci_f[1]-center:+.2f}) — внутри оси")
 
     out = {"episodes": eps, "n": n, "freq": freq, "laplace": lap, "f_mean": fmean, "d_mean": dmean,
            "axis": {"sd_class": se_f, "sd_estimators": sd_est, "sd_mix": sd_mix, "sd_param": sd_param,
+                    "sd_param_center_se": sd_param_c, "sd_param_center_se_t": sd_param_t,
                     "low_pp": ax_lo, "high_pp": ax_hi, "sd_axis": sd_axis},
            "wilson": {r: wilson(len(by[r]), n) for r in REGIMES},
            "x5": {"peak_year": peak_year, "peak_pp": peak, "t0_ltm_pp": t0, "t0_rule_b_pp": t0_b, "loss_pp": loss},
            "mix_pp": mix, "mix_structures_pp": {"2028_strategy": (g28 - g25) * 100, "2030_realistic": (g30 - g25) * 100},
            "lt_f_scale_pp": lt_f, "lt_pp_scale_pp": lt_pp, "lt_raw_pp": lt_raw, "lt_pp": lt,
            "center": {"A_f_scale": est_a, "A_se": se_f, "A_ci95": ci_f, "B_pp_scale": est_b, "B_se": se_d,
-                      "center_pp": center, "center_se": math.sqrt(1 / (wa + wb)),
+                      "AB_cov": cov_ab, "AB_corr": corr_ab, "w_A": w_a,
+                      "center_pp": center, "center_se": center_se, "center_ci95": ci_c,
+                      "A_se_t": se_f_t, "center_se_t": center_se_t, "t975": t975,
+                      "center_ci95_t": (center - t975 * center_se_t, center + t975 * center_se_t),
                       "check_C_level": est_c, "check_D_tinvest": est_d},
            "prob_tilted": p, "lambda": lam, "prob_book": p_book, "e_lt_book_pp": e_book, "sd_lt_book_pp": sd_book,
            "e_lt_laplace_pp": e_lap, "e_lt_raw_pp": e_raw,

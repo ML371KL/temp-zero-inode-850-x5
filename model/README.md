@@ -249,6 +249,23 @@ i/20), 36 клеток, уникальные id журнала (и неизме�
 защита заголовка §13.4: скачок печатаемой медианы > 25 % или V0 медианы > 10 % против
 `changes.vs_previous.reference` без новой книги, новых фактов или действующей записки.
 
+Производные — против того, из чего они посчитаны (`derived_problems(payload)`, зовёт
+`validate`): медиана, P10/P90, P25/P75 заголовка, `headline.mean` и каждая строка
+`fair_value.by_lambda` (квантили, среднее) — статистика прогонов выпуска при своём λ в пределах
+`HALF_CENT`, `headline.p_central_below_market` и `by_lambda[].p_below` — доля прогонов ниже
+рынка строго; `headline.market_price` = `market.price`; `fair_value.low`/`high` — цены слоёв
+`macro_neutral`/`analytical`, `fair_value.lambda` = `headline.lambda`, `central` и точка каждой
+строки таблицы = низ + λ·(верх − низ) (два округления концов — `2·HALF_CENT`); у каждого слоя
+V0 = `pv_fcff` + `pv_shield` + `pv_terminal` − `pv_financing` = Σ p·EV клеток (Σ p = 1),
+`equity` = V0 − D, `price` — из капитала по формуле §7.2 (`meta.governance_discount`,
+`meta.shares_mln`, казначейский пакет `debt.bridge`); `debt.bridge` v0/total/equity и
+`market.claims` — слой `analytical`, строки `ev_rows` и `rows_at_valuation` складываются в
+итог; `center_ev.v_star` = `market.market_ev` = V0 цены рынка, `v0_median` — V0 медианы
+заголовка (§7.3), `gap_median` = v0_median / v_star − 1; все `checks.invariants[].ok` истинны.
+Прочие допуски — 9 значащих цифр выпуска (`DERIVED_REL` = 1e-7 от масштаба слагаемых, а не от
+разности: капитал бывает около нуля). Сверки ловят и подмену с пересчитанным хэшем:
+хэш — идентификатор содержания, а не подпись.
+
 **Хэш** `meta.payload_sha256` — sha256 канонического JSON (sort_keys, без пробелов, UTF-8) без
 `meta.generated_at`, `meta.payload_sha256`, `meta.bytes`, `meta.previous_sha256`,
 `live.fetched_at`, блока `changes` и поля `release_sha` записей журнала: время сборки и ссылки

@@ -497,6 +497,7 @@ bridge:
   - nci_put
   - tax_provisions_net
   - income_tax_net
+  - deferred_consideration
   - st_investments
   - associates
 valuation:

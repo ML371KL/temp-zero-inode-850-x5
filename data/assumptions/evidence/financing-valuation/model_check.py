@@ -206,6 +206,9 @@ B = copy.deepcopy(A)
 B["bridge"]["include"] = list(A["bridge"]["include"]) + ["lti_liability"]
 alts.append(("LTI в мосте", evaluate(B, core_facts(F, B)).point.central))
 B = copy.deepcopy(A)
+B["bridge"]["include"] = [k for k in A["bridge"]["include"] if k != "deferred_consideration"]
+alts.append(("без отложенного возмещения по сделкам", evaluate(B, core_facts(F, B)).point.central))
+B = copy.deepcopy(A)
 B["financing"]["dividends_from"] = "2026H2"
 alts.append(("выплаты с 2026H2", evaluate(B, CF).point.central))
 B = copy.deepcopy(A)

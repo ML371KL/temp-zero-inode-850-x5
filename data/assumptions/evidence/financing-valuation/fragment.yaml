@@ -29,7 +29,8 @@ financing:                                          # A-F1…A-F6 (rates.py, lev
   dividends_from: "2027H1"                          # A-F6d: финал 2025 уже в стартовом долге; следующая выплата — за 9М 2026 в январе 2027
 
 bridge:                                             # A-B (bridge.py): LTI — скользящая программа, её поток уже в марже (A-C7)
-  include: [accrued_interest, nci_put, tax_provisions_net, income_tax_net, st_investments, associates]
+  include: [accrued_interest, nci_put, tax_provisions_net, income_tax_net, deferred_consideration, st_investments,
+            associates]
 
 valuation:                                          # A-V (valuation.py)
   beta_u: 0.60                                      # A-V1: X5 3 года, недели, полная доходность к MCFTR, Харрис — Пингл (лист Магнита 1.4: 0,601)

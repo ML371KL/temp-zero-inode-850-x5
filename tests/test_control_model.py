@@ -40,7 +40,7 @@ STRUCTURAL = {
     4: "знаков печати", 6: "длина ключа полугодия «2026H2»", 7: "месяц начала 2-го полугодия",
     15: "срок схода кривой к LT, лет (§0.2)", 0.5: "половина", 0.25: "четверть",
     0.75: "три четверти (Гордон, §6)", 1000: "млрд → млн (цена на акцию)", 100: "проценты",
-    0.0001: "защита g = r − 0,0001 (§6)", 1e-12: "x → 0 в ratio (§6); порог печати",
+    0.0001: "защита g = r − 0,0001 (§6)", 1e-12: "x → 0 в S_x(n) (§6); порог печати",
     1e-06: "порог печати", 0.01: "1 % EV (§7.3); допуск требований",
     0.03: "допуск V0 и точки", 0.1: "допуск строк; пол знаменателя FCFF; квантиль P10 (§9)",
     0.9: "квантиль P90 (§9)", 5: "стоп поиска обратного DCF по цене, ₽ (§11)",
@@ -151,6 +151,20 @@ def test_control_invariants(control_default, book_facts):
     pt = res["point"]
     back = (pt["v_star"] - res["claims"]["d_analytical"] + inp["treasury_value"]) * (1 - g) * 1000 / n_all
     assert math.isclose(back, pt["market_price"], rel_tol=1e-12)
+
+
+@pytest.mark.parametrize("life", [6.5, 7.0, 7.5])
+def test_control_steady_da_is_the_cohort_sum(life):
+    """Установившаяся D&A терминала контрольной модели (§6) — прямая сумма 2L когорт на
+    геометрическом пути capex и при полуцелом L (контрпример аудита 30.09.2026: 60/140, 10 %)."""
+    c1, c2, x, two_l = 60.0, 140.0, 0.10, round(2 * life)
+
+    def capex(i: int) -> float:        # полугодие 2y + h года y, h = 0 — первое
+        return (c1 if i % 2 == 0 else c2) * (1.0 + x) ** (i // 2)
+
+    want = [math.fsum(capex(-j) for j in range(1, two_l + 1)) / two_l,         # T1
+            math.fsum(capex(1 - j) for j in range(1, two_l + 1)) / two_l]      # T2
+    assert cm.steady_da(c1, c2, x, life, two_l) == pytest.approx(want, rel=1e-13)
 
 
 def test_control_treasury_zero_gives_plain_price(book_facts):

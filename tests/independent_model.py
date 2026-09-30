@@ -95,6 +95,8 @@ SCENARIOS = [
      "set": {"meta.last_period": "2029H2"}},
     {"key": "lt_inflation_gap", "title": "Долгосрочная инфляция мира M ниже последнего ИПЦ траектории: индекс цен терминала — по π, а не по ИПЦ",
      "set": {"worlds.M.lt.inflation": 0.085}},
+    {"key": "half_year_life", "title": "Срок службы 7,5 года (2L = 15, нечётное): в окне D&A терминала T1 на когорту второго полугодия больше, у T2 — первого; база якоря — 15 когорт",
+     "set": {"capex.asset_life_years": 7.5}},
 ]
 
 # Толкования неоднозначных мест MODEL.md (ключ → текст для отчёта).
@@ -125,12 +127,12 @@ INTERPRETATIONS = {
         "включала бы издержки размещения, и они вычитались бы из EV дважды — в C_iss и в X). "
         "С 28.09.2026 §4.9 говорит это прямо."),
     "pi_guard": (
-        "§6, защита π ≥ r ⇒ π = r − 0,0001 — во всём терминале: индекс цен, ratio(π, L) в D&A, "
+        "§6, защита π ≥ r ⇒ π = r − 0,0001 — во всём терминале: индекс цен, S_π(a) в D&A, "
         "(1 + π)^n в переходном члене и Гордон части π (так текст уточнён 28.09.2026; прежний "
         "называл только разделение Гордона). В книге π < r во всех мирах, на числа не влияет."),
     "g_guard_scope": (
         "§6, при g ≥ r ⇒ g = r − 0,0001 защищённый g — везде в терминале: выручка T1/T2, "
-        "ratio(g, L), (1 + g)^n переходного члена, Гордон части g, щита и вычетов."),
+        "S_g(a) в D&A, (1 + g)^n переходного члена, Гордон части g, щита и вычетов."),
     "terminal_halves": (
         "§6, T1 и T2 — «первое и второе полугодия года после `last_period`»: для `last_period` во "
         "втором полугодии это два полугодия сразу за явным участком. `last_period` в первом "
@@ -411,11 +413,22 @@ def gordon(f1: float, f2: float, r: float, x: float) -> float:
     return (f1 * (1.0 + r) ** 0.75 + f2 * (1.0 + r) ** 0.25) / (r - x)
 
 
-def ratio(x: float, life: float) -> float:
-    """(1 − (1 + x)^(−L)) / (L × x), при x → 0 — 1 (§6)."""
+def disc_sum(x: float, n: int) -> float:
+    """S_x(n) = Σ_{k=1..n} (1 + x)^(−k) = (1 − (1 + x)^(−n)) / x, при x → 0 — n (§6)."""
     if abs(x) < 1e-12:
-        return 1.0
-    return (1.0 - (1.0 + x) ** (-life)) / (life * x)
+        return float(n)
+    return (1.0 - (1.0 + x) ** (-n)) / x
+
+
+def steady_da(c1: float, c2: float, x: float, life: float, two_l: int) -> list:
+    """Установившаяся D&A T1, T2 части с ростом x (§6) — сумма 2L когорт окна полугодия:
+    a = ⌊L⌋ когорт первых и вторых полугодий и при e = 2L − 2a = 1 ещё одна, самая старая
+    (у T1 — второго полугодия года −(a + 1), у T2 — первого полугодия года −a)."""
+    a = math.floor(life)
+    e = two_l - 2 * a
+    s = disc_sum(x, a)
+    return [((c1 + c2) * s + e * c2 * (1.0 + x) ** (-(a + 1))) / two_l,
+            ((c1 * (1.0 + x) + c2) * s + e * c1 * (1.0 + x) ** (-a)) / two_l]
 
 
 # ------------------------------------------------------------------ контекст расчёта
@@ -908,10 +921,8 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
     # D&A терминала: установившаяся D&A правила когорт по частям g и π, T1 и T2 (§6)
     c_pi = [t["capex_pi"] for t in t_rows]
     c_g = [t["capex"] - t["capex_pi"] for t in t_rows]
-    life = ctx.life
-    rg, rp = ratio(g, life), ratio(pi, life)
-    da_g = [(c_g[0] + c_g[1]) * rg / 2.0, (c_g[0] * (1.0 + g) + c_g[1]) * rg / 2.0]
-    da_p = [(c_pi[0] + c_pi[1]) * rp / 2.0, (c_pi[0] * (1.0 + pi) + c_pi[1]) * rp / 2.0]
+    da_g = steady_da(c_g[0], c_g[1], g, ctx.life, ctx.two_l)
+    da_p = steady_da(c_pi[0], c_pi[1], pi, ctx.life, ctx.two_l)
     flows, f_pi, pos_base = [], [], []
     for h, t in enumerate(t_rows):
         da_h = da_g[h] + da_p[h]

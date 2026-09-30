@@ -107,7 +107,7 @@
 | `test_payload.py`, `test_journal.py`, `test_time_travel.py` | выпуск и контракт, журнал, прогон «в будущем» (`ci_only`) |
 | `test_live_*.py` | сборщики на сохранённых ответах ISS и ЦБ; `test_live_network.py` — живые источники (`network`) |
 | `test_ops_*.py` | сборка, публикация на локальном «удалённом» репозитории (`ci_only`), workflow, `ops/README.md` |
-| `test_web_*.py`, `web_functions_check.mjs` | статика и CSP, контракт витрины и ползунок λ, функции Pages под Node |
+| `test_web_*.py`, `web_app_check.mjs`, `web_functions_check.mjs` | статика и CSP, контракт витрины и ползунок λ; под Node — витрина с заглушкой DOM (адрес, события отчёта, подписи, все экраны мока) и функции Pages |
 | `test_render_numbers.py` | числа результатов книги в документах = `results.json` |
 | `fixtures/` | ответы ISS и ЦБ 28.09.2026 с манифестом `live_sources.json`, факты для тестов ядра, мок выпуска `sample_payload.json` |
 

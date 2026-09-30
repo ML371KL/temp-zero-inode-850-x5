@@ -2,17 +2,17 @@
  "book": [
   "assumptions.yaml"
  ],
- "version": "1.1.2",
+ "version": "1.1.3",
  "schema_errors": [],
  "run": {
   "layers": {
    "analytical": {
     "v0": 1259.5062,
-    "d": 420.8057,
-    "equity": 838.7005,
-    "price": 3178.7928,
-    "v0_to_d": 2.9931,
-    "equity_share": 0.6659,
+    "d": 422.0497,
+    "equity": 837.4565,
+    "price": 3174.3037,
+    "v0_to_d": 2.9843,
+    "equity_share": 0.6649,
     "pv_shield": 100.5289,
     "pv_terminal": 602.3659,
     "terminal_share": 0.4741,
@@ -20,11 +20,11 @@
    },
    "market_implied": {
     "v0": 1262.2463,
-    "d": 420.2484,
-    "equity": 841.9979,
-    "price": 3190.6917,
-    "v0_to_d": 3.0036,
-    "equity_share": 0.6671,
+    "d": 421.4924,
+    "equity": 840.7539,
+    "price": 3186.2026,
+    "v0_to_d": 2.9947,
+    "equity_share": 0.6661,
     "pv_shield": 117.6879,
     "pv_terminal": 583.2305,
     "terminal_share": 0.4546,
@@ -32,21 +32,21 @@
    },
    "macro_neutral": {
     "v0": 1286.3929,
-    "d": 419.905,
-    "equity": 866.4879,
-    "price": 3279.0666,
-    "v0_to_d": 3.0635,
-    "equity_share": 0.6736,
+    "d": 421.149,
+    "equity": 865.2439,
+    "price": 3274.5775,
+    "v0_to_d": 3.0545,
+    "equity_share": 0.6726,
     "pv_shield": 129.6406,
     "pv_terminal": 589.1791,
     "terminal_share": 0.4481,
     "ev_ebitda": 3.9642
    }
   },
-  "point": 3228.9297,
-  "low": 3279.0666,
-  "high": 3178.7928,
-  "v_star": 879.7773
+  "point": 3224.4406,
+  "low": 3274.5775,
+  "high": 3174.3037,
+  "v_star": 881.0213
  },
  "shield": {
   "explicit": 100.5289,
@@ -59,7 +59,7 @@
     "layer": "analytical",
     "sigma_e": 0.2657,
     "T": 1.24,
-    "sigma_ev": 0.1769,
+    "sigma_ev": 0.1767,
     "put_bn": 0.0,
     "rub": 0.0
    },
@@ -67,47 +67,47 @@
     "layer": "analytical",
     "sigma_e": 0.2657,
     "T": 3.0,
-    "sigma_ev": 0.1769,
+    "sigma_ev": 0.1767,
+    "put_bn": 0.0096,
+    "rub": 0.0348
+   },
+   {
+    "layer": "analytical",
+    "sigma_e": 0.4,
+    "T": 3.0,
+    "sigma_ev": 0.266,
+    "put_bn": 0.9682,
+    "rub": 3.4939
+   },
+   {
+    "layer": "market_implied",
+    "sigma_e": 0.2657,
+    "T": 1.24,
+    "sigma_ev": 0.177,
+    "put_bn": 0.0,
+    "rub": 0.0
+   },
+   {
+    "layer": "market_implied",
+    "sigma_e": 0.2657,
+    "T": 3.0,
+    "sigma_ev": 0.177,
     "put_bn": 0.0095,
     "rub": 0.0341
    },
    {
-    "layer": "analytical",
+    "layer": "market_implied",
     "sigma_e": 0.4,
     "T": 3.0,
     "sigma_ev": 0.2664,
-    "put_bn": 0.9599,
-    "rub": 3.4638
-   },
-   {
-    "layer": "market_implied",
-    "sigma_e": 0.2657,
-    "T": 1.24,
-    "sigma_ev": 0.1772,
-    "put_bn": 0.0,
-    "rub": 0.0
-   },
-   {
-    "layer": "market_implied",
-    "sigma_e": 0.2657,
-    "T": 3.0,
-    "sigma_ev": 0.1772,
-    "put_bn": 0.0093,
-    "rub": 0.0335
-   },
-   {
-    "layer": "market_implied",
-    "sigma_e": 0.4,
-    "T": 3.0,
-    "sigma_ev": 0.2668,
-    "put_bn": 0.9521,
-    "rub": 3.4357
+    "put_bn": 0.9604,
+    "rub": 3.4658
    },
    {
     "layer": "macro_neutral",
     "sigma_e": 0.2657,
     "T": 1.24,
-    "sigma_ev": 0.179,
+    "sigma_ev": 0.1787,
     "put_bn": 0.0,
     "rub": 0.0
    },
@@ -115,32 +115,32 @@
     "layer": "macro_neutral",
     "sigma_e": 0.2657,
     "T": 3.0,
-    "sigma_ev": 0.179,
-    "put_bn": 0.0084,
-    "rub": 0.0303
+    "sigma_ev": 0.1787,
+    "put_bn": 0.0086,
+    "rub": 0.0309
    },
    {
     "layer": "macro_neutral",
     "sigma_e": 0.4,
     "T": 3.0,
-    "sigma_ev": 0.2694,
-    "put_bn": 0.915,
-    "rub": 3.3017
+    "sigma_ev": 0.269,
+    "put_bn": 0.9231,
+    "rub": 3.3311
    }
   ],
-  "v_star": 879.7773,
-  "d": 420.8057,
-  "e_to_v_star": 0.5217,
-  "sigma_ev_market": 0.1386,
-  "sigma_ev_book": 0.1769,
+  "v_star": 881.0213,
+  "d": 422.0497,
+  "e_to_v_star": 0.521,
+  "sigma_ev_market": 0.1384,
+  "sigma_ev_book": 0.1767,
   "thresholds": {
-   "put_at_1.5_T1.24_rub": 2.6495,
-   "T1.24_rub1": 1.6074,
-   "T1.24_rub25": 1.23,
-   "put_at_1.5_T3.0_rub": 24.4984,
-   "T3.0_rub1": 2.2194,
-   "T3.0_rub25": 1.4953,
-   "T_for_25rub_at_1.5": 3.0321
+   "put_at_1.5_T1.24_rub": 2.6314,
+   "T1.24_rub1": 1.6064,
+   "T1.24_rub25": 1.2298,
+   "put_at_1.5_T3.0_rub": 24.4316,
+   "T3.0_rub1": 2.217,
+   "T3.0_rub25": 1.4947,
+   "T_for_25rub_at_1.5": 3.0364
   },
   "sigma_e": 0.2657,
   "T": 1.24,
@@ -159,8 +159,8 @@
    "cmax": 0.0365,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 701.2028,
-   "price": 2682.6174
+   "equity": 699.9588,
+   "price": 2678.1282
   },
   {
    "key": "N|stress|base",
@@ -174,8 +174,8 @@
    "cmax": 0.039,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 422.6309,
-   "price": 1677.3606
+   "equity": 421.3869,
+   "price": 1672.8714
   },
   {
    "key": "N|stress|high",
@@ -189,8 +189,8 @@
    "cmax": 0.0446,
    "lev": 1.3539,
    "real": 0.0834,
-   "equity": 40.9907,
-   "price": 300.1708
+   "equity": 39.7467,
+   "price": 295.6817
   },
   {
    "key": "N|floor|low",
@@ -204,8 +204,8 @@
    "cmax": 0.0376,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 1494.561,
-   "price": 5545.5359
+   "equity": 1493.317,
+   "price": 5541.0468
   },
   {
    "key": "N|floor|base",
@@ -219,8 +219,8 @@
    "cmax": 0.0416,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 1175.9296,
-   "price": 4395.7202
+   "equity": 1174.6856,
+   "price": 4391.2311
   },
   {
    "key": "N|floor|high",
@@ -234,8 +234,8 @@
    "cmax": 0.048,
    "lev": 1.3129,
    "real": 0.0834,
-   "equity": 738.6769,
-   "price": 2817.8468
+   "equity": 737.4329,
+   "price": 2813.3577
   },
   {
    "key": "N|partial|low",
@@ -249,8 +249,8 @@
    "cmax": 0.0376,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 1739.7648,
-   "price": 6430.3804
+   "equity": 1738.5208,
+   "price": 6425.8913
   },
   {
    "key": "N|partial|base",
@@ -264,8 +264,8 @@
    "cmax": 0.0416,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 1421.1334,
-   "price": 5280.5647
+   "equity": 1419.8894,
+   "price": 5276.0756
   },
   {
    "key": "N|partial|high",
@@ -279,8 +279,8 @@
    "cmax": 0.048,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 983.8383,
-   "price": 3702.5383
+   "equity": 982.5943,
+   "price": 3698.0492
   },
   {
    "key": "N|full|low",
@@ -294,8 +294,8 @@
    "cmax": 0.0375,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 2458.3528,
-   "price": 9023.4828
+   "equity": 2457.1088,
+   "price": 9018.9937
   },
   {
    "key": "N|full|base",
@@ -309,8 +309,8 @@
    "cmax": 0.0411,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 2127.7805,
-   "price": 7830.5768
+   "equity": 2126.5365,
+   "price": 7826.0877
   },
   {
    "key": "N|full|high",
@@ -324,8 +324,8 @@
    "cmax": 0.0474,
    "lev": 1.3,
    "real": 0.0834,
-   "equity": 1674.0719,
-   "price": 6193.3204
+   "equity": 1672.8279,
+   "price": 6188.8313
   },
   {
    "key": "H|stress|low",
@@ -339,8 +339,8 @@
    "cmax": 0.0365,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 561.2412,
-   "price": 2177.5507
+   "equity": 559.9972,
+   "price": 2173.0616
   },
   {
    "key": "H|stress|base",
@@ -354,8 +354,8 @@
    "cmax": 0.0389,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 325.0623,
-   "price": 1325.2737
+   "equity": 323.8183,
+   "price": 1320.7846
   },
   {
    "key": "H|stress|high",
@@ -369,8 +369,8 @@
    "cmax": 0.0446,
    "lev": 1.3558,
    "real": 0.1054,
-   "equity": 2.0535,
-   "price": 159.6617
+   "equity": 0.8095,
+   "price": 155.1726
   },
   {
    "key": "H|floor|low",
@@ -384,8 +384,8 @@
    "cmax": 0.0369,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 1147.7658,
-   "price": 4294.0881
+   "equity": 1146.5218,
+   "price": 4289.5989
   },
   {
    "key": "H|floor|base",
@@ -399,8 +399,8 @@
    "cmax": 0.0403,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 889.6933,
-   "price": 3362.8058
+   "equity": 888.4493,
+   "price": 3358.3167
   },
   {
    "key": "H|floor|high",
@@ -414,8 +414,8 @@
    "cmax": 0.0467,
    "lev": 1.304,
    "real": 0.1054,
-   "equity": 535.6966,
-   "price": 2085.3706
+   "equity": 534.4526,
+   "price": 2080.8815
   },
   {
    "key": "H|partial|low",
@@ -429,8 +429,8 @@
    "cmax": 0.0369,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 1337.6751,
-   "price": 4979.3962
+   "equity": 1336.4311,
+   "price": 4974.9071
   },
   {
    "key": "H|partial|base",
@@ -444,8 +444,8 @@
    "cmax": 0.0403,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 1079.6026,
-   "price": 4048.1139
+   "equity": 1078.3586,
+   "price": 4043.6248
   },
   {
    "key": "H|partial|high",
@@ -459,8 +459,8 @@
    "cmax": 0.0467,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 725.5883,
-   "price": 2770.6151
+   "equity": 724.3443,
+   "price": 2766.126
   },
   {
    "key": "H|full|low",
@@ -474,8 +474,8 @@
    "cmax": 0.0368,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 1849.1389,
-   "price": 6825.0687
+   "equity": 1847.8949,
+   "price": 6820.5796
   },
   {
    "key": "H|full|base",
@@ -489,8 +489,8 @@
    "cmax": 0.0398,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 1583.1193,
-   "price": 5865.1084
+   "equity": 1581.8753,
+   "price": 5860.6192
   },
   {
    "key": "H|full|high",
@@ -504,8 +504,8 @@
    "cmax": 0.0461,
    "lev": 1.3,
    "real": 0.1054,
-   "equity": 1218.1831,
-   "price": 4548.1967
+   "equity": 1216.9391,
+   "price": 4543.7076
   },
   {
    "key": "M|stress|low",
@@ -519,8 +519,8 @@
    "cmax": 0.0365,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 675.5965,
-   "price": 2590.2145
+   "equity": 674.3525,
+   "price": 2585.7254
   },
   {
    "key": "M|stress|base",
@@ -534,8 +534,8 @@
    "cmax": 0.0389,
    "lev": 1.3067,
    "real": 0.1024,
-   "equity": 412.314,
-   "price": 1640.131
+   "equity": 411.07,
+   "price": 1635.6419
   },
   {
    "key": "M|stress|high",
@@ -549,8 +549,8 @@
    "cmax": 0.0446,
    "lev": 1.3638,
    "real": 0.1024,
-   "equity": 52.2197,
-   "price": 340.6917
+   "equity": 50.9757,
+   "price": 336.2026
   },
   {
    "key": "M|floor|low",
@@ -564,8 +564,8 @@
    "cmax": 0.0363,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 1322.9776,
-   "price": 4926.3588
+   "equity": 1321.7336,
+   "price": 4921.8697
   },
   {
    "key": "M|floor|base",
@@ -579,8 +579,8 @@
    "cmax": 0.0387,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 1050.862,
-   "price": 3944.4004
+   "equity": 1049.618,
+   "price": 3939.9113
   },
   {
    "key": "M|floor|high",
@@ -594,8 +594,8 @@
    "cmax": 0.0439,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 677.5347,
-   "price": 2597.2086
+   "equity": 676.2907,
+   "price": 2592.7195
   },
   {
    "key": "M|partial|low",
@@ -609,8 +609,8 @@
    "cmax": 0.0363,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 1524.543,
-   "price": 5653.7293
+   "equity": 1523.299,
+   "price": 5649.2402
   },
   {
    "key": "M|partial|base",
@@ -624,8 +624,8 @@
    "cmax": 0.0387,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 1252.4274,
-   "price": 4671.7709
+   "equity": 1251.1834,
+   "price": 4667.2818
   },
   {
    "key": "M|partial|high",
@@ -639,8 +639,8 @@
    "cmax": 0.0439,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 879.1001,
-   "price": 3324.5791
+   "equity": 877.8561,
+   "price": 3320.09
   },
   {
    "key": "M|full|low",
@@ -654,8 +654,8 @@
    "cmax": 0.0362,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 2080.5397,
-   "price": 7660.1034
+   "equity": 2079.2957,
+   "price": 7655.6143
   },
   {
    "key": "M|full|base",
@@ -669,8 +669,8 @@
    "cmax": 0.0386,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 1799.6733,
-   "price": 6646.5666
+   "equity": 1798.4293,
+   "price": 6642.0775
   },
   {
    "key": "M|full|high",
@@ -684,8 +684,8 @@
    "cmax": 0.0433,
    "lev": 1.3,
    "real": 0.1024,
-   "equity": 1414.3189,
-   "price": 5255.9739
+   "equity": 1413.0749,
+   "price": 5251.4848
   }
  ],
  "gate_masses": {
@@ -700,15 +700,15 @@
  "reverse_point": [
   {
    "name": "β_u",
-   "solved": 1.332
+   "solved": 1.3294
   },
   {
    "name": "ERP",
-   "solved": 0.1237
+   "solved": 0.1234
   },
   {
    "name": "Дисконт за управление",
-   "solved": 0.4509
+   "solved": 0.4504
   }
  ],
  "sensitivities": [
@@ -716,8 +716,8 @@
    "name": "β_u",
    "low": 0.45,
    "high": 0.75,
-   "point_low": 3688.1334,
-   "point_high": 2845.1426,
+   "point_low": 3683.6443,
+   "point_high": 2840.6535,
    "d_low": 459.2037,
    "d_high": -383.7871,
    "swing": 842.9908
@@ -726,8 +726,8 @@
    "name": "ERP",
    "low": 0.049,
    "high": 0.065,
-   "point_low": 3439.1598,
-   "point_high": 2965.4229,
+   "point_low": 3434.6707,
+   "point_high": 2960.9338,
    "d_low": 210.2302,
    "d_high": -263.5068,
    "swing": 473.7369
@@ -736,18 +736,18 @@
    "name": "Дисконт за управление",
    "low": 0.0,
    "high": 0.05,
-   "point_low": 3294.8262,
-   "point_high": 3130.0849,
-   "d_low": 65.8965,
-   "d_high": -98.8448,
-   "swing": 164.7413
+   "point_low": 3290.2455,
+   "point_high": 3125.7332,
+   "d_low": 65.8049,
+   "d_high": -98.7074,
+   "swing": 164.5123
   },
   {
    "name": "Целевой рычаг",
    "low": 1.0,
    "high": 1.6,
-   "point_low": 3110.2287,
-   "point_high": 3352.9362,
+   "point_low": 3105.7396,
+   "point_high": 3348.4471,
    "d_low": -118.7009,
    "d_high": 124.0065,
    "swing": 242.7075
@@ -756,8 +756,8 @@
    "name": "Спред плавающего долга, base",
    "low": 0.01,
    "high": 0.014,
-   "point_low": 3216.6606,
-   "point_high": 3241.1628,
+   "point_low": 3212.1715,
+   "point_high": 3236.6737,
    "d_low": -12.2691,
    "d_high": 12.2331,
    "swing": 24.5022
@@ -766,8 +766,8 @@
    "name": "Спред плавающего, base и stress вместе",
    "low": -0.002,
    "high": 0.002,
-   "point_low": 3224.717,
-   "point_high": 3233.1433,
+   "point_low": 3220.2279,
+   "point_high": 3228.6542,
    "d_low": -4.2126,
    "d_high": 4.2137,
    "swing": 8.4263
@@ -776,8 +776,8 @@
    "name": "Спред фикса, base",
    "low": 0.008,
    "high": 0.014,
-   "point_low": 3210.9432,
-   "point_high": 3246.8753,
+   "point_low": 3206.4541,
+   "point_high": 3242.3862,
    "d_low": -17.9865,
    "d_high": 17.9457,
    "swing": 35.9322
@@ -786,8 +786,8 @@
    "name": "Спред фикса, base и stress вместе",
    "low": -0.003,
    "high": 0.003,
-   "point_low": 3222.234,
-   "point_high": 3235.6112,
+   "point_low": 3217.7449,
+   "point_high": 3231.1221,
    "d_low": -6.6957,
    "d_high": 6.6816,
    "swing": 13.3772
@@ -796,8 +796,8 @@
    "name": "Издержки размещения",
    "low": 0.0,
    "high": 0.0015,
-   "point_low": 3241.9564,
-   "point_high": 3220.2454,
+   "point_low": 3237.4673,
+   "point_high": 3215.7563,
    "d_low": 13.0267,
    "d_high": -8.6843,
    "swing": 21.711
@@ -806,8 +806,8 @@
    "name": "Частота купона нового фикса (4 / 2 в год)",
    "low": 4,
    "high": 2,
-   "point_low": 3232.7506,
-   "point_high": 3238.5911,
+   "point_low": 3228.2615,
+   "point_high": 3234.102,
    "d_low": 3.8209,
    "d_high": 9.6614,
    "swing": 5.8405
@@ -816,8 +816,8 @@
    "name": "Доля фикса (сдвиг)",
    "low": -0.1,
    "high": 0.1,
-   "point_low": 3235.3732,
-   "point_high": 3222.4871,
+   "point_low": 3230.8841,
+   "point_high": 3217.998,
    "d_low": 6.4436,
    "d_high": -6.4425,
    "swing": 12.8861
@@ -826,8 +826,8 @@
    "name": "Купон «старого» фикса",
    "low": 0.145,
    "high": 0.155,
-   "point_low": 3228.6527,
-   "point_high": 3229.2072,
+   "point_low": 3224.1636,
+   "point_high": 3224.718,
    "d_low": -0.2769,
    "d_high": 0.2775,
    "swing": 0.5544
@@ -836,8 +836,8 @@
    "name": "Доходность кассы k",
    "low": 0.8,
    "high": 1.05,
-   "point_low": 3218.4155,
-   "point_high": 3244.702,
+   "point_low": 3213.9264,
+   "point_high": 3240.2129,
    "d_low": -10.5142,
    "d_high": 15.7724,
    "swing": 26.2866
@@ -846,8 +846,8 @@
    "name": "Подушка кассы",
    "low": 0.0,
    "high": 0.0145,
-   "point_low": 3239.7451,
-   "point_high": 3204.9017,
+   "point_low": 3235.256,
+   "point_high": 3200.4126,
    "d_low": 10.8154,
    "d_high": -24.028,
    "swing": 34.8434
@@ -864,8 +864,8 @@
     "H": 0.45,
     "M": 0.15
    },
-   "point_low": 3199.3389,
-   "point_high": 3237.5769,
+   "point_low": 3194.8498,
+   "point_high": 3233.0878,
    "d_low": -29.5907,
    "d_high": 8.6472,
    "swing": 38.2379
@@ -874,8 +874,8 @@
    "name": "Инфляция мира M",
    "low": -0.003,
    "high": 0.005,
-   "point_low": 3144.223,
-   "point_high": 3382.2723,
+   "point_low": 3139.7339,
+   "point_high": 3377.7832,
    "d_low": -84.7067,
    "d_high": 153.3426,
    "swing": 238.0493
@@ -884,24 +884,29 @@
  "alternatives": [
   {
    "name": "пиковые спреды stress (КС + 2,00; G + 2,60)",
-   "point": 3172.7634,
+   "point": 3168.2743,
    "delta": -56.1663
   },
   {
    "name": "LTI в мосте",
-   "point": 3200.4361,
+   "point": 3195.947,
    "delta": -28.4936
   },
   {
+   "name": "без отложенного возмещения по сделкам",
+   "point": 3228.9297,
+   "delta": 4.4891
+  },
+  {
    "name": "выплаты с 2026H2",
-   "point": 3231.0515,
+   "point": 3226.5624,
    "delta": 2.1218
   },
   {
    "name": "мир M с кредитом base",
-   "point": 3261.3618,
+   "point": 3256.8727,
    "delta": 32.4322
   }
  ],
- "base_point": 3228.9297
+ "base_point": 3224.4406
 }

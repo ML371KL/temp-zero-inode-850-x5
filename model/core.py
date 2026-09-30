@@ -26,8 +26,8 @@ import math
 from dataclasses import dataclass, field, fields
 from functools import cached_property
 
-from model.book import (half_rate, interp_curve, next_period, path_value, period_end,
-                        period_index, period_of, period_start, periods, prev_period,
+from model.book import (coupon_rate, half_rate, interp_curve, next_period, path_value,
+                        period_end, period_index, period_of, period_start, periods, prev_period,
                         trajectory)
 from model.facts import CoreFacts, Facts, FactsError, core_facts
 
@@ -176,14 +176,15 @@ class WorldPaths:
 @dataclass(frozen=True)
 class RatePaths:
     """Ставки клетки (§4.9, §6): по полугодиям явного участка и последним элементом
-    (индекс N) — терминал; half(·) — полугодовые ставки."""
+    (индекс N) — терминал. Ставки долга и кассы — простые (§0): начисление за
+    полугодие — половина годовой, half_* = годовая / 2."""
 
-    debt: tuple                 # debt_rate: годовая ставка долга с издержками размещения
-    half_debt: tuple            # half(debt_rate)
-    half_clean: tuple           # half(debt_rate без издержек размещения)
-    half_fair: tuple            # half(debt_rate при справедливых спредах — base)
-    half_yield: tuple           # half(cash_yield_k × key)
-    half_key: tuple             # half(key)
+    debt: tuple                 # debt_rate: простая годовая ставка долга с издержками размещения
+    half_debt: tuple            # debt_rate / 2
+    half_clean: tuple           # debt_rate без издержек размещения / 2
+    half_fair: tuple            # debt_rate при справедливых спредах (base) / 2
+    half_yield: tuple           # cash_yield_k × key / 2
+    half_key: tuple             # key / 2
 
 
 @dataclass(frozen=True)
@@ -589,8 +590,10 @@ class Context:
     def rates(self, world: str, credit: str) -> RatePaths:
         """Ставки полугодий (§4.9) и терминала (§6, индекс N).
 
-        debt_rate(p) = f·[ℓ·legacy + (1 − ℓ)(z_fix(p) + s_fix[c] + ic)] + (1 − f)(key + s_float[c] + ic);
-        терминал — то же на последних значениях f, ℓ, key и узле LT вместо z_fix.
+        debt_rate(p) = f·[ℓ·legacy + (1 − ℓ)(cpn(z_fix(p) + s_fix[c]) + ic)] + (1 − f)(key + s_float[c] + ic),
+        cpn(y) = m·((1 + y)^(1/m) − 1), m = fixed_coupon_freq: все ноги — простые ставки (купоны),
+        начисление за полугодие — debt_rate / 2 (§0); доход кассы k·key и ключевая кэрри — тоже / 2.
+        Терминал — то же на последних значениях f, ℓ, key и узле LT вместо z_fix.
         """
         hit = self._rates.get((world, credit))
         if hit is not None:
@@ -599,23 +602,26 @@ class Context:
         legacy = float(FN["legacy_rate"])
         cost = float(FN["issuance_cost"])
         yield_k = float(FN["cash_yield_k"])
+        freq = int(FN["fixed_coupon_freq"])
         steps = range(self.N + 1)
 
         def rate(i: int, state: str, ic: float) -> float:
             j = min(i, self.N - 1)
             lw, fs = self.legacy_weight[j], self.fixed_share[j]
             z = W.z_fix[i] if i < self.N else W.z_lt
-            fixed_rate = lw * legacy + (1.0 - lw) * (z + float(FN["spread_fixed"][state]) + ic)
+            # новый фикс: эффективная доходность z + G-спред → купон облигации с freq выплатами
+            new_fixed = coupon_rate(z + float(FN["spread_fixed"][state]), freq)
+            fixed_rate = lw * legacy + (1.0 - lw) * (new_fixed + ic)
             return fs * fixed_rate + (1.0 - fs) * (W.key[j] + float(FN["spread_float"][state]) + ic)
 
         debt = tuple(rate(i, credit, cost) for i in steps)
         keys = tuple(W.key[min(i, self.N - 1)] for i in steps)
         hit = self._rates[(world, credit)] = RatePaths(
-            debt=debt, half_debt=tuple(half_rate(r) for r in debt),
-            half_clean=tuple(half_rate(rate(i, credit, 0.0)) for i in steps),
-            half_fair=tuple(half_rate(rate(i, FAIR_CREDIT, cost)) for i in steps),
-            half_yield=tuple(half_rate(yield_k * k) for k in keys),
-            half_key=tuple(half_rate(k) for k in keys))
+            debt=debt, half_debt=tuple(r / 2.0 for r in debt),
+            half_clean=tuple(rate(i, credit, 0.0) / 2.0 for i in steps),
+            half_fair=tuple(rate(i, FAIR_CREDIT, cost) / 2.0 for i in steps),
+            half_yield=tuple(yield_k * k / 2.0 for k in keys),
+            half_key=tuple(k / 2.0 for k in keys))
         return hit
 
     def maintenance(self, level: str) -> tuple:

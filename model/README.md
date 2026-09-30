@@ -17,7 +17,7 @@
 | `add_observation(A, period, value, se=0.0) -> dict` | копия книги с ещё одним наблюдением маржи A-P2u поверх внесённых («что даст отчёт», §12); повтор полугодия — `BookError` |
 | `open_period(A) -> str \| None` | самое раннее прогнозное полугодие без факта (se = 0) |
 | `path_value(spec, p)`, `trajectory(spec, P)` | значение траектории §0.1 в полугодии / на списке полугодий (память по содержимому) |
-| `interp_curve(curve, t)`, `half_rate(r)` | кривая §0.2 (за последним узлом форвард = `LT`); (1 + r)^0,5 − 1 |
+| `interp_curve(curve, t)`, `half_rate(r)`, `coupon_rate(y, m)` | кривая §0.2 (за последним узлом форвард = `LT`); (1 + r)^0,5 − 1 — полугодие эффективной ставки; m × ((1 + y)^(1/m) − 1) — купон по номиналу при эффективной доходности y и m выплатах в год (§0, §4.9) |
 | `periods`, `prev_period`, `next_period`, `prev_same_half`, `period_index`, `period_start`, `period_end`, `period_of` | линейка полугодий |
 | `book_warnings(A) -> list[str]` | несмертельные замечания (например, траектория без `LT`, которую §0.1 продлевает навсегда) |
 | `today() -> date` | сегодня по Москве (UTC+3, фиксированное смещение `MOSCOW`); `FAKE_TODAY=ГГГГ-ММ-ДД` подменяет |
@@ -59,8 +59,10 @@ res = run_cell(ctx, ctx.cell("H", "floor", "base"))
 RegimePaths` (target, season, deviation по полугодиям; значения на якоре;
 target_lt), `network(tariff) -> NetworkPaths` (открытия, закрытия, площадь, Ā_eff по полугодиям; `eff_hist` — A_eff на конец S … якорь, `eff_avg_hist` — Ā_eff якоря − 1 и якоря), `revenue(w, tariff, demand) ->
 RevenuePaths` (выручка, чек, трафик, ticket_lt, traffic_lt), `rates(w, credit)
--> RatePaths` (debt, half_debt, half_clean — без издержек размещения, half_fair —
-со спредами base, half_yield, half_key; индекс N — терминал), `maintenance(level)`.
+-> RatePaths` (debt — простая годовая ставка долга, новый фикс в ней купоном
+`coupon_rate`; начисление за полугодие r/2 (§0, §4.9): half_debt = debt/2,
+half_clean — без издержек размещения, half_fair — со спредами base, half_yield =
+k × key/2, half_key = key/2; индекс N — терминал), `maintenance(level)`.
 Живые входы — только `valuation_date` (дата принятой цены) и `market_price`;
 по умолчанию `meta.valuation_date` и `meta.market_price`.
 

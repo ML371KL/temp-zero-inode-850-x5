@@ -27,7 +27,8 @@ from model.book_schema import BookError, get_node, is_number, is_trajectory, val
 __all__ = ["BookError", "ROOT", "BOOK_DIR", "BOOK_YAML", "DRAFT_YAML", "default_book_path",
            "load_book", "today", "periods", "prev_period", "next_period", "prev_same_half",
            "period_index", "period_start", "period_end", "path_value", "trajectory",
-           "interp_curve", "half_rate", "override", "blend_weights", "add_observation",
+           "interp_curve", "half_rate", "coupon_rate", "override", "blend_weights",
+           "add_observation",
            "book_warnings", "get_node", "open_period", "period_of"]
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -196,8 +197,17 @@ def interp_curve(curve: dict, tenor: float) -> float:
 
 
 def half_rate(annual: float) -> float:
-    """Годовая ставка в полугодовую: (1 + r)^0,5 − 1 (корень, не r/2)."""
+    """Эффективная годовая ставка в полугодовую: (1 + r)^0,5 − 1 (корень, не r/2; §0).
+
+    Только для эффективных величин (дисконт, кривая, ИПЦ, рост); простые ставки
+    начисления (купоны, ключевая + спред, доход кассы) начисляются r/2 (§0, §4.9)."""
     return math.sqrt(1.0 + annual) - 1.0
+
+
+def coupon_rate(effective: float, freq: int) -> float:
+    """Годовой купон облигации по номиналу с `freq` выплатами в год при эффективной
+    годовой доходности `effective`: cpn(y) = m × ((1 + y)^(1/m) − 1) (§4.9)."""
+    return freq * math.expm1(math.log1p(effective) / freq)
 
 
 # ------------------------------------------------------------------- подмены

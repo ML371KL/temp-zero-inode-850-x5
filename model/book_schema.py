@@ -103,7 +103,7 @@ SCHEMA: dict[str, Any] = {
     "tax": {"rate": "prob", "permanent_add_pct": "num"},
     "financing": {"fixed_share": "traj01", "legacy_rate": "num", "legacy_weight": "traj01",
                   "spread_float": _keyed(CREDITS, "num"), "spread_fixed": _keyed(CREDITS, "num"),
-                  "issuance_cost": "nonneg",
+                  "fixed_coupon_freq": "count", "issuance_cost": "nonneg",
                   "cash_buffer_pct": "nonneg", "cash_yield_k": "nonneg",
                   "target_leverage": "nonneg", "dividends_from": "period"},
     "bridge": {"include": _list("str")},

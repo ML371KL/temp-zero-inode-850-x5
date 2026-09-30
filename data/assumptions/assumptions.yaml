@@ -486,6 +486,7 @@ financing:
   spread_fixed:
     base: 0.011
     stress: 0.018
+  fixed_coupon_freq: 12
   issuance_cost: 0.0009
   cash_buffer_pct: 0.0045
   cash_yield_k: 0.9

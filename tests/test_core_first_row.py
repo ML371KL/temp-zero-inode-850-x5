@@ -117,8 +117,13 @@ def test_first_half_year_by_hand(book, facts, world):
     lw, fs = path_value(FN["legacy_weight"], p1), path_value(FN["fixed_share"], p1)
     key = W["key_rate"][p1]
 
+    # Новый фикс: эффективная доходность (узел 3 года + G-спред) → купон облигации по номиналу
+    # с m выплатами в год; все ноги — простые ставки, за полугодие начисляется половина (§0, §4.9).
+    m = FN["fixed_coupon_freq"]
+
     def rate_of(state, ic):
-        fixed = lw * FN["legacy_rate"] + (1 - lw) * (W["zero_curve"]["3"] + FN["spread_fixed"][state] + ic)
+        y = W["zero_curve"]["3"] + FN["spread_fixed"][state]
+        fixed = lw * FN["legacy_rate"] + (1 - lw) * (m * ((1 + y) ** (1 / m) - 1) + ic)
         return fs * fixed + (1 - fs) * (key + FN["spread_float"][state] + ic)
 
     ic = FN["issuance_cost"]
@@ -126,11 +131,11 @@ def test_first_half_year_by_hand(book, facts, world):
     buf_a = FN["cash_buffer_pct"] * ltm_a
     nd_a = cf.net_debt + cf.dividends_payable
     gross = nd_a + opc_a + buf_a
-    interest = gross * half_rate(rate) - buf_a * half_rate(FN["cash_yield_k"] * key)
+    interest = gross * rate / 2 - buf_a * FN["cash_yield_k"] * key / 2
     shield = tax_u - TX["rate"] * max(0, base - interest)
-    issuance = max(0, gross) * (half_rate(rate) - half_rate(rate_of(credit, 0.0)))
-    excess = max(0, gross) * max(0, half_rate(rate) - half_rate(rate_of("base", ic)))
-    carry = buf_a * (half_rate(key) - half_rate(FN["cash_yield_k"] * key))
+    issuance = max(0, gross) * (rate - rate_of(credit, 0.0)) / 2
+    excess = max(0, gross) * max(0, rate - rate_of("base", ic)) / 2
+    carry = buf_a * (key - FN["cash_yield_k"] * key) / 2
     nd_pre = nd_a - (fcff + shield - interest)
     ltm = (ebitda - lti) + cf.ebitda_rep[anchor]
     pays = p1 >= FN["dividends_from"]
@@ -289,17 +294,20 @@ def test_terminal_by_hand(book, facts, regime):
     dg = [(cg[0] + cg[1]) * ratio(g) / 2, (cg[0] * (1 + g) + cg[1]) * ratio(g) / 2]
     dp = [(cp[0] + cp[1]) * ratio(pi) / 2, (cp[0] * (1 + pi) + cp[1]) * ratio(pi) / 2]
 
-    # ставка терминала: последние f, ℓ, key; фиксированная нога — узел LT
+    # ставка терминала: последние f, ℓ, key; доходность фиксированной ноги — узел LT, в ставку —
+    # купоном облигации с m выплатами в год; начисление за полугодие — половина (§0, §4.9, §6)
     f_T, l_T = path_value(FN["fixed_share"], lastp), path_value(FN["legacy_weight"], lastp)
     key_T = W["key_rate"][lastp]
+    m = FN["fixed_coupon_freq"]
 
     def r_T(state, ic):
-        fixed = l_T * FN["legacy_rate"] + (1 - l_T) * (W["zero_curve"]["LT"] + FN["spread_fixed"][state] + ic)
+        y = W["zero_curve"]["LT"] + FN["spread_fixed"][state]
+        fixed = l_T * FN["legacy_rate"] + (1 - l_T) * (m * ((1 + y) ** (1 / m) - 1) + ic)
         return f_T * fixed + (1 - f_T) * (key_T + FN["spread_float"][state] + ic)
 
     ic, lt, bp = FN["issuance_cost"], FN["target_leverage"], FN["cash_buffer_pct"]
     rT, rT0, rTf = r_T(credit, ic), r_T(credit, 0.0), r_T("base", ic)
-    y_T = half_rate(FN["cash_yield_k"] * key_T)
+    y_T = FN["cash_yield_k"] * key_T / 2
     rep_T1 = halves[0]["ebitda"] - halves[0]["lti"]
     starts = [(last_h1.ebitda_rep + last.ebitda_rep, last.opcash, bp * last.revenue_annual),
               (last.ebitda_rep + rep_T1, halves[0]["opc"], bp * halves[0]["ann"])]
@@ -313,12 +321,12 @@ def test_terminal_by_hand(book, facts, regime):
         pre.append(F[-1] + tau * max(0, base))                             # до налога
         ltm, opc0, buf0 = starts[i]
         G = lt * ltm + opc0 + buf0
-        I = G * half_rate(rT) - buf0 * y_T
+        I = G * rT / 2 - buf0 * y_T
         interest.append(I)
         S.append(tau * max(0, base) - tau * max(0, base - I))
-        fin[i] = (max(0, G) * (half_rate(rT) - half_rate(rT0))
-                  + max(0, G) * max(0, half_rate(rT) - half_rate(rTf))
-                  + buf0 * (half_rate(key_T) - y_T))
+        fin[i] = (max(0, G) * (rT - rT0) / 2
+                  + max(0, G) * max(0, rT - rTf) / 2
+                  + buf0 * (key_T / 2 - y_T))
 
     # налог терминала: τ·max(0, base) по полугодиям 800 лет; D&A — правило когорт §4.5
     # (база якоря, capex явного участка), продолженное capex терминала; щит — то же с

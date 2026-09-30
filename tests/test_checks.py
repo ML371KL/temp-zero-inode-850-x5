@@ -11,7 +11,7 @@ import pytest
 
 from model.checks import (GATES, GATE_EXPLANATIONS, GateExplanationError, blocking_reasons,
                           flag_book_update, flag_dividend_register, flag_price_fallback,
-                          gate_masses, gate_violations, gates, invariants,
+                          flag_report_fact, gate_masses, gate_violations, gates, invariants,
                           load_gate_explanations, printed_ok, round_to_step)
 from model.grid import evaluate
 
@@ -142,6 +142,24 @@ def test_flag_dividend_register(book_date):
     assert not flag_dividend_register(expected, register, facts_date, today=book_date).raised
     future = [book_date + dt.timedelta(days=10)]
     assert not flag_dividend_register(future, [], facts_date, today=book_date).raised
+
+
+def test_flag_report_fact():
+    """`report_fact`: закрывающее МСФО открытого полугодия по календарю вышло (дата не позже
+    даты оценки, включительно — отчёт выходит утром), а книга полугодие не закрыла."""
+    out = dt.date(2027, 3, 19)
+    title = "Финансовые результаты X5 за 2026 г. (МСФО)"
+    assert not flag_report_fact("2026H2", out, title, out - dt.timedelta(days=1)).raised
+    on_day = flag_report_fact("2026H2", out, title, out)
+    assert on_day.raised and on_day.name == "report_fact"
+    later = flag_report_fact("2026H2", out, title, out + dt.timedelta(days=3))
+    assert later.raised and title in later.detail and "2027-03-19" in later.detail
+    assert "2П 2026" in later.detail
+    # деталь идёт на витрину через ruText: без десятичных чисел вроде «10.3» (стали бы «10,3»)
+    assert not any(a.isdigit() and b == "." and c.isdigit()
+                   for a, b, c in zip(later.detail, later.detail[1:], later.detail[2:]))
+    assert not flag_report_fact("2026H2", None, None, out).raised
+    assert not flag_report_fact(None, None, None, out).raised
 
 
 def test_flag_price_fallback():

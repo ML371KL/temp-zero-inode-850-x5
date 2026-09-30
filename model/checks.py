@@ -21,6 +21,7 @@ import yaml
 
 from model.book import BOOK_DIR, period_of, today as _today
 from model.book_schema import CAPEX_LEVELS, REGIMES
+from model.journal import half_label
 
 fsum = math.fsum
 
@@ -358,6 +359,24 @@ def flag_dividend_register(expected_ex_dates: Iterable[dt.date], register: Itera
               if facts_date < d <= today and period_of(d) not in halves]
     return Flag("dividend_register", "ожидаемая отсечка прошла, дивиденда в реестре нет",
                 bool(missed), ", ".join(d.isoformat() for d in sorted(missed)) or "реестр полон")
+
+
+def flag_report_fact(period: str | None, closing_date: dt.date | None, closing_title: str | None,
+                     valuation_date: dt.date) -> Flag:
+    """`report_fact`: МСФО, закрывающее открытое полугодие книги (`next_report.closing`),
+    по календарю вышло — его дата не позже даты оценки, — а книга полугодие ещё не
+    закрыла: факт не внесён (справочник, раздел 10.3)."""
+    raised = period is not None and closing_date is not None and closing_date <= valuation_date
+    if not raised:
+        return Flag("report_fact", "вышел отчёт за полугодие, факт не внесён", False,
+                    f"отчёт за {half_label(period)} по календарю — {closing_date.isoformat()}"
+                    if period is not None and closing_date is not None
+                    else "закрывающего отчёта в календаре нет" if period is not None
+                    else "открытого полугодия нет")
+    return Flag("report_fact", "вышел отчёт за полугодие, факт не внесён", True,
+                f"{closing_title or 'МСФО'} — {closing_date.isoformat()} по календарю; "
+                f"в книге {half_label(period)} ещё открыто: внести факт — справочник, "
+                f"«Квартальный отчёт X5 и дивиденды»")
 
 
 # Статус цены рынка словами (деталь флага `price_fallback` идёт на витрину как есть).

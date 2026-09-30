@@ -214,10 +214,21 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 
 ## next_report
 * `period` (открытое полугодие), `events` [{date, title, kind ("trading_update" |
-  "ifrs" | "dividend" | "cbr"), confirmed (bool), note}] — от даты оценки до МСФО,
-  закрывающего `period` (первое событие `ifrs` с датой позже конца полугодия),
-  включительно. Витрина ведёт отсчёт до этого МСФО, а более ранние отчёты (МСФО за
-  1/3 кв., `trading_update`) показывает отдельной строкой как события внутри полугодия.
+  "ifrs" | "dividend" | "cbr"), confirmed (bool), note; у `ifrs` ещё `covers` — полугодие,
+  которое отчёт закрывает, или null — МСФО за 1/3 кв. внутри полугодия}] — от даты оценки
+  до МСФО, закрывающего `period` (`closing`), включительно; если оно уже вышло или его в
+  календаре нет — события 12 месяцев от даты оценки.
+* `closing`: {`date`, `title`, `confirmed`, `published`} или null — МСФО, закрывающее
+  `period`: событие календаря с `covers` = `period` (у календаря без `covers` — первое `ifrs`
+  после конца полугодия), по всему календарю, без нижней границы по дате оценки
+  (`model/payload.py::closing_event`); null — такого события в календаре нет. `published` —
+  дата не позже даты оценки: отчёт по календарю вышел, а книга полугодие ещё не закрыла
+  (факт не внесён; тот же признак поднимает флаг `report_fact`). Витрина ведёт отсчёт до
+  `closing`, а более ранние отчёты (МСФО за 1/3 кв., `trading_update`) показывает отдельной
+  строкой как события внутри полугодия; при `published` вместо отсчёта — «Отчёт за … вышел
+  …; факт ещё не внесён в модель», без строки «Раньше» и пометок «внутри полугодия».
+  Выпуск без поля (до 1.1.3) витрина читает по прежнему правилу — первое МСФО после конца
+  полугодия среди `events`.
 * `expectation`: {`revenue_growth` (г/г полугодия), `revenue`, `margin`,
   `adj_ebitda`, `by_regime` [{regime, margin}]}.
 * `guidance`: {`revenue_growth` [lo, hi], `margin_min`, `capex_pct` [lo, hi],
@@ -242,12 +253,13 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 `meta.book_version`).
 
 ## calendar
-`events`: [{`date`, `title`, `kind`, `confirmed`, `note`}] ближайших 12 месяцев.
+`events`: [{`date`, `title`, `kind`, `confirmed`, `note`; у `ifrs` — `covers`}] ближайших 12 месяцев.
 
 ## checks
 `invariants`: [{name, ok, detail}]; `gates`: [{`name`, `title`, `fired`, `mass`,
 `explanation`, `valid_until`, `expected_mass`}]; `flags`: [{`name`, `title`,
-`raised`, `detail`}].
+`raised`, `detail`}] — `book_update`, `dividend_register`, `report_fact`, `price_fallback`
+(`docs/MODEL.md` §13.3).
 
 ## inputs
 `rows`: [{`name`, `value`, `unit` (`version` — версия книги, печатается как есть),

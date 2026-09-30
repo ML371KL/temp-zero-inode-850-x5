@@ -128,9 +128,79 @@ def test_every_block_is_filled(book, book_release):
     assert R["calendar"]["events"] and R["checks"]["invariants"] and len(R["checks"]["gates"]) == len(GATES)
     assert all(i["ok"] for i in R["checks"]["invariants"])
     assert {f["name"] for f in R["checks"]["flags"]} == {"book_update", "dividend_register",
-                                                       "price_fallback"}
+                                                       "report_fact", "price_fallback"}
+    closing = NR["closing"]
+    assert closing == {"date": P.closing_event(NR["period"])["date"],
+                       "title": P.closing_event(NR["period"])["title"],
+                       "confirmed": P.closing_event(NR["period"])["confirmed"], "published": False}
+    assert max(e["date"] for e in NR["events"]) == closing["date"]
+    assert any(e["date"] == closing["date"] and e["kind"] == "ifrs" for e in NR["events"])
     assert len(R["inputs"]["rows"]) == 5 and R["book"]["key_judgements"]
     assert len(R["fair_value"]["by_lambda"]) == 21
+
+
+# Край п. 8 аудита 30.09.2026: годовое МСФО за 2П 2026 вышло (≈19.03.2027), а книга ещё
+# не закрыла полугодие. Закрывающее МСФО — по `covers` календаря и по всему календарю;
+# МСФО за 1 кв. 2027 закрывающим 2П 2026 не становится.
+REPORT_DATES = [
+    # дата оценки, закрывающее МСФО, вышло ли оно, последнее событие окна
+    ("2026-09-29", "2027-03-19", False, "2027-03-19"),
+    ("2026-10-20", "2027-03-19", False, "2027-03-19"),
+    ("2026-11-01", "2027-03-19", False, "2027-03-19"),
+    ("2027-03-18", "2027-03-19", False, "2027-03-19"),
+    ("2027-03-19", "2027-03-19", True, None),
+    ("2027-03-20", "2027-03-19", True, None),
+    ("2027-03-22", "2027-03-19", True, None),
+]
+
+
+@pytest.mark.parametrize("day, date, published, last", REPORT_DATES)
+def test_closing_report_of_the_open_half(day, date, published, last):
+    v = dt.date.fromisoformat(day)
+    events, closing = P.report_events("2026H2", v)
+    assert closing["date"] == date and closing["published"] is published
+    assert "2026 г. (МСФО)" in closing["title"]
+    assert all(e["date"] >= day for e in events)
+    if published:
+        # окно — обычное: 12 месяцев календаря; «закрывающего» МСФО в нём нет
+        assert max(e["date"] for e in events) > "2027-04-29"
+        assert not any(e["kind"] == "ifrs" and e.get("covers") == "2026H2" and e["date"] > date
+                       for e in events)
+    else:
+        assert max(e["date"] for e in events) == last
+    q1 = [e for e in events if e["kind"] == "ifrs" and "1 кв." in e["title"]]
+    assert all(e.get("covers") is None for e in q1)
+
+
+def _calendar_copy(tmp_path, name, change) -> Path:
+    """Копия календаря репозитория с правкой событий `change(events)`."""
+    raw = json.loads((ROOT / "data" / "calendar.json").read_text(encoding="utf-8"))
+    raw["events"] = change(raw["events"])
+    path = tmp_path / f"{name}.json"
+    path.write_text(json.dumps(raw, ensure_ascii=False), encoding="utf-8")
+    return path
+
+
+def test_closing_report_without_covers_or_without_the_event(tmp_path, monkeypatch):
+    v = dt.date(2027, 3, 22)
+    # календарь прежнего формата (без covers) — первое МСФО после конца полугодия по всему
+    # календарю, без нижней границы по дате оценки: вышедшее годовое МСФО видно
+    monkeypatch.setattr(P, "CALENDAR", _calendar_copy(
+        tmp_path, "bare", lambda ev: [{k: x for k, x in e.items() if k != "covers"} for e in ev]))
+    events, closing = P.report_events("2026H2", v)
+    assert closing["date"] == "2027-03-19" and closing["published"] is True
+    # годового МСФО в календаре нет — закрывающего нет, МСФО за 1 кв. (covers: null) им не
+    # становится; окно — обычное
+    monkeypatch.setattr(P, "CALENDAR", _calendar_copy(
+        tmp_path, "no-fy", lambda ev: [e for e in ev if e.get("covers") != "2026H2"]))
+    events, closing = P.report_events("2026H2", v)
+    assert closing is None and max(e["date"] for e in events) > "2027-04-29"
+    assert P.closing_event("2026H2") is None
+    assert P.closing_event(None) is None
+    # у события календаря covers доходит до выпуска; у не-МСФО поля нет
+    monkeypatch.setattr(P, "CALENDAR", _calendar_copy(tmp_path, "same", lambda ev: ev))
+    rows = P._events(dt.date(2026, 9, 29))
+    assert all(("covers" in e) == (e["kind"] == "ifrs") for e in rows)
 
 
 def test_live_release_uses_live_price_and_observations(book, live_release):

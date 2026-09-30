@@ -145,6 +145,8 @@ rub_per_1pct_ev_point, equity_share_of_ev), `grid.cell(w, r, c)`.
   `blocking_reasons(invariants, gates) -> [str]` — пусто, значит сборка выходит.
 * Флаги §13.3: `flag_book_update(A, live_nodes {"5","10"} | None, today)`,
   `flag_dividend_register(expected_ex_dates, register_rows, facts_date, today)`,
+  `flag_report_fact(period, closing_date, closing_title, valuation_date)` (закрывающее МСФО
+  открытого полугодия вышло — дата не позже даты оценки, — а книга полугодие не закрыла),
   `flag_price_fallback(status)` → `Flag(name, title, raised, detail)` (деталь словами: живая цена /
   цена книги / запасная цена).
   `stale_release` — забота витрины.
@@ -245,6 +247,12 @@ problems = validate(payload)          # [] — годен
 `data` (объект с `entries` или список); нет — берётся `previous["journal"]`. `release_history` —
 `history.json` ветки `data` (список строк): по строкам публикаций `journal.releases` находит
 книгу выпуска, записавшего прогноз, и когда цепочка прошлых выпусков до него не дотягивается.
+
+`report_events(period, v) -> (events, closing)` — `next_report.events` и `next_report.closing`:
+закрывающее МСФО полугодия (`closing_event(period)`: событие календаря с `covers` = полугодию,
+по всему календарю, без нижней границы по дате оценки), события — до него включительно; если
+оно уже вышло (дата не позже `v`) — события 12 месяцев и `closing.published` = true (флаг
+`report_fact`).
 
 `validate(payload, notes_path=None, previous_journal=None, today=None)`: блоки
 `REQUIRED_TOP_LEVEL` (и ничего сверх), конечность чисел, размер ≤ 500 000 байт компактного

@@ -4,7 +4,9 @@
   на датах отсечки (§13.4: это ожидаемая доходность капитала, не новость);
 * флаги поднимаются по календарю: `book_update` — книге больше
   `checks.book_update.max_age_days` дней, `dividend_register` — ожидаемая
-  отсечка прошла, а объявленного дивиденда в реестре нет;
+  отсечка прошла, а объявленного дивиденда в реестре нет, `report_fact` —
+  МСФО, закрывающее открытое полугодие, вышло, а книга его не закрыла (на +180
+  дней от книги 1.1.3 — после годового МСФО ≈19.03.2027);
 * сборка на входах книги с датой оценки +30/+90/+180 дней проходит: контракт
   цел, и от одной только даты не появляется новых блокирующих причин
   (истёкшее объяснение гейта или масса, уехавшая из коридора, — провал здесь,
@@ -92,6 +94,10 @@ def test_release_builds_in_the_future(book, facts, book_date, monkeypatch):
         assert flags["book_update"] == (k > age)
         passed = [d for d in P._expected_ex_dates() if book_date < d <= day]
         assert flags["dividend_register"] == bool(passed)
+        closing = P.closing_event(payload["next_report"]["period"])
+        out = closing is not None and dt.date.fromisoformat(closing["date"]) <= day
+        assert flags["report_fact"] == out
+        assert (payload["next_report"]["closing"] or {}).get("published", False) == out
         assert not flags["price_fallback"]
         ch = payload["changes"]["vs_previous"]
         roll = next(r["rub"] for r in ch["rows"] if r["component"] == "valuation_date")

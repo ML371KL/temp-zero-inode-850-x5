@@ -42,7 +42,8 @@ from model.book import (BOOK_DIR, ROOT, get_node, load_book, open_period, path_v
                         period_end, prev_same_half, today as _today, trajectory)
 from model.book_schema import CAPEX_LEVELS, REGIMES, WORLDS
 from model.checks import (BP, PAYLOAD_MAX_BYTES, blocking_reasons,
-                          flag_book_update, flag_dividend_register, flag_price_fallback, gates,
+                          flag_book_update, flag_dividend_register, flag_price_fallback,
+                          flag_report_fact, gates,
                           invariants, load_gate_explanations, round_to_step)
 from model.core import price_of_equity
 from model.facts import Facts, core_facts, load_facts
@@ -855,18 +856,62 @@ def reverse_block(dist, mp) -> dict:
                       "уточнение секущей на полной полосе"}
 
 
-def _events(v: dt.date, until: dt.date | None = None) -> list[dict]:
+def _calendar() -> list[tuple[dt.date, dict]]:
+    """События календаря с датой, по порядку дат: [(день, событие выпуска)]. У МСФО —
+    `covers` (полугодие, которое отчёт закрывает, или null — внутри полугодия), если
+    поле есть в календаре."""
     if not CALENDAR.exists():
         return []
     raw = json.loads(CALENDAR.read_text(encoding="utf-8"))
-    end = until or v + dt.timedelta(days=CALENDAR_DAYS)
     out = []
     for e in raw.get("events") or []:
         d = _day(e.get("date"))
-        if d and v <= d <= end:
-            out.append({"date": d.isoformat(), "title": e.get("title"), "kind": e.get("kind"),
-                        "confirmed": bool(e.get("confirmed")), "note": e.get("note") or None})
-    return sorted(out, key=lambda e: e["date"])
+        if d:
+            row = {"date": d.isoformat(), "title": e.get("title"), "kind": e.get("kind"),
+                   "confirmed": bool(e.get("confirmed")), "note": e.get("note") or None}
+            if "covers" in e:
+                row["covers"] = e["covers"]
+            out.append((d, row))
+    return sorted(out, key=lambda x: x[0])
+
+
+def _events(v: dt.date, until: dt.date | None = None) -> list[dict]:
+    end = until or v + dt.timedelta(days=CALENDAR_DAYS)
+    return [row for d, row in _calendar() if v <= d <= end]
+
+
+def closing_event(period: str | None) -> dict | None:
+    """МСФО, закрывающее полугодие `period`, — по всему календарю, без нижней границы по
+    дате оценки (отчёт мог уже выйти, а книга — ещё не закрыть полугодие): событие `ifrs`
+    с `covers == period`; у события без поля `covers` (календарь прежнего формата) —
+    первое `ifrs` с датой позже конца полугодия. МСФО за 1/3 кв. (`covers: null`) и
+    закрывающие другое полугодие не подходят; нет такого события — None."""
+    if period is None:
+        return None
+    end = period_end(period)
+    for d, row in _calendar():
+        if row["kind"] != "ifrs" or d <= end:
+            continue
+        if "covers" not in row or row["covers"] == period:
+            return row
+    return None
+
+
+def report_events(period: str | None, v: dt.date) -> tuple[list[dict], dict | None]:
+    """`next_report.events` и `next_report.closing` на дату оценки `v`.
+
+    События — от `v` до МСФО, закрывающего полугодие (`closing_event`), включительно. Если
+    оно по календарю уже вышло (дата не позже `v`), а книга полугодие ещё не закрыла, —
+    обычное окно календаря (`CALENDAR_DAYS`), а `closing.published` = true: витрина вместо
+    отсчёта пишет «отчёт вышел, факт не внесён», флаг `report_fact` поднимает плашку.
+    Закрывающего МСФО в календаре нет — обычное окно и `closing` = None."""
+    closing = closing_event(period)
+    if closing is None:
+        return _events(v), None
+    published = _day(closing["date"]) <= v
+    return (_events(v, None if published else _day(closing["date"])),
+            {"date": closing["date"], "title": closing["title"], "confirmed": closing["confirmed"],
+             "published": published})
 
 
 def _guidance(F: Facts, period: str | None) -> dict:
@@ -896,7 +941,8 @@ def next_report_block(A, F, cf, grid, dist, period, inputs) -> tuple[dict, dict]
     v = inputs["valuation_date"]
     NR = dist.next_report
     if period is None:
-        return ({"period": None, "events": _events(v), "expectation": None, "guidance": _guidance(F, None),
+        return ({"period": None, "events": _events(v), "closing": None, "expectation": None,
+                 "guidance": _guidance(F, None),
                  "benchmarks": [], "table": [], "neutral": {"median": None, "point": None},
                  "neutral_gap": {"median": None}, "rub_per_01pp": None}, {})
     exp = expectation(grid, period)
@@ -908,10 +954,8 @@ def next_report_block(A, F, cf, grid, dist, period, inputs) -> tuple[dict, dict]
         base_rev = expected_path(grid)[i]["revenue"] if i is not None else None
     growth = exp["revenue"] / base_rev - 1.0 if base_rev else None
     bench = journal_mod.benchmarks(F, period)
-    ends = [e for e in _events(v, v + dt.timedelta(days=2 * CALENDAR_DAYS))
-            if e["kind"] == "ifrs" and _day(e["date"]) > period_end(period)]
-    until = _day(ends[0]["date"]) if ends else None
-    block = {"period": period, "events": _events(v, until),
+    events, closing = report_events(period, v)
+    block = {"period": period, "events": events, "closing": closing,
              "expectation": {"revenue_growth": growth, "revenue": exp["revenue"],
                              "margin": exp["margin"], "adj_ebitda": exp["adj_ebitda"],
                              "by_regime": exp["by_regime"]},
@@ -930,26 +974,25 @@ def next_report_block(A, F, cf, grid, dist, period, inputs) -> tuple[dict, dict]
 
 
 def _expected_ex_dates() -> list[dt.date]:
-    if not CALENDAR.exists():
-        return []
-    raw = json.loads(CALENDAR.read_text(encoding="utf-8"))
     out = []
-    for e in raw.get("events") or []:
+    for d, e in _calendar():
         title = str(e.get("title") or "").lower()
         if e.get("kind") == "dividend" and ("отсечк" in title or "реестр" in title):
-            d = _day(e.get("date"))
-            if d:
-                out.append(d)
+            out.append(d)
     return out
 
 
-def checks_block(A, F, grid, gate_list, inv, live, inputs, today) -> dict:
+def checks_block(A, F, grid, gate_list, inv, live, inputs, today, next_report=None) -> dict:
     curve = (live or {}).get("curve") or {}
     nodes = curve.get("nodes") if isinstance(curve, dict) else None
     reg = (F.data.get("dividends") or {}).get("register") or []
+    NR = next_report or {}
+    closing = NR.get("closing") or {}
     flags = [flag_book_update(A, nodes, today),
              flag_dividend_register(_expected_ex_dates(), reg,
                                     dt.date.fromisoformat(A["meta"]["facts_date"]), today),
+             flag_report_fact(NR.get("period"), _day(closing.get("date")), closing.get("title"),
+                              inputs["valuation_date"]),
              flag_price_fallback(inputs["status"])]
     return {"invariants": [{"name": i.name, "title": INVARIANT_TITLES.get(i.name, i.name),
                             "ok": i.ok, "detail": i.detail} for i in inv],
@@ -1183,7 +1226,7 @@ def build_payload(live: dict | None = None, previous: dict | None = None, journa
     headline = headline_block(A, dist, mp)
     paths = paths_block(F, cf, grid)
     next_report, for_journal = next_report_block(A, F, cf, grid, dist, period, inputs)
-    checks = checks_block(A, F, grid, gate_list, inv, live, inputs, today)
+    checks = checks_block(A, F, grid, gate_list, inv, live, inputs, today, next_report)
 
     previous_journal = journal if journal is not None else (previous or {}).get("journal")
     new_journal, new_ids = journal_mod.update(

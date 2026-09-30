@@ -13,6 +13,13 @@ dividends, history, reverse_dcf, judgements, uncertainty, next_report, journal,
 calendar, checks, inputs, live, changes, book, indicators`. Витрина читает только
 объявленные блоки (тест `test_frontend_reads_only_declared_blocks`).
 
+**Контроль** — `model/payload.py::validate` в сборке и ещё раз шагом «Проверка контракта»
+над записанным файлом (`ops/build_release.py --check`): блоки, конечность чисел, размер,
+хэш, печать = округлению, защита заголовка — и производные против того, из чего они
+посчитаны: заголовок, P ниже рынка и таблица `by_lambda` — по прогонам выпуска, точка — на
+отрезке низ–верх, тождества и цены слоёв, мост, пара «модель — рынок», флаги
+`checks.invariants`. Перечень и допуски — `model/README.md`, «Выпуск».
+
 ## schema
 `"x5-v1"`.
 
@@ -64,8 +71,10 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
   верх), `printed` {low, central, high}, `lambda`, `lambda_step` (0,05).
 * `rates_view` {`rub`: верх − низ}.
 * `by_lambda`: [{`lambda`, `point`, `median`, `p10`, `p25`, `p75`, `p90`, `mean`,
-  `p_below`}] — 21 строка λ = 0, 0,05, …, 1 (контроль фронта; фронт считает сам по
-  прогонам, таблица — сверка).
+  `p_below`}] — 21 строка λ = 0, 0,05, …, 1. Витрина таблицу не читает: ползунок считает
+  те же статистики сам по прогонам. Таблица — сверка: каждую строку с прогонами выпуска
+  сверяет `validate` (квантили и среднее — до полкопейки, `p_below` — строго, `point` =
+  `low` + λ·(`high` − `low`)).
 * `draws_low`, `draws_high`: массивы длины `headline.draws` (цены ₽, округление до 0,1).
 * `center_ev`: {`v0_median`, `v0_point`, `v_star`, `gap_median`, `gap_point`,
   `rub_per_1pct_ev_median`, `rub_per_1pct_ev_point`, `ebitda_ntm` (скорр. EBITDA

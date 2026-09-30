@@ -223,6 +223,86 @@ def test_validate_catches_breakage(book_release):
         R, lambda p: p["fair_value"]["draws_high"].__setitem__(0, 1e6)))
 
 
+def test_derived_values_match_their_sources(book_release, live_release):
+    """Производные выпуска сходятся с прогонами, слоями и сеткой (`derived_problems`): на
+    выпуске книги и на живом (другая цена рынка) — ни одного нарушения."""
+    assert P.derived_problems(book_release) == []
+    assert P.derived_problems(live_release[0]) == []
+
+
+def _heaviest_cell(p):
+    return max(p["grid"]["cells"], key=lambda c: c["p_analytical"])
+
+
+def _set_central(p, value):
+    p["fair_value"]["central"] = value
+    p["fair_value"]["printed"]["central"] = round_to_step(value, p["headline"]["print_step"])
+
+
+DERIVED_BREAKS = [
+    ("p-below-99", lambda p: p["headline"].update(
+        p_central_below_market=0.01 if p["headline"]["p_central_below_market"] == 0.99 else 0.99),
+     "headline.p_central_below_market"),
+    ("p-below-one-draw", lambda p: p["headline"].update(
+        p_central_below_market=p["headline"]["p_central_below_market"] + 1 / p["headline"]["draws"]),
+     "headline.p_central_below_market"),
+    ("layer-price", lambda p: p["layers"]["analytical"].update(price=99999.0), "layers.analytical.price"),
+    ("mean", lambda p: p["headline"].update(mean=p["headline"]["mean"] * 2), "headline.mean"),
+    ("by-lambda-p-below", lambda p: p["fair_value"]["by_lambda"][10].update(p_below=0.99),
+     "by_lambda[λ=0.50].p_below"),
+    ("by-lambda-median", lambda p: p["fair_value"]["by_lambda"][3].update(
+        median=p["fair_value"]["by_lambda"][3]["median"] + 1), "by_lambda[λ=0.15].median"),
+    ("by-lambda-point", lambda p: p["fair_value"]["by_lambda"][3].update(
+        point=p["fair_value"]["by_lambda"][3]["point"] + 1), "by_lambda[λ=0.15].point"),
+    ("market-price", lambda p: p["market"].update(price=99999.0), "market.price"),
+    ("point-central", lambda p: _set_central(p, 9999.0), "fair_value.central ="),
+    ("gap-median", lambda p: p["fair_value"]["center_ev"].update(gap_median=5.0), "gap_median"),
+    ("v0-median", lambda p: p["fair_value"]["center_ev"].update(
+        v0_median=p["fair_value"]["center_ev"]["v0_median"] * 1.05), "center_ev.v0_median"),
+    ("invariant-ok", lambda p: p["checks"]["invariants"][0].update(ok=False), "checks.invariants"),
+    ("cell-ev", lambda p: _heaviest_cell(p).update(ev=_heaviest_cell(p)["ev"] * 2), "Σ p·EV"),
+    ("layer-equity", lambda p: p["layers"]["macro_neutral"].update(
+        equity=p["layers"]["macro_neutral"]["equity"] + 100), "layers.macro_neutral.equity"),
+    ("pv-column", lambda p: p["layers"]["market_implied"].update(
+        pv_fcff=p["layers"]["market_implied"]["pv_fcff"] + 1), "layers.market_implied.v0"),
+    ("bridge-total", lambda p: p["debt"]["bridge"].update(total=p["debt"]["bridge"]["total"] + 1),
+     "debt.bridge.total"),
+    ("layer-column-missing", lambda p: p["layers"]["analytical"].pop("pv_fcff"),
+     "layers.analytical: v0, d, equity"),
+]
+
+
+@pytest.mark.parametrize("fn, words", [pytest.param(fn, words, id=name)
+                                       for name, fn, words in DERIVED_BREAKS])
+def test_validate_catches_derived_breakage_under_a_fresh_hash(book_release, fn, words):
+    """Подмена производного с пересчитанными хэшем и размером (как если бы её собрал
+    код сборки) — нарушение контракта: P ниже рынка 1 % → 99 % при тех же прогонах, цена
+    слоя → 99 999, строка таблицы λ, точка, пара «модель — рынок», тождества слоёв,
+    сетка, флаг инварианта."""
+    p = copy.deepcopy(book_release)
+    fn(p)
+    P._seal(p, [])
+    problems = P.validate(p)
+    assert not any("payload_sha256" in x or "meta.bytes" in x for x in problems), problems
+    assert any(words in x for x in problems), problems
+
+
+@pytest.mark.ci_only
+def test_derived_checks_hold_at_another_lambda_and_price(book, facts, book_release):
+    """Допуски сверок — от округления выпуска, а не от чисел книги: λ вне сетки таблицы и
+    цена рынка у медианы (P ниже рынка не 0 и не 1) — ни одного нарушения."""
+    B = copy.deepcopy(book)
+    B["joint"]["lambda"] = 0.35
+    price = round(book_release["headline"]["central"], 1)
+    live = {"price": {"value": price, "date": book["meta"]["date"], "status": "fallback",
+                      "accepted": False, "reason": "тест"}}
+    R = _small_build(book=B, facts=facts, live=live)
+    assert R["headline"]["lambda"] == 0.35 and R["market"]["price"] == price
+    assert 0 < R["headline"]["p_central_below_market"] < 1
+    assert P.derived_problems(R) == []
+    assert P.validate(R) == []
+
+
 def test_hash_ignores_time_and_links_but_not_content(book_release):
     R = copy.deepcopy(book_release)
     digest = P.content_digest(R)

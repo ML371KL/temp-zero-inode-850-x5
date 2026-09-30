@@ -35,8 +35,8 @@
 | Функция | Что делает |
 |---|---|
 | `default_facts_dir() -> Path` | `data/facts`, если там есть `accounting.json`, иначе фикстура `tests/fixtures/facts` (предупреждение `FactsFallbackWarning`) |
-| `load_facts(path=None) -> Facts` | все `*.json` каталога; узлы `{"v", "src"\|"calc"}` раскрываются в значения; число без `src` и `calc` — `FactsError`; `null` → `None` (не 0). `Facts.raw` — JSON как есть (с источниками, для выпуска), `Facts.data` — раскрытый, `Facts.get("файл.ключ…")`, `Facts.fixture` |
-| `core_facts(F, A) -> CoreFacts` | проверенные факты прохода клетки: выручка, скорр. и отчётная EBITDA, D&A и capex якоря, capex 2L полугодий до якоря (`capex_hist`: выручка × capex/выручку из `history.json` — выбывание базы D&A якоря), история индекса эффективной площади (§4.1: `eff_start` = S — первое полугодие с площадью в фактах, `area_end` на конец S и якоря, открытия `gross_opened` S − n + 1 … якорь, закрытия `closed_area` S + 1 … якорь), ЧД, дивиденды к выплате, NWC, строки моста (`BridgeLine`: key, label, amount, included), акции в обращении (`shares_mln`) и казначейские (`treasury_mln`), реестр (`DeclaredDividend`: id, amount, ex_date, in_company). `None` там, где значение нужно, — `FactsError` с путём |
+| `load_facts(path=None) -> Facts` | все `*.json` каталога; узлы `{"v", "src"\|"calc"}` раскрываются в значения; число без `src` и `calc` (или с источником без единой буквы и цифры — пробел, «?») — `FactsError`; `null` → `None` (не 0); `has_source(node)` — есть ли у узла источник. `Facts.raw` — JSON как есть (с источниками, для выпуска), `Facts.data` — раскрытый, `Facts.get("файл.ключ…")`, `Facts.fixture` |
+| `core_facts(F, A) -> CoreFacts` | проверенные факты прохода клетки: выручка, скорр. и отчётная EBITDA, D&A и capex якоря, capex 2L полугодий до якоря (`capex_hist`: выручка × capex/выручку из `history.json` — выбывание базы D&A якоря), история индекса эффективной площади (§4.1: `eff_start` = S — первое полугодие с площадью в фактах, `area_end` на конец S и якоря, открытия `gross_opened` S − n + 1 … якорь, закрытия `closed_area` S + 1 … якорь), ЧД, дивиденды к выплате, NWC, строки моста (`BridgeLine`: key, label, amount, included), акции в обращении (`shares_mln`) и казначейские (`treasury_mln`), реестр (`DeclaredDividend`: id, amount, ex_date, in_company). `None` там, где значение нужно, — `FactsError` с путём; каждое число, которое она читает (в том числе суммы строк моста и реестра), в исходном файле — узел с источником и конечным числом `v`: голое число, строка, true/false — `FactsError` «… — число без узла {v, src\|calc}» |
 
 ## Расчёт
 
@@ -254,6 +254,23 @@ i/20), 36 клеток, уникальные id журнала (и неизме�
 `data/assumptions/release_notes.yaml` (без `expected_median` или `valid_until` — ошибка),
 защита заголовка §13.4: скачок печатаемой медианы > 25 % или V0 медианы > 10 % против
 `changes.vs_previous.reference` без новой книги, новых фактов или действующей записки.
+
+Производные — против того, из чего они посчитаны (`derived_problems(payload)`, зовёт
+`validate`): медиана, P10/P90, P25/P75 заголовка, `headline.mean` и каждая строка
+`fair_value.by_lambda` (квантили, среднее) — статистика прогонов выпуска при своём λ в пределах
+`HALF_CENT`, `headline.p_central_below_market` и `by_lambda[].p_below` — доля прогонов ниже
+рынка строго; `headline.market_price` = `market.price`; `fair_value.low`/`high` — цены слоёв
+`macro_neutral`/`analytical`, `fair_value.lambda` = `headline.lambda`, `central` и точка каждой
+строки таблицы = низ + λ·(верх − низ) (два округления концов — `2·HALF_CENT`); у каждого слоя
+V0 = `pv_fcff` + `pv_shield` + `pv_terminal` − `pv_financing` = Σ p·EV клеток (Σ p = 1),
+`equity` = V0 − D, `price` — из капитала по формуле §7.2 (`meta.governance_discount`,
+`meta.shares_mln`, казначейский пакет `debt.bridge`); `debt.bridge` v0/total/equity и
+`market.claims` — слой `analytical`, строки `ev_rows` и `rows_at_valuation` складываются в
+итог; `center_ev.v_star` = `market.market_ev` = V0 цены рынка, `v0_median` — V0 медианы
+заголовка (§7.3), `gap_median` = v0_median / v_star − 1; все `checks.invariants[].ok` истинны.
+Прочие допуски — 9 значащих цифр выпуска (`DERIVED_REL` = 1e-7 от масштаба слагаемых, а не от
+разности: капитал бывает около нуля). Сверки ловят и подмену с пересчитанным хэшем:
+хэш — идентификатор содержания, а не подпись.
 
 **Хэш** `meta.payload_sha256` — sha256 канонического JSON (sort_keys, без пробелов, UTF-8) без
 `meta.generated_at`, `meta.payload_sha256`, `meta.bytes`, `meta.previous_sha256`,

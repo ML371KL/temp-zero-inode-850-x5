@@ -44,6 +44,7 @@ from model.book_schema import CAPEX_LEVELS, REGIMES, WORLDS
 from model.checks import (BP, PAYLOAD_MAX_BYTES, blocking_reasons,
                           flag_book_update, flag_dividend_register, flag_price_fallback, gates,
                           invariants, load_gate_explanations, round_to_step)
+from model.core import price_of_equity
 from model.facts import Facts, core_facts, load_facts
 from model.grid import (annual_path, evaluate, expected_path, point_of, rub_per_1pct_ev,
                         v0_from_price)
@@ -64,6 +65,7 @@ LAMBDA_STEP = 1 / (LAMBDA_ROWS - 1)
 DRAW_DECIMALS = 1               # прогоны в выпуске — до 0,1 ₽
 PRICE_DECIMALS = 2              # точные цены заголовка и точки — до копейки
 HALF_CENT = 0.0051              # допуск сверки заголовка с прогонами (округление до копейки)
+DERIVED_REL = 1e-7              # допуск тождеств выпуска от масштаба слагаемых (9 значащих цифр)
 NUMBER_FORMAT = ".9g"           # прочие числа выпуска — 9 значащих цифр
 # Защита заголовка (§13.4): скачок печатаемой медианы и V0 медианы.
 MAX_HEADLINE_JUMP = 0.25
@@ -1359,6 +1361,148 @@ def headline_problems(payload: dict, *, notes_path=None, today: dt.date | None =
             "(data/assumptions/release_notes.yaml): " + "; ".join(jumps)]
 
 
+LAYER_P = {"analytical": "p_analytical", "market_implied": "p_market_implied",
+           "macro_neutral": "p_neutral"}      # слой → столбец вероятностей grid.cells
+
+
+def derived_problems(payload: dict) -> list[str]:
+    """Производные выпуска против того, из чего они посчитаны (контроль после сборки).
+
+    * Прогоны: `headline.p_central_below_market` — доля прогонов ниже рынка (строго),
+      `headline.mean` — их среднее; каждая строка `fair_value.by_lambda` — статистика
+      тех же прогонов при своём λ (P ниже рынка — строго), точка строки — низ + λ·(верх − низ).
+    * Рынок один: `headline.market_price` = `market.price`.
+    * Точка: `fair_value.low`/`high` — цены слоёв «рыночные ставки как есть» и «свой
+      взгляд», `lambda` = λ заголовка, `central` = низ + λ·(верх − низ).
+    * Слои: V0 = PV потока + PV щита + PV терминала − вычеты финансирования = Σ p·EV
+      клеток слоя (Σ p = 1); капитал = V0 − D; цена — из капитала по формуле §7.2 (с
+      казначейским пакетом `debt.bridge`); мост `debt.bridge` и `market.claims` — слой
+      «свой взгляд», строки моста складываются в итог.
+    * Пара «модель — рынок»: `center_ev.v_star` = `market.market_ev` = V0 рыночной цены,
+      `v0_median` — V0 медианы заголовка, `gap_median` = v0_median / v_star − 1.
+    * Инварианты сетки (`checks.invariants`) — все `ok`.
+
+    Допуски — от округления выпуска: цены и статистики — `HALF_CENT` (точка на отрезке —
+    два округления концов), прочие числа — 9 значащих цифр (`DERIVED_REL` от масштаба
+    слагаемых, не от разности: капитал бывает около нуля)."""
+    out: list[str] = []
+    head, fv, mk, meta = payload["headline"], payload["fair_value"], payload["market"], payload["meta"]
+    layers = payload.get("layers") or {}
+    draws_low, draws_high, mp = fv["draws_low"], fv["draws_high"], head.get("market_price")
+
+    def same(where: str, got, want, tol: float, basis: str) -> None:
+        if not (_num(got) and _num(want) and abs(got - want) <= tol):
+            shown = f"{want:.9g}" if _num(want) else repr(want)
+            out.append(f"{where} = {got!r}, а {basis} даёт {shown}")
+
+    def rel(*xs) -> float:
+        return DERIVED_REL * max([1.0, *(abs(x) for x in xs if _num(x))])
+
+    if mp != mk.get("price"):
+        out.append(f"headline.market_price = {mp!r} ≠ market.price {mk.get('price')!r}")
+    if not _num(mp):
+        return out
+    s = band_stats(draws_low, draws_high, head["lambda"], mp)
+    if head.get("p_central_below_market") != _tidy(s["p_below"]):
+        out.append(f"headline.p_central_below_market = {head.get('p_central_below_market')!r}, "
+                   f"а доля прогонов ниже рынка — {_tidy(s['p_below'])!r}")
+    same("headline.mean", head.get("mean"), s["mean"], HALF_CENT, "среднее прогонов")
+
+    low, high, lam = fv.get("low"), fv.get("high"), fv.get("lambda")
+    ends = _num(low) and _num(high)
+    for r in fv.get("by_lambda") or []:
+        x = r.get("lambda")
+        if not _num(x):
+            continue                    # строка без λ — уже названа проверкой таблицы
+        where = f"fair_value.by_lambda[λ={x:.2f}]"
+        t = band_stats(draws_low, draws_high, x, mp)
+        for k in ("median", "p10", "p25", "p75", "p90", "mean"):
+            same(f"{where}.{k}", r.get(k), t[k], HALF_CENT, "статистика прогонов")
+        if r.get("p_below") != _tidy(t["p_below"]):
+            out.append(f"{where}.p_below = {r.get('p_below')!r}, а доля прогонов ниже рынка — "
+                       f"{_tidy(t['p_below'])!r}")
+        if ends:
+            same(f"{where}.point", r.get("point"), low + x * (high - low), 2 * HALF_CENT,
+                 "низ + λ·(верх − низ)")
+
+    an, neutral = layers.get("analytical") or {}, layers.get("macro_neutral") or {}
+    same("fair_value.low", low, neutral.get("price"), HALF_CENT, "цена слоя macro_neutral")
+    same("fair_value.high", high, an.get("price"), HALF_CENT, "цена слоя analytical")
+    if lam != head.get("lambda"):
+        out.append(f"fair_value.lambda = {lam!r} ≠ headline.lambda {head.get('lambda')!r}")
+    if ends and _num(lam):
+        same("fair_value.central", fv.get("central"), low + lam * (high - low), 2 * HALF_CENT,
+             "низ + λ книги·(верх − низ)")
+
+    g, shares = meta.get("governance_discount"), meta.get("shares_mln")
+    bridge = (payload.get("debt") or {}).get("bridge") or {}
+    treasury = bridge.get("treasury_mln") or 0.0
+    tv = fsum(r.get("amount") or 0.0 for r in bridge.get("equity_rows") or [])
+    if not (_num(g) and _num(shares) and _num(treasury) and shares + treasury > 0):
+        out.append("meta.governance_discount, meta.shares_mln или debt.bridge.treasury_mln — "
+                   "не числа: цену слоёв из капитала не проверить")
+        g = None
+    cells = (payload.get("grid") or {}).get("cells") or []
+    for name, L in layers.items():
+        v0, d, equity = L.get("v0"), L.get("d"), L.get("equity")
+        terms = [L.get("pv_fcff"), L.get("pv_shield"), L.get("pv_terminal"),
+                 -(L.get("pv_financing") or 0.0)]
+        if not all(_num(x) for x in (v0, d, equity, *terms)):
+            out.append(f"layers.{name}: v0, d, equity или PV-составляющие — не числа")
+            continue
+        same(f"layers.{name}.v0", v0, fsum(terms), rel(v0, *terms),
+             "PV потока + щита + терминала − вычеты финансирования")
+        same(f"layers.{name}.equity", equity, v0 - d, rel(v0, d), "V0 − D")
+        if g is not None:
+            same(f"layers.{name}.price", L.get("price"),
+                 price_of_equity(equity, g, shares, treasury, tv),
+                 rel((abs(equity) + abs(tv)) * 1000.0 / (shares + treasury), L.get("price")),
+                 "цена из капитала (§7.2)")
+        col = LAYER_P.get(name)
+        if col and cells:
+            p = [c.get(col) for c in cells]
+            ev = [c.get("ev") for c in cells]
+            if not all(_num(x) for x in (*p, *ev)):
+                out.append(f"grid.cells: {col} или ev — не числа")
+                continue
+            same(f"grid.cells: Σ {col}", fsum(p), 1.0, DERIVED_REL, "сумма вероятностей слоя")
+            same(f"layers.{name}.v0", v0, fsum(a * b for a, b in zip(p, ev)),
+                 rel(v0, *(a * b for a, b in zip(p, ev))), "Σ p·EV клеток")
+
+    ce = fv.get("center_ev") or {}
+    for key, lkey in (("v0", "v0"), ("total", "d"), ("equity", "equity")):
+        same(f"debt.bridge.{key}", bridge.get(key), an.get(lkey), rel(an.get(lkey)),
+             f"слой analytical ({lkey})")
+    same("market.claims", mk.get("claims"), an.get("d"), rel(an.get("d")), "D слоя analytical")
+    for key, total in (("rows_at_valuation", "total"), ("ev_rows", "v0")):
+        rows = [r.get("amount") for r in bridge.get(key) or []]
+        if rows and all(_num(x) for x in rows):
+            same(f"debt.bridge.{total}", bridge.get(total), fsum(rows), rel(*rows),
+                 f"сумма строк debt.bridge.{key}")
+    same("fair_value.center_ev.v_star", ce.get("v_star"), mk.get("market_ev"),
+         rel(mk.get("market_ev")), "market.market_ev")
+    if g is not None and _num(an.get("d")):
+        d = an["d"]
+        for key, price in (("v_star", mp), ("v0_median", head.get("central"))):
+            if _num(price):
+                want = v0_from_price(price, d, g, shares, treasury, tv)
+                same(f"fair_value.center_ev.{key}", ce.get(key), want, rel(want, d, tv),
+                     f"V0 цены {price} (§7.3)")
+    if _num(ce.get("v0_median")) and _num(ce.get("v_star")) and ce["v_star"]:
+        ratio = ce["v0_median"] / ce["v_star"]
+        same("fair_value.center_ev.gap_median", ce.get("gap_median"), ratio - 1.0, rel(ratio),
+             "v0_median / v_star − 1")
+
+    inv = (payload.get("checks") or {}).get("invariants")
+    if not inv:
+        out.append("checks.invariants пуст")
+    else:
+        failed = [str(i.get("name")) for i in inv if i.get("ok") is not True]
+        if failed:
+            out.append(f"checks.invariants: не выполнены {', '.join(failed)}")
+    return out
+
+
 def validate(payload: dict, *, notes_path=None, previous_journal=None,
              today: dt.date | None = None) -> list[str]:
     """Нарушения контракта `x5-v1` (пусто — годен)."""
@@ -1424,6 +1568,11 @@ def validate(payload: dict, *, notes_path=None, previous_journal=None,
                 *(head.get("inner") or [None] * 2)]
         if not all(_num(w) and abs(g - w) <= HALF_CENT for g, w in zip(got, want)):
             out.append("заголовок не совпадает со статистикой прогонов draws_low/draws_high")
+        # Прочие производные — против прогонов, слоёв и сетки выпуска (derived_problems).
+        try:
+            out += derived_problems(payload)
+        except (KeyError, TypeError, ValueError, ZeroDivisionError, AttributeError) as exc:
+            out.append(f"сверка производных не прошла: {type(exc).__name__}: {exc}")
     rows = fv.get("by_lambda") or []
     if len(rows) != LAMBDA_ROWS or any(
             not _num(r.get("lambda")) or abs(r["lambda"] - i / (LAMBDA_ROWS - 1)) > 1e-9

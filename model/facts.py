@@ -3,7 +3,9 @@
 Значение факта — узел `{"v": …, "src": …}` или `{"v": …, "calc": …}`: ядро
 читает `v`. Узел без `src` и без `calc` — отказ `FactsError` (число без
 источника не считается). Нераскрытое — `null` → `None`, не 0: ядро требует
-значение там, где его читает, и на `None` отказывает с путём факта.
+значение там, где его читает, и на `None` отказывает с путём факта. Каждое
+число, которое читает ядро (`core_facts`), — узел с источником и числом `v`:
+голое число, строка или true/false на этом месте — отказ с путём факта.
 
 Пока агент фактов не собрал `data/facts/accounting.json`, по умолчанию
 читается фикстура `tests/fixtures/facts/` — с предупреждением.
@@ -13,6 +15,8 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import math
+import re
 import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -43,13 +47,21 @@ def default_facts_dir() -> Path:
     return FIXTURE_DIR
 
 
+def has_source(node: Any) -> bool:
+    """У узла `{"v": …}` есть источник: `src` или `calc` — текст хотя бы с одной буквой или
+    цифрой (пробел, «?», «—» источником не считаются)."""
+    return isinstance(node, dict) and any(
+        isinstance(node.get(key), str) and any(ch.isalnum() for ch in node[key])
+        for key in ("src", "calc"))
+
+
 def unwrap(node: Any, where: str) -> Any:
     """Раскрывает узлы `{"v": …}` в значения; узел без `src` и `calc` — отказ."""
     if isinstance(node, dict):
         if "v" in node:
             # Число без источника — отказ; null (нераскрыто) источника не требует:
             # числа нет, а ядро на None само откажет там, где значение нужно.
-            if node["v"] is not None and not (node.get("src") or node.get("calc")):
+            if node["v"] is not None and not has_source(node):
                 raise FactsError(f"факты: {where} — значение без src и без calc")
             return unwrap(node["v"], f"{where}.v")
         return {k: unwrap(v, f"{where}.{k}") for k, v in node.items()}
@@ -143,16 +155,36 @@ class CoreFacts:
 
 
 _READ = object()
+_PATH_PART = re.compile(r"[^.\[\]]+")
+
+
+def _raw_node(F: Facts, path: str) -> Any:
+    """Узел по пути в исходном JSON (`F.raw`): индекс списка — `[i]` или `.i`; нет — None."""
+    node: Any = F.raw
+    for part in _PATH_PART.findall(path):
+        if isinstance(node, list) and part.isdigit() and int(part) < len(node):
+            node = node[int(part)]
+        elif isinstance(node, dict) and part in node:
+            node = node[part]
+        else:
+            return None
+    return node
 
 
 def _need(F: Facts, path: str, value: Any = _READ) -> float:
-    """Число факта по пути (или уже прочитанное `value` с этим путём для сообщения)."""
+    """Число факта по пути (или уже прочитанное `value` с этим путём для сообщения).
+
+    В исходном файле на этом пути — узел `{"v": число, "src"|"calc"}`: голое число
+    (без источника), строка, true/false и нечисловое `v` — отказ с путём факта."""
     if value is _READ:
         value = F.get(path)
     if value is None:
         raise FactsError(f"факты: {path} не раскрыт (null) — ядро не считает его нулём")
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise FactsError(f"факты: {path} = {value!r} — ожидается число")
+    node = _raw_node(F, path)
+    if not (isinstance(node, dict) and "v" in node and has_source(node)):
+        raise FactsError(f"факты: {path} — число без узла {{v, src|calc}}")
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise FactsError(f"факты: {path} = {value!r} — ожидается конечное число")
     return float(value)
 
 
@@ -231,9 +263,10 @@ def core_facts(F: Facts, A: dict) -> CoreFacts:
         if included and amount is None:
             raise FactsError(f"факты: bridge.lines[{i}] {key} не раскрыт (null), а книга "
                              "включает строку в мост")
-        lines.append(BridgeLine(key=key, label=str(line.get("label", key)),
-                                amount=float(amount) if amount is not None else None,
-                                included=included))
+        lines.append(BridgeLine(
+            key=key, label=str(line.get("label", key)),
+            amount=_need(F, f"bridge.lines[{i}].amount", amount) if amount is not None else None,
+            included=included))
     lost = [k for k in include if k not in known]
     if lost:
         raise FactsError(f"факты: строк моста {', '.join(lost)} (bridge.include книги) нет в "
@@ -250,7 +283,8 @@ def core_facts(F: Facts, A: dict) -> CoreFacts:
         if in_company and amount is None:
             raise FactsError(f"факты: {where}.amount не раскрыт (null)")
         dividends.append(DeclaredDividend(
-            id=str(row.get("id", i)), amount=float(amount) if amount is not None else 0.0,
+            id=str(row.get("id", i)),
+            amount=_need(F, f"{where}.amount", amount) if amount is not None else 0.0,
             ex_date=_date(row.get("ex_date"), f"{where}.ex_date"), in_company=in_company))
 
     return CoreFacts(

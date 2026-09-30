@@ -159,6 +159,8 @@ def test_actual_is_a_fact_node_with_source():
                                                        ("x5.revenue_growth", "2026H2"): 0.09}
     bad = [({**good, "value": 0.061}, "без источника"),
            ({**good, "value": {"v": 0.061}}, "без src и без calc"),
+           ({**good, "value": {"v": 0.061, "src": " "}}, "без src и без calc"),
+           ({**good, "value": {"v": 0.061, "src": "?"}}, "без src и без calc"),
            ({**good, "value": {"v": None, "src": "x"}}, "ожидается число"),
            ({**good, "value": {"v": "0,061", "src": "x"}}, "ожидается число"),
            ({**good, "target": "x5.margin"}, "цель журнала"),

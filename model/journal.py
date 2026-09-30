@@ -23,7 +23,7 @@ import math
 import re
 
 from model.book import prev_period, prev_same_half
-from model.facts import FactsError
+from model.facts import FactsError, has_source
 
 fsum = math.fsum
 
@@ -112,7 +112,7 @@ def actuals_of(facts) -> dict:
                              '{"v": число, "src": …} (или "calc")')
         if not _is_number(node.get("v")):
             raise FactsError(f"факты: {where}.value.v = {node.get('v')!r} — ожидается число")
-        if not (node.get("src") or node.get("calc")):
+        if not has_source(node):
             raise FactsError(f"факты: {where}.value — значение без src и без calc")
         if (target, period) in out:
             raise FactsError(f"факты: {where} — повтор ({target}, {period})")

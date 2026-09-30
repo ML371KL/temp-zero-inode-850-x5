@@ -1386,6 +1386,7 @@ def derived_problems(payload: dict) -> list[str]:
     * Пара «модель — рынок»: `center_ev.v_star` = `market.market_ev` = V0 рыночной цены,
       `v0_median` — V0 медианы заголовка, `gap_median` = v0_median / v_star − 1.
     * Инварианты сетки (`checks.invariants`) — все `ok`.
+    * Вклады осей (`uncertainty.contributions`): доля = rank_corr² / Σ rank_corr², сумма — 1.
 
     Допуски — от округления выпуска: цены и статистики — `HALF_CENT` (точка на отрезке —
     два округления концов), прочие числа — 9 значащих цифр (`DERIVED_REL` от масштаба
@@ -1505,6 +1506,20 @@ def derived_problems(payload: dict) -> list[str]:
         failed = [str(i.get("name")) for i in inv if i.get("ok") is not True]
         if failed:
             out.append(f"checks.invariants: не выполнены {', '.join(failed)}")
+
+    # Вклады осей в полосу (§9): доля оси = rank_corr² / Σ rank_corr², сумма долей — 1.
+    contrib = (payload.get("uncertainty") or {}).get("contributions") or []
+    if contrib:
+        rc = [c.get("rank_corr") for c in contrib]
+        share = [c.get("share") for c in contrib]
+        if not all(_num(x) for x in (*rc, *share)):
+            out.append("uncertainty.contributions: share или rank_corr — не числа")
+        elif (total := fsum(r * r for r in rc)) > 0:
+            same("uncertainty.contributions: Σ share", fsum(share), 1.0, DERIVED_REL,
+                 "сумма долей осей")
+            for c, r, s_ in zip(contrib, rc, share):
+                same(f"uncertainty.contributions[{c.get('axis')}].share", s_, r * r / total,
+                     DERIVED_REL, "rank_corr² / Σ rank_corr²")
     return out
 
 

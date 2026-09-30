@@ -18,7 +18,7 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 хэш, печать = округлению, защита заголовка — и производные против того, из чего они
 посчитаны: заголовок, P ниже рынка и таблица `by_lambda` — по прогонам выпуска, точка — на
 отрезке низ–верх, тождества и цены слоёв, мост, пара «модель — рынок», флаги
-`checks.invariants`. Перечень и допуски — `model/README.md`, «Выпуск».
+`checks.invariants`, доли осей `uncertainty.contributions` (из `rank_corr`, сумма 1). Перечень и допуски — `model/README.md`, «Выпуск».
 
 ## schema
 `"x5-v1"`.

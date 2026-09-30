@@ -267,7 +267,8 @@ V0 = `pv_fcff` + `pv_shield` + `pv_terminal` − `pv_financing` = Σ p·EV кл�
 `meta.shares_mln`, казначейский пакет `debt.bridge`); `debt.bridge` v0/total/equity и
 `market.claims` — слой `analytical`, строки `ev_rows` и `rows_at_valuation` складываются в
 итог; `center_ev.v_star` = `market.market_ev` = V0 цены рынка, `v0_median` — V0 медианы
-заголовка (§7.3), `gap_median` = v0_median / v_star − 1; все `checks.invariants[].ok` истинны.
+заголовка (§7.3), `gap_median` = v0_median / v_star − 1; все `checks.invariants[].ok` истинны;
+доля оси `uncertainty.contributions[].share` = rank_corr² / Σ rank_corr² (§9), сумма долей — 1.
 Прочие допуски — 9 значащих цифр выпуска (`DERIVED_REL` = 1e-7 от масштаба слагаемых, а не от
 разности: капитал бывает около нуля). Сверки ловят и подмену с пересчитанным хэшем:
 хэш — идентификатор содержания, а не подпись.

@@ -269,6 +269,12 @@ DERIVED_BREAKS = [
      "debt.bridge.total"),
     ("layer-column-missing", lambda p: p["layers"]["analytical"].pop("pv_fcff"),
      "layers.analytical: v0, d, equity"),
+    ("contribution-share", lambda p: p["uncertainty"]["contributions"][0].update(
+        share=p["uncertainty"]["contributions"][0]["share"] + 0.01),
+     "uncertainty.contributions: Σ share"),
+    ("contribution-rank-corr", lambda p: p["uncertainty"]["contributions"][1].update(
+        rank_corr=p["uncertainty"]["contributions"][1]["rank_corr"] * 1.1),
+     "rank_corr² / Σ rank_corr²"),
 ]
 
 

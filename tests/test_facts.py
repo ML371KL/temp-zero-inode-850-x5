@@ -18,6 +18,7 @@ from model.facts import core_facts, load_facts
 
 ROOT = Path(__file__).resolve().parents[1]
 FACTS = ROOT / "data" / "facts"
+FIXTURE = ROOT / "tests" / "fixtures" / "facts"
 CALENDAR = ROOT / "data" / "calendar.json"
 BUILDER = ROOT / "ops" / "tools" / "build_facts.py"
 FILES = ("accounting", "network", "balance", "bridge", "shares", "dividends", "debt_register",
@@ -65,13 +66,59 @@ def test_files_parse():
     assert isinstance(json.loads(CALENDAR.read_text(encoding="utf-8")), dict)
 
 
+def sourced(node) -> bool:
+    """Узел (или строка) с источником: `src` или `calc` — текст хотя бы с одной буквой или
+    цифрой (пробел и «?» — не источник)."""
+    return isinstance(node, dict) and any(
+        isinstance(node.get(k), str) and any(ch.isalnum() for ch in node[k]) for k in ("src", "calc"))
+
+
+def bare_numbers(node, where="", key=None, row=None):
+    """Числа вне узлов `{"v": …}`: (путь, ключ, строка-владелец). Внутри узла число
+    подтверждено источником узла; true/false — флаги, не числа."""
+    if isinstance(node, dict):
+        if "v" in node:
+            return
+        for k, x in node.items():
+            yield from bare_numbers(x, f"{where}.{k}", k, node)
+    elif isinstance(node, list):
+        for i, x in enumerate(node):
+            yield from bare_numbers(x, f"{where}[{i}]", key, row)
+    elif isinstance(node, (int, float)) and not isinstance(node, bool):
+        yield where, key, row
+
+
+# Голое число вне узла {v, src|calc} допустимо только в этих полях (data/facts/SCHEMA.md):
+# ключ → чем подтверждено. Любое другое голое число — число без источника.
+BARE_NUMBER_KEYS = {
+    "year": None,                                   # год строки — её ключ, а не факт
+    "dps": ("src", "amount"),                       # DPS строки дивиденда: src строки или узел amount
+    "target_leverage": ("src",),                    # параметры дивидендной политики: src policy
+    "no_pay_above": ("src",),
+}
+
+
+def _check_sources(data, name):
+    nodes = [("", data)] + [(p, x) for p, _, x in walk(data)]
+    for path, node in nodes:
+        if isinstance(node, dict) and "v" in node:
+            assert sourced(node), f"{name}{path}: значение без src и calc"
+    for path, key, row in bare_numbers(data, name):
+        assert key in BARE_NUMBER_KEYS, f"{path}: число без узла {{v, src|calc}}"
+        by = BARE_NUMBER_KEYS[key]
+        if by:
+            assert sourced(row) or ("amount" in by and sourced(row.get("amount"))), \
+                f"{path}: у строки нет источника ({' или '.join(by)})"
+
+
 def test_every_value_has_src_or_calc():
+    """У каждого числа фактов — источник: узел `{"v", "src"|"calc"}` с непустым источником;
+    голое число — только в полях `BARE_NUMBER_KEYS` (и там строка подтверждена источником).
+    Тот же закон — у фикстуры ядра `tests/fixtures/facts`."""
     for name in FILES:
-        data = load(name)
-        nodes = [("", data)] + [(p, x) for p, _, x in walk(data)]
-        for path, node in nodes:
-            if isinstance(node, dict) and "v" in node:
-                assert node.get("src") or node.get("calc"), f"{name}{path}: значение без src и calc"
+        _check_sources(load(name), name)
+    for file in sorted(FIXTURE.glob("*.json")):
+        _check_sources(json.loads(file.read_text(encoding="utf-8")), f"фикстура {file.stem}")
 
 
 def test_dates_are_iso():

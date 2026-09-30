@@ -51,6 +51,57 @@ def _fixture_book(book, root):
     return {**book, "bridge": {"include": [k for k in book["bridge"]["include"] if k in keys]}}
 
 
+_BARE = object()        # голое число узла на его месте (то же значение, без src и calc)
+
+
+@pytest.mark.parametrize("name, path, value, match", [
+    pytest.param("accounting", ("periods", "ANCHOR", "revenue"), _BARE, "число без узла",
+                 id="revenue-bare"),
+    pytest.param("network", ("gross_opened_hist", "ANCHOR"), _BARE, "число без узла",
+                 id="gross_opened-bare"),
+    pytest.param("history", ("halves", "PREV", "capex_pct"), _BARE, "число без узла",
+                 id="capex_pct-bare"),
+    pytest.param("shares", ("outstanding_mln",), _BARE, "число без узла", id="shares-bare"),
+    pytest.param("balance", ("net_debt",), True, "число без узла", id="net_debt-bool"),
+    pytest.param("bridge", ("lines", 0, "amount"), _BARE, "число без узла", id="bridge-bare"),
+    pytest.param("bridge", ("lines", 0, "amount"), "60.265", "число без узла", id="bridge-str"),
+    pytest.param("bridge", ("lines", 0, "amount"), {"v": True, "src": "x"},
+                 "ожидается конечное число", id="bridge-node-bool"),
+    pytest.param("dividends", ("register", 0, "amount"), _BARE, "число без узла",
+                 id="dividend-bare"),
+    pytest.param("dividends", ("register", 0, "amount"), True, "число без узла",
+                 id="dividend-bool"),
+    pytest.param("dividends", ("register", 0, "amount"), {"v": "60.265", "src": "x"},
+                 "ожидается конечное число", id="dividend-node-str"),
+    pytest.param("balance", ("net_debt",), {"v": 310.0, "src": " "}, "без src и без calc",
+                 id="src-space"),
+    pytest.param("balance", ("net_debt",), {"v": 310.0, "src": "?"}, "без src и без calc",
+                 id="src-question"),
+])
+def test_core_number_without_source_node_is_refused(book, tmp_path, name, path, value, match):
+    """Каждое число, которое читает ядро, — узел `{"v": число, "src"|"calc"}` с непустым
+    источником (`data/facts/SCHEMA.md`): голое число (то же значение, но без источника),
+    строка, true/false, пробел или «?» вместо источника — отказ с путём факта."""
+    root = _copy_fixture(tmp_path)
+    B = _fixture_book(book, root)
+    core_facts(load_facts(root), B)                     # исходная копия читается
+    file = root / f"{name}.json"
+    data = json.loads(file.read_text(encoding="utf-8"))
+    anchor = book["meta"]["anchor_period"]
+    halves = [h.get("period") for h in data.get("halves") or []]
+    keys = [anchor if k == "ANCHOR" else halves.index(prev_period(anchor)) if k == "PREV" else k
+            for k in path]
+    parent = data
+    for k in keys[:-1]:
+        parent = parent[k]
+    node = parent[keys[-1]]
+    assert isinstance(node, dict) and "v" in node and (node.get("src") or node.get("calc"))
+    parent[keys[-1]] = node["v"] if value is _BARE else value
+    file.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(FactsError, match=match):
+        core_facts(load_facts(root), B)
+
+
 def test_null_is_not_zero(book, tmp_path):
     root = _copy_fixture(tmp_path)
     path = root / "balance.json"

@@ -24,7 +24,10 @@
    "pay_until": null,
    "status": "declared",
    "paid_share_on": {
-    "2026-08-13": 0.761119
+    "2026-08-13": {
+     "v": 0.761119,
+     "src": "Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf), с. 42: выплачено 45 872 096 760 ₽ (76,1119387862 %) на 13.08.2026"
+    }
    },
    "cash_in_company_at_facts_date": true,
    "src": "https://www.x5.ru/ru/investors/dividends/ (копия reference/primary/x5-investors-dividends-2026-09-28.html, доступ 2026-09-28); Отчёт эмитента 6м2026 (reference/primary/oeczb-pao-kcz-za-6m2026_disclosure.pdf) п. 4.4, с. 39–42; МСФО 2025 (reference/primary/auditorskoe-zaklyuchenie-i-finansovaya-otchetnost_pao-kcz-iks-5_2025.pdf) прим. 22, с. 43; МСФО 1П2026 (reference/primary/finansovaya-otchetnost_pao-kcz-iks5_6m2026.pdf) прим. 13 с. 19, прим. 17 с. 22, ОДДС с. 7"

@@ -168,7 +168,10 @@ record_date}] — по времени, от старых к новым (9M ра�
 `next_expected` {label, record_date_est (дата ISO или null: из фактов, иначе ближайшая
 отсечка календаря), record_date_note (текст оценки), pay_period (полугодие выплаты:
 за 9 мес. — 1П следующего года, финал — 2П), dps_model (дивиденд модели в `pay_period`,
-₽ на акцию), note}; `yield_ltm`.
+₽ на акцию), note}; `yield_ltm`. Дивиденд модели на акцию (`model[].dps`, `dps_model`) — на
+акции в обращении (`meta.shares_mln`), до продажи казначейского пакета: пакет дивидендов не
+получает (цена акции при этом считает его проданным — `docs/MODEL.md` §7.2); витрина пишет эту базу
+в подписи графика и строки «Следующая выплата».
 
 ## history
 `annual` [{year, revenue, growth, adj_margin, rep_margin, capex_pct, da_pct,

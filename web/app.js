@@ -2701,12 +2701,20 @@ function bridgeCard(d) {
   ], lines, { cls: "compact", detail: (r) => (r.src ? detailsBlock("Источник", srcText(r.src)) : null) }))) : null);
 }
 
+// База дивиденда модели на акцию — делитель выпуска (`meta.shares_mln`): акции в обращении,
+// казначейский пакет — до продажи (дивидендов ему нет; цена акции считает его проданным).
+function dpsBase(d) {
+  const n = obj(d.meta).shares_mln;
+  return isNum(n) ? `на ${fmt.num(n, 2)}${NBSP}млн акций в обращении, до продажи казначейского пакета` : "";
+}
+
 function dividendCard(d) {
   const dv = obj(d.dividends);
   const pol = obj(dv.policy);
   const reg = list(dv.register);
   const next = obj(dv.next_expected);
   const tl = list(pol.target_leverage);
+  const nextNotes = [dpsBase(d), next.pay_period ? `выплата в ${periodName(next.pay_period)}` : ""].filter(Boolean);
   return card({ title: "Дивиденды: политика и реестр", span: 5, sub: pol.text ? sentence(ruText(pol.text)) : "" },
     el("div", { class: "kpis" },
       tl.length === 2 ? kpi(`${fmt.num(tl[0], 1)}–${fmt.num(tl[1], 1)}×`, "целевой чистый долг / EBITDA") : null,
@@ -2723,7 +2731,7 @@ function dividendCard(d) {
       { title: "Отсечка", num: true, value: registerCutoff },
     ], reg.slice().sort((a, b) => String(b.ex_date || b.record_date).localeCompare(String(a.ex_date || a.record_date))), { cls: "compact" })) : null,
     next.label ? el("p", { class: "card-foot" }, sentence(`Следующая выплата — ${lowerFirst(next.label)}: по модели ${fmt.rub(next.dps_model)} на акцию`
-      + `${next.pay_period ? ` (выплата в ${periodName(next.pay_period)})` : ""}, ожидаемая отсечка — ${nextRecordText(next)}`
+      + (nextNotes.length ? ` (${nextNotes.join("; ")})` : "") + `, ожидаемая отсечка — ${nextRecordText(next)}`
       + (next.note ? `. ${upperFirst(ruText(next.note))}` : ""))) : null);
 }
 
@@ -2746,21 +2754,23 @@ function dividendHistoryCard(d) {
   const future = columnsChart(model.map((r) => ({ key: r.year, label: yearName(r.year, true), value: r.dps,
     tipTitle: partOf(r.year).length ? `Модель, выплаты: ${yearName(r.year, false)}` : `Модель, выплаты в ${r.year} г.` })),
     { height: 210, color: "var(--model)", valueName: "₽ на акцию", fmt: (v) => fmt.rub(v), short: (v) => fmt.num(v), label: "Дивиденды модели по году выплаты" });
+  const base = dpsBase(d);
   const both = el("div", { class: "split" },
     el("div", {}, el("span", { class: "tile-label" }, "X5: по отчётному периоду, ₽ на акцию"), past),
-    el("div", {}, el("span", { class: "tile-label" }, "Модель: по году выплаты, ₽ на акцию"), future));
+    el("div", {}, el("span", { class: "tile-label" }, "Модель: по году выплаты, ₽ на акцию"),
+      base ? el("span", { class: "tile-label", style: "display:block;font-weight:400" }, base) : null, future));
   const fig = withTable(both, () => el("div", { class: "split" },
     dataTable([
       { title: "Период", value: (r) => upperFirst(ruText(r.label || r.period)), cls: "name" },
       { title: "На акцию", num: true, value: (r) => fmt.rub(r.dps) },
       { title: "Всего", num: true, value: (r) => fmt.bn(r.amount, 1) },
       { title: "Отсечка", num: true, value: (r) => fmt.date(r.record_date) },
-    ], hist, { cls: "compact" }),
+    ], hist, { cls: "compact", caption: "X5: по отчётному периоду, ₽ на акцию" }),
     dataTable([
       { title: "Год выплаты", value: (r) => yearName(r.year, false), cls: "name" },
       { title: "На акцию", num: true, value: (r) => fmt.rub(r.dps) },
       { title: "Всего", num: true, value: (r) => fmt.bn(r.amount, 1) },
-    ], model, { cls: "compact" })));
+    ], model, { cls: "compact", caption: `Модель: по году выплаты, ₽ на акцию${base ? ` — ${base}` : ""}` })));
   // Подвал: как годы модели соотносятся с отчётными периодами X5 и что с годом якоря.
   const full = model.find((r) => !partOf(r.year).length && isNum(r.dps) && r.dps > 0);
   const part = model.find((r) => partOf(r.year).length);

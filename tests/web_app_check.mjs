@@ -321,7 +321,28 @@ const H1_2027 = [
   check("«следующих 12 мес.» на витрине нет", !/следующих 12|EBITDA вперёд/.test(APP), "web/app.js");
 }
 
-/* ── 4. все экраны мока рисуются, графики — в ширине карточки и телефона ── */
+/* ── 4. дивиденд модели на акцию — с базой: акции в обращении, до продажи казначейского пакета ── */
+
+{
+  const page = makePage();
+  const d = sample();
+  page.ctx.__d = d;
+  const BASE = "на 245,98 млн акций в обращении, до продажи казначейского пакета";
+  const card = squash(visibleText(page.get("dividendCard(globalThis.__d)")));
+  check("«Следующая выплата … по модели» — с базой акций", card.includes(
+    `по модели 190 ₽ на акцию (${BASE}; выплата в 1П 2027), ожидаемая отсечка`), card.slice(-400));
+  const history = squash(visibleText(page.get("dividendHistoryCard(globalThis.__d)")));
+  check("график «Модель: по году выплаты» — с базой акций", history.includes(`Модель: по году выплаты, ₽ на акцию ${BASE}`), history.slice(0, 400));
+  d.meta.shares_mln = 250.5;
+  check("база — из meta.shares_mln выпуска", squash(page.get("dpsBase(globalThis.__d)")).startsWith("на 250,50 млн акций"),
+    page.get("dpsBase(globalThis.__d)"));
+  delete d.meta.shares_mln;
+  const bare = squash(visibleText(page.get("dividendCard(globalThis.__d)")));
+  check("без meta.shares_mln — подпись без базы", bare.includes("по модели 190 ₽ на акцию (выплата в 1П 2027), ожидаемая отсечка")
+    && !bare.includes("в обращении,"), bare.slice(-300));
+}
+
+/* ── 5. все экраны мока рисуются, графики — в ширине карточки и телефона ── */
 
 for (const width of [640, 343]) {
   const page = makePage({ width });

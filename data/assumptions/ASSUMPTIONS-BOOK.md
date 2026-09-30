@@ -22,7 +22,7 @@
 
 | | ₽ на акцию |
 |---|---|
-| **медиана по суждениям книги** (печать, шаг 50 ₽) | **≈<!--=band.printed.median r0-->3 150<!--/-->** (точно <!--=band.stats.median r1-->3 136,1<!--/-->) |
+| **медиана по суждениям книги** (печать, шаг 50 ₽) | **≈<!--=band.printed.median r0-->3 150<!--/-->** (точно <!--=band.stats.median r1-->3 135,9<!--/-->) |
 | полоса 80 % (P10–P90) | <!--=band.printed.p10 r0-->2 400<!--/-->–<!--=band.printed.p90 r0-->3 900<!--/--> (точно <!--=band.stats.p10 r0-->2 390<!--/-->–<!--=band.stats.p90 r0-->3 897<!--/-->) |
 | полоса 50 % (P25–P75) | <!--=band.printed.p25 r0-->2 750<!--/-->–<!--=band.printed.p75 r0-->3 550<!--/--> (точно <!--=band.stats.p25 r0-->2 728<!--/-->–<!--=band.stats.p75 r0-->3 559<!--/-->) |
 | среднее прогонов | <!--=band.stats.mean r0-->3 147<!--/--> |
@@ -52,7 +52,7 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 ### Стоимость бизнеса против рынка
 
 - **V\*** — стоимость бизнеса, при которой та же функция «EV → цена» даёт рыночную цену: <!--=point.v_star r1-->879,4<!--/--> млрд ₽ (§7.3).
-- EV медианы — <!--=band.center_ev.v0_median r1-->1 247,3<!--/--> млрд ₽, **<!--=band.center_ev.gap_median sp1-->+41,8<!--/--> %** к V\*; EV точки — <!--=point.v0_point r1-->1 273,2<!--/--> млрд ₽ (<!--=point.gap_point sp1-->+44,8<!--/--> %).
+- EV медианы — <!--=band.center_ev.v0_median r1-->1 247,2<!--/--> млрд ₽, **<!--=band.center_ev.gap_median sp1-->+41,8<!--/--> %** к V\*; EV точки — <!--=point.v0_point r1-->1 273,2<!--/--> млрд ₽ (<!--=point.gap_point sp1-->+44,8<!--/--> %).
 - 1 % EV — <!--=band.center_ev.rub_per_1pct_ev_median r1-->45,0<!--/--> ₽ медианы и <!--=point.rub_per_1pct_ev_point r1-->45,9<!--/--> ₽ точки; капитал — <!--=point.equity_share_of_ev p0-->67<!--/--> % EV точки.
 - Требования на дату оценки (слой «свой макро-взгляд»), млрд ₽: чистый долг якоря <!--=claims.net_debt_fact r3-->310,647<!--/--> + операционная касса <!--=claims.opcash_anchor r1-->51,7<!--/--> + строки моста <!--=claims.bridge_total r3-->7,460<!--/--> + объявленные дивиденды с отсечкой до даты оценки <!--=claims.dividends_declared r3-->60,425<!--/--> − денежный результат прошедшего времени <!--=claims.rolled_analytical r1-->9,8<!--/--> = <!--=claims.d_analytical r1-->420,4<!--/-->.
 - Акции: <!--=inputs.shares_mln r3-->245,981<!--/--> млн в обращении и <!--=inputs.treasury_mln r3-->25,592<!--/--> млн казначейских; пакет в цене продан по <!--=inputs.treasury_sale_price_k r4-->0,9116<!--/--> рыночной цены — <!--=inputs.treasury_value r1-->42,2<!--/--> млрд ₽ капиталу; дисконт за управление <!--=inputs.governance_discount p0-->2<!--/--> % (§7.2, раздел 10, A-V7).
@@ -69,7 +69,7 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 | бета активов β_u (A-V1) | 0,60 | 0,45–0,75 | <!--=band.reverse_dcf[name=Бета активов β_u].solved r2-->1,29<!--/--> | <!--=band.reverse_dcf[name=Бета активов β_u].point_solved r2-->1,33<!--/--> |
 | премия за риск ERP (A-V2) | 5,57 % | 4,9–6,5 % | <!--=band.reverse_dcf[name=Премия за риск ERP].solved p1-->12,1<!--/--> % | <!--=band.reverse_dcf[name=Премия за риск ERP].point_solved p1-->12,3<!--/--> % |
 | дисконт за управление (A-V7) | 2 % | 0–5 % | <!--=band.reverse_dcf[name=Дисконт за управление].solved p1-->43,8<!--/--> % | <!--=band.reverse_dcf[name=Дисконт за управление].point_solved p1-->45,0<!--/--> % |
-| трафик LFL (сдвиг состояний, A-R4) | 0 | −0,8…+0,4 п.п. | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,38<!--/--> п.п. в год | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].point_solved sp2-->−1,39<!--/--> п.п. в год |
+| трафик LFL (сдвиг состояний, A-R4) | 0 | −0,8…+0,4 п.п. | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,38<!--/--> п.п. в год | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].point_solved sp2-->−1,38<!--/--> п.п. в год |
 | чистый рост площади 2027–2030 (A-R7) | 0 | −1,0…+0,8 п.п. | недостижимо на отрезке −5…+4 п.п. | недостижимо |
 | инфляция мира M (A-M6) | 0 | −0,3…+0,5 п.п. | недостижимо на отрезке −5…+8 п.п. | недостижимо |
 
@@ -109,10 +109,10 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 | Факт маржи 2П2026 | медиана, ₽ | изменение медианы | точка, ₽ | изменение точки | P(«Стресс») после факта |
 |---|---|---|---|---|---|
 | <!--=band.next_report.table[0].margin p1-->5,3<!--/--> % | <!--=band.next_report.table[0].median r0-->2 797<!--/--> | <!--=band.next_report.table[0].d_median s0-->−339<!--/--> | <!--=band.next_report.table[0].point r0-->2 880<!--/--> | <!--=band.next_report.table[0].d_point s0-->−350<!--/--> | <!--=band.next_report.table[0].posterior.stress p1-->51,5<!--/--> % |
-| <!--=band.next_report.table[1].margin p1-->5,6<!--/--> % | <!--=band.next_report.table[1].median r0-->2 851<!--/--> | <!--=band.next_report.table[1].d_median s0-->−285<!--/--> | <!--=band.next_report.table[1].point r0-->2 936<!--/--> | <!--=band.next_report.table[1].d_point s0-->−294<!--/--> | <!--=band.next_report.table[1].posterior.stress p1-->50,2<!--/--> % |
+| <!--=band.next_report.table[1].margin p1-->5,6<!--/--> % | <!--=band.next_report.table[1].median r0-->2 851<!--/--> | <!--=band.next_report.table[1].d_median s0-->−284<!--/--> | <!--=band.next_report.table[1].point r0-->2 936<!--/--> | <!--=band.next_report.table[1].d_point s0-->−294<!--/--> | <!--=band.next_report.table[1].posterior.stress p1-->50,2<!--/--> % |
 | <!--=band.next_report.table[2].margin p1-->5,9<!--/--> % | <!--=band.next_report.table[2].median r0-->2 998<!--/--> | <!--=band.next_report.table[2].d_median s0-->−138<!--/--> | <!--=band.next_report.table[2].point r0-->3 085<!--/--> | <!--=band.next_report.table[2].d_point s0-->−145<!--/--> | <!--=band.next_report.table[2].posterior.stress p1-->45,6<!--/--> % |
 | <!--=band.next_report.table[3].margin p1-->6,2<!--/--> % | <!--=band.next_report.table[3].median r0-->3 143<!--/--> | <!--=band.next_report.table[3].d_median s0-->+7<!--/--> | <!--=band.next_report.table[3].point r0-->3 237<!--/--> | <!--=band.next_report.table[3].d_point s0-->+7<!--/--> | <!--=band.next_report.table[3].posterior.stress p1-->41,1<!--/--> % |
-| <!--=band.next_report.table[4].margin p1-->6,5<!--/--> % | <!--=band.next_report.table[4].median r0-->3 290<!--/--> | <!--=band.next_report.table[4].d_median s0-->+153<!--/--> | <!--=band.next_report.table[4].point r0-->3 390<!--/--> | <!--=band.next_report.table[4].d_point s0-->+160<!--/--> | <!--=band.next_report.table[4].posterior.stress p1-->36,7<!--/--> % |
+| <!--=band.next_report.table[4].margin p1-->6,5<!--/--> % | <!--=band.next_report.table[4].median r0-->3 290<!--/--> | <!--=band.next_report.table[4].d_median s0-->+154<!--/--> | <!--=band.next_report.table[4].point r0-->3 390<!--/--> | <!--=band.next_report.table[4].d_point s0-->+160<!--/--> | <!--=band.next_report.table[4].posterior.stress p1-->36,7<!--/--> % |
 | <!--=band.next_report.table[5].margin p1-->6,8<!--/--> % | <!--=band.next_report.table[5].median r0-->3 438<!--/--> | <!--=band.next_report.table[5].d_median s0-->+302<!--/--> | <!--=band.next_report.table[5].point r0-->3 544<!--/--> | <!--=band.next_report.table[5].d_point s0-->+314<!--/--> | <!--=band.next_report.table[5].posterior.stress p1-->32,5<!--/--> % |
 | <!--=band.next_report.table[6].margin p1-->7,1<!--/--> % | <!--=band.next_report.table[6].median r0-->3 504<!--/--> | <!--=band.next_report.table[6].d_median s0-->+368<!--/--> | <!--=band.next_report.table[6].point r0-->3 607<!--/--> | <!--=band.next_report.table[6].d_point s0-->+378<!--/--> | <!--=band.next_report.table[6].posterior.stress p1-->31,5<!--/--> % |
 
@@ -497,7 +497,7 @@ Results, стр. 30 и старый лист Operating Results_Q, стр. 47; И
 (`ticket.py`, разд. 5) — рынок в натуральном выражении растёт на +0…+0,5 % в год, доля X5 в терминале слегка теряется.
 Ось асимметрична вниз: за 2011–2026 гг. реальный LFL X5 (отчётный) был −0,9 % в год, у зрелой сети — ниже.
 
-**Цена ошибки.** −0,8 / +0,4 п.п. → <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 358<!--/--> / <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 727<!--/--> ₽ точки (размах <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].swing r0-->1 369<!--/--> ₽, доля полосы <!--=band.contributions[axis=Трафик LFL (сдвиг всех состояний)].share p1-->22,3<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,38<!--/--> п.п. в год (обратный DCF медианы).
+**Цена ошибки.** −0,8 / +0,4 п.п. → <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 358<!--/--> / <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 727<!--/--> ₽ точки (размах <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].swing r0-->1 370<!--/--> ₽, доля полосы <!--=band.contributions[axis=Трафик LFL (сдвиг всех состояний)].share p1-->22,3<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,38<!--/--> п.п. в год (обратный DCF медианы).
 
 **Чем может ошибаться.** Самое дорогое суждение области: ось −0,8…+0,4 п.п. — <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 358<!--/-->…<!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 727<!--/--> ₽ точки. Отнесение всего
 созревания к трафику (а не частью к чеку) — суждение.
@@ -1643,7 +1643,7 @@ ERP и инфляции M — 7,21–12,08 %.
 слоя 17,7 % кредитный пут при V0/D 1,5 — 2,7 ₽ на акцию на сроке 1,24 года и достигает 25 ₽ (полшага печати) только на сроке
 ≈3,0 года; ниже 1,5 внутренняя стоимость перестаёт быть точной — нужен возврат к структурной оценке (§7.2). На книге
 1.1.2 V0/D слоёв — <!--=layers.analytical.v0_to_d r2-->3,00<!--/--> (свой взгляд), <!--=layers.market_implied.v0_to_d r2-->3,01<!--/--> (вменённые рынком), <!--=layers.macro_neutral.v0_to_d r2-->3,07<!--/--> (рыночные ставки). Капитал клеток
-«Стресс» при высоком capex — у нуля: <!--=cells[world=N&regime=stress&capex=high].equity r1-->41,5<!--/--> / <!--=cells[world=H&regime=stress&capex=high].equity r1-->2,8<!--/--> / <!--=cells[world=M&regime=stress&capex=high].equity r1-->52,1<!--/--> млрд ₽ в мирах N / H / M —
+«Стресс» при высоком capex — у нуля: <!--=cells[world=N&regime=stress&capex=high].equity r1-->41,4<!--/--> / <!--=cells[world=H&regime=stress&capex=high].equity r1-->2,8<!--/--> / <!--=cells[world=M&regime=stress&capex=high].equity r1-->52,1<!--/--> млрд ₽ в мирах N / H / M —
 все выше нуля (в мире «Высокие ставки надолго» — при EV <!--=cells[world=H&regime=stress&capex=high].ev r0-->431<!--/--> млрд ₽, почти равной долгу), и гейт `equity_cushion` на книге
 не срабатывает (масса <!--=gates[name=equity_cushion].mass r3-->0,000<!--/-->). Уйди капитал клетки ниже нуля, её цена осталась бы положительной
 (выручка от продажи казначейского пакета, §7.2), а слои — далеко от предела (объяснение гейта на этот случай —

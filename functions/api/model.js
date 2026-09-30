@@ -5,9 +5,15 @@
  * (его кладёт конвейер). Запрос к GitHub кэшируется краем на ~60 с
  * (`cf.cacheTtl`): витрина не бьёт в raw.githubusercontent.com каждым заходом.
  *
- * Порядок при сбое GitHub (сеть, 5xx, 404, не-JSON, ответа нет дольше
- * UPSTREAM_TIMEOUT_MS — зависшее соединение отменяется, а не ждёт предела
- * платформы):
+ * Выпуск — объект, у которого `meta` и `fair_value` — объекты (не массивы), а
+ * `meta.payload_sha256` — 64 шестнадцатеричных символа (те же ворота, что у
+ * витрины, плюс хэш: из него строится ETag, и чужой символ в нём уронил бы
+ * ответ). Ворота одни для ответа GitHub, для записи запасной копии и для её
+ * чтения: неполный ответ источника — сбой источника, копию он не затирает.
+ *
+ * Порядок при сбое GitHub (сеть, 5xx, 404, не-JSON, не выпуск, ответа нет
+ * дольше UPSTREAM_TIMEOUT_MS — зависшее соединение отменяется, а не ждёт
+ * предела платформы):
  *   1) запасная копия из Cache API края — кладётся фоном (waitUntil) при
  *      каждом удачном ответе, с долгим max-age: копия с max-age=60 жила бы
  *      минуту и не спасала бы от сбоя дольше минуты;
@@ -52,7 +58,7 @@ export async function onRequest({ request, env, waitUntil }) {
     });
     if (upstream.ok) {
       const text = await upstream.text();
-      const release = parse(text);
+      const { release, problem } = parse(text);
       if (release) {
         // Запасная копия — фоном: ждать записи в кэш значит добавить её время
         // к каждому ответу.
@@ -60,7 +66,7 @@ export async function onRequest({ request, env, waitUntil }) {
         if (typeof waitUntil === "function") waitUntil(saved);
         return respond(request, text, release, "github");
       }
-      detail = "ответ источника не разобрался как выпуск";
+      detail = `ответ источника — не выпуск: ${problem}`;
     } else if (upstream.status === 404) {
       notPublished = true;
     } else {
@@ -80,15 +86,30 @@ export async function onRequest({ request, env, waitUntil }) {
   return json(503, { error: "upstream unavailable", detail });
 }
 
-// Выпуск — объект с блоком meta; всё остальное (страница ошибки, обрезанный
-// ответ) выпуском не считается.
-function parse(text) {
-  try {
-    const release = JSON.parse(text);
-    return release && typeof release === "object" && release.meta && typeof release.meta === "object" ? release : null;
-  } catch (error) {
-    return null;
+const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+const SHA256_HEX = /^[0-9a-f]{64}$/i;
+
+// Почему текст — не выпуск (null — выпуск): страница ошибки, обрезанный ответ,
+// файл без обязательных блоков или с негодным хэшем выпуском не считаются.
+function releaseProblem(release) {
+  if (!isObject(release)) return "не объект";
+  if (!isObject(release.meta)) return "нет объекта meta";
+  if (!isObject(release.fair_value)) return "нет объекта fair_value";
+  if (typeof release.meta.payload_sha256 !== "string" || !SHA256_HEX.test(release.meta.payload_sha256)) {
+    return "meta.payload_sha256 — не 64 шестнадцатеричных символа";
   }
+  return null;
+}
+
+function parse(text) {
+  let release;
+  try {
+    release = JSON.parse(text);
+  } catch (error) {
+    return { release: null, problem: "не JSON" };
+  }
+  const problem = releaseProblem(release);
+  return problem ? { release: null, problem } : { release, problem: null };
 }
 
 function saveFallback(text) {
@@ -108,7 +129,7 @@ async function readFallback() {
     const hit = await caches.default.match(new Request(FALLBACK_KEY));
     if (!hit) return null;
     const text = await hit.text();
-    const release = parse(text);
+    const { release } = parse(text);
     return release ? { text, release } : null;
   } catch (error) {
     return null;
@@ -121,7 +142,7 @@ async function readBundled(env, request) {
     const hit = await env.ASSETS.fetch(new Request(new URL(BUNDLED_PATH, request.url)));
     if (!hit.ok) return null;
     const text = await hit.text();
-    const release = parse(text);
+    const { release } = parse(text);
     return release ? { text, release } : null;
   } catch (error) {
     return null;
@@ -137,12 +158,12 @@ function respond(request, text, release, source) {
   });
   const generated = Date.parse(release.meta.generated_at);
   if (Number.isFinite(generated)) headers.set("last-modified", new Date(generated).toUTCString());
-  const sha = release.meta.payload_sha256;
-  const etag = typeof sha === "string" && sha ? `"${sha}"` : null;
-  if (etag) headers.set("etag", etag);
+  // Хэш уже проверен воротами (64 hex-символа): метка всегда годна для заголовка.
+  const etag = `"${release.meta.payload_sha256}"`;
+  headers.set("etag", etag);
 
   const inm = request.headers.get("if-none-match");
-  if (etag && inm && sameTag(inm, etag)) return new Response(null, { status: 304, headers });
+  if (inm && sameTag(inm, etag)) return new Response(null, { status: 304, headers });
   if (request.method === "HEAD") return new Response(null, { status: 200, headers });
   return new Response(text, { status: 200, headers });
 }

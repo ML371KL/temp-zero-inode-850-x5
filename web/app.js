@@ -289,6 +289,23 @@ function periodShort(p) {
   const m = /^(\d{4})H([12])$/.exec(String(p));
   return m ? `${m[2]}П${m[1].slice(2)}` : String(p);
 }
+// Полугодие через k полугодий: «2026H2», 1 → «2027H1».
+function shiftHalf(p, k) {
+  const m = /^(\d{4})H([12])$/.exec(String(p));
+  if (!m || !Number.isInteger(k)) return null;
+  const i = Number(m[1]) * 2 + Number(m[2]) - 1 + k;
+  return `${Math.floor(i / 2)}H${(i % 2) + 1}`;
+}
+// База мультипликатора EV / скорр. EBITDA (`ebitda_ntm`, `ev_ebitda_fwd`) — текущее и
+// следующее полугодия: полугодие даты оценки (первое незакрытое прогнозное — `meta.first_period`
+// через `meta.closed_periods` полугодий) и следующее за ним (docs/MODEL.md §13.2). Не «следующие
+// 12 месяцев»: прошедшая часть текущего полугодия в базе есть. «2П 2026 + 1П 2027».
+function ebitdaBase(d, short = false) {
+  const meta = obj(d.meta);
+  const p0 = shiftHalf(meta.first_period, meta.closed_periods);
+  const name = short ? periodShort : periodName;
+  return p0 ? `${name(p0)} + ${name(shiftHalf(p0, 1))}` : null;
+}
 
 /* ───────────────────────────── подсказки ───────────────────────────── */
 
@@ -1541,43 +1558,74 @@ function bandDrivers(d) {
 
 /* ── «Ближайший отчёт» (кратко) ── */
 
-// Ближайшее событие отчётности открытого полугодия (или любое ближайшее).
-function nextReportEvent(d) {
+// Последний день полугодия: «2026H2» → «2026-12-31», «2027H1» → «2027-06-30».
+function periodEnd(p) {
+  const m = /^(\d{4})H([12])$/.exec(String(p === null || p === undefined ? "" : p));
+  return m ? `${m[1]}-${m[2] === "1" ? "06-30" : "12-31"}` : null;
+}
+
+// События отчёта полугодия заголовка (`next_report.period`), от даты оценки.
+// `closing` — МСФО, которое закрывает полугодие: первое МСФО с датой позже его
+// конца (то же правило, что `until` выпуска в model/payload.py); к нему — отсчёт.
+// `earlier` — отчёт раньше закрывающего (МСФО за 1/3 кв., иначе операционные
+// результаты): он внутри полугодия, журнал не закрывает и медиану сам не двигает.
+function reportEvents(d) {
   const nr = obj(d.next_report);
   const from = obj(d.meta).valuation_date;
+  const end = periodEnd(nr.period);
   const events = list(nr.events).filter((e) => (daysBetween(from, e.date) ?? -1) >= 0)
     .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  return events.find((e) => e.kind === "ifrs") || events.find((e) => e.kind === "trading_update") || events[0] || null;
+  const closing = end ? events.find((e) => e.kind === "ifrs" && (daysBetween(end, e.date) ?? 0) > 0) || null : null;
+  const before = closing ? events.filter((e) => (daysBetween(e.date, closing.date) ?? 0) > 0) : events;
+  const earlier = before.find((e) => e.kind === "ifrs") || before.find((e) => e.kind === "trading_update") || null;
+  return { closing, earlier };
+}
+
+// Отсчёт до закрывающего отчёта: «171 день до ≈ 19 марта 2027».
+function countdown(d, ev) {
+  const days = daysBetween(obj(d.meta).valuation_date, ev.date);
+  return el("div", { class: "countdown" },
+    el("span", { class: "big" }, fmt.num(days)),
+    el("span", { class: "ink-2" }, `${plural(days, ["день", "дня", "дней"])} до ${ev.confirmed ? "" : "≈" + NBSP}${fmt.dateLong(ev.date)}`));
+}
+
+// Отчёт раньше закрывающего — отдельной строкой: его квартальную маржу нельзя
+// подставлять в «маржа полугодия → медиана».
+function earlierReport(d, ev) {
+  if (!ev) return null;
+  const days = daysBetween(obj(d.meta).valuation_date, ev.date);
+  return el("p", { class: "note-box", style: "margin-top:12px" },
+    el("strong", {}, `Раньше: ${ev.confirmed ? "" : "≈" + NBSP}${fmt.date(ev.date)}${isNum(days) ? ` (через ${fmt.days(days)})` : ""} — ${ev.title}.`),
+    " Внутри полугодия: журнал не закрывает, медиану само не двигает; в цену — только новой версией книги ",
+    el("span", { style: "white-space:nowrap" }, "(правило A-P2u)."));
 }
 
 function neutralSentence(d) {
   const nr = obj(d.next_report);
   const n = obj(nr.neutral);
   if (!isNum(n.median)) return "";
-  const slope = isNum(nr.rub_per_01pp) ? `; каждые 0,1${NBSP}п.п. маржи — около ${fmt.rub(nr.rub_per_01pp)} медианы` : "";
+  const slope = isNum(nr.rub_per_01pp) ? `; каждые 0,1${NBSP}п.п. маржи — в среднем около ${fmt.rub(nr.rub_per_01pp)} медианы` : "";
   return `Нейтральная маржа ${periodName(nr.period)} — ${fmt.pct(n.median, 2)}: при таком факте медиана не изменится, выше — вырастет, ниже — снизится${slope}.`;
 }
 
 function reportTeaser(d) {
   const nr = obj(d.next_report);
   if (!nr.period) return card({ title: "Ближайший отчёт", span: 6, link: ["report", "Подробно"] }, missing("ближайший отчёт"));
-  const ev = nextReportEvent(d);
-  const days = ev ? daysBetween(obj(d.meta).valuation_date, ev.date) : null;
+  const { closing: ev, earlier } = reportEvents(d);
   const exp = obj(nr.expectation);
   const g = obj(nr.guidance);
   const bench = list(nr.benchmarks)[0];
   return card({ title: `Ближайший отчёт: ${periodName(nr.period)}`, span: 6, link: ["report", "Подробно"],
     sub: ev ? `${ev.title}${ev.confirmed ? "" : " · ожидаемая дата"}` : "" },
-  ev ? el("div", { class: "countdown" },
-    el("span", { class: "big" }, fmt.num(days)),
-    el("span", { class: "ink-2" }, `${plural(days, ["день", "дня", "дней"])} до ${ev.confirmed ? "" : "≈" + NBSP}${fmt.dateLong(ev.date)}`)) : null,
+  ev ? countdown(d, ev) : empty(`Даты МСФО за ${periodName(nr.period)} в календаре выпуска нет.`),
+  earlierReport(d, earlier),
   el("div", { class: "kpis", style: "margin-top:14px" },
-    isNum(exp.margin) ? kpi(fmt.pct(exp.margin, 2), `ожидание модели: скорр. маржа ${periodName(nr.period)}`) : null,
+    isNum(exp.margin) ? kpi(fmt.pct(exp.margin, 2), `ожидание модели: скорр. маржа за всё ${periodName(nr.period)}`) : null,
     isNum(g.margin_min) ? kpi(`≥${NBSP}${fmt.pct(g.margin_min, 1)}`, "прогноз компании на год") : null,
     bench && isNum(bench.margin) ? kpi(fmt.pct(bench.margin, 2), `наивный эталон: ${lowerFirst(bench.name)}`) : null,
     isNum(obj(nr.neutral).median) ? kpi(fmt.pct(nr.neutral.median, 2), "нейтральная маржа: медиана не меняется") : null),
   list(nr.table).length ? el("div", { style: "margin-top:14px" },
-    el("span", { class: "tile-label" }, `Если маржа ${periodName(nr.period)} выйдет …, медиана станет:`),
+    el("span", { class: "tile-label" }, `Если маржа за всё ${periodName(nr.period)} выйдет …, медиана станет:`),
     impactChart(d, true)) : null,
   el("p", { class: "card-foot" }, neutralSentence(d)));
 }
@@ -1739,9 +1787,10 @@ function evCard(d) {
   legend([["key-dot key-model", "EV модели"], ["key-dot key-market", "рыночная стоимость бизнеса"]]),
   fig.box,
   el("div", { class: "kpis", style: "margin-top:14px" },
-    // Пара мультипликаторов — на одной базе: скорр. EBITDA следующих 12 месяцев.
+    // Пара мультипликаторов — на одной базе: скорр. EBITDA модели (слой «свой взгляд»)
+    // текущего и следующего полугодий.
     isNum(ce.ev_ebitda_ntm_market) ? kpi(fmt.x(ce.ev_ebitda_ntm_market, 2),
-      `рынок: EV / скорр. EBITDA следующих 12 мес. (${fmt.num(ce.ebitda_ntm, 0)} млрд ₽)`) : null,
+      `рынок: EV / скорр. EBITDA модели текущего и следующего полугодий (${[ebitdaBase(d), `${fmt.num(ce.ebitda_ntm, 0)} млрд ₽`].filter(Boolean).join(", ")})`) : null,
     isNum(ce.ev_ebitda_ntm_median) ? kpi(fmt.x(ce.ev_ebitda_ntm_median, 2), "модель, медиана: EV / та же EBITDA") : null,
     kpi(fmt.rub(ce.rub_per_1pct_ev_median), "цена 1 % EV на акцию"),
     kpi(fmt.bn(mk.claims, 0), "требования на дату оценки")));
@@ -1988,7 +2037,7 @@ function layersCard(d) {
     ...(order.some((k) => isNum(L[k].pv_terminal_financing)) ? [{ title: "из них терминала", num: true,
       value: (k) => (isNum(L[k].pv_terminal_financing) ? fmt.num(-L[k].pv_terminal_financing, 1) : "—") }] : []),
     { title: "Доля терминала (чистая)", num: true, value: (k) => fmt.pct(L[k].terminal_share, 0) },
-    { title: "EV / EBITDA вперёд", num: true, value: (k) => fmt.x(L[k].ev_ebitda_fwd, 2) },
+    { title: `EV / EBITDA ${ebitdaBase(d, true) || "тек. и след. полугодий"}`, num: true, value: (k) => fmt.x(L[k].ev_ebitda_fwd, 2) },
     { title: "V0 / D", num: true, value: (k) => fmt.x(L[k].v0_to_d, 2) },
   ], order, { rowClass: (k) => (k === "analytical" ? "is-pick" : null),
     caption: `Веса миров по порядку: ${weightsNames(d, obj(L[order[0]]).world_weights)}.` }),
@@ -2182,7 +2231,7 @@ function gridCard(d) {
             rows: [["цена", fmt.rub(c.price)], ["вероятность (свой взгляд)", fmt.pct(c.p_analytical, 2)],
               ["вменённая рынком", fmt.pct(c.p_market_implied, 2)], ["рыночные ставки", fmt.pct(c.p_neutral, 2)],
               ["EV", fmt.bn(c.ev, 0)], ["требования", fmt.bn(c.d, 0)], ["капитал", fmt.bn(c.equity, 0)],
-              ["EV / EBITDA вперёд", fmt.x(c.ev_ebitda_fwd, 2)], ["доля терминала (чистая)", fmt.pct(c.terminal_share, 0)],
+              [`EV / EBITDA ${ebitdaBase(d, true) || "тек. и след. полугодий"}`, fmt.x(c.ev_ebitda_fwd, 2)], ["доля терминала (чистая)", fmt.pct(c.terminal_share, 0)],
               ["маржа далее", fmt.pct(c.margin_lt, 2)], ["макс. ЧД / EBITDA", fmt.x(c.max_leverage, 2)]],
             note: isNum(c.equity) && c.equity <= 0 ? "капитал клетки не положителен" : null } },
           isNum(c.equity) && c.equity <= 0 ? el("span", { class: "flag", "aria-label": "капитал не положителен" }, "∅") : null,
@@ -2311,7 +2360,7 @@ function screenReport(d) {
   const g = obj(nr.guidance);
   const n = obj(nr.neutral);
   const facts = [];
-  if (isNum(exp.margin)) facts.push(`Модель ждёт скорректированную маржу ${fmt.pct(exp.margin, 2)}`
+  if (isNum(exp.margin)) facts.push(`Модель ждёт скорректированную маржу ${fmt.pct(exp.margin, 2)} за всё полугодие`
     + (isNum(exp.revenue_growth) ? ` и рост выручки ${fmt.signedPct(exp.revenue_growth, 1)} год к году` : ""));
   if (isNum(g.required_h2_margin)) facts.push(`чтобы выполнить прогноз на год, компании нужна маржа ${fmt.pct(g.required_h2_margin, 2)}`);
   if (isNum(n.median)) facts.push(`при марже ${fmt.pct(n.median, 2)} медиана не изменится`);
@@ -2329,18 +2378,20 @@ function reportCalendarCard(d) {
   const nr = obj(d.next_report);
   const from = obj(d.meta).valuation_date;
   const events = list(nr.events).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  const ev = nextReportEvent(d);
-  const days = ev ? daysBetween(from, ev.date) : null;
-  return card({ title: "Календарь отчёта", span: 5, sub: nr.period ? `${periodName(nr.period)} · отсчёт от даты оценки ${fmt.date(from)}` : "" },
-    ev ? el("div", { class: "countdown" },
-      el("span", { class: "big" }, fmt.num(days)),
-      el("span", { class: "ink-2" }, `${plural(days, ["день", "дня", "дней"])} до ${ev.confirmed ? "" : "≈" + NBSP}${fmt.dateLong(ev.date)}`)) : null,
-    ev ? el("p", { class: "ink-2", style: "margin-top:4px" }, el("strong", {}, ev.title)) : null,
+  const { closing: ev, earlier } = reportEvents(d);
+  const p = periodName(nr.period);
+  // Отчёт X5 до закрывающего МСФО — внутри полугодия (МСФО за 1/3 кв., операционные результаты).
+  const inside = (e) => ev && (e.kind === "ifrs" || e.kind === "trading_update") && (daysBetween(e.date, ev.date) ?? 0) > 0;
+  return card({ title: "Календарь отчёта", span: 5, sub: nr.period ? `${p} · отсчёт от даты оценки ${fmt.date(from)}` : "" },
+    ev ? countdown(d, ev) : (nr.period ? empty(`Даты МСФО за ${p} в календаре выпуска нет.`) : null),
+    ev ? el("p", { class: "ink-2", style: "margin-top:4px" }, el("strong", {}, ev.title), ` — закрывает ${p}`) : null,
+    earlierReport(d, earlier),
     events.length ? el("ul", { class: "list", style: "margin-top:12px" }, events.map((e) => {
       const left = daysBetween(from, e.date);
       return el("li", {},
         el("span", { class: "t" }, e.title, el("span", { class: "muted" },
-          [KIND_NAMES[e.kind], isNum(left) ? (left >= 0 ? `через ${fmt.days(left)}` : "прошло") : ""].filter(Boolean).join(" · "))),
+          [KIND_NAMES[e.kind], e === ev ? `закрывает ${p}` : inside(e) ? "внутри полугодия" : "",
+            isNum(left) ? (left >= 0 ? `через ${fmt.days(left)}` : "прошло") : ""].filter(Boolean).join(" · "))),
         el("span", { class: "v" }, `${e.confirmed ? "" : "≈" + NBSP}${fmt.date(e.date)}`));
     })) : empty("Событий отчёта в выпуске нет."),
     events.some((e) => e.note) ? el("div", { class: "card-foot" }, detailsBlock("Примечания", el("div", {},
@@ -2497,7 +2548,7 @@ function impactCard(d) {
   ], rows));
   const byMargin = rows.slice().sort((a, b) => a.margin - b.margin);
   const lo = byMargin[0], hi = byMargin[byMargin.length - 1];
-  return card({ title: `Что даст отчёт: факт маржи ${periodName(nr.period)} → оценка`, tools: fig.button,
+  return card({ title: `Что даст отчёт: факт маржи за всё ${periodName(nr.period)} → оценка`, tools: fig.button,
     sub: "Факт маржи сдвигает вероятности режимов и отклонение маржи от цели; с ними — медиану и точку." },
   legend([["key-line key-model", "медиана"], ["key-line key-dash", "точка"], ["key-line key-ink", "медиана сейчас"],
     ["key-line key-market", "рынок"]]),
@@ -2651,12 +2702,20 @@ function bridgeCard(d) {
   ], lines, { cls: "compact", detail: (r) => (r.src ? detailsBlock("Источник", srcText(r.src)) : null) }))) : null);
 }
 
+// База дивиденда модели на акцию — делитель выпуска (`meta.shares_mln`): акции в обращении,
+// казначейский пакет — до продажи (дивидендов ему нет; цена акции считает его проданным).
+function dpsBase(d) {
+  const n = obj(d.meta).shares_mln;
+  return isNum(n) ? `на ${fmt.num(n, 2)}${NBSP}млн акций в обращении, до продажи казначейского пакета` : "";
+}
+
 function dividendCard(d) {
   const dv = obj(d.dividends);
   const pol = obj(dv.policy);
   const reg = list(dv.register);
   const next = obj(dv.next_expected);
   const tl = list(pol.target_leverage);
+  const nextNotes = [dpsBase(d), next.pay_period ? `выплата в ${periodName(next.pay_period)}` : ""].filter(Boolean);
   return card({ title: "Дивиденды: политика и реестр", span: 5, sub: pol.text ? sentence(ruText(pol.text)) : "" },
     el("div", { class: "kpis" },
       tl.length === 2 ? kpi(`${fmt.num(tl[0], 1)}–${fmt.num(tl[1], 1)}×`, "целевой чистый долг / EBITDA") : null,
@@ -2673,7 +2732,7 @@ function dividendCard(d) {
       { title: "Отсечка", num: true, value: registerCutoff },
     ], reg.slice().sort((a, b) => String(b.ex_date || b.record_date).localeCompare(String(a.ex_date || a.record_date))), { cls: "compact" })) : null,
     next.label ? el("p", { class: "card-foot" }, sentence(`Следующая выплата — ${lowerFirst(next.label)}: по модели ${fmt.rub(next.dps_model)} на акцию`
-      + `${next.pay_period ? ` (выплата в ${periodName(next.pay_period)})` : ""}, ожидаемая отсечка — ${nextRecordText(next)}`
+      + (nextNotes.length ? ` (${nextNotes.join("; ")})` : "") + `, ожидаемая отсечка — ${nextRecordText(next)}`
       + (next.note ? `. ${upperFirst(ruText(next.note))}` : ""))) : null);
 }
 
@@ -2696,21 +2755,23 @@ function dividendHistoryCard(d) {
   const future = columnsChart(model.map((r) => ({ key: r.year, label: yearName(r.year, true), value: r.dps,
     tipTitle: partOf(r.year).length ? `Модель, выплаты: ${yearName(r.year, false)}` : `Модель, выплаты в ${r.year} г.` })),
     { height: 210, color: "var(--model)", valueName: "₽ на акцию", fmt: (v) => fmt.rub(v), short: (v) => fmt.num(v), label: "Дивиденды модели по году выплаты" });
+  const base = dpsBase(d);
   const both = el("div", { class: "split" },
     el("div", {}, el("span", { class: "tile-label" }, "X5: по отчётному периоду, ₽ на акцию"), past),
-    el("div", {}, el("span", { class: "tile-label" }, "Модель: по году выплаты, ₽ на акцию"), future));
+    el("div", {}, el("span", { class: "tile-label" }, "Модель: по году выплаты, ₽ на акцию"),
+      base ? el("span", { class: "tile-label", style: "display:block;font-weight:400" }, base) : null, future));
   const fig = withTable(both, () => el("div", { class: "split" },
     dataTable([
       { title: "Период", value: (r) => upperFirst(ruText(r.label || r.period)), cls: "name" },
       { title: "На акцию", num: true, value: (r) => fmt.rub(r.dps) },
       { title: "Всего", num: true, value: (r) => fmt.bn(r.amount, 1) },
       { title: "Отсечка", num: true, value: (r) => fmt.date(r.record_date) },
-    ], hist, { cls: "compact" }),
+    ], hist, { cls: "compact", caption: "X5: по отчётному периоду, ₽ на акцию" }),
     dataTable([
       { title: "Год выплаты", value: (r) => yearName(r.year, false), cls: "name" },
       { title: "На акцию", num: true, value: (r) => fmt.rub(r.dps) },
       { title: "Всего", num: true, value: (r) => fmt.bn(r.amount, 1) },
-    ], model, { cls: "compact" })));
+    ], model, { cls: "compact", caption: `Модель: по году выплаты, ₽ на акцию${base ? ` — ${base}` : ""}` })));
   // Подвал: как годы модели соотносятся с отчётными периодами X5 и что с годом якоря.
   const full = model.find((r) => !partOf(r.year).length && isNum(r.dps) && r.dps > 0);
   const part = model.find((r) => partOf(r.year).length);
@@ -3132,9 +3193,18 @@ const SCREENS = {
   book: screenBook,
 };
 
+// Экран по адресу. Битая %-последовательность (`#%E0%A4%A`, `#100%`) или
+// незнакомое имя — «Оценка», а не исключение: иначе старт застрял бы на
+// «Загружаем…», а смена адреса роняла бы обработчик.
 function screenFromHash() {
-  const name = decodeURIComponent(location.hash.replace(/^#/, ""));
+  let name = location.hash.replace(/^#/, "");
+  try { name = decodeURIComponent(name); } catch (error) { name = ""; }
   return Object.prototype.hasOwnProperty.call(SCREENS, name) ? name : "overview";
+}
+
+// Адрес — ровно `#<экран>`: битый или чужой хэш заменяется без новой записи истории.
+function syncHash(name) {
+  if (location.hash.replace(/^#/, "") !== name) history.replaceState(null, "", `#${name}`);
 }
 
 function render(name) {
@@ -3187,8 +3257,11 @@ function wireTabs() {
   }
   // Смена адреса (ссылки «Подробно», «назад» и «вперёд») — hashchange.
   window.addEventListener("hashchange", () => {
-    if (!DATA || screenFromHash() === CURRENT) return;
-    render(screenFromHash());
+    if (!DATA) return;
+    const name = screenFromHash();
+    syncHash(name);
+    if (name === CURRENT) return;
+    render(name);
     window.scrollTo({ top: 0 });
   });
   // «К содержанию» переводит фокус, а не адрес: иначе #app сбросил бы экран.
@@ -3286,7 +3359,7 @@ async function boot() {
   }
   try { releaseChip(DATA); colophon(DATA); } catch (error) { console.error(error); }
   const name = screenFromHash();
-  if (location.hash.replace(/^#/, "") !== name) history.replaceState(null, "", `#${name}`);
+  syncHash(name);
   render(name);
 }
 

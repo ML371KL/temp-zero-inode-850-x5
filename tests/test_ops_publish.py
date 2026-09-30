@@ -54,6 +54,7 @@ def release(tmp_path: Path, sha_char: str, entries: list[dict], name: str | None
                      "generated_at": "2026-09-28T16:55:00+00:00", "bytes": 1234},
             "market": {"price": 1802.5, "price_status": "live"},
             "headline": {"printed_central": 2150, "printed_band": [1700, 2600]},
+            "fair_value": {"central": 2200.0},
             "journal": {"entries": entries, "rule": "правило", "status": "копит"}}
     path = tmp_path / (name or f"release_{sha_char}.json")
     path.write_text(json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n",
@@ -138,6 +139,34 @@ def test_release_without_journal_is_refused(tmp_path, remote):
     path.write_text(json.dumps(body), encoding="utf-8")
     with pytest.raises(publish.PublishError, match="journal"):
         publish.publish(path, remote)
+
+
+@pytest.mark.parametrize("change,problem", [
+    (lambda b: b.update(meta={}), "нет meta.payload_sha256"),
+    (lambda b: b.update(meta=[]), "нет объекта meta"),
+    (lambda b: b.pop("fair_value"), "нет объекта fair_value"),
+    (lambda b: b.update(fair_value=[]), "нет объекта fair_value"),
+    (lambda b: b["meta"].update(payload_sha256="x"), "не 64 шестнадцатеричных"),
+    (lambda b: b["meta"].update(payload_sha256="a" * 63), "не 64 шестнадцатеричных"),
+    (lambda b: b["meta"].update(payload_sha256="a" * 63 + "\n"), "не 64 шестнадцатеричных"),
+    (lambda b: b["meta"].update(payload_sha256="а" * 64), "не 64 шестнадцатеричных"),  # кириллица
+    (lambda b: b["meta"].update(payload_sha256=123), "не 64 шестнадцатеричных"),
+])
+def test_stub_the_door_would_refuse_is_not_published(tmp_path, remote, change, problem):
+    """Лёгкие ворота двери (functions/api/model.js): файл без объектов meta и fair_value
+    или с хэшем не из 64 hex в ветку не попадает — иначе дверь отдала бы старую копию,
+    а сверка шла бы по хэшу обрубка."""
+    publish.publish(release(tmp_path, "a", [entry(1)]), remote)
+    before = head(remote)
+    path = release(tmp_path, "b", [entry(1)])
+    body = json.loads(path.read_text(encoding="utf-8"))
+    change(body)
+    path.write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(publish.PublishError) as caught:
+        publish.publish(path, remote)
+    assert caught.value.step == "чтение выпуска"
+    assert problem in caught.value.reason
+    assert head(remote) == before
 
 
 def test_rollback_puts_previous_back(tmp_path, remote):

@@ -31,6 +31,11 @@
 null, строка в history.json); следующий выпуск закроет её фактом из
 `data/facts/actuals.json`.
 
+В ветку попадает только то, что дверь `/api/model` сочтёт выпуском: объект с
+объектами `meta` и `fair_value` и `meta.payload_sha256` из 64 шестнадцатеричных
+символов (`release_problem` — те же ворота, что в `functions/api/model.js`);
+полный контракт проверяет сборка.
+
 Выпуск с тем же `payload_sha256`, что уже лежит в `latest.json`, не
 публикуется повторно: иначе `previous.json` затёрся бы копией текущего.
 
@@ -45,6 +50,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -75,6 +81,8 @@ PUBLIC_URL = "https://tzi-850-x5.pages.dev/api/model"
 VERIFY_ATTEMPTS = 20
 VERIFY_PAUSE = 30.0
 JOURNAL_MUTABLE = ("actual", "errors")
+# Хэш выпуска — 64 шестнадцатеричных символа (как ворота двери functions/api/model.js).
+SHA256_HEX = re.compile(r"[0-9a-fA-F]{64}")
 
 
 class PublishError(Exception):
@@ -257,6 +265,26 @@ def _sha(payload) -> str | None:
     return _get(payload, "meta", "payload_sha256") if isinstance(payload, dict) else None
 
 
+def release_problem(payload) -> str | None:
+    """Те же лёгкие ворота, что у двери данных (`functions/api/model.js`, releaseProblem):
+    выпуск — объект с объектами `meta` и `fair_value` и `meta.payload_sha256` из 64
+    шестнадцатеричных символов. Файл, который дверь выпуском не сочтёт, в ветку не
+    попадает. Полный контракт — дело сборки (`model.payload.validate`, шаг «Проверка
+    контракта»): publish от ядра не зависит. None — годен."""
+    if not isinstance(payload, dict):
+        return "не объект"
+    if not isinstance(payload.get("meta"), dict):
+        return "нет объекта meta"
+    if not isinstance(payload.get("fair_value"), dict):
+        return "нет объекта fair_value"
+    sha = payload["meta"].get("payload_sha256")
+    if not sha:
+        return "нет meta.payload_sha256"
+    if not isinstance(sha, str) or not SHA256_HEX.fullmatch(sha):
+        return "meta.payload_sha256 — не 64 шестнадцатеричных символа"
+    return None
+
+
 # ----------------------------------------------------------------- команды
 
 def publish(release: Path, remote: str, branch: str = BRANCH, *,
@@ -270,9 +298,10 @@ def publish(release: Path, remote: str, branch: str = BRANCH, *,
         payload = strict_json(body.decode("utf-8"))
     except (OSError, UnicodeDecodeError, ValueError) as exc:
         raise PublishError(step, f"{release}: {exc}") from exc
+    problem = release_problem(payload)
+    if problem:
+        raise PublishError(step, problem)
     sha = _sha(payload)
-    if not sha:
-        raise PublishError(step, "нет meta.payload_sha256")
 
     with tempfile.TemporaryDirectory(prefix="x5-data-", ignore_cleanup_errors=True) as tmp:
         git = Git(Path(tmp), remote)

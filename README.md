@@ -90,7 +90,7 @@
 
 | Путь | Что |
 |---|---|
-| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журналы версий — `V1.1-CHANGES.md` (1.1), `V1.1.1-CHANGES.md` (1.1.1, errata) и `V1.1.2-CHANGES.md` (1.1.2, errata); состав и порядок новой версии — `data/assumptions/README.md` |
+| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журналы версий — `V1.1-CHANGES.md` (1.1), `V1.1.1-CHANGES.md` (1.1.1, errata), `V1.1.2-CHANGES.md` (1.1.2, errata) и `V1.1.3-CHANGES.md` (1.1.3, правки по внешнему аудиту 30.09.2026); состав и порядок новой версии — `data/assumptions/README.md` |
 | `facts/` | отчётные факты на якорь книги, у каждого числа источник: `accounting`, `network`, `balance`, `bridge`, `shares`, `dividends`, `history` (читает ядро; из `history` — выручку и capex/выручку полугодий до якоря, `docs/MODEL.md` §4.5; `dividends` и `history` читает и выпуск), `debt_register`, `peers`, `brokers`, `guidance` (читает выпуск), `actuals` (факты журнала, ведёт человек); поля — `data/facts/SCHEMA.md`, первичка и сверка — `docs/FACTS.md`; собирает `ops/tools/build_facts.py` (кроме `actuals`: его шаблон — только если файла нет) |
 | `calendar.json` | события на 12 месяцев: отчёты X5, дивиденды, заседания ЦБ; `confirmed` и прецедент в `note` |
 
@@ -175,7 +175,7 @@ TAG=<метка> BASE_URL=http://127.0.0.1:8872 OUT_ROOT=../x5-850-handoff/shots
 
 - `docs/MANUAL.md` — справочник владельца: с него начинать.
 - `docs/MODEL.md` — методика; `docs/PAYLOAD.md` — контракт выпуска `x5-v1`; `model/README.md` — API ядра.
-- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md`, `V1.1.1-CHANGES.md` и `V1.1.2-CHANGES.md` — что изменилось в книгах 1.1, 1.1.1 и 1.1.2 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
+- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md`, `V1.1.1-CHANGES.md`, `V1.1.2-CHANGES.md` и `V1.1.3-CHANGES.md` — что изменилось в книгах 1.1, 1.1.1, 1.1.2 и 1.1.3 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
 - `docs/FACTS.md` — факты и первичка; `data/facts/SCHEMA.md` — поля фактов.
 - `docs/DASHBOARD.md` — витрина; `docs/INDICATORS.md` — ближайший отчёт и журнал прогнозов.
 - `docs/CONTROL-MODEL.md` — сверка контрольной модели с ядром (генерируется).

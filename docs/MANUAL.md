@@ -323,7 +323,7 @@ npx wrangler@4.135.0 pages deploy web --project-name tzi-850-x5 --branch main
 
 ## 14. Документы
 - **Этот справочник** — `docs/MANUAL.md`. Обзор и структура репозитория, команды запуска — `README.md`.
-- **Книга допущений** — `data/assumptions/`: канон — текст `ASSUMPTIONS-BOOK.md` вместе с машинным видом `assumptions.yaml`; журналы версий `V1.1-CHANGES.md`, `V1.1.1-CHANGES.md` и `V1.1.2-CHANGES.md`; таблицы `results.json` и `run_output.txt`, доказательные листы `evidence/`; состав и порядок новой версии — `data/assumptions/README.md`; версии — теги `book-<версия>`.
+- **Книга допущений** — `data/assumptions/`: канон — текст `ASSUMPTIONS-BOOK.md` вместе с машинным видом `assumptions.yaml`; журналы версий `V1.1-CHANGES.md`, `V1.1.1-CHANGES.md`, `V1.1.2-CHANGES.md` и `V1.1.3-CHANGES.md`; таблицы `results.json` и `run_output.txt`, доказательные листы `evidence/`; состав и порядок новой версии — `data/assumptions/README.md`; версии — теги `book-<версия>`.
 - **Методика** — `docs/MODEL.md`; **контракт выпуска** — `docs/PAYLOAD.md`; **API ядра** — `model/README.md`.
 - **Факты** — `docs/FACTS.md` (первичка и сверка), `data/facts/SCHEMA.md` (поля).
 - **Витрина** — `docs/DASHBOARD.md`; **ближайший отчёт и журнал** — `docs/INDICATORS.md`.

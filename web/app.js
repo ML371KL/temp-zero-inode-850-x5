@@ -1584,7 +1584,10 @@ function reportEvents(d) {
   const closing = given
     ? (known ? events.find((e) => e.kind === "ifrs" && e.date === known.date) || known : null)
     : (end ? events.find((e) => e.kind === "ifrs" && (daysBetween(end, e.date) ?? 0) > 0) || null : null);
-  const before = closing ? events.filter((e) => (daysBetween(e.date, closing.date) ?? 0) > 0) : events;
+  // Полугодие уже кончилось, а закрывающего МСФО в выпуске нет: отчёты следующего
+  // полугодия «внутри» этого не лежат — строки «Раньше» нет.
+  const pastEnd = given && !known && end && (daysBetween(end, from) ?? -1) > 0;
+  const before = closing ? events.filter((e) => (daysBetween(e.date, closing.date) ?? 0) > 0) : pastEnd ? [] : events;
   const earlier = before.find((e) => e.kind === "ifrs") || before.find((e) => e.kind === "trading_update") || null;
   return { closing, earlier, published: null };
 }

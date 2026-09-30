@@ -10,9 +10,14 @@ const model = await load("functions/api/model.js");
 const middleware = await load("functions/_middleware.js");
 
 const SOURCE = "https://raw.githubusercontent.com/ML371KL/temp-zero-inode-850-x5/data/latest.json";
-const release = { schema: "x5-v1", meta: { generated_at: "2026-09-28T17:05:00Z", payload_sha256: "abc123" } };
+// Выпуск для двери — объект с объектами meta и fair_value и хэшем из 64 hex-символов.
+const SHA = "51f1e0e0be1c410dbb5ebe6c54dd163f40680c38f6ec40c6a456bb272662fa7d";
+const OLD_SHA = "3935d1c2c5668b71522ef131631cfa82097f31c846550cf39c5c2fb6a4a3b641";
+const release = { schema: "x5-v1", meta: { generated_at: "2026-09-28T17:05:00Z", payload_sha256: SHA }, fair_value: {} };
 const body = JSON.stringify(release);
-const older = JSON.stringify({ schema: "x5-v1", meta: { generated_at: "2026-09-20T17:05:00Z", payload_sha256: "old999" } });
+const older = JSON.stringify({ schema: "x5-v1", meta: { generated_at: "2026-09-20T17:05:00Z", payload_sha256: OLD_SHA }, fair_value: {} });
+const FALLBACK_KEY = "https://tzi-850-x5.internal/fallback/latest.json";
+const LF = String.fromCharCode(10);
 
 let store = new Map();
 globalThis.caches = {
@@ -22,10 +27,12 @@ globalThis.caches = {
   },
 };
 const calls = [];
-function upstream(kind) {
+// kind — вид ответа источника; "text" — 200 с телом `text` (неполный или чужой файл).
+function upstream(kind, text) {
   globalThis.fetch = async (url, init) => {
     calls.push({ url: String(url), init });
     if (kind === "ok") return new Response(body, { status: 200 });
+    if (kind === "text") return new Response(text, { status: 200 });
     if (kind === "404") return new Response("404: Not Found", { status: 404 });
     if (kind === "500") return new Response("oops", { status: 500 });
     if (kind === "html") return new Response("<html>not json</html>", { status: 200 });
@@ -64,23 +71,23 @@ let text = await res.text();
 check("GET 200", res.status === 200, res.status);
 check("тело — как у источника", text === body, text.slice(0, 80));
 check("x-data-source github", res.headers.get("x-data-source") === "github", res.headers.get("x-data-source"));
-check("ETag = payload_sha256", res.headers.get("etag") === '"abc123"', res.headers.get("etag"));
+check("ETag = payload_sha256", res.headers.get("etag") === `"${SHA}"`, res.headers.get("etag"));
 check("Last-Modified из generated_at", res.headers.get("last-modified") === "Mon, 28 Sep 2026 17:05:00 GMT", res.headers.get("last-modified"));
 check("кэш клиенту 60 с", res.headers.get("cache-control") === "public, max-age=60", res.headers.get("cache-control"));
 check("content-type JSON", /application\/json/.test(res.headers.get("content-type")), res.headers.get("content-type"));
 check("источник — ветка data публичного репозитория", calls[0] && calls[0].url === SOURCE, calls[0] && calls[0].url);
 check("край кэширует источник ~60 с", calls[0] && calls[0].init.cf && calls[0].init.cf.cacheTtl === 60, calls[0] && calls[0].init.cf);
 await Promise.all(waits); waits = [];
-const saved = store.get("https://tzi-850-x5.internal/fallback/latest.json");
+const saved = store.get(FALLBACK_KEY);
 check("запасная копия положена фоном", saved && saved.text === body, saved);
 check("у запасной копии долгий max-age", saved && /max-age=(\d+)/.test(saved.cc) && +saved.cc.match(/max-age=(\d+)/)[1] >= 86400, saved && saved.cc);
 
 // 2. HEAD, 304, чужой ETag, 405
 res = await call("HEAD");
 check("HEAD 200 без тела", res.status === 200 && (await res.text()) === "", res.status);
-res = await call("GET", { "if-none-match": 'W/"abc123"' });
+res = await call("GET", { "if-none-match": `W/"${SHA}"` });
 check("304 по слабому ETag", res.status === 304, res.status);
-res = await call("GET", { "if-none-match": '"zzz", "abc123"' });
+res = await call("GET", { "if-none-match": `"zzz", "${SHA}"` });
 check("304 по списку меток", res.status === 304, res.status);
 res = await call("GET", { "if-none-match": '"other"' });
 check("чужой ETag — 200", res.status === 200, res.status);
@@ -135,6 +142,72 @@ upstream("html");
 res = await call("GET");
 out = await json(res);
 check("не-JSON от источника — не выпуск", res.status === 503 && out && out.error === "upstream unavailable", [res.status, out]);
+
+// 4а. неполный ответ источника — сбой источника: запасная копия не затирается и отдаётся
+const safe = async (promise) => { try { return await promise; } catch (error) { return { error: String(error) }; } };
+const without = (key) => { const r = JSON.parse(body); delete r[key]; return JSON.stringify(r); };
+const withSha = (sha) => JSON.stringify({ ...release, meta: { ...release.meta, payload_sha256: sha } });
+const partial = [
+  ["{\"meta\":{}}", '{"meta":{}}'],
+  ["{\"meta\":[]}", '{"meta":[]}'],
+  ["без fair_value", without("fair_value")],
+  ["fair_value — массив", JSON.stringify({ ...release, fair_value: [] })],
+  ["meta — массив при fair_value", JSON.stringify({ ...release, meta: [] })],
+  ["без payload_sha256", JSON.stringify({ ...release, meta: { generated_at: release.meta.generated_at } })],
+  ["короткий хэш", withSha("abc123")],
+  ["хэш с кириллицей", withSha("аб" + SHA.slice(2))],
+  ["хэш с переводом строки", withSha(SHA.slice(0, 32) + LF + SHA.slice(33))],
+  ["хэш-число", JSON.stringify({ ...release, meta: { ...release.meta, payload_sha256: 12345 } })],
+];
+store = new Map();
+upstream("ok");
+await call("GET");
+await Promise.all(waits); waits = [];
+for (const [name, text] of partial) {
+  upstream("text", text);
+  for (const attempt of [1, 2]) {
+    res = await safe(call("GET"));
+    const got = res.error ? null : await res.text();
+    check(`неполный ответ (${name}), запрос ${attempt}: отдана прежняя копия`, !res.error && res.status === 200
+      && res.headers.get("x-data-source") === "cache-fallback" && got === body && res.headers.get("etag") === `"${SHA}"`,
+    res.error || [res.status, res.headers.get("x-data-source"), got && got.slice(0, 60)]);
+    await Promise.all(waits); waits = [];
+    check(`неполный ответ (${name}), запрос ${attempt}: копия не затёрта`, store.get(FALLBACK_KEY) && store.get(FALLBACK_KEY).text === body,
+      store.get(FALLBACK_KEY) && store.get(FALLBACK_KEY).text.slice(0, 60));
+  }
+}
+upstream("ok");
+res = await call("GET");
+check("после неполного ответа исправный снова идёт от источника", res.status === 200 && res.headers.get("x-data-source") === "github", res.status);
+await Promise.all(waits); waits = [];
+
+// Копий нет — 503 с причиной; негодная копия (в кэше или в деплое) не отдаётся.
+store = new Map();
+upstream("text", '{"meta":{}}');
+res = await call("GET");
+out = await json(res);
+check("неполный ответ без копий — 503 upstream unavailable с причиной", res.status === 503 && out && out.error === "upstream unavailable"
+  && /не выпуск: нет объекта fair_value/.test(out.detail || ""), [res.status, out]);
+check("неполный ответ без копий — копия не положена", !store.has(FALLBACK_KEY), store.get(FALLBACK_KEY));
+upstream("text", withSha("аб" + SHA.slice(2)));
+res = await safe(call("GET"));
+out = res.error ? null : await json(res);
+check("хэш с кириллицей без копий — 503, а не исключение", !res.error && res.status === 503 && out
+  && /payload_sha256/.test(out.detail || ""), res.error || [res.status, out]);
+upstream("down");
+store.set(FALLBACK_KEY, { text: '{"meta":{}}', cc: "public, max-age=2592000" });
+res = await call("GET");
+out = await json(res);
+check("негодная копия в кэше не отдаётся — 503", res.status === 503 && out && out.error === "upstream unavailable", [res.status, out]);
+res = await call("GET", {}, { ASSETS: assets(older) });
+check("негодная копия в кэше — дальше статическая копия деплоя", res.status === 200 && res.headers.get("x-data-source") === "bundled"
+  && res.headers.get("etag") === `"${OLD_SHA}"`, [res.status, res.headers.get("x-data-source")]);
+store.set(FALLBACK_KEY, { text: withSha("ab" + LF + "cd"), cc: "public, max-age=2592000" });
+res = await safe(call("GET", {}, { ASSETS: assets(JSON.stringify({ meta: [] })) }));
+out = res.error ? null : await json(res);
+check("негодные копии в кэше и деплое — 503, а не исключение", !res.error && res.status === 503 && out && out.error === "upstream unavailable",
+  res.error || [res.status, out]);
+store = new Map();
 
 // 5. граница /api/ и заголовки безопасности
 const mw = async (path) => {

@@ -251,19 +251,32 @@ def homogeneity(A: dict, world: str, demand: str, year: int | None) -> float:
     return (1.0 - k) * gap * weight
 
 
-def annuity_ratio(x: float, life: float) -> float:
-    """ratio(x, L) = (1 − (1 + x)^(−L)) / (L·x); при x = 0 — 1 (§6)."""
+def annuity_ratio(x: float, life: float, n: float | None = None) -> float:
+    """S_x(n)/L, S_x(n) = Σ_{k=1..n} (1 + x)^(−k) = (1 − (1 + x)^(−n))/x (§6); при x = 0 —
+    n/L. Без `n` (n = L) — ratio(x, L) = (1 − (1 + x)^(−L)) / (L·x), при x = 0 — 1."""
+    if n is None:
+        n = life
     if x == 0:
-        return 1.0
-    return -math.expm1(-life * math.log1p(x)) / (life * x)
+        return n / life
+    return -math.expm1(-n * math.log1p(x)) / (life * x)
 
 
 def steady_da(c1: float, c2: float, x: float, life: float) -> tuple[float, float]:
     """Установившаяся D&A первого и второго полугодия года (§6) при capex полугодий c1, c2,
     растущем с темпом x в год, и списании каждой когорты по 1/(2L) в 2L следующих
-    полугодиях: T1 — (c1 + c2)·ratio/2, T2 — (c1·(1 + x) + c2)·ratio/2."""
-    ratio = annuity_ratio(x, life)
-    return (c1 + c2) * ratio / 2.0, (c1 * (1.0 + x) + c2) * ratio / 2.0
+    полугодиях — точная сумма 2L когорт окна полугодия. В окне по a = ⌊L⌋ когорт первых и
+    вторых полугодий и при нечётном 2L (e = 1) ещё одна, самая старая: у T1 — второго
+    полугодия года −(a + 1), у T2 — первого полугодия года −a:
+    T1 = [(c1 + c2)·S(a) + e·c2·(1 + x)^(−(a+1))] / (2L),
+    T2 = [(c1·(1 + x) + c2)·S(a) + e·c1·(1 + x)^(−a)] / (2L).
+    При целом L — (c1 + c2)·ratio/2 и (c1·(1 + x) + c2)·ratio/2, ratio = ratio(x, L)."""
+    a, e = divmod(int(round(2 * life)), 2)
+    ratio = annuity_ratio(x, life, a)           # S(a)/L; при целом L (a = L) — ratio(x, L)
+    t1, t2 = (c1 + c2) * ratio, (c1 * (1.0 + x) + c2) * ratio
+    if e:
+        t1 += c2 * math.exp(-(a + 1) * math.log1p(x)) / life
+        t2 += c1 * math.exp(-a * math.log1p(x)) / life
+    return t1 / 2.0, t2 / 2.0
 
 
 def observations(A: dict) -> list[tuple[str, float, float]]:

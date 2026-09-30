@@ -88,10 +88,11 @@ net_debt, ebitda_rep_ltm, leverage, fraction, t, df.
 
 Прочее: `make_cell(A, w, r, c)`, `grid_position(P, day)`, `ruler(first, day)`,
 `make_timing(P, v, curve_as_of)`, `homogeneity(A, w, demand, year|None)`,
-`season_of(A, p)`, `annuity_ratio(x, L)`, `steady_da(c1, c2, x, L)` (установившаяся
-D&A T1, T2), `forward_rate(curve, start, tenor)`, `price_of_equity(equity, g_gov, N,
-n=0, T=0)`, `v0_from_price(price, d, g_gov, N, n=0, T=0)`, `rub_per_1pct_ev(v0, g_gov,
-N, n=0)` (n = 0 — формула без казначейского пакета).
+`season_of(A, p)`, `annuity_ratio(x, L, n=L)` (S_x(n)/L, §6), `steady_da(c1, c2, x, L)`
+(установившаяся D&A T1, T2 — точная сумма 2L когорт и при полуцелом L),
+`forward_rate(curve, start, tenor)`, `price_of_equity(equity, g_gov, N, n=0, T=0)`,
+`v0_from_price(price, d, g_gov, N, n=0, T=0)`, `rub_per_1pct_ev(v0, g_gov, N, n=0)`
+(n = 0 — формула без казначейского пакета).
 
 ### Сетка, слои, точка — `model/grid.py`
 

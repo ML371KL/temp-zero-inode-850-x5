@@ -213,9 +213,12 @@ def test_network_consistency():
 def test_bridge_lines_and_signs():
     lines = {line["key"]: v(line["amount"]) for line in load("bridge")["lines"]}
     assert set(lines) == {"accrued_interest", "nci_put", "lti_liability", "tax_provisions_net",
-                          "income_tax_net", "st_investments", "associates"}
+                          "income_tax_net", "deferred_consideration", "st_investments", "associates"}
     assert lines["st_investments"] <= 0 and lines["associates"] <= 0
-    assert all(lines[k] >= 0 for k in ("accrued_interest", "nci_put", "lti_liability", "tax_provisions_net"))
+    assert all(lines[k] >= 0 for k in ("accrued_interest", "nci_put", "lti_liability", "tax_provisions_net",
+                                       "deferred_consideration"))
+    # отложенное возмещение по сделкам — строка моста, а не «нераскрытое» вне моста
+    assert "deferred_consideration" not in load("bridge")["outside_bridge"]
     # налог на прибыль к уплате − к возмещению: к уплате — та же ячейка, что в балансе
     payable = v(load("balance")["nwc_components"]["income_tax_payable"])
     assert close(payable - lines["income_tax_net"], 5.298, 1e-9)

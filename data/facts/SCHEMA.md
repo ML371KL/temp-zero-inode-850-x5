@@ -85,6 +85,7 @@
   {"key": "lti_liability", "label": "Обязательство LTI", "amount": {...}},
   {"key": "tax_provisions_net", "label": "Резервы по налоговым позициям (нетто)", "amount": {...}},
   {"key": "income_tax_net", "label": "Налог на прибыль к уплате − к возмещению (нетто)", "amount": {...}},  // знак любой
+  {"key": "deferred_consideration", "label": "Отложенное возмещение по приобретениям бизнесов", "amount": {...}},
   {"key": "st_investments", "label": "Краткосрочные финансовые вложения", "amount": {...}},   // отрицательная
   {"key": "associates", "label": "Инвестиции в ассоциированные и СП", "amount": {...}}         // отрицательная
 ]}

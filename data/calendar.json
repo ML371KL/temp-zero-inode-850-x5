@@ -22,6 +22,7 @@
    "date": "2026-10-29",
    "title": "Финансовые результаты X5 за 3 кв. 2026 г. (МСФО)",
    "kind": "ifrs",
+   "covers": null,
    "confirmed": true,
    "note": "",
    "src": "closed-periods-calendar-2026_rus.pdf, с. 3"
@@ -86,6 +87,7 @@
    "date": "2027-03-19",
    "title": "Финансовые результаты X5 за 2026 г. (МСФО) и ориентиры на 2027 г.",
    "kind": "ifrs",
+   "covers": "2026H2",
    "confirmed": false,
    "note": "оценка по прецеденту: пятница около 20 марта — 22.03.2024, 21.03.2025, 20.03.2026 (≈ 19.03.2027)",
    "src": "research/indicators/x5_calendar.json"
@@ -110,6 +112,7 @@
    "date": "2027-04-29",
    "title": "Финансовые результаты X5 за 1 кв. 2027 г. (МСФО)",
    "kind": "ifrs",
+   "covers": null,
    "confirmed": false,
    "note": "оценка по прецеденту: 22.04.2024, 05.05.2025, 29.04.2026",
    "src": "research/indicators/x5_calendar.json"
@@ -166,6 +169,7 @@
    "date": "2027-08-13",
    "title": "Финансовые результаты X5 за 2 кв. и 1П 2027 г. (МСФО)",
    "kind": "ifrs",
+   "covers": "2027H1",
    "confirmed": false,
    "note": "оценка по прецеденту: 15.08.2024, 13.08.2025, 13.08.2026",
    "src": "research/indicators/x5_calendar.json"

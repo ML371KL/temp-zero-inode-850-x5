@@ -9,11 +9,12 @@ from __future__ import annotations
 import datetime as dt
 import importlib.util
 import json
+import re
 from pathlib import Path
 
 import pytest
 
-from model.book import load_book, period_index
+from model.book import load_book, open_period, period_end, period_index
 from model.facts import core_facts, load_facts
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,6 +31,9 @@ DATE_KEYS = {"as_of", "date", "decided_on", "record_date", "ex_date", "last_cum_
              "pay_until_nominee", "reported_on", "published", "collected_on", "put_date", "maturity",
              "repayment_date_for_model"}
 EVENT_KINDS = {"trading_update", "ifrs", "dividend", "cbr"}
+# МСФО, закрывающее полугодие, выходит через 44–46 дней (1П) или ≈80 дней (год) после его
+# конца (docs/INDICATORS.md, «Календарь X5»); дальше 100 дней — ошибка в `covers`.
+CLOSING_LAG_DAYS = 100
 
 
 def load(name: str):
@@ -136,25 +140,54 @@ def test_anchor_dates():
         assert load(name)["as_of"] == ANCHOR_DATE, name
 
 
-def test_calendar_events():
+def test_calendar_events(book):
+    """Формат календаря (справочник, 5.3). У МСФО — `covers`: полугодие, которое отчёт
+    закрывает (годовое — H2, за 2 кв. и 1П — H1; дата — в пределах CLOSING_LAG_DAYS после
+    конца полугодия, заголовок называет полугодие), или null — МСФО за 1/3 кв. внутри
+    полугодия; у остальных событий поля нет. МСФО, закрывающее открытое полугодие книги,
+    в календаре есть — по нему выпуск ведёт отсчёт и видит, что отчёт вышел, а книга его не
+    закрыла (`next_report.closing`, флаг `report_fact`); это единственное событие, которое
+    может остаться в календаре после своей даты — раньше `as_of`."""
     cal = json.loads(CALENDAR.read_text(encoding="utf-8"))
     start = dt.date.fromisoformat(cal["as_of"])
     events = cal["events"]
+    period = open_period(book)
     assert events
     days = []
     for e in events:
         assert set(e) >= {"date", "title", "kind", "confirmed", "note", "src"}, e
         day = dt.date.fromisoformat(e["date"])
-        assert start <= day <= start + dt.timedelta(days=366), e
+        assert day <= start + dt.timedelta(days=366), e
+        assert start <= day or (e["kind"] == "ifrs" and e.get("covers") == period), \
+            f"событие раньше as_of — допустимо только МСФО, закрывающее открытое полугодие книги {period}: {e}"
         assert e["kind"] in EVENT_KINDS, e
         assert isinstance(e["confirmed"], bool) and e["title"] and e["src"], e
         if not e["confirmed"]:
             assert e["note"], f"оценочная дата без пояснения: {e}"
         assert day.weekday() < 5, f"событие на выходной: {e}"
+        if e["kind"] == "ifrs":
+            assert "covers" in e, f"у МСФО нет covers: {e}"
+            covers = e["covers"]
+            if covers is None:
+                assert re.search(r"за [13] кв\.", e["title"]), f"covers: null — только у МСФО за 1/3 кв.: {e}"
+            else:
+                assert re.fullmatch(r"\d{4}H[12]", covers), e
+                end = period_end(covers)
+                assert end < day <= end + dt.timedelta(days=CLOSING_LAG_DAYS), \
+                    f"МСФО за {covers} вне {CLOSING_LAG_DAYS} дней после конца полугодия: {e}"
+                name = f"1П {covers[:4]}" if covers.endswith("H1") else f"за {covers[:4]} г."
+                assert name in e["title"], f"заголовок МСФО не называет полугодие {covers}: {e}"
+        else:
+            assert "covers" not in e, f"covers — только у МСФО: {e}"
         days.append(day)
     assert days == sorted(days)
     kinds = {e["kind"] for e in events}
     assert kinds == EVENT_KINDS
+    covered = [e["covers"] for e in events if e.get("covers")]
+    assert len(covered) == len(set(covered)), f"два МСФО закрывают одно полугодие: {covered}"
+    assert period is None or period in covered, (
+        f"в календаре нет МСФО, закрывающего открытое полугодие книги {period}: его не удалять, "
+        "пока новая версия книги не закроет полугодие (справочник, 5.3)")
 
 
 # --------------------------------------------------------------- тождества

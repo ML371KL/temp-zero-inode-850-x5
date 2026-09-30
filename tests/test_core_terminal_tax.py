@@ -68,6 +68,24 @@ def test_tail_is_continuous_when_the_sign_change_crosses_a_whole_year(x, y):
     assert positive_part_pv(a_star, b, x, y, r, 0) == pytest.approx(lo, abs=1e-8)
 
 
+@pytest.mark.parametrize("x, y", [(0.1199, 0.04), (0.04, 0.1199)])
+def test_tail_at_the_growth_guard(x, y):
+    """Защита §6: g, π ≤ r − 0,0001 — q = (1 + x)/(1 + r) < 1, хвост конечен. База
+    положительна всегда (a > b > 0, x > y) — ровно два Гордона; при x < y — отрезок до n_c."""
+    r = 0.12
+    a, b = 90.0, 60.0
+    q = [(1 + z) / (1 + r) for z in (x, y)]
+    got = positive_part_pv(a, b, x, y, r, 2)
+    if x > y:
+        assert got == pytest.approx(a * q[0] ** 2 / (1 - q[0]) - b * q[1] ** 2 / (1 - q[1]),
+                                    rel=1e-12)
+    else:
+        n_c = math.log(b / a) / math.log((1 + x) / (1 + y))          # ≈ 5,5 года
+        want = math.fsum(a * q[0] ** n - b * q[1] ** n for n in range(2, math.ceil(n_c)))
+        assert got == pytest.approx(want, rel=1e-11)
+    assert math.isfinite(got) and got > 0.0
+
+
 def test_tail_close_growth_rates_are_continuous():
     """g → π: хвост непрерывно переходит к случаю g = π (знак a − b), n_c уходит в
     бесконечность; разница — не больше наклона по g (≈ 1,4·10⁴ на единицу g) × |g − π|."""

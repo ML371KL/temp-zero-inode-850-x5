@@ -78,7 +78,7 @@ def _cell(ctx, c) -> dict:
                 p_market_implied=c.p["market_implied"], p_neutral=c.p["macro_neutral"],
                 ev=r.ev, pv_fcff=r.pv_fcff, pv_shield=r.pv_shield, pv_terminal=r.pv_terminal,
                 pv_issuance=r.pv_issuance, pv_excess_spread=r.pv_excess_spread,
-                pv_buffer_carry=r.pv_buffer_carry, tv_da_transition=r.terminal.tv_da_transition,
+                pv_buffer_carry=r.pv_buffer_carry, tv_tax=r.terminal.tv_tax,
                 terminal_debt_rate=r.terminal.debt_rate,
                 terminal_share=r.terminal_share, d=r.claims.total, equity=r.equity,
                 price=r.price, ebitda_ntm=r.ebitda_ntm, ev_ebitda_fwd=r.ev_ebitda_fwd,

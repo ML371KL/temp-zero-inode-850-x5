@@ -68,7 +68,8 @@ RevenuePaths` (выручка, чек, трафик, ticket_lt, traffic_lt), `ra
 `key` = "W|режим|capex"), `rows` (кортеж `HalfRow` по полугодиям; поля — ниже),
 `terminal` (`Terminal`: growth g, rate r, pi, debt_rate r_T, halves — два
 `TerminalHalf` (с da и da_pi по полугодию, buffer, gross_debt_start, interest,
-shield, issuance_cost, excess_spread, buffer_carry), tv_da_transition, tv_flow,
+shield, issuance_cost, excess_spread, buffer_carry; f_pi = −capex_π), tv_tax (PV налога
+без рычага по всем полугодиям терминала), tv_flow,
 tv_shield, tv_issuance, tv_excess_spread, tv_buffer_carry, tv_financing,
 ebitda_rep_annual; TV — на конец явного участка), `ev`, `pv_fcff`, `pv_shield`
 (явный участок), `pv_terminal` ((TV + TV_S)·df_end), `pv_issuance`,
@@ -90,6 +91,8 @@ net_debt, ebitda_rep_ltm, leverage, fraction, t, df.
 `make_timing(P, v, curve_as_of)`, `homogeneity(A, w, demand, year|None)`,
 `season_of(A, p)`, `annuity_ratio(x, L, n=L)` (S_x(n)/L, §6), `steady_da(c1, c2, x, L)`
 (установившаяся D&A T1, T2 — точная сумма 2L когорт и при полуцелом L),
+`positive_part_pv(a, b, x, y, r, n0)` (хвост налога терминала §6: Σ_{n≥n0} max(0,
+a·(1+x)^n − b·(1+y)^n)·(1+r)^(−n) двумя геометрическими рядами),
 `forward_rate(curve, start, tenor)`, `price_of_equity(equity, g_gov, N, n=0, T=0)`,
 `v0_from_price(price, d, g_gov, N, n=0, T=0)`, `rub_per_1pct_ev(v0, g_gov, N, n=0)`
 (n = 0 — формула без казначейского пакета).

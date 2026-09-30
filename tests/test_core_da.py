@@ -5,7 +5,8 @@
   на чисто геометрическом пути capex она равна сумме 2L когорт — и при целом L, и при
   полуцелом (6,5; 7,5 …: в окне T1 на одну когорту второго полугодия больше, у T2 — первого);
 * правило когорт, продолженное capex терминала, совпадает с установившейся D&A, как
-  только все живые когорты терминальные, — переходный член конечен (2L полугодий).
+  только все живые когорты терминальные, — явная часть налога терминала TV_tax конечна
+  (2L полугодий), дальше — хвост с установившейся D&A.
 """
 
 from __future__ import annotations
@@ -90,7 +91,7 @@ def test_steady_da_at_whole_life_is_the_ratio_formula_bit_for_bit():
 @pytest.mark.parametrize("key", ["H|floor|base", "M|stress|high", "N|full|low"])
 def test_cohort_rule_meets_steady_da_after_2l_terminal_halves(book, facts, key, life):
     """D&A по правилу §4.5 (capex явного участка, дальше — терминала) = установившейся
-    D&A терминала с полугодия 2L + 1; до того разница — переходный член. Срок службы — и
+    D&A терминала с полугодия 2L + 1; до того — явная часть TV_tax (§6). Срок службы — и
     книжный (7 лет), и полуцелый: нечётное 2L (6,5; 7,5) книга допускает (A-K6)."""
     ctx = Context(override(book, ["capex.asset_life_years"], "value", life), facts)
     assert ctx.half_life == round(2 * life)

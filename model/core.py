@@ -279,6 +279,46 @@ def steady_da(c1: float, c2: float, x: float, life: float) -> tuple[float, float
     return t1 / 2.0, t2 / 2.0
 
 
+def _geometric(q: float, n1: int, n2: float) -> float:
+    """Σ_{n=n1..n2} q^n, 0 < q < 1; n2 = inf — бесконечный хвост (§6)."""
+    if n2 < n1:
+        return 0.0
+    head = q ** n1
+    if n2 == math.inf:
+        return head / (1.0 - q)
+    return (head - q ** (n2 + 1)) / (1.0 - q)
+
+
+def positive_part_pv(a: float, b: float, x: float, y: float, r: float, n0: int) -> float:
+    """Σ_{n ≥ n0} max(0, a·(1 + x)^n − b·(1 + y)^n)·(1 + r)^(−n) при x, y < r (§6, хвост
+    налога терминала). a·(1 + x)^n − b·(1 + y)^n = (1 + y)^n·(a·ρ^n − b), ρ = (1 + x)/(1 + y):
+    ρ^n монотонна, знак меняется не больше одного раза — в n_c = ln(b/a)/ln ρ, если a и b
+    одного знака и x ≠ y; иначе знак постоянен (знак a − b). Сумма — два геометрических ряда
+    по промежутку n ≥ n0, где разность положительна."""
+    log_rho = math.log1p(x) - math.log1p(y)
+    n1, n2 = n0, math.inf
+    if (a > 0.0 and b > 0.0) or (a < 0.0 and b < 0.0):
+        if log_rho == 0.0:
+            if a <= b:
+                return 0.0
+        else:
+            nc = math.log(b / a) / log_rho          # a·ρ^n = b
+            if (a > 0.0) == (log_rho > 0.0):        # положительна после n_c
+                if nc == math.inf:
+                    return 0.0
+                if nc > -math.inf:
+                    n1 = max(n0, math.floor(nc) + 1)
+            else:                                   # положительна до n_c
+                if nc == -math.inf:
+                    return 0.0
+                if nc < math.inf:
+                    n2 = math.ceil(nc) - 1
+    elif a <= b:
+        return 0.0
+    qa, qb = (1.0 + x) / (1.0 + r), (1.0 + y) / (1.0 + r)
+    return a * _geometric(qa, n1, n2) - b * _geometric(qb, n1, n2)
+
+
 def observations(A: dict) -> list[tuple[str, float, float]]:
     """Наблюдения маржи A-P2u по порядку полугодий: (период, значение, se)."""
     raw = A["joint"]["regime_update"]["observations"]
@@ -673,7 +713,7 @@ class TerminalHalf:
     lease: float
     proceeds: float
     fcff: float
-    f_pi: float
+    f_pi: float                 # часть π доналогового потока: −capex_π (Gordon_π)
     gross_debt_start: float     # Lt·EBITDA_rep_LTM + OpCash + Buf на начало полугодия
     interest: float
     shield: float
@@ -691,8 +731,8 @@ class Terminal:
     pi: float
     debt_rate: float            # r_T — ставка долга терминала
     halves: tuple
-    tv_da_transition: float     # PV τ·(D&A по когортам − установившаяся), 2L полугодий
-    tv_flow: float              # Gordon_g + Gordon_π + переходный член D&A
+    tv_tax: float               # TV_tax: PV Σ τ·max(0, base) по всем полугодиям терминала
+    tv_flow: float              # Gordon_g + Gordon_π доналогового потока − TV_tax
     tv_shield: float
     tv_issuance: float
     tv_excess_spread: float
@@ -944,8 +984,9 @@ def _capex_by_year(cf: CoreFacts, P: list[str], data: list) -> tuple:
 def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: NetworkPaths,
               RV: RevenuePaths, rp: RatePaths, phys_unit: float, data: list,
               capex_hist: list) -> Terminal:
-    """Терминал (§6): два полугодия года после last_period, разделение Гордона, щит и
-    вычеты финансирования оператором явного участка, переходный член D&A."""
+    """Терминал (§6): два полугодия года после last_period, разделение Гордона доналогового
+    потока, налог TV_tax и щит — точной суммой по всем полугодиям терминала, вычеты
+    финансирования оператором явного участка."""
     A, cf = ctx.A, ctx.facts
     NW, C, WC, TX, FN = A["network"], A["capex"], A["working_capital"], A["tax"], A["financing"]
     tau, padd = float(TX["rate"]), float(TX["permanent_add_pct"])
@@ -1013,7 +1054,6 @@ def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: Netwo
         tax = tau * max(0.0, base)
         fcff = (q["ebitda"] - q["lti"] - tax - q["capex"] - q["d_nwc"] - q["d_opc"]
                 + q["lease"] + q["proceeds"])
-        f_pi = (tau * da_pi[h] if base > 0 else 0.0) - q["capex_pi"]
         ltm, opc0, buf0 = starts[h]
         gross = lt * ltm + opc0 + buf0
         interest = gross * rp.half_debt[N] - buf0 * rp.half_yield[N]
@@ -1026,43 +1066,54 @@ def _terminal(ctx: Context, cell: Cell, W: WorldPaths, RG: RegimePaths, G: Netwo
             capex_pi=q["capex_pi"], price_index=q["idx"], da=da, da_pi=da_pi[h],
             tax_base=base, tax=tax, nwc=q["nwc"], nwc_change=q["d_nwc"], opcash=q["opc"],
             opcash_change=q["d_opc"], buffer=q["buf"], lease=q["lease"],
-            proceeds=q["proceeds"], fcff=fcff, f_pi=f_pi, gross_debt_start=gross,
+            proceeds=q["proceeds"], fcff=fcff, f_pi=-q["capex_pi"], gross_debt_start=gross,
             interest=interest, shield=shield,
             issuance_cost=debt * (rp.half_debt[N] - rp.half_clean[N]),
             excess_spread=debt * max(0.0, rp.half_debt[N] - rp.half_fair[N]),
             buffer_carry=buf0 * (rp.half_key[N] - rp.half_yield[N])))
 
-    # Переходный член (§6): в первых 2L полугодиях терминала D&A по правилу когорт §4.5
-    # (база якоря, capex явного участка и терминала) отличается от установившейся;
-    # щит разницы — конечной суммой на конец явного участка.
+    # Налог терминала TV_tax (§6): Σ τ·max(0, base(j)) по всем полугодиям, без переноса
+    # убытков. Первые 2L полугодий — явно: D&A по правилу когорт §4.5 (база якоря, capex
+    # явного участка и терминала) ещё не установилась. Дальше база — a·(1 + g)^n − b·(1 + π)^n
+    # (a = база до D&A − DA_g, b = DA_π), хвост — геометрические ряды по области base > 0.
     H = ctx.half_life
     seq = list(capex_hist)              # capex якоря, явного участка, дальше — терминала
     window = fsum(seq[max(0, N + 1 - H):N + 1])     # живые когорты первого полугодия терминала
     grow_g = grow_pi = 1.0                          # (1 + g)^n, (1 + π)^n
-    transition = []
+    early = []                                      # (n, h, (1 + g)^n, D&A по правилу когорт)
     for j in range(1, H + 1):
         n, h = divmod(j - 1, 2)
         if j > 1 and h == 0:
             grow_g, grow_pi = grow_g * (1.0 + g), grow_pi * (1.0 + pi)
         k = N + j
-        rule = cf.da_anchor * ctx.da_runoff[k - 1] + window / H
-        steady = da_g[h] * grow_g + da_pi[h] * grow_pi
-        if halves[h].tax_base > 0:
-            transition.append(tau * (rule - steady) * (1.0 + r) ** -(n + 0.25 + 0.5 * h))
+        early.append((n, h, grow_g, cf.da_anchor * ctx.da_runoff[k - 1] + window / H))
         seq.append(cap_g[h] * grow_g + cap_pi[h] * grow_pi)
         window += seq[k] - (seq[k - H] if k >= H else 0.0)
-    tv_transition = fsum(transition)
+
+    def tax_pv(before_da: list) -> float:
+        """PV на конец явного участка налога по всем полугодиям терминала; before_da[h] —
+        база полугодия h года 0 до D&A (растёт с g)."""
+        terms = [tau * max(0.0, before_da[h] * gg - da) * (1.0 + r) ** -(n + 0.25 + 0.5 * h)
+                 for n, h, gg, da in early]
+        for h in (0, 1):
+            first = (H + 1 - h) // 2                # n_0: j = 2n + h + 1 > 2L — ⌈L⌉ и ⌊L⌋
+            tail = positive_part_pv(before_da[h] - da_g[h], da_pi[h], g, pi, r, first)
+            terms.append(tau * tail * (1.0 + r) ** -(0.25 + 0.5 * h))
+        return fsum(terms)
 
     def gordon(f1: float, f2: float, x: float) -> float:
         return (f1 * (1.0 + r) ** 0.75 + f2 * (1.0 + r) ** 0.25) / (r - x)
 
     h1, h2 = halves
-    tv = (gordon(h1.fcff - h1.f_pi, h2.fcff - h2.f_pi, g) + gordon(h1.f_pi, h2.f_pi, pi)
-          + tv_transition)
+    before = [q["ebitda"] - q["lti"] + padd * q["R"] for q in parts]
+    tv_tax = tax_pv(before)
+    tv_tax_levered = tax_pv([b - q.interest for b, q in zip(before, halves)])
+    tv = (gordon(h1.fcff + h1.tax - h1.f_pi, h2.fcff + h2.tax - h2.f_pi, g)
+          + gordon(h1.f_pi, h2.f_pi, pi) - tv_tax)
     return Terminal(
         growth=g, rate=r, pi=pi, debt_rate=rp.debt[N], halves=tuple(halves),
-        tv_da_transition=tv_transition, tv_flow=tv,
-        tv_shield=gordon(h1.shield, h2.shield, g),
+        tv_tax=tv_tax, tv_flow=tv,
+        tv_shield=tv_tax - tv_tax_levered,
         tv_issuance=gordon(h1.issuance_cost, h2.issuance_cost, g),
         tv_excess_spread=gordon(h1.excess_spread, h2.excess_spread, g),
         tv_buffer_carry=gordon(h1.buffer_carry, h2.buffer_carry, g),

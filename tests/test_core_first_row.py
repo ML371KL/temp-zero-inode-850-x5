@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import dataclasses
 import datetime as dt
+import math
 
 import pytest
 
@@ -222,9 +223,14 @@ def test_history_cohorts_mature_to_density_d(book, facts):
     assert bumped - net.eff_hist[ctx.anchor] == pytest.approx(-(1.0 - d), abs=1e-9)
 
 
-def test_terminal_by_hand(book, facts):
-    """Терминал §6 вручную по строкам клетки: D&A по полугодиям и частям g/π, переходный
-    член, щит и вычеты финансирования оператором явного участка."""
+@pytest.mark.parametrize("regime", ["floor", "stress"])
+def test_terminal_by_hand(book, facts, regime):
+    """Терминал §6 вручную по строкам клетки: D&A по полугодиям и частям g/π, разделение
+    Гордона доналогового потока, налог и щит — прямой суммой τ·max(0, base) по полугодиям
+    800 лет (D&A — правило когорт §4.5, продолженное capex терминала), вычеты финансирования
+    оператором явного участка. Режим floor — g > π, stress — g < π (база терминала со
+    временем уходит в минус)."""
+    REGIME = regime
     A = book
     cf = core_facts(facts, book)
     ctx = Context(A, cf)
@@ -297,22 +303,26 @@ def test_terminal_by_hand(book, facts):
     rep_T1 = halves[0]["ebitda"] - halves[0]["lti"]
     starts = [(last_h1.ebitda_rep + last.ebitda_rep, last.opcash, bp * last.revenue_annual),
               (last.ebitda_rep + rep_T1, halves[0]["opc"], bp * halves[0]["ann"])]
-    F, f, S, fin, bases = [], [], [], [0.0, 0.0], []
+    F, S, fin, pre, before, interest = [], [], [0.0, 0.0], [], [], []
     for i, h in enumerate(halves):
-        base = h["ebitda"] - h["lti"] - dg[i] - dp[i] + TX["permanent_add_pct"] * h["rev"]
-        bases.append(base)
+        B = h["ebitda"] - h["lti"] + TX["permanent_add_pct"] * h["rev"]     # база до D&A
+        base = B - dg[i] - dp[i]
+        before.append(B)
         F.append(h["ebitda"] - h["lti"] - tau * max(0, base) - h["capex"] - h["dn"] - h["do"]
                  + h["extra"])
-        f.append((tau * dp[i] if base > 0 else 0) - h["cpi"])
+        pre.append(F[-1] + tau * max(0, base))                             # до налога
         ltm, opc0, buf0 = starts[i]
         G = lt * ltm + opc0 + buf0
         I = G * half_rate(rT) - buf0 * y_T
+        interest.append(I)
         S.append(tau * max(0, base) - tau * max(0, base - I))
         fin[i] = (max(0, G) * (half_rate(rT) - half_rate(rT0))
                   + max(0, G) * max(0, half_rate(rT) - half_rate(rTf))
                   + buf0 * (half_rate(key_T) - y_T))
 
-    # переходный член: правило когорт §4.5, продолженное capex терминала
+    # налог терминала: τ·max(0, base) по полугодиям 800 лет; D&A — правило когорт §4.5
+    # (база якоря, capex явного участка), продолженное capex терминала; щит — то же с
+    # процентами, растущими с g
     hist = {h["period"]: h["revenue"] * h["capex_pct"] for h in facts.data["history"]["halves"]}
     old = []
     q = anchor
@@ -321,26 +331,33 @@ def test_terminal_by_hand(book, facts):
         old.append(hist[q])                     # якорь−1, якорь−2, …
     seq = [cf.capex_anchor] + [row.capex for row in rows]
     N = len(rows)
-    tr = 0.0
-    for j in range(1, L2 + 1):
+    tax, tax_lev, signs = [], [], set()
+    for j in range(1, 1601):
         n, h = divmod(j - 1, 2)
         kk = N + j
-        alive = sum(old[:max(0, L2 - kk)]) / sum(old)
-        rule = cf.da_anchor * alive + sum(seq[kk - min(kk, L2):kk]) / L2
-        steady = dg[h] * (1 + g) ** n + dp[h] * (1 + pi) ** n
-        if bases[h] > 0:
-            tr += tau * (rule - steady) * (1 + r) ** -(n + 0.25 + 0.5 * h)
+        alive = math.fsum(old[:max(0, L2 - kk)]) / math.fsum(old)
+        rule = cf.da_anchor * alive + math.fsum(seq[kk - min(kk, L2):kk]) / L2
+        base = before[h] * (1 + g) ** n - rule
+        disc = (1 + r) ** -(n + 0.25 + 0.5 * h)
+        tax.append(tau * max(0.0, base) * disc)
+        tax_lev.append(tau * max(0.0, base - interest[h] * (1 + g) ** n) * disc)
+        signs.add(base > 0)
         seq.append(cg[h] * (1 + g) ** n + cp[h] * (1 + pi) ** n)
 
     def gordon(a, b, x):
         return (a * (1 + r) ** 0.75 + b * (1 + r) ** 0.25) / (r - x)
 
-    tv = gordon(F[0] - f[0], F[1] - f[1], g) + gordon(f[0], f[1], pi) + tr
+    tv_tax = math.fsum(tax)
+    tv = gordon(pre[0] + cp[0], pre[1] + cp[1], g) + gordon(-cp[0], -cp[1], pi) - tv_tax
     T = res.terminal
     assert T.growth == pytest.approx(g, rel=1e-12)
+    assert (g > pi) == (regime == "floor")
+    assert signs == ({True} if regime == "floor" else {True, False})
     assert [x.da for x in T.halves] == pytest.approx([dg[0] + dp[0], dg[1] + dp[1]], rel=1e-12)
-    assert T.tv_da_transition == pytest.approx(tr, rel=1e-9)
+    assert T.tv_tax == pytest.approx(tv_tax, rel=1e-10)
     assert T.tv_flow == pytest.approx(tv, rel=1e-10)
-    assert T.tv_shield == pytest.approx(gordon(S[0], S[1], g), rel=1e-10)
+    assert T.tv_shield == pytest.approx(tv_tax - math.fsum(tax_lev), rel=1e-9)
+    if regime == "floor":                       # база с процентами положительна всегда
+        assert T.tv_shield == pytest.approx(gordon(S[0], S[1], g), rel=1e-9)
     assert T.tv_financing == pytest.approx(gordon(fin[0], fin[1], g), rel=1e-10)
     assert T.tv_excess_spread > 0 and T.tv_issuance > 0 and T.tv_buffer_carry > 0

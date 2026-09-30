@@ -59,8 +59,11 @@ def V(v, src=None, calc=None, **extra):
     if calc:
         node["calc"] = calc
     node.update(extra)
-    if v is not None and not (src or calc):
-        raise ValueError(f"узел без src и calc: {v}")
+    # То же правило, что у загрузки (model/facts.py::has_source): источник — текст хотя бы
+    # с одной буквой или цифрой; пробел, «?», «—» источником не считаются.
+    if v is not None and not any(isinstance(x, str) and any(ch.isalnum() for ch in x)
+                                 for x in (src, calc)):
+        raise ValueError(f"узел без src и calc (или они пусты по смыслу): {v}")
     return node
 
 

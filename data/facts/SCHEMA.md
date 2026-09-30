@@ -20,7 +20,8 @@
 `dps` строк дивидендов (источник — `src` строки или узел `amount` той же строки),
 `target_leverage` и `no_pay_above` дивидендной политики (источник — `src` политики). Любое
 другое голое число и узел без источника во всех файлах фактов и в фикстуре
-`tests/fixtures/facts` ловит тест такта `tests/test_facts.py::test_every_value_has_src_or_calc`.
+`tests/fixtures/facts` ловит тест такта `tests/test_facts.py::test_every_value_has_src_or_calc`; сборщик `ops/tools/build_facts.py` (узел `V`) такой узел не пишет —
+то же правило источника (`tests/test_facts.py::test_builder_refuses_number_without_source`).
 
 ## accounting.json — отчётные полугодия (читает ядро)
 

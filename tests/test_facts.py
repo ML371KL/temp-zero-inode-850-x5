@@ -327,6 +327,22 @@ def test_builder_reproduces_facts(tmp_path):
         assert data == (ROOT / rel).read_bytes().replace(b"\r\n", b"\n"), f"{rel}: пересборка отличается"
 
 
+@pytest.mark.parametrize("src, calc", [(" ", None), ("?", None), (None, "—"), (None, None),
+                                       ("", ""), (None, " ? ")])
+def test_builder_refuses_number_without_source(src, calc):
+    """Сборщик не пишет число без содержательного источника — то же правило, что у загрузки
+    (`model/facts.py::has_source`): иначе пересборка дала бы файл, который загрузка отвергнет."""
+    from model.facts import has_source
+
+    builder = builder_module()
+    assert not has_source({"v": 1.0, "src": src, "calc": calc})
+    with pytest.raises(ValueError, match="без src и calc"):
+        builder.V(1.0, src, calc)
+    node = builder.V(1.0, "с. 5")
+    assert node == {"v": 1.0, "src": "с. 5"} and has_source(node)
+    assert builder.V(None) == {"v": None, "calc": "не раскрыто"}
+
+
 def test_builder_never_overwrites_actuals(tmp_path):
     """`actuals.json` ведёт человек: сборщик пишет его шаблон, только если файла нет, внесённые
     факты не трогает и в записанные файлы его не включает. Поэтому факт журнала вносится

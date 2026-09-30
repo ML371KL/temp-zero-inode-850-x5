@@ -73,12 +73,15 @@ class Element_ {
   get offsetHeight() { return 0; }
 }
 
-// Видимый текст узла (скрытые узлы — таблица-двойник до нажатия — не в счёт).
+// Видимый текст узла (скрытые узлы — таблица-двойник до нажатия — не в счёт); блоки
+// отделяются пробелом, строчные элементы — нет.
+const BLOCKS = new Set(["P", "DIV", "LI", "UL", "OL", "H1", "H2", "SECTION", "TR", "TD", "TH", "CAPTION", "TABLE"]);
 function visibleText(node) {
   if (!node) return "";
   if (node.nodeType === 3) return node.data;
   if (node.hidden) return "";
-  return node.children.map(visibleText).join(node.tagName === "P" || node.tagName === "DIV" || node.tagName === "LI" ? " " : "");
+  const inner = node.children.map(visibleText).join("");
+  return BLOCKS.has(node.tagName) || /display:\s*block/.test(node.attrs.style || "") ? ` ${inner} ` : inner;
 }
 const countTag = (node, tag) => (node && node.nodeType === 1
   ? (node.tagName === tag ? 1 : 0) + node.children.reduce((n, c) => n + countTag(c, tag), 0) : 0);
@@ -277,7 +280,8 @@ const H1_2027 = [
   const d = withReport("2026-09-29", "2026H2", H2_2026);
   page.ctx.__d = d;
   const teaser = squash(visibleText(page.get("reportTeaser(globalThis.__d)")));
-  check("«Оценка»: отсчёт до годового МСФО", teaser.includes("171 день до ≈ 19 марта 2027")
+  // Число отсчёта и подпись — соседние строчные элементы (зазор даёт CSS).
+  check("«Оценка»: отсчёт до годового МСФО", /171 ?день до ≈ 19 марта 2027/.test(teaser)
     && teaser.includes("Финансовые результаты X5 за 2026 г. (МСФО) и ориентиры на 2027 г."), teaser.slice(0, 300));
   check("«Оценка»: отсчёта до МСФО за 3 кв. нет", !teaser.includes("до 29 октября") && !/\b30 дней до/.test(teaser), teaser.slice(0, 300));
   check("«Оценка»: МСФО за 3 кв. — отдельной строкой с пояснением",
@@ -288,7 +292,7 @@ const H1_2027 = [
     && teaser.includes("Если маржа за всё 2П 2026 выйдет"), teaser.slice(0, 900));
 
   const cal = squash(visibleText(page.get("reportCalendarCard(globalThis.__d)")));
-  check("#report: отсчёт до годового МСФО, он закрывает 2П 2026", cal.includes("171 день до ≈ 19 марта 2027")
+  check("#report: отсчёт до годового МСФО, он закрывает 2П 2026", /171 ?день до ≈ 19 марта 2027/.test(cal)
     && cal.includes("Финансовые результаты X5 за 2026 г. (МСФО) и ориентиры на 2027 г. — закрывает 2П 2026"), cal.slice(0, 400));
   check("#report: МСФО за 3 кв. — строкой «раньше»", cal.includes("Раньше: 29.10.2026 (через 30 дней) — Финансовые результаты X5 за 3 кв. 2026 г. (МСФО)."), cal.slice(0, 600));
   check("#report: промежуточные отчёты в списке помечены", (cal.match(/внутри полугодия · через/g) || []).length === 3, cal);

@@ -679,9 +679,9 @@ class HalfRow:
     debt_rate: float
     gross_debt_start: float
     interest: float
-    issuance_cost: float        # издержки размещения в процентах: G⁺·(half(r) − half(r без ic))
-    excess_spread: float        # проценты сверх справедливого спреда: G⁺·max(0, half(r) − half(r_fair))
-    buffer_carry: float         # кэрри подушки: Buf(p−1)·(half(key) − half(k·key))
+    issuance_cost: float        # издержки размещения в процентах: G⁺·(debt_rate − debt_rate⁰)/2 (§4.9)
+    excess_spread: float        # проценты сверх справедливого спреда: G⁺·max(0, debt_rate − debt_rate_fair)/2
+    buffer_carry: float         # кэрри подушки: Buf(p−1)·(1 − k)·key/2
     net_debt_pre: float
     dividends: float
     net_debt: float

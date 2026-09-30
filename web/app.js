@@ -289,6 +289,23 @@ function periodShort(p) {
   const m = /^(\d{4})H([12])$/.exec(String(p));
   return m ? `${m[2]}П${m[1].slice(2)}` : String(p);
 }
+// Полугодие через k полугодий: «2026H2», 1 → «2027H1».
+function shiftHalf(p, k) {
+  const m = /^(\d{4})H([12])$/.exec(String(p));
+  if (!m || !Number.isInteger(k)) return null;
+  const i = Number(m[1]) * 2 + Number(m[2]) - 1 + k;
+  return `${Math.floor(i / 2)}H${(i % 2) + 1}`;
+}
+// База мультипликатора EV / скорр. EBITDA (`ebitda_ntm`, `ev_ebitda_fwd`) — текущее и
+// следующее полугодия: полугодие даты оценки (первое незакрытое прогнозное — `meta.first_period`
+// через `meta.closed_periods` полугодий) и следующее за ним (docs/MODEL.md §13.2). Не «следующие
+// 12 месяцев»: прошедшая часть текущего полугодия в базе есть. «2П 2026 + 1П 2027».
+function ebitdaBase(d, short = false) {
+  const meta = obj(d.meta);
+  const p0 = shiftHalf(meta.first_period, meta.closed_periods);
+  const name = short ? periodShort : periodName;
+  return p0 ? `${name(p0)} + ${name(shiftHalf(p0, 1))}` : null;
+}
 
 /* ───────────────────────────── подсказки ───────────────────────────── */
 
@@ -1769,9 +1786,10 @@ function evCard(d) {
   legend([["key-dot key-model", "EV модели"], ["key-dot key-market", "рыночная стоимость бизнеса"]]),
   fig.box,
   el("div", { class: "kpis", style: "margin-top:14px" },
-    // Пара мультипликаторов — на одной базе: скорр. EBITDA следующих 12 месяцев.
+    // Пара мультипликаторов — на одной базе: скорр. EBITDA модели (слой «свой взгляд»)
+    // текущего и следующего полугодий.
     isNum(ce.ev_ebitda_ntm_market) ? kpi(fmt.x(ce.ev_ebitda_ntm_market, 2),
-      `рынок: EV / скорр. EBITDA следующих 12 мес. (${fmt.num(ce.ebitda_ntm, 0)} млрд ₽)`) : null,
+      `рынок: EV / скорр. EBITDA модели текущего и следующего полугодий (${[ebitdaBase(d), `${fmt.num(ce.ebitda_ntm, 0)} млрд ₽`].filter(Boolean).join(", ")})`) : null,
     isNum(ce.ev_ebitda_ntm_median) ? kpi(fmt.x(ce.ev_ebitda_ntm_median, 2), "модель, медиана: EV / та же EBITDA") : null,
     kpi(fmt.rub(ce.rub_per_1pct_ev_median), "цена 1 % EV на акцию"),
     kpi(fmt.bn(mk.claims, 0), "требования на дату оценки")));
@@ -2018,7 +2036,7 @@ function layersCard(d) {
     ...(order.some((k) => isNum(L[k].pv_terminal_financing)) ? [{ title: "из них терминала", num: true,
       value: (k) => (isNum(L[k].pv_terminal_financing) ? fmt.num(-L[k].pv_terminal_financing, 1) : "—") }] : []),
     { title: "Доля терминала (чистая)", num: true, value: (k) => fmt.pct(L[k].terminal_share, 0) },
-    { title: "EV / EBITDA вперёд", num: true, value: (k) => fmt.x(L[k].ev_ebitda_fwd, 2) },
+    { title: `EV / EBITDA ${ebitdaBase(d, true) || "тек. и след. полугодий"}`, num: true, value: (k) => fmt.x(L[k].ev_ebitda_fwd, 2) },
     { title: "V0 / D", num: true, value: (k) => fmt.x(L[k].v0_to_d, 2) },
   ], order, { rowClass: (k) => (k === "analytical" ? "is-pick" : null),
     caption: `Веса миров по порядку: ${weightsNames(d, obj(L[order[0]]).world_weights)}.` }),
@@ -2212,7 +2230,7 @@ function gridCard(d) {
             rows: [["цена", fmt.rub(c.price)], ["вероятность (свой взгляд)", fmt.pct(c.p_analytical, 2)],
               ["вменённая рынком", fmt.pct(c.p_market_implied, 2)], ["рыночные ставки", fmt.pct(c.p_neutral, 2)],
               ["EV", fmt.bn(c.ev, 0)], ["требования", fmt.bn(c.d, 0)], ["капитал", fmt.bn(c.equity, 0)],
-              ["EV / EBITDA вперёд", fmt.x(c.ev_ebitda_fwd, 2)], ["доля терминала (чистая)", fmt.pct(c.terminal_share, 0)],
+              [`EV / EBITDA ${ebitdaBase(d, true) || "тек. и след. полугодий"}`, fmt.x(c.ev_ebitda_fwd, 2)], ["доля терминала (чистая)", fmt.pct(c.terminal_share, 0)],
               ["маржа далее", fmt.pct(c.margin_lt, 2)], ["макс. ЧД / EBITDA", fmt.x(c.max_leverage, 2)]],
             note: isNum(c.equity) && c.equity <= 0 ? "капитал клетки не положителен" : null } },
           isNum(c.equity) && c.equity <= 0 ? el("span", { class: "flag", "aria-label": "капитал не положителен" }, "∅") : null,

@@ -69,8 +69,14 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 * `draws_low`, `draws_high`: массивы длины `headline.draws` (цены ₽, округление до 0,1).
 * `center_ev`: {`v0_median`, `v0_point`, `v_star`, `gap_median`, `gap_point`,
   `rub_per_1pct_ev_median`, `rub_per_1pct_ev_point`, `ebitda_ntm` (скорр. EBITDA
-  следующих 12 мес. слоя «свой взгляд»), `ev_ebitda_ntm_median` (EV медианы / `ebitda_ntm`),
-  `ev_ebitda_ntm_market` (V\* / `ebitda_ntm`)} — пара «модель — рынок» на одной базе.
+  слоя «свой взгляд» текущего и следующего полугодий), `ev_ebitda_ntm_median` (EV медианы /
+  `ebitda_ntm`), `ev_ebitda_ntm_market` (V\* / `ebitda_ntm`)} — пара «модель — рынок» на
+  одной базе. База — полугодие даты оценки (первое незакрытое прогнозное:
+  `meta.first_period`, сдвинутое на `meta.closed_periods` полугодий) и следующее за ним
+  (`docs/MODEL.md` §13.2): при дате оценки во 2П 2026 — 2П 2026 + 1П 2027, с 01.01.2027 —
+  1П 2027 + 2П 2027. Это не скользящие 12 месяцев: прошедшая часть текущего полугодия в
+  базе есть, 1 января база сдвигается на полугодие. Имена `ntm` и `fwd` — условные, ключи
+  контракта не меняются; витрина подписывает базу периодами из `meta`.
 * `equity_share_of_ev` (капитал / V0 точки).
 
 ## layers
@@ -80,8 +86,9 @@ calendar, checks, inputs, live, changes, book, indicators`. Витрина чи�
 кэрри подушки, положительным числом: `v0` = `pv_fcff` + `pv_shield` + `pv_terminal` −
 `pv_financing`), `pv_terminal_financing` (терминальная часть `pv_financing`: Σp·TV_fin·df =
 `pv_terminal` − `terminal_share`·`v0`), `terminal_share` (доля терминала **чистая** —
-(`pv_terminal` − `pv_terminal_financing`) / `v0`), `ev_ebitda_fwd`, `ebitda_ntm` (скорр.
-EBITDA следующих 12 мес.), `v0_to_d`.
+(`pv_terminal` − `pv_terminal_financing`) / `v0`), `ev_ebitda_fwd` (EV / скорр. EBITDA
+текущего и следующего полугодий — база та же, что у `fair_value.center_ev.ebitda_ntm`),
+`ebitda_ntm` (скорр. EBITDA текущего и следующего полугодий), `v0_to_d`.
 
 ## grid
 `cells`: 36 × {`world`, `regime`, `capex`, `p_analytical`, `p_market_implied`,

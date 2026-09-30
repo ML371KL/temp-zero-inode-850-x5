@@ -461,15 +461,20 @@ def fair_value_block(A, grid, dist, headline, draws_low, draws_high, mp) -> dict
                           "gap_median": v0_med / P.v_star - 1.0, "gap_point": P.gap_point,
                           "rub_per_1pct_ev_median": rub_1pct,
                           "rub_per_1pct_ev_point": P.rub_per_1pct_ev_point,
-                          # Пара «модель — рынок» на одной базе: скорр. EBITDA следующих
-                          # 12 мес. слоя «свой взгляд».
+                          # Пара «модель — рынок» на одной базе: скорр. EBITDA слоя «свой
+                          # взгляд» текущего и следующего полугодий (имя ntm — условное).
                           "ebitda_ntm": ntm, "ev_ebitda_ntm_median": _div(v0_med, ntm),
                           "ev_ebitda_ntm_market": _div(P.v_star, ntm)},
             "equity_share_of_ev": P.equity_share_of_ev}
 
 
 def _ebitda_ntm(L) -> float | None:
-    """Скорр. EBITDA следующих 12 месяцев слоя (V0 / мультипликатор вперёд)."""
+    """Скорр. EBITDA слоя за текущее и следующее полугодия (V0 / `ev_ebitda_fwd`).
+
+    Полугодие даты оценки (первое незакрытое прогнозное) и следующее за ним —
+    docs/MODEL.md §13.2; это не скользящие 12 месяцев: прошедшая часть текущего
+    полугодия в базе есть. Имена `ntm`/`fwd` — условные (контракт x5-v1).
+    """
     return L.v0 / L.ev_ebitda_fwd if _num(L.ev_ebitda_fwd) and L.ev_ebitda_fwd else None
 
 

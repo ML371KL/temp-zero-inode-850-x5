@@ -149,7 +149,7 @@ def payload_size_ok(n_bytes: int) -> bool:
 GATES = ("ev_ebitda", "margin_range", "capex_range", "terminal_share", "real_rate",
          "leverage_path", "equity_cushion")
 GATE_TITLES = {
-    "ev_ebitda": "EV / скорр. EBITDA следующих 12 мес. вне коридора мира",
+    "ev_ebitda": "EV / скорр. EBITDA текущего и следующего полугодий вне коридора мира",
     "margin_range": "маржа полугодия вне коридора",
     "capex_range": "capex / выручка года вне коридора",
     "terminal_share": "доля PV терминала в EV вне коридора",

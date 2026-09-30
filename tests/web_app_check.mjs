@@ -300,7 +300,28 @@ const H1_2027 = [
     && !/дн(я|ей|ь) до/.test(teaserNone) && teaserNone.includes("Раньше: 29.10.2026"), teaserNone.slice(0, 400));
 }
 
-/* ── 3. все экраны мока рисуются, графики — в ширине карточки и телефона ── */
+/* ── 3. база мультипликатора EV / EBITDA — текущее и следующее полугодия, а не «12 месяцев» ── */
+
+{
+  const page = makePage();
+  const d = sample();
+  page.ctx.__d = d;
+  const evText = squash(visibleText(page.get("evCard(globalThis.__d)")));
+  check("EV / EBITDA рынка: база — полугодия модели с периодами", evText.includes(
+    "рынок: EV / скорр. EBITDA модели текущего и следующего полугодий (2П 2026 + 1П 2027, 300 млрд ₽)"), evText.slice(-400));
+  const layersText = squash(visibleText(page.get("layersCard(globalThis.__d)")));
+  check("таблица слоёв: столбец EV / EBITDA 2П26 + 1П27", layersText.includes("EV / EBITDA 2П26 + 1П27"), layersText.slice(0, 400));
+  d.meta.closed_periods = 1;
+  check("с 1 января база — 1П 2027 + 2П 2027", page.get("ebitdaBase(globalThis.__d)") === "1П 2027 + 2П 2027",
+    page.get("ebitdaBase(globalThis.__d)"));
+  delete d.meta.closed_periods;
+  const bare = squash(visibleText(page.get("evCard(globalThis.__d)")));
+  check("без meta.closed_periods — подпись без периодов, но с базой словами", bare.includes(
+    "рынок: EV / скорр. EBITDA модели текущего и следующего полугодий (300 млрд ₽)"), bare.slice(-400));
+  check("«следующих 12 мес.» на витрине нет", !/следующих 12|EBITDA вперёд/.test(APP), "web/app.js");
+}
+
+/* ── 4. все экраны мока рисуются, графики — в ширине карточки и телефона ── */
 
 for (const width of [640, 343]) {
   const page = makePage({ width });

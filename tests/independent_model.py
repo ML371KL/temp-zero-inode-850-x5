@@ -99,6 +99,8 @@ SCENARIOS = [
      "set": {"worlds.M.lt.inflation": 0.085}},
     {"key": "half_year_life", "title": "Срок службы 7,5 года (2L = 15, нечётное): в окне D&A терминала T1 на когорту второго полугодия больше, у T2 — первого; база якоря — 15 когорт",
      "set": {"capex.asset_life_years": 7.5}},
+    {"key": "coupon_semiannual", "title": "Купон нового фикса раз в полгода (m = 2): новая нога начисляет корень от эффективной доходности, простые ноги — r/2",
+     "set": {"financing.fixed_coupon_freq": 2}},
 ]
 
 # Толкования неоднозначных мест MODEL.md (ключ → текст для отчёта).
@@ -123,6 +125,13 @@ INTERPRETATIONS = {
         "от `first_period` с нуля, pos — номер полугодия даты кривой на той же линейке плюс доля "
         "прошедших дней по правилу §5 (день даты не прошёл). Ставка z_W(t) на сроки меньше года — "
         "узел 1 (§0.2), поэтому при s < 1 знаменатель — (1 + z_W(1))^s."),
+    "rate_conventions": (
+        "§0, §4.9, §6: `debt_rate` и `r_T` — простые годовые ставки, начисление за полугодие — "
+        "ровно половина годовой (не корень). Доходность нового фикса (форвард + G-спред) переводится "
+        "в купон cpn(y) = m((1 + y)^(1/m) − 1) до прибавления ic: ic — простая ставка, формула "
+        "`cpn(z_fix + spread_fixed) + ic`; ставки без ic и справедливая — та же формула. Доход кассы "
+        "`cash_yield_k × key` и ключевая в кэрри — простые, / 2. Корень — только у индекса цен "
+        "(ИПЦ, π). Поле `debt_rate` строк — простая годовая ставка."),
     "fair_rate_ic": (
         "§4.9, справедливая ставка `debt_rate_fair` — та же формула со спредами `base` И с "
         "издержками размещения ic: только так «в состоянии base X = 0» (без ic разница ставок "
@@ -328,8 +337,15 @@ def half_start(i: int) -> dt.date:
 
 
 def half_rate(r: float) -> float:
-    """Годовая ставка → полугодовая: корень, не r/2 (§0)."""
+    """Эффективная годовая ставка → полугодовая: корень, не r/2 (§0). Только эффективные
+    величины (ИПЦ, π); простые ставки начисления (долг, касса, ключевая) — r / 2."""
     return (1.0 + r) ** 0.5 - 1.0
+
+
+def par_coupon(y: float, m: int) -> float:
+    """Годовой купон облигации по номиналу с m выплатами в год при эффективной доходности y:
+    cpn(y) = m × ((1 + y)^(1/m) − 1) (§4.9)."""
+    return m * ((1.0 + y) ** (1.0 / m) - 1.0)
 
 
 def date_pos(d: dt.date) -> tuple[int, float]:
@@ -628,8 +644,9 @@ class Ctx:
         base = self.da_anchor * self.cohort_sum(k) / self.s0
         return base + sum(capex_seq[k - j] for j in range(1, min(k, self.two_l) + 1)) / self.two_l
 
-    def fix_coupon(self, curve: dict, i: int) -> float:
-        """Купон нового фикса полугодия i: трёхлетний форвард кривой мира с начала полугодия."""
+    def fix_yield(self, curve: dict, i: int) -> float:
+        """Доходность нового фикса полугодия i без спреда: трёхлетний форвард кривой мира с
+        начала полугодия (эффективная; в ставку — купоном par_coupon, §4.9)."""
         s = max(0.0, 0.5 * ((i - self.first) - self.curve_pos))
         return forward_3y(curve, s)
 
@@ -761,13 +778,17 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
     n_mu = len(mu) - 1
     d_new, kappa = net["new_space_density"], net["closed_productivity"]
 
+    m_cpn = fin["fixed_coupon_freq"]
+
     def debt_rate(i: int, c_state: str, with_ic: bool) -> float:
-        """Ставка долга полугодия i (§4.9) в кредитном состоянии c_state; ic — или 0."""
+        """Простая годовая ставка долга полугодия i (§4.9) в кредитном состоянии c_state; ic — или 0.
+        Новый фикс — купон по номиналу из эффективной доходности (форвард + G-спред)."""
         ic = path_value(fin["issuance_cost"], i) if with_ic else 0.0
         ell = path_value(fin["legacy_weight"], i)
         f = path_value(fin["fixed_share"], i)
+        y_new = ctx.fix_yield(curve, i) + fin["spread_fixed"][c_state]
         fixed = (ell * path_value(fin["legacy_rate"], i)
-                 + (1.0 - ell) * (ctx.fix_coupon(curve, i) + fin["spread_fixed"][c_state] + ic))
+                 + (1.0 - ell) * (par_coupon(y_new, m_cpn) + ic))
         floating = path_value(W["key_rate"], i) + fin["spread_float"][c_state] + ic
         return f * fixed + (1.0 - f) * floating
 
@@ -861,11 +882,12 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
         # валовой долг: ND модели уже содержит накопленный прирост операционной кассы (он вычтен
         # из FCFF), поэтому операционная касса в нём — уровнем якоря
         gross = nd_prev + opcash_anchor_level + buf_prev
-        interest = gross * half_rate(rate) - buf_prev * half_rate(cash_rate)
+        # простые ставки: за полугодие начисляется половина годовой (§0, §4.9)
+        interest = gross * rate / 2.0 - buf_prev * cash_rate / 2.0
         gross_pos = max(0.0, gross)
-        c_iss = gross_pos * (half_rate(rate) - half_rate(rate0))
-        x_spread = gross_pos * max(0.0, half_rate(rate) - half_rate(rate_fair))
-        k_carry = buf_prev * (half_rate(key) - half_rate(cash_rate))
+        c_iss = gross_pos * (rate - rate0) / 2.0
+        x_spread = gross_pos * max(0.0, rate - rate_fair) / 2.0
+        k_carry = buf_prev * (key - cash_rate) / 2.0
 
         # налог и FCFF (§4.7, §4.8)
         base = ebit - lti + path_value(tx["permanent_add_pct"], i) * R[i]
@@ -1003,7 +1025,8 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
     legacy_t = path_value(fin["legacy_rate"], last)
 
     def term_rate(c_state: str, ic: float) -> float:
-        fixed = ell_t * legacy_t + (1.0 - ell_t) * (curve["LT"] + fin["spread_fixed"][c_state] + ic)
+        y_new = curve["LT"] + fin["spread_fixed"][c_state]
+        fixed = ell_t * legacy_t + (1.0 - ell_t) * (par_coupon(y_new, m_cpn) + ic)
         return f_t * fixed + (1.0 - f_t) * (key_t + fin["spread_float"][c_state] + ic)
 
     rt, rt0 = term_rate(credit, ic_t), term_rate(credit, 0.0)
@@ -1019,12 +1042,12 @@ def run_cell(ctx: Ctx, world: str, regime: str, level: str) -> dict:
     s_t, c_t, x_t, k_t, g_t, i_t = [], [], [], [], [], []
     for h, t in enumerate(t_rows):
         gross_h = lev_t * ltm_t[h] + opcs[h] + bufs[h]
-        int_h = gross_h * half_rate(rt) - bufs[h] * half_rate(cash_rate_t)
+        int_h = gross_h * rt / 2.0 - bufs[h] * cash_rate_t / 2.0
         s_t.append(tau * max(0.0, t["tax_base"]) - tau * max(0.0, t["tax_base"] - int_h))
         gp = max(0.0, gross_h)
-        c_t.append(gp * (half_rate(rt) - half_rate(rt0)))
-        x_t.append(gp * max(0.0, half_rate(rt) - half_rate(rt_fair)))
-        k_t.append(bufs[h] * (half_rate(key_t) - half_rate(cash_rate_t)))
+        c_t.append(gp * (rt - rt0) / 2.0)
+        x_t.append(gp * max(0.0, rt - rt_fair) / 2.0)
+        k_t.append(bufs[h] * (key_t - cash_rate_t) / 2.0)
         g_t.append(gross_h)
         i_t.append(int_h)
         t.update({"gross_debt": gross_h, "interest": int_h, "shield": s_t[-1],

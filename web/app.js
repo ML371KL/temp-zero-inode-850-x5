@@ -3132,9 +3132,18 @@ const SCREENS = {
   book: screenBook,
 };
 
+// Экран по адресу. Битая %-последовательность (`#%E0%A4%A`, `#100%`) или
+// незнакомое имя — «Оценка», а не исключение: иначе старт застрял бы на
+// «Загружаем…», а смена адреса роняла бы обработчик.
 function screenFromHash() {
-  const name = decodeURIComponent(location.hash.replace(/^#/, ""));
+  let name = location.hash.replace(/^#/, "");
+  try { name = decodeURIComponent(name); } catch (error) { name = ""; }
   return Object.prototype.hasOwnProperty.call(SCREENS, name) ? name : "overview";
+}
+
+// Адрес — ровно `#<экран>`: битый или чужой хэш заменяется без новой записи истории.
+function syncHash(name) {
+  if (location.hash.replace(/^#/, "") !== name) history.replaceState(null, "", `#${name}`);
 }
 
 function render(name) {
@@ -3187,8 +3196,11 @@ function wireTabs() {
   }
   // Смена адреса (ссылки «Подробно», «назад» и «вперёд») — hashchange.
   window.addEventListener("hashchange", () => {
-    if (!DATA || screenFromHash() === CURRENT) return;
-    render(screenFromHash());
+    if (!DATA) return;
+    const name = screenFromHash();
+    syncHash(name);
+    if (name === CURRENT) return;
+    render(name);
     window.scrollTo({ top: 0 });
   });
   // «К содержанию» переводит фокус, а не адрес: иначе #app сбросил бы экран.
@@ -3286,7 +3298,7 @@ async function boot() {
   }
   try { releaseChip(DATA); colophon(DATA); } catch (error) { console.error(error); }
   const name = screenFromHash();
-  if (location.hash.replace(/^#/, "") !== name) history.replaceState(null, "", `#${name}`);
+  syncHash(name);
   render(name);
 }
 

@@ -1,6 +1,6 @@
 # Витрина X5: экраны, блоки выпуска, тема, дверь данных
 
-Витрина https://tzi-850-x5.pages.dev — шесть экранов на одном выпуске `/api/model` (контракт `x5-v1`, поля — `docs/PAYLOAD.md`). Краткая карта — справочник (`docs/MANUAL.md`, раздел 8); файлы `web/` и `functions/` — `README.md`, «Структура». Источник правды — `web/app.js`; правила держат `tests/test_web_static.py`, `tests/test_web_contract.py`, `tests/test_web_node.py` и `tests/test_payload.py`.
+Витрина https://tzi-850-x5.pages.dev — шесть экранов на одном выпуске `/api/model` (контракт `x5-v1`, поля — `docs/PAYLOAD.md`). Краткая карта — справочник (`docs/MANUAL.md`, раздел 8); файлы `web/` и `functions/` — `README.md`, «Структура». Источник правды — `web/app.js`; правила держат `tests/test_web_static.py`, `tests/test_web_contract.py`, `tests/test_web_node.py` (под Node: `tests/web_app_check.mjs` — витрина с заглушкой DOM, `tests/web_functions_check.mjs` — дверь данных) и `tests/test_payload.py`.
 
 ## Размеры
 
@@ -26,7 +26,7 @@
 
 ## Экраны
 
-Прямые адреса — `/#overview` … `/#book`. Названия миров и режимов все экраны берут из `worlds` и `regimes`.
+Прямые адреса — `/#overview` … `/#book`; незнакомый или битый хэш (`#%E0%A4%A`, `#100%`) открывает «Оценку», а адрес заменяется на `#overview` без новой записи истории — и при загрузке, и при смене адреса (`screenFromHash`, `syncHash`; проверка — `tests/web_app_check.mjs`). Названия миров и режимов все экраны берут из `worlds` и `regimes`.
 
 | # | Экран | Что на нём | Блоки выпуска |
 |---|---|---|---|

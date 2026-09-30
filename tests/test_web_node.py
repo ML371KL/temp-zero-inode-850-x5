@@ -4,7 +4,9 @@
 вход подаются через stdin с --input-type=module: так проверка не зависит от
 того, умеет ли установленный Node распознавать модули по содержимому).
 Поведение `functions/api/model.js` и `functions/_middleware.js` — сценарием
-tests/web_functions_check.mjs с подменой fetch, Cache API и ASSETS.
+tests/web_functions_check.mjs с подменой fetch, Cache API и ASSETS; поведение
+самой витрины (разбор адреса, события «Ближайшего отчёта», подписи, отрисовка
+всех экранов мока) — сценарием tests/web_app_check.mjs с заглушкой DOM.
 Нужен Node.js 18+ (на раннерах GitHub он есть); пропуска нет — без Node тест
 падает с понятной причиной.
 """
@@ -42,4 +44,9 @@ def test_functions_behave():
     major = int(_run(["-p", "process.versions.node.split('.')[0]"]).stdout.strip() or 0)
     assert major >= 18, f"нужен Node 18+ (fetch, Request, Response), а стоит {major}"
     result = _run([str(ROOT / "tests" / "web_functions_check.mjs")])
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_app_behaves():
+    result = _run([str(ROOT / "tests" / "web_app_check.mjs")])
     assert result.returncode == 0, result.stdout + result.stderr

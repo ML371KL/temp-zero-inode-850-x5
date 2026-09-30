@@ -189,7 +189,10 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 
 ## next_report
 * `period` (открытое полугодие), `events` [{date, title, kind ("trading_update" |
-  "ifrs" | "dividend" | "cbr"), confirmed (bool), note}].
+  "ifrs" | "dividend" | "cbr"), confirmed (bool), note}] — от даты оценки до МСФО,
+  закрывающего `period` (первое событие `ifrs` с датой позже конца полугодия),
+  включительно. Витрина ведёт отсчёт до этого МСФО, а более ранние отчёты (МСФО за
+  1/3 кв., `trading_update`) показывает отдельной строкой как события внутри полугодия.
 * `expectation`: {`revenue_growth` (г/г полугодия), `revenue`, `margin`,
   `adj_ebitda`, `by_regime` [{regime, margin}]}.
 * `guidance`: {`revenue_growth` [lo, hi], `margin_min`, `capex_pct` [lo, hi],
@@ -200,7 +203,7 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
 * `table`: [{`margin`, `point`, `median`, `d_point`, `d_median`, `posterior`
   {stress…full}}] (медианы — полной полосы); `neutral` {`median`, `point`};
   `neutral_gap` {`median`} (невязка медианы полной полосы при нейтральной марже, ₽);
-  `rub_per_01pp` (медиана на 0,1 п.п.).
+  `rub_per_01pp` (медиана на 0,1 п.п. — наклон МНК медианы по `table`, в среднем по таблице).
 
 ## journal
 `entries`: [{`id`, `target` ("x5.adj_margin" | "x5.revenue_growth"), `period`,

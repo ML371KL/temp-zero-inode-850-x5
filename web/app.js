@@ -1541,43 +1541,73 @@ function bandDrivers(d) {
 
 /* ── «Ближайший отчёт» (кратко) ── */
 
-// Ближайшее событие отчётности открытого полугодия (или любое ближайшее).
-function nextReportEvent(d) {
+// Последний день полугодия: «2026H2» → «2026-12-31», «2027H1» → «2027-06-30».
+function periodEnd(p) {
+  const m = /^(\d{4})H([12])$/.exec(String(p === null || p === undefined ? "" : p));
+  return m ? `${m[1]}-${m[2] === "1" ? "06-30" : "12-31"}` : null;
+}
+
+// События отчёта полугодия заголовка (`next_report.period`), от даты оценки.
+// `closing` — МСФО, которое закрывает полугодие: первое МСФО с датой позже его
+// конца (то же правило, что `until` выпуска в model/payload.py); к нему — отсчёт.
+// `earlier` — отчёт раньше закрывающего (МСФО за 1/3 кв., иначе операционные
+// результаты): он внутри полугодия, журнал не закрывает и медиану сам не двигает.
+function reportEvents(d) {
   const nr = obj(d.next_report);
   const from = obj(d.meta).valuation_date;
+  const end = periodEnd(nr.period);
   const events = list(nr.events).filter((e) => (daysBetween(from, e.date) ?? -1) >= 0)
     .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  return events.find((e) => e.kind === "ifrs") || events.find((e) => e.kind === "trading_update") || events[0] || null;
+  const closing = end ? events.find((e) => e.kind === "ifrs" && (daysBetween(end, e.date) ?? 0) > 0) || null : null;
+  const before = closing ? events.filter((e) => (daysBetween(e.date, closing.date) ?? 0) > 0) : events;
+  const earlier = before.find((e) => e.kind === "ifrs") || before.find((e) => e.kind === "trading_update") || null;
+  return { closing, earlier };
+}
+
+// Отсчёт до закрывающего отчёта: «171 день до ≈ 19 марта 2027».
+function countdown(d, ev) {
+  const days = daysBetween(obj(d.meta).valuation_date, ev.date);
+  return el("div", { class: "countdown" },
+    el("span", { class: "big" }, fmt.num(days)),
+    el("span", { class: "ink-2" }, `${plural(days, ["день", "дня", "дней"])} до ${ev.confirmed ? "" : "≈" + NBSP}${fmt.dateLong(ev.date)}`));
+}
+
+// Отчёт раньше закрывающего — отдельной строкой: его квартальную маржу нельзя
+// подставлять в «маржа полугодия → медиана».
+function earlierReport(d, ev) {
+  if (!ev) return null;
+  const days = daysBetween(obj(d.meta).valuation_date, ev.date);
+  return el("p", { class: "note-box", style: "margin-top:12px" },
+    el("strong", {}, `Раньше: ${ev.confirmed ? "" : "≈" + NBSP}${fmt.date(ev.date)}${isNum(days) ? ` (через ${fmt.days(days)})` : ""} — ${ev.title}.`),
+    " Внутри полугодия: журнал не закрывает, медиану само не двигает; в цену — только новой версией книги (правило A-P2u).");
 }
 
 function neutralSentence(d) {
   const nr = obj(d.next_report);
   const n = obj(nr.neutral);
   if (!isNum(n.median)) return "";
-  const slope = isNum(nr.rub_per_01pp) ? `; каждые 0,1${NBSP}п.п. маржи — около ${fmt.rub(nr.rub_per_01pp)} медианы` : "";
+  const slope = isNum(nr.rub_per_01pp) ? `; каждые 0,1${NBSP}п.п. маржи — в среднем около ${fmt.rub(nr.rub_per_01pp)} медианы` : "";
   return `Нейтральная маржа ${periodName(nr.period)} — ${fmt.pct(n.median, 2)}: при таком факте медиана не изменится, выше — вырастет, ниже — снизится${slope}.`;
 }
 
 function reportTeaser(d) {
   const nr = obj(d.next_report);
   if (!nr.period) return card({ title: "Ближайший отчёт", span: 6, link: ["report", "Подробно"] }, missing("ближайший отчёт"));
-  const ev = nextReportEvent(d);
-  const days = ev ? daysBetween(obj(d.meta).valuation_date, ev.date) : null;
+  const { closing: ev, earlier } = reportEvents(d);
   const exp = obj(nr.expectation);
   const g = obj(nr.guidance);
   const bench = list(nr.benchmarks)[0];
   return card({ title: `Ближайший отчёт: ${periodName(nr.period)}`, span: 6, link: ["report", "Подробно"],
     sub: ev ? `${ev.title}${ev.confirmed ? "" : " · ожидаемая дата"}` : "" },
-  ev ? el("div", { class: "countdown" },
-    el("span", { class: "big" }, fmt.num(days)),
-    el("span", { class: "ink-2" }, `${plural(days, ["день", "дня", "дней"])} до ${ev.confirmed ? "" : "≈" + NBSP}${fmt.dateLong(ev.date)}`)) : null,
+  ev ? countdown(d, ev) : empty(`Даты МСФО за ${periodName(nr.period)} в календаре выпуска нет.`),
+  earlierReport(d, earlier),
   el("div", { class: "kpis", style: "margin-top:14px" },
-    isNum(exp.margin) ? kpi(fmt.pct(exp.margin, 2), `ожидание модели: скорр. маржа ${periodName(nr.period)}`) : null,
+    isNum(exp.margin) ? kpi(fmt.pct(exp.margin, 2), `ожидание модели: скорр. маржа за всё ${periodName(nr.period)}`) : null,
     isNum(g.margin_min) ? kpi(`≥${NBSP}${fmt.pct(g.margin_min, 1)}`, "прогноз компании на год") : null,
     bench && isNum(bench.margin) ? kpi(fmt.pct(bench.margin, 2), `наивный эталон: ${lowerFirst(bench.name)}`) : null,
     isNum(obj(nr.neutral).median) ? kpi(fmt.pct(nr.neutral.median, 2), "нейтральная маржа: медиана не меняется") : null),
   list(nr.table).length ? el("div", { style: "margin-top:14px" },
-    el("span", { class: "tile-label" }, `Если маржа ${periodName(nr.period)} выйдет …, медиана станет:`),
+    el("span", { class: "tile-label" }, `Если маржа за всё ${periodName(nr.period)} выйдет …, медиана станет:`),
     impactChart(d, true)) : null,
   el("p", { class: "card-foot" }, neutralSentence(d)));
 }
@@ -2311,7 +2341,7 @@ function screenReport(d) {
   const g = obj(nr.guidance);
   const n = obj(nr.neutral);
   const facts = [];
-  if (isNum(exp.margin)) facts.push(`Модель ждёт скорректированную маржу ${fmt.pct(exp.margin, 2)}`
+  if (isNum(exp.margin)) facts.push(`Модель ждёт скорректированную маржу ${fmt.pct(exp.margin, 2)} за всё полугодие`
     + (isNum(exp.revenue_growth) ? ` и рост выручки ${fmt.signedPct(exp.revenue_growth, 1)} год к году` : ""));
   if (isNum(g.required_h2_margin)) facts.push(`чтобы выполнить прогноз на год, компании нужна маржа ${fmt.pct(g.required_h2_margin, 2)}`);
   if (isNum(n.median)) facts.push(`при марже ${fmt.pct(n.median, 2)} медиана не изменится`);
@@ -2329,18 +2359,20 @@ function reportCalendarCard(d) {
   const nr = obj(d.next_report);
   const from = obj(d.meta).valuation_date;
   const events = list(nr.events).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  const ev = nextReportEvent(d);
-  const days = ev ? daysBetween(from, ev.date) : null;
-  return card({ title: "Календарь отчёта", span: 5, sub: nr.period ? `${periodName(nr.period)} · отсчёт от даты оценки ${fmt.date(from)}` : "" },
-    ev ? el("div", { class: "countdown" },
-      el("span", { class: "big" }, fmt.num(days)),
-      el("span", { class: "ink-2" }, `${plural(days, ["день", "дня", "дней"])} до ${ev.confirmed ? "" : "≈" + NBSP}${fmt.dateLong(ev.date)}`)) : null,
-    ev ? el("p", { class: "ink-2", style: "margin-top:4px" }, el("strong", {}, ev.title)) : null,
+  const { closing: ev, earlier } = reportEvents(d);
+  const p = periodName(nr.period);
+  // Отчёт X5 до закрывающего МСФО — внутри полугодия (МСФО за 1/3 кв., операционные результаты).
+  const inside = (e) => ev && (e.kind === "ifrs" || e.kind === "trading_update") && (daysBetween(e.date, ev.date) ?? 0) > 0;
+  return card({ title: "Календарь отчёта", span: 5, sub: nr.period ? `${p} · отсчёт от даты оценки ${fmt.date(from)}` : "" },
+    ev ? countdown(d, ev) : (nr.period ? empty(`Даты МСФО за ${p} в календаре выпуска нет.`) : null),
+    ev ? el("p", { class: "ink-2", style: "margin-top:4px" }, el("strong", {}, ev.title), ` — закрывает ${p}`) : null,
+    earlierReport(d, earlier),
     events.length ? el("ul", { class: "list", style: "margin-top:12px" }, events.map((e) => {
       const left = daysBetween(from, e.date);
       return el("li", {},
         el("span", { class: "t" }, e.title, el("span", { class: "muted" },
-          [KIND_NAMES[e.kind], isNum(left) ? (left >= 0 ? `через ${fmt.days(left)}` : "прошло") : ""].filter(Boolean).join(" · "))),
+          [KIND_NAMES[e.kind], e === ev ? `закрывает ${p}` : inside(e) ? "внутри полугодия" : "",
+            isNum(left) ? (left >= 0 ? `через ${fmt.days(left)}` : "прошло") : ""].filter(Boolean).join(" · "))),
         el("span", { class: "v" }, `${e.confirmed ? "" : "≈" + NBSP}${fmt.date(e.date)}`));
     })) : empty("Событий отчёта в выпуске нет."),
     events.some((e) => e.note) ? el("div", { class: "card-foot" }, detailsBlock("Примечания", el("div", {},
@@ -2497,7 +2529,7 @@ function impactCard(d) {
   ], rows));
   const byMargin = rows.slice().sort((a, b) => a.margin - b.margin);
   const lo = byMargin[0], hi = byMargin[byMargin.length - 1];
-  return card({ title: `Что даст отчёт: факт маржи ${periodName(nr.period)} → оценка`, tools: fig.button,
+  return card({ title: `Что даст отчёт: факт маржи за всё ${periodName(nr.period)} → оценка`, tools: fig.button,
     sub: "Факт маржи сдвигает вероятности режимов и отклонение маржи от цели; с ними — медиану и точку." },
   legend([["key-line key-model", "медиана"], ["key-line key-dash", "точка"], ["key-line key-ink", "медиана сейчас"],
     ["key-line key-market", "рынок"]]),

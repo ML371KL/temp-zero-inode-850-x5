@@ -1,13 +1,18 @@
-"""(1) Структура ставок X5: доля фикса, «старый» фикс и его выход на оферты, спреды base/stress, доходность кассы.
+"""(1) Структура ставок X5: доля фикса, «старый» фикс и его выход на оферты, спреды base/stress, частота купона
+нового фикса, издержки размещения, доходность кассы.
 
 Ключи книги: financing.fixed_share, legacy_rate, legacy_weight, spread_float{base,stress},
-spread_fixed{base,stress}, cash_yield_k (docs/MODEL.md §4.9). Читает только inputs/.
-Выход: rates_out.json, rates.out.
+spread_fixed{base,stress}, fixed_coupon_freq, issuance_cost, cash_yield_k (docs/MODEL.md §0, §4.9).
+Конвенции (MODEL §0): legacy_rate, спред флоатеров к КС, issuance_cost и k — простые годовые ставки
+(ACT/365: купон; проценты / средний долг / доля года); spread_fixed — к эффективной доходности (G-спред к
+КБД), в ставку долга новый фикс входит купоном облигации с fixed_coupon_freq выплатами в год.
+Читает только inputs/. Выход: rates_out.json, rates.out.
 """
 from __future__ import annotations
 
 import csv
 import datetime as dt
+from collections import Counter
 
 from common import (INPUTS, Report, avg_key, d, half_bounds, halves, key_rate_fn, load, mean, median,
                     overlap_years, par_bond, r4, r6, v, write_json, zcyc_check, zcyc_fn, zcyc_load)
@@ -274,6 +279,37 @@ out["spreads"] = {"float_weighted_0928": r4(w_now), "float_recent_mean": r4(mean
                   "book": {"spread_float": {"base": fl_base, "stress": fl_stress},
                            "spread_fixed": {"base": fx_base, "stress": fx_stress}}}
 
+# ------------------------------------------------------------------ 4b. частота купона нового фикса
+R.h("4b. Частота купона нового фикса: доходность → купон (MODEL §0, §4.9)")
+fixed_all = [b for b in BONDS if b["type"] == "fixed"]
+fixed_live = [b for b in fixed_all if b["face_2026_09_28"] > 0]
+freq_all = Counter(b["freq"] for b in fixed_all)
+freq_live = Counter(b["freq"] for b in fixed_live)
+face_live = {f: sum(b["face_2026_09_28"] for b in fixed_live if b["freq"] == f) for f in sorted(freq_live)}
+R("  фиксированные выпуски реестра (выплат купона в год; номинал 28.09.2026):")
+for b in sorted(fixed_all, key=lambda b: b["issue_date"]):
+    R(f"    {b['series']} {b['issue_date']}: {b['freq']:2d}  {b['face_2026_09_28']:7.3f}"
+      + ("" if b["face_2026_09_28"] > 0 else f" (погашен {b['exit_date']})"))
+R(f"  все выпуски реестра: {dict(sorted(freq_all.items()))} (выплат в год: выпусков); в обращении 28.09: "
+  f"{dict(sorted(freq_live.items()))}, номинал {face_live}")
+freq_book = freq_live.most_common(1)[0][0]
+assert len(freq_live) == 1, "в обращении фикс с разной частотой купона — суждение нужно пересмотреть"
+W_ = load("worlds.json")["worlds"]
+y_ex = W_["N"]["zero_curve"]["3"] + fx_base
+c_ex = freq_book * ((1 + y_ex) ** (1 / freq_book) - 1)
+R(f"  G-спред A-F1b — к эффективной доходности (par_bond: (1 + c/m)^m − 1). Облигация по номиналу с m купонами "
+  f"в год при эффективной доходности y платит купон cpn(y) = m((1 + y)^(1/m) − 1); за полугодие начисляется "
+  f"cpn/2. Пример: мир N, узел 3 года + base = {y_ex:.4f} → купон {c_ex:.4f}, за полугодие {c_ex / 2:.5f} "
+  f"(корень {(1 + y_ex) ** 0.5 - 1:.5f}, половина доходности {y_ex / 2:.5f})")
+R(f"  КНИГА fixed_coupon_freq = {freq_book}: все {len(fixed_live)} фиксированных выпусков в обращении "
+  f"({sum(face_live.values()):.1f} млрд) и все размещения с 12.2024 платят купон ежемесячно; квартальный — только "
+  f"погашенный {', '.join(b['series'] for b in fixed_all if b['freq'] != freq_book)}")
+out["coupon_freq"] = {"issues": {b["series"]: b["freq"] for b in fixed_all},
+                      "by_freq_all": {str(k): v for k, v in sorted(freq_all.items())},
+                      "by_freq_live": {str(k): v for k, v in sorted(freq_live.items())},
+                      "face_live_by_freq": {str(k): r4(v) for k, v in face_live.items()},
+                      "example_n": {"yield": r6(y_ex), "coupon": r6(c_ex)}, "book": freq_book}
+
 # ------------------------------------------------------------------ 5. доходность кассы
 R.h("5. Доходность кассы (подушки) в долях ключевой")
 Q = load("quarterly_finance.json")["quarters"]
@@ -312,13 +348,19 @@ out["cash_yield"] = {"k_quarters": [r4(x) for x in ks], "k_mean": r4(k_mean), "k
 # ------------------------------------------------------------------ 6. сверка ставки модели 2П2026
 R.h("6. Ставка долга модели на 2П2026 при книжных значениях (MODEL §4.9)")
 W = load("worlds.json")["worlds"]
+model_rate = {}
 for w, credit in (("N", "base"), ("H", "base"), ("M", "stress")):
     key = W[w]["key_rate"]["2026H2"]
     z3 = W[w]["zero_curve"]["3"]
     lw = legacy_book["2026H2"]
-    fixed = lw * legacy_book_rate + (1 - lw) * (z3 + out["spreads"]["book"]["spread_fixed"][credit] + ic_book)
+    y_new = z3 + out["spreads"]["book"]["spread_fixed"][credit]
+    c_new = freq_book * ((1 + y_new) ** (1 / freq_book) - 1)
+    fixed = lw * legacy_book_rate + (1 - lw) * (c_new + ic_book)
     rate = fixed_2026h2 * fixed + (1 - fixed_2026h2) * (key + out["spreads"]["book"]["spread_float"][credit] + ic_book)
-    R(f"  мир {w} ({credit}): КС {key:.4f}, фикс {fixed:.4f}, ставка долга {rate:.4f}")
+    model_rate[w] = r6(rate)
+    R(f"  мир {w} ({credit}): КС {key:.4f}, новый фикс: доходность {y_new:.4f} → купон {c_new:.4f}; фикс {fixed:.4f}, "
+      f"ставка долга (простая) {rate:.4f}, начисление за полугодие {rate / 2:.5f}")
+out["model_rate_2026h2"] = model_rate
 R(f"  факт: эффективная ставка по займам 1П2026 {REP['effective_rate_h1_2026_pct'] / 100:.4f} при средней КС "
   f"{ks_h1:.4f}; купон облигаций 28.09 ≈15,2 % при КС 14,00 % (X2 §3.4)")
 

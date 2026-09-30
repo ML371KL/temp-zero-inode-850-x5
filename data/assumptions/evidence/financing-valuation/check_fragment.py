@@ -39,7 +39,8 @@ def eq(label: str, a, b) -> None:
 # 1. ключи области
 AREA = {"joint": {"world_prob", "market_implied_prob", "neutral_world", "lambda", "world_links"},
         "financing": {"fixed_share", "legacy_rate", "legacy_weight", "spread_float", "spread_fixed",
-                      "issuance_cost", "cash_buffer_pct", "cash_yield_k", "target_leverage", "dividends_from"},
+                      "fixed_coupon_freq", "issuance_cost", "cash_buffer_pct", "cash_yield_k", "target_leverage",
+                      "dividends_from"},
         "bridge": {"include"},
         "valuation": {"beta_u", "erp", "governance_discount", "treasury_sale_price_k", "headline", "uncertainty",
                       "reverse_dcf"},
@@ -64,6 +65,7 @@ eq("legacy_weight", F["legacy_weight"], R_["legacy"]["book_weight"])
 eq("legacy_rate", F["legacy_rate"], R_["legacy"]["book_rate"])
 eq("spread_float", F["spread_float"], R_["spreads"]["book"]["spread_float"])
 eq("spread_fixed", F["spread_fixed"], R_["spreads"]["book"]["spread_fixed"])
+eq("fixed_coupon_freq", F["fixed_coupon_freq"], R_["coupon_freq"]["book"])
 eq("issuance_cost", F["issuance_cost"], R_["issuance_cost"]["book"])
 eq("cash_yield_k", F["cash_yield_k"], R_["cash_yield"]["book"])
 eq("target_leverage", F["target_leverage"], L_["target_leverage"]["book"])

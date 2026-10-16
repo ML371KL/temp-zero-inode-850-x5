@@ -66,6 +66,7 @@
 | ТА 4 кв. 2025 | `q4_2025_trading_update_rus.pdf` | открытия (с. 5–6); прирост 12М 2024 сопоставимо (с. 14) | `d71838088c924cadfb98f53c4b5a351a56e0484d742cc830a00230ab3facc3c4` |
 | ТА 1 кв. 2026 | `q1_2026_trading_update_rus.pdf` | открытия (с. 3–4, 12) | `d4fbec849dff0edb96a079f166364061fde2c082580a2f4e4777bb0a78b7802d` |
 | ТА 2 кв. 2026 | `q2_2026_trading_update_rus.pdf` | открытия (с. 3–4) | `beddc0e0e43d0fa047aecb697a5a5087e04a4e72a57b5600b55359ecb5a1ba20` |
+| ТА 3 кв. 2026 | `q3_2026_trading_update_rus.pdf` | LFL, трафик и чек 3 кв. (с. 1, 9), выручка и «прочее» (с. 8) — только книга 1.1.4 (A-R4), в `data/facts` не входит | `7762079d095b3094ef49804ebae6e6575adb8f2905828f1c36ee38e557c148a8` |
 | Fix Price databook | `peer-fixprice-pjsc-databook-6m2026.xlsx` | EBITDA IAS 17, долг, прибыль | `63d6ae6d2b6c333d5ea503ee6abd94812575aef5b0bc68787af50f5be40c028d` |
 | Fix Price ПР | `peer-fixprice-pjsc-q2-2026-results-rus.pdf` | выкуп акций (с. 5) | `e0feeb7d6abd89123788269866973c68c86d68a4c3899fd4a6067813629b89fc` |
 | О'Кей МСФО | `peer-okey-1h2026-ifrs-fs.pdf` | касса и долг (с. 3–4), акции (с. 21) | `f504cec6bc558fc604c6c698cec3fadf4aae992f64f79b0f43186e240dda10dc` |

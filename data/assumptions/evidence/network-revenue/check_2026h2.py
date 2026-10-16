@@ -171,8 +171,17 @@ def main() -> None:
     R.p(f"Прогноз компании на 2026 г.: +{pc(gd['revenue_growth'][0], 0)}…+{pc(gd['revenue_growth'][1], 0)} % → 2П2026 нужно "
         f"+{pc(need[0], 1)}…+{pc(need[1], 1)} % г/г (data/facts/guidance.json). Книга: +{pc(g_e, 1)} % — ниже нижней границы "
         f"на {pc(need[0] - g_e, 1)} п.п.; год — +{pc(g26, 1)} %.")
+    # вердикт — по числам, а не текстом: до книги 1.1.4 здесь стояло «внутри» при любом g_e
+    if g_e > retro[1]:
+        verdict = f"выше верхнего края на {pc(g_e - retro[1], 1)} п.п. (в пределах RMSE метода)" \
+            if g_e - retro[1] <= 0.025 else f"выше верхнего края на {pc(g_e - retro[1], 1)} п.п."
+    elif g_e < retro[0]:
+        verdict = f"ниже нижнего края на {pc(retro[0] - g_e, 1)} п.п. (в пределах RMSE метода)" \
+            if retro[0] - g_e <= 0.025 else f"ниже нижнего края на {pc(retro[0] - g_e, 1)} п.п."
+    else:
+        verdict = "внутри"
     R.p(f"Ретро-оценка 3 кв. 2026 (X5-indicators §4, разностная форма без подгонки): +{pc(retro[0], 1)}…+{pc(retro[1], 1)} %, "
-        f"RMSE метода 2,5 п.п. Книга 2П2026 +{pc(g_e, 1)} % — внутри.")
+        f"RMSE метода 2,5 п.п. Книга 2П2026 +{pc(g_e, 1)} % — {verdict}.")
     nf = load("network_facts.json")
     Ah = {p: x["v"] for p, x in nf["area_end"].items()}
     a26 = sum(J["world_prob"][W] * J["regime_prob"][reg] * ctx.network(tariff_of(A, W, reg)).area_end[0]

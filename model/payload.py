@@ -916,7 +916,8 @@ def report_events(period: str | None, v: dt.date) -> tuple[list[dict], dict | No
 
 def _guidance(F: Facts, period: str | None) -> dict:
     G = F.data.get("guidance")
-    empty = {"year": None, "revenue_growth": None, "margin_min": None, "capex_pct": None,
+    empty = {"year": None, "revenue_growth": None, "margin_min": None, "margin": None,
+             "margin_kind": None, "capex_pct": None,
              "openings": None, "required_h2_margin": None, "required_h2_growth": None,
              "net_debt_to_ebitda": None, "src": None}
     if not G:
@@ -926,11 +927,18 @@ def _guidance(F: Facts, period: str | None) -> dict:
     h2 = period is not None and period == f"{year}H2"
     growth_h2 = implied.get(f"revenue_{year}H2_growth") if h2 else None
     raw = F.raw.get("guidance") or {}
+    # Прогноз маржи — «не ниже» (adj_margin_min) или «около» (adj_margin + adj_margin_kind: approx,
+    # с уточнения 29.10.2026); margin — значение любого вида, margin_kind — вид.
+    approx = G.get("adj_margin") is not None
+    margin = G.get("adj_margin") if approx else G.get("adj_margin_min")
+    need = implied.get(f"adj_margin_{year}H2", implied.get(f"adj_margin_{year}H2_min"))
     return {"year": year, "published": G.get("published"),
             "revenue_growth": G.get("revenue_growth"), "margin_min": G.get("adj_margin_min"),
+            "margin": margin,
+            "margin_kind": (G.get("adj_margin_kind") or "approx") if approx else ("min" if margin is not None else None),
             "capex_pct": G.get("capex_pct"), "openings": G.get("openings_min"),
             "net_debt_to_ebitda": G.get("net_debt_to_ebitda"),
-            "required_h2_margin": implied.get(f"adj_margin_{year}H2_min") if h2 else None,
+            "required_h2_margin": need if h2 else None,
             "required_h2_growth": growth_h2[0] if isinstance(growth_h2, list) else growth_h2,
             "required_h2_growth_range": growth_h2 if isinstance(growth_h2, list) else None,
             "src": _raw_src(raw.get("revenue_growth")), "note": None}

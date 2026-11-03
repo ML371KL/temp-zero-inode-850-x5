@@ -231,9 +231,11 @@ perekrestok, chizhik, digital, other}] (выручка), `format_area` (то ж�
   полугодия среди `events`.
 * `expectation`: {`revenue_growth` (г/г полугодия), `revenue`, `margin`,
   `adj_ebitda`, `by_regime` [{regime, margin}]}.
-* `guidance`: {`revenue_growth` [lo, hi], `margin_min`, `capex_pct` [lo, hi],
+* `guidance`: {`revenue_growth` [lo, hi], `margin_min`, `margin`, `margin_kind`, `capex_pct` [lo, hi],
   `openings`, `required_h2_margin`, `required_h2_growth` (нижняя граница),
-  `required_h2_growth_range`, `src`}.
+  `required_h2_growth_range`, `src`}. Равные границы диапазона — точечный прогноз («около 12 %»);
+  `margin` — прогноз маржи любого вида, `margin_kind` — `min` («не ниже», тогда он же в `margin_min`)
+  или `approx` («около», с уточнения 29.10.2026; `margin_min` — null).
 * `benchmarks`: [{`name`, `margin`, `revenue_growth`, `note`}] — наивные эталоны
   («то же полугодие год назад», «среднее двух полугодий», «как прошлое полугодие»).
 * `table`: [{`margin`, `point`, `median`, `d_point`, `d_median`, `posterior`

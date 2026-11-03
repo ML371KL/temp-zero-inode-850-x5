@@ -1636,6 +1636,19 @@ function neutralSentence(d) {
   return `Нейтральная маржа ${periodName(nr.period)} — ${fmt.pct(n.median, 2)}: при таком факте медиана не изменится, выше — вырастет, ниже — снизится${slope}.`;
 }
 
+// Прогноз компании на год: маржа «не ниже» или «около» (margin_kind), диапазоны с равными
+// границами — точечный прогноз («около 12 %»).
+function guideMargin(g) {
+  const v = isNum(g.margin) ? g.margin : g.margin_min;
+  if (!isNum(v)) return null;
+  const approx = g.margin_kind === "approx";
+  return { short: `${approx ? "≈" : "≥"}${NBSP}${fmt.pct(v, 1)}`, long: `${approx ? "около" : "не ниже"} ${fmt.pct(v, 1)}` };
+}
+
+function guideRange(r) {
+  return Array.isArray(r) && r.length === 2 && r.every(isNum) ? { lo: r[0], hi: r[1], point: r[0] === r[1] } : null;
+}
+
 function reportTeaser(d) {
   const nr = obj(d.next_report);
   if (!nr.period) return card({ title: "Ближайший отчёт", span: 6, link: ["report", "Подробно"] }, missing("ближайший отчёт"));
@@ -1649,7 +1662,7 @@ function reportTeaser(d) {
   earlierReport(d, earlier),
   el("div", { class: "kpis", style: "margin-top:14px" },
     isNum(exp.margin) ? kpi(fmt.pct(exp.margin, 2), `ожидание модели: скорр. маржа за всё ${periodName(nr.period)}`) : null,
-    isNum(g.margin_min) ? kpi(`≥${NBSP}${fmt.pct(g.margin_min, 1)}`, "прогноз компании на год") : null,
+    guideMargin(g) ? kpi(guideMargin(g).short, "прогноз компании на год") : null,
     bench && isNum(bench.margin) ? kpi(fmt.pct(bench.margin, 2), `наивный эталон: ${lowerFirst(bench.name)}`) : null,
     isNum(obj(nr.neutral).median) ? kpi(fmt.pct(nr.neutral.median, 2), "нейтральная маржа: медиана не меняется") : null),
   list(nr.table).length ? el("div", { style: "margin-top:14px" },
@@ -2482,7 +2495,7 @@ function expectationCard(d) {
     ...benches.filter((b) => isNum(b.margin)).map((b) => ({ v: b.margin, kind: "bench",
       tip: { title: `Эталон: ${benchName(b.name)}`, rows: [["маржа", fmt.pct(b.margin, 2)]] } })),
     ...(isNum(g.required_h2_margin) ? [{ v: g.required_h2_margin, kind: "guide", text: `нужно компании ${fmt.pct(g.required_h2_margin, 2)}`,
-      tip: { title: "Маржа полугодия, нужная для прогноза на год", rows: [["маржа", fmt.pct(g.required_h2_margin, 2)], ["прогноз на год", isNum(g.margin_min) ? `≥ ${fmt.pct(g.margin_min, 1)}` : "—"]] } }] : []),
+      tip: { title: "Маржа полугодия, нужная для прогноза на год", rows: [["маржа", fmt.pct(g.required_h2_margin, 2)], ["прогноз на год", guideMargin(g) ? guideMargin(g).short : "—"]] } }] : []),
   ];
   const growthMarks = [
     ...(isNum(exp.revenue_growth) ? [{ v: exp.revenue_growth, kind: "model", text: `модель ${fmt.signedPct(exp.revenue_growth, 1)}`,
@@ -2494,10 +2507,14 @@ function expectationCard(d) {
   ];
   // Годовой прогноз компании — в тексте и таблице; на шкале полугодия — полоса
   // роста 2П, при котором год попадает в прогноз (та же величина, что у отметок).
-  const yearBand = Array.isArray(g.revenue_growth) && g.revenue_growth.every(isNum) ? g.revenue_growth : null;
-  const growthBand = Array.isArray(g.required_h2_growth_range) && g.required_h2_growth_range.every(isNum) ? g.required_h2_growth_range : null;
-  const yearText = yearBand ? `${fmt.num(yearBand[0] * 100, 0)}–${fmt.num(yearBand[1] * 100, 0)}${THIN}%` : "—";
+  const yr = guideRange(g.revenue_growth);
+  const yearBand = yr ? [yr.lo, yr.hi] : null;
+  const gr = guideRange(g.required_h2_growth_range);
+  const growthBand = gr && !gr.point ? [gr.lo, gr.hi] : null;
+  const yearText = yr ? (yr.point ? `≈${NBSP}${fmt.num(yr.lo * 100, 0)}${THIN}%` : `${fmt.num(yr.lo * 100, 0)}–${fmt.num(yr.hi * 100, 0)}${THIN}%`) : "—";
   const bandText = growthBand ? `${fmt.signedPct(growthBand[0], 1)}…${fmt.signedPct(growthBand[1], 1)}` : null;
+  const gm = guideMargin(g);
+  const capex = guideRange(g.capex_pct);
   const charts = el("div", {},
     el("span", { class: "tile-label" }, `Скорректированная маржа EBITDA, ${p}`),
     stripChart(marginMarks, { pct: true, label: "Маржа: модель, режимы, эталоны и прогноз компании" }),
@@ -2513,7 +2530,7 @@ function expectationCard(d) {
     { name: "Ожидание модели", margin: fmt.pct(exp.margin, 2), growth: fmt.signedPct(exp.revenue_growth, 1) },
     ...list(exp.by_regime).map((r) => ({ name: `модель в режиме «${regimeName(d, r.regime)}»`, margin: fmt.pct(r.margin, 2), growth: "" })),
     ...benches.map((b) => ({ name: `Эталон: ${benchName(b.name)}`, margin: fmt.pct(b.margin, 2), growth: fmt.signedPct(b.revenue_growth, 1) })),
-    { name: "Прогноз компании на год", margin: isNum(g.margin_min) ? `≥ ${fmt.pct(g.margin_min, 1)}` : "—", growth: yearText },
+    { name: "Прогноз компании на год", margin: gm ? gm.short : "—", growth: yearText },
     { name: `Нужно компании в ${p}`, margin: fmt.pct(g.required_h2_margin, 2), growth: bandText || fmt.signedPct(g.required_h2_growth, 1) },
   ]));
   return card({ title: `Ожидание модели на ${p}`, span: 7, tools: fig.button,
@@ -2527,9 +2544,9 @@ function expectationCard(d) {
     ["key-dot key-third", "наивные эталоны"], ["key-line key-market", "нужно компании для прогноза"],
     ...(growthBand ? [["key-band", `рост ${p}, нужный для прогноза на год`]] : [])]), fig.box),
   el("p", { class: "card-foot" },
-    `Прогноз компании на год: маржа ${isNum(g.margin_min) ? "не ниже " + fmt.pct(g.margin_min, 1) : "—"}`,
-    yearBand ? `, выручка ${fmt.signedPct(yearBand[0], 0)}…${fmt.signedPct(yearBand[1], 0)}` : "",
-    Array.isArray(g.capex_pct) && g.capex_pct.every(isNum) ? `, capex ${fmt.num(g.capex_pct[0] * 100, 1)}–${fmt.num(g.capex_pct[1] * 100, 1)}${THIN}% выручки` : "",
+    `Прогноз компании на год: маржа ${gm ? gm.long : "—"}`,
+    yr ? (yr.point ? `, выручка около ${fmt.signedPct(yr.lo, 0)}` : `, выручка ${fmt.signedPct(yr.lo, 0)}…${fmt.signedPct(yr.hi, 0)}`) : "",
+    capex ? (capex.point ? `, capex около ${fmt.num(capex.lo * 100, 1)}${THIN}% выручки` : `, capex ${fmt.num(capex.lo * 100, 1)}–${fmt.num(capex.hi * 100, 1)}${THIN}% выручки`) : "",
     isNum(g.openings) ? `, открытий больше ${fmt.num(g.openings)}` : "", ".",
     g.src ? [" ", detailsBlock("Источник", srcText(g.src))] : null));
 }

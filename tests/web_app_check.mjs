@@ -452,6 +452,28 @@ const upcoming = (v) => H2_2026.filter((e) => e.date >= v);
     && !bare.includes("в обращении,"), bare.slice(-300));
 }
 
+/* ── 4б. прогноз компании: «около» и точечные значения (уточнение 29.10.2026) ── */
+
+{
+  const page = makePage();
+  const d = sample();
+  d.next_report.guidance = { ...d.next_report.guidance, revenue_growth: [0.12, 0.12], margin_min: null, margin: 0.06,
+    margin_kind: "approx", capex_pct: [0.04, 0.04], required_h2_growth: 0.13366, required_h2_growth_range: [0.13366, 0.13366] };
+  page.ctx.__d = d;
+  const teaser = squash(visibleText(page.get("reportTeaser(globalThis.__d)")));
+  check("«Ближайший отчёт»: прогноз маржи — «≈ 6,0 %»", teaser.includes("≈ 6,0 %") && !teaser.includes("≥ 6,0 %"), teaser.slice(0, 400));
+  const card = squash(visibleText(page.get("expectationCard(globalThis.__d)")));
+  check("«Ожидание модели»: подпись — около 6 %, около +12 %, capex около 4 %", card.includes("маржа около 6,0 %, выручка около +12 %, capex около 4,0 % выручки")
+    && !card.includes("не ниже") && !card.includes("+12 %…+12 %") && !card.includes("4,0–4,0"), card.slice(-500));
+  // Прежний вид прогноза (до 29.10.2026, margin_min) читается как раньше.
+  const old = sample();
+  page.ctx.__d = old;
+  const oldCard = squash(visibleText(page.get("expectationCard(globalThis.__d)")));
+  check("прежний прогноз «не ниже» и диапазоны — без изменений", isFinite(old.next_report.guidance.margin_min)
+    ? oldCard.includes(`маржа не ниже ${String(old.next_report.guidance.margin_min * 100).replace(".", ",")}`) || oldCard.includes("маржа не ниже")
+    : true, oldCard.slice(-400));
+}
+
 /* ── 5. все экраны мока рисуются, графики — в ширине карточки и телефона ── */
 
 for (const width of [640, 343]) {

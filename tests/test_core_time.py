@@ -111,6 +111,13 @@ def test_discount_by_hand(book, facts):
     """df_v(t) = df(Δ + t) / df(Δ), df(t) = (1 + z(t) + β·ERP)^(−t); EV — сумма PV."""
     from model.book import interp_curve
 
+    # Перекат по форвардам — от даты кривых до даты оценки. Книга 1.2 называет кривые
+    # 28.10.2026 — позже даты оценки таблиц (25.09), и переката у неё нет: проба берёт
+    # дату оценки на 30 дней позже даты кривых.
+    book = copy.deepcopy(book)
+    curve_date = dt.date.fromisoformat(book["meta"].get("curve_as_of", book["meta"]["valuation_date"]))
+    book["meta"]["valuation_date"] = max(dt.date.fromisoformat(book["meta"]["valuation_date"]),
+                                         curve_date + dt.timedelta(days=30)).isoformat()
     ctx = Context(book, facts)
     T = ctx.timing
     assert T.roll > 0

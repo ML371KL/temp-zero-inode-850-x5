@@ -452,7 +452,7 @@ def build_worlds() -> None:
     import yaml
     draft = yaml.safe_load((REPO / "data/assumptions/assumptions.draft.yaml").read_text(encoding="utf-8"))
     W = draft["worlds"]
-    dump("worlds.json", {"_about": "Миры книги X5 (= книга Магнита 1.6, кривая 18.09.2026): ключевая, кривая, π_LT",
+    dump("worlds.json", {"_about": "Миры книги X5 (= книга Магнита 1.7, кривая 28.10.2026): ключевая, кривая, π_LT",
                          "source": src_note(REPO / "data/assumptions/assumptions.draft.yaml"),
                          "worlds_source": W["source"],
                          "worlds": {w: {"key_rate": W[w]["key_rate"], "zero_curve": W[w]["zero_curve"],

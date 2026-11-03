@@ -159,15 +159,15 @@
  },
  "checks": {
   "capex_2026": {
-   "high/base": 0.038965,
-   "high/high": 0.042241,
-   "high/low": 0.036545,
-   "low/base": 0.037621,
-   "low/high": 0.040891,
-   "low/low": 0.035207,
-   "mid/base": 0.038241,
-   "mid/high": 0.041514,
-   "mid/low": 0.035825
+   "high/base": 0.038973,
+   "high/high": 0.04225,
+   "high/low": 0.036552,
+   "low/base": 0.037629,
+   "low/high": 0.040899,
+   "low/low": 0.035213,
+   "mid/base": 0.038249,
+   "mid/high": 0.041523,
+   "mid/low": 0.035831
   },
   "model_stationary_total": 0.030345,
   "replacement_corridor": {
@@ -178,10 +178,10 @@
   "run_rate_1h26": 0.037357
  },
  "checks_2026": {
-  "expected_mid": 0.038259,
-  "h2_bn": 103.564913,
-  "h2_pct": 0.039069,
-  "h2_to_h1": 1.045842,
+  "expected_mid": 0.038266,
+  "h2_bn": 103.603323,
+  "h2_pct": 0.039084,
+  "h2_to_h1": 1.04623,
   "p_levels": {
    "base": 0.57925,
    "high": 0.18175,

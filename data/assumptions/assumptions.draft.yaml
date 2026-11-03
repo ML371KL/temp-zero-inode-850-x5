@@ -24,7 +24,7 @@ meta:
 #   M: ...
 
 worlds:
-  source: {book: magnit-850oa book-1.7, curve_date: '2026-10-28', tag_commit: 10d6788a0e42b327831c16663f72846c1e4ebbe0, kernel_sha256: 92ee3dd15a592f60d1e816c048fc3d5c2f381dbe4a1e9e18b9324345a6b4a493}
+  source: {book: magnit-850oa book-1.7, curve_date: '2026-10-28', tag_commit: 2dddccc6544e2c4bcb4715105cd855a80615e51c, kernel_sha256: 92ee3dd15a592f60d1e816c048fc3d5c2f381dbe4a1e9e18b9324345a6b4a493}
   N:
     name: Нормализация
     key_rate: {2026H2: 0.1405, 2027H1: 0.1325, 2027H2: 0.125, 2028H1: 0.11, 2028H2: 0.0975, 2029H1: 0.09, 2029H2: 0.085, 2030H1: 0.085, 2030H2: 0.0825, 2031H1: 0.08, 2031H2: 0.08, 2032H1: 0.08, 2032H2: 0.08, 2033H1: 0.08, 2033H2: 0.08, 2034H1: 0.08, 2034H2: 0.08, 2035H1: 0.08, 2035H2: 0.08, 2036H1: 0.08, 2036H2: 0.08}

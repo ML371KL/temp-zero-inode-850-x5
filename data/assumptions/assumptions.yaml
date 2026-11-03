@@ -19,7 +19,7 @@ worlds:
   source:
     book: magnit-850oa book-1.7
     curve_date: '2026-10-28'
-    tag_commit: 10d6788a0e42b327831c16663f72846c1e4ebbe0
+    tag_commit: 2dddccc6544e2c4bcb4715105cd855a80615e51c
     kernel_sha256: 92ee3dd15a592f60d1e816c048fc3d5c2f381dbe4a1e9e18b9324345a6b4a493
   N:
     name: Нормализация

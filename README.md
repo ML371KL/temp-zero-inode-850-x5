@@ -8,9 +8,9 @@
 
 На входах книги (версия и дата оценки — `data/assumptions/results.json`, блоки `book` и `inputs`; рынок <!--=inputs.market_price r1-->1 808,5<!--/--> ₽):
 
-- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 300<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 550<!--/-->–<!--=band.printed.p90 r0-->4 100<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->2 900<!--/-->–<!--=band.printed.p75 r0-->3 750<!--/--> ₽;
-- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 400<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->0,40<!--/--> %;
-- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+46,9<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
+- крупно — **медиана по суждениям книги ≈<!--=band.printed.median r0-->3 350<!--/--> ₽**, полоса 80 % — <!--=band.printed.p10 r0-->2 600<!--/-->–<!--=band.printed.p90 r0-->4 150<!--/--> ₽, 50 % — <!--=band.printed.p25 r0-->2 950<!--/-->–<!--=band.printed.p75 r0-->3 800<!--/--> ₽;
+- рядом — **точка при центральных значениях всех суждений ≈<!--=point.printed.central r0-->3 450<!--/--> ₽** и вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->0,25<!--/--> %;
+- стоимость бизнеса — **EV медианы против рыночного V\*: <!--=band.center_ev.gap_median sp1-->+49,0<!--/--> %**; что должно измениться, чтобы рынок оказался прав, — обратный DCF (справочник, раздел 1).
 
 Живой выпуск считает на сегодняшней цене и печатает свои числа — экран «Оценка» и `/api/model`. Числа выше стоят в метках и перерисовываются из `data/assumptions/results.json` (`python -B ops/tools/render_numbers.py`).
 
@@ -90,7 +90,7 @@
 
 | Путь | Что |
 |---|---|
-| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журналы версий — `V1.1-CHANGES.md` (1.1), `V1.1.1-CHANGES.md` (1.1.1, errata), `V1.1.2-CHANGES.md` (1.1.2, errata), `V1.1.3-CHANGES.md` (1.1.3, правки по внешнему аудиту 30.09.2026) и `V1.1.4-CHANGES.md` (1.1.4, трафик по операционным результатам 3 кв. 2026); состав и порядок новой версии — `data/assumptions/README.md` |
+| `assumptions/` | книга допущений — единственный экземпляр; канон — `assumptions.yaml` вместе с текстом `ASSUMPTIONS-BOOK.md`, журналы версий — `V1.1-CHANGES.md` (1.1), `V1.1.1-CHANGES.md` (1.1.1, errata), `V1.1.2-CHANGES.md` (1.1.2, errata), `V1.1.3-CHANGES.md` (1.1.3, правки по внешнему аудиту 30.09.2026), `V1.1.4-CHANGES.md` (1.1.4, трафик по операционным результатам 3 кв. 2026) и `V1.2-CHANGES.md` (1.2, миры ставок книги Магнита 1.7); состав и порядок новой версии — `data/assumptions/README.md` |
 | `facts/` | отчётные факты на якорь книги, у каждого числа источник: `accounting`, `network`, `balance`, `bridge`, `shares`, `dividends`, `history` (читает ядро; из `history` — выручку и capex/выручку полугодий до якоря, `docs/MODEL.md` §4.5; `dividends` и `history` читает и выпуск), `debt_register`, `peers`, `brokers`, `guidance` (читает выпуск), `actuals` (факты журнала, ведёт человек); поля — `data/facts/SCHEMA.md`, первичка и сверка — `docs/FACTS.md`; собирает `ops/tools/build_facts.py` (кроме `actuals`: его шаблон — только если файла нет) |
 | `calendar.json` | события на 12 месяцев: отчёты X5, дивиденды, заседания ЦБ; `confirmed` и прецедент в `note` |
 
@@ -175,7 +175,7 @@ TAG=<метка> BASE_URL=http://127.0.0.1:8872 OUT_ROOT=../x5-850-handoff/shots
 
 - `docs/MANUAL.md` — справочник владельца: с него начинать.
 - `docs/MODEL.md` — методика; `docs/PAYLOAD.md` — контракт выпуска `x5-v1`; `model/README.md` — API ядра.
-- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md`, `V1.1.1-CHANGES.md`, `V1.1.2-CHANGES.md`, `V1.1.3-CHANGES.md` и `V1.1.4-CHANGES.md` — что изменилось в книгах 1.1, 1.1.1, 1.1.2, 1.1.3 и 1.1.4 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
+- `data/assumptions/ASSUMPTIONS-BOOK.md` — книга допущений (канон вместе с `assumptions.yaml`); `data/assumptions/V1.1-CHANGES.md`, `V1.1.1-CHANGES.md`, `V1.1.2-CHANGES.md`, `V1.1.3-CHANGES.md`, `V1.1.4-CHANGES.md` и `V1.2-CHANGES.md` — что изменилось в книгах 1.1, 1.1.1, 1.1.2, 1.1.3, 1.1.4 и 1.2 и почему; `data/assumptions/README.md` — состав каталога книги и порядок новой версии.
 - `docs/FACTS.md` — факты и первичка; `data/facts/SCHEMA.md` — поля фактов.
 - `docs/DASHBOARD.md` — витрина; `docs/INDICATORS.md` — ближайший отчёт и журнал прогнозов.
 - `docs/CONTROL-MODEL.md` — сверка контрольной модели с ядром (генерируется).

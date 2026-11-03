@@ -1,10 +1,10 @@
-# Книга допущений X5 — версия 1.1.4
+# Книга допущений X5 — версия 1.2
 
-**Что это.** Текст книги допущений модели справедливой стоимости акции ПАО «Корпоративный центр ИКС 5» (MOEX: X5): каждое суждение, из которого модель собирает цену, — с ключом машинной книги, значением, диапазоном, классом, обоснованием, ценой ошибки и тем, чем оно может ошибаться. Канон книги — этот текст вместе с машинным видом `data/assumptions/assumptions.yaml` (его читает ядро; закрытая схема `model/book_schema.py`). Как суждения превращаются в цену — `docs/MODEL.md` (номера § ниже — его); что изменилось против версии 1.0 и почему — `data/assumptions/V1.1-CHANGES.md`, исправления 1.1.1 — `data/assumptions/V1.1.1-CHANGES.md`, исправления 1.1.2 — `data/assumptions/V1.1.2-CHANGES.md`, правки 1.1.3 — `data/assumptions/V1.1.3-CHANGES.md`, правка 1.1.4 — `data/assumptions/V1.1.4-CHANGES.md`.
+**Что это.** Текст книги допущений модели справедливой стоимости акции ПАО «Корпоративный центр ИКС 5» (MOEX: X5): каждое суждение, из которого модель собирает цену, — с ключом машинной книги, значением, диапазоном, классом, обоснованием, ценой ошибки и тем, чем оно может ошибаться. Канон книги — этот текст вместе с машинным видом `data/assumptions/assumptions.yaml` (его читает ядро; закрытая схема `model/book_schema.py`). Как суждения превращаются в цену — `docs/MODEL.md` (номера § ниже — его); что изменилось против версии 1.0 и почему — `data/assumptions/V1.1-CHANGES.md`, исправления 1.1.1 — `data/assumptions/V1.1.1-CHANGES.md`, исправления 1.1.2 — `data/assumptions/V1.1.2-CHANGES.md`, правки 1.1.3 — `data/assumptions/V1.1.3-CHANGES.md`, правка 1.1.4 — `data/assumptions/V1.1.4-CHANGES.md`, миры ставок 1.2 — `data/assumptions/V1.2-CHANGES.md`.
 
-**Версия.** 1.1.4 от 16.10.2026 (`meta.version`, `meta.date`), тег `book-1.1.4` — LFL-трафик зрелой сети 2П2026 и 2027 г. (A-R4) по операционным результатам X5 за 3 кв. 2026 (решение владельца 16.10.2026); версия 1.1.3 от 30.09.2026 — тег `book-1.1.3`, правки версии 1.1.2 по внешнему аудиту 30.09.2026 (методика и ядро: налог терминала, конвенции ставок, D&A терминала при полуцелом сроке; книга: отложенное возмещение по сделкам в мосте, частота купона нового фикса); версия 1.1.2 от 29.09.2026 (errata к 1.1.1 по аудиту раунда 3) — тег `book-1.1.2`, версия 1.1.1 от 29.09.2026 (errata к 1.1 по аудиту раунда 2) — тег `book-1.1.1`, версия 1.1 от 28.09.2026 — тег `book-1.1`, версия 1.0 — тег `book-1.0`. Книгу меняет только новая версия (`data/assumptions/README.md`).
+**Версия.** 1.2 от 29.10.2026 (`meta.version`, `meta.date`), тег `book-1.2` — миры ставок книги Магнита 1.7 (пересборка после решения Банка России 23.10.2026; прочие суждения — книги 1.1.4); версия 1.1.4 от 16.10.2026 — тег `book-1.1.4`, LFL-трафик зрелой сети 2П2026 и 2027 г. (A-R4) по операционным результатам X5 за 3 кв. 2026 (решение владельца 16.10.2026); версия 1.1.3 от 30.09.2026 — тег `book-1.1.3`, правки версии 1.1.2 по внешнему аудиту 30.09.2026 (методика и ядро: налог терминала, конвенции ставок, D&A терминала при полуцелом сроке; книга: отложенное возмещение по сделкам в мосте, частота купона нового фикса); версия 1.1.2 от 29.09.2026 (errata к 1.1.1 по аудиту раунда 3) — тег `book-1.1.2`, версия 1.1.1 от 29.09.2026 (errata к 1.1 по аудиту раунда 2) — тег `book-1.1.1`, версия 1.1 от 28.09.2026 — тег `book-1.1`, версия 1.0 — тег `book-1.0`. Книгу меняет только новая версия (`data/assumptions/README.md`).
 
-**Якорь.** Отчётная база — 1-е полугодие 2026 г. (`meta.anchor_period` 2026H1, факты на 30.06.2026 — `data/facts/`, у каждого числа источник). Прогноз — полугодия 2026H2–2036H2, дальше терминал (§6). Таблицы книги считаются на дату оценки 25.09.2026 при рыночной цене <!--=inputs.market_price r1-->1 808,5<!--/--> ₽ (`meta.valuation_date`, `meta.market_price`); кривые миров — на 18.09.2026 (`meta.curve_as_of`).
+**Якорь.** Отчётная база — 1-е полугодие 2026 г. (`meta.anchor_period` 2026H1, факты на 30.06.2026 — `data/facts/`, у каждого числа источник). Прогноз — полугодия 2026H2–2036H2, дальше терминал (§6). Таблицы книги считаются на дату оценки 25.09.2026 при рыночной цене <!--=inputs.market_price r1-->1 808,5<!--/--> ₽ (`meta.valuation_date`, `meta.market_price`); кривые миров — на 28.10.2026 (`meta.curve_as_of`; окно 23–28.10.2026 книги Магнита 1.7).
 
 **Базис.** Все деньги — до МСФО 16 (аренда — операционный расход); маржа — скорректированная EBITDA до МСФО 16 без LTI в доле выручки, LTI — отдельной денежной строкой. Деньги — млрд ₽, площадь — тыс. м², акции — млн шт.; ставки и доли — годовые, в тексте — в процентах и п.п.
 
@@ -22,14 +22,14 @@
 
 | | ₽ на акцию |
 |---|---|
-| **медиана по суждениям книги** (печать, шаг 50 ₽) | **≈<!--=band.printed.median r0-->3 300<!--/-->** (точно <!--=band.stats.median r1-->3 299,0<!--/-->) |
-| полоса 80 % (P10–P90) | <!--=band.printed.p10 r0-->2 550<!--/-->–<!--=band.printed.p90 r0-->4 100<!--/--> (точно <!--=band.stats.p10 r0-->2 540<!--/-->–<!--=band.stats.p90 r0-->4 077<!--/-->) |
-| полоса 50 % (P25–P75) | <!--=band.printed.p25 r0-->2 900<!--/-->–<!--=band.printed.p75 r0-->3 750<!--/--> (точно <!--=band.stats.p25 r0-->2 882<!--/-->–<!--=band.stats.p75 r0-->3 728<!--/-->) |
-| среднее прогонов | <!--=band.stats.mean r0-->3 312<!--/--> |
-| вероятность, что справедливая цена ниже рыночной | <!--=band.stats.p_below p2-->0,40<!--/--> % |
-| **точка при центральных значениях всех суждений** (печать) | **≈<!--=point.printed.central r0-->3 400<!--/-->** (точно <!--=point.central r1-->3 397,0<!--/-->) |
-| низ оси ставок — «рыночные ставки как есть» / верх — «свой макро-взгляд» | ≈<!--=point.printed.low r0-->3 450<!--/--> / ≈<!--=point.printed.high r0-->3 350<!--/--> |
-| вклад взгляда на инфляцию и ставки (верх − низ) | <!--=point.rates_view s0-->−99<!--/--> |
+| **медиана по суждениям книги** (печать, шаг 50 ₽) | **≈<!--=band.printed.median r0-->3 350<!--/-->** (точно <!--=band.stats.median r1-->3 363,5<!--/-->) |
+| полоса 80 % (P10–P90) | <!--=band.printed.p10 r0-->2 600<!--/-->–<!--=band.printed.p90 r0-->4 150<!--/--> (точно <!--=band.stats.p10 r0-->2 593<!--/-->–<!--=band.stats.p90 r0-->4 166<!--/-->) |
+| полоса 50 % (P25–P75) | <!--=band.printed.p25 r0-->2 950<!--/-->–<!--=band.printed.p75 r0-->3 800<!--/--> (точно <!--=band.stats.p25 r0-->2 942<!--/-->–<!--=band.stats.p75 r0-->3 809<!--/-->) |
+| среднее прогонов | <!--=band.stats.mean r0-->3 381<!--/--> |
+| вероятность, что справедливая цена ниже рыночной | <!--=band.stats.p_below p2-->0,25<!--/--> % |
+| **точка при центральных значениях всех суждений** (печать) | **≈<!--=point.printed.central r0-->3 450<!--/-->** (точно <!--=point.central r1-->3 467,1<!--/-->) |
+| низ оси ставок — «рыночные ставки как есть» / верх — «свой макро-взгляд» | ≈<!--=point.printed.low r0-->3 600<!--/--> / ≈<!--=point.printed.high r0-->3 350<!--/--> |
+| вклад взгляда на инфляцию и ставки (верх − низ) | <!--=point.rates_view s0-->−219<!--/--> |
 
 Медиана — печатаемый заголовок (A-V9); точка — справочно; ось ставок — выбор слоя, а не интервал (§8, A-P1c).
 
@@ -37,23 +37,23 @@
 
 | Слой | V0, млрд ₽ | D, млрд ₽ | капитал | цена, ₽ | доля терминала | EV / скорр. EBITDA тек. и след. полугодий | V0/D |
 |---|---|---|---|---|---|---|---|
-| свой макро-взгляд (N 35 / H 45 / M 20 %) | <!--=layers.analytical.v0 r1-->1 306,3<!--/--> | <!--=layers.analytical.d r1-->420,8<!--/--> | <!--=layers.analytical.equity r1-->885,5<!--/--> | <!--=layers.analytical.price r0-->3 348<!--/--> | <!--=layers.analytical.terminal_share p1-->47,3<!--/--> % | <!--=layers.analytical.ev_ebitda_fwd r2-->3,97<!--/-->× | <!--=layers.analytical.v0_to_d r2-->3,10<!--/--> |
-| вменённые рынком (10 / 25 / 65 %) | <!--=layers.market_implied.v0 r1-->1 308,3<!--/--> | <!--=layers.market_implied.d r1-->420,2<!--/--> | <!--=layers.market_implied.equity r1-->888,1<!--/--> | <!--=layers.market_implied.price r0-->3 357<!--/--> | <!--=layers.market_implied.terminal_share p1-->45,3<!--/--> % | <!--=layers.market_implied.ev_ebitda_fwd r2-->3,98<!--/-->× | <!--=layers.market_implied.v0_to_d r2-->3,11<!--/--> |
-| рыночные ставки как есть (мир M) | <!--=layers.macro_neutral.v0 r1-->1 332,7<!--/--> | <!--=layers.macro_neutral.d r1-->419,9<!--/--> | <!--=layers.macro_neutral.equity r1-->912,9<!--/--> | <!--=layers.macro_neutral.price r0-->3 446<!--/--> | <!--=layers.macro_neutral.terminal_share p1-->44,7<!--/--> % | <!--=layers.macro_neutral.ev_ebitda_fwd r2-->4,06<!--/-->× | <!--=layers.macro_neutral.v0_to_d r2-->3,17<!--/--> |
+| свой макро-взгляд (N 35 / H 45 / M 20 %) | <!--=layers.analytical.v0 r1-->1 309,1<!--/--> | <!--=layers.analytical.d r1-->420,8<!--/--> | <!--=layers.analytical.equity r1-->888,3<!--/--> | <!--=layers.analytical.price r0-->3 358<!--/--> | <!--=layers.analytical.terminal_share p1-->47,6<!--/--> % | <!--=layers.analytical.ev_ebitda_fwd r2-->3,97<!--/-->× | <!--=layers.analytical.v0_to_d r2-->3,11<!--/--> |
+| вменённые рынком (10 / 25 / 65 %) | <!--=layers.market_implied.v0 r1-->1 329,7<!--/--> | <!--=layers.market_implied.d r1-->420,3<!--/--> | <!--=layers.market_implied.equity r1-->909,5<!--/--> | <!--=layers.market_implied.price r0-->3 434<!--/--> | <!--=layers.market_implied.terminal_share p1-->46,1<!--/--> % | <!--=layers.market_implied.ev_ebitda_fwd r2-->4,04<!--/-->× | <!--=layers.market_implied.v0_to_d r2-->3,16<!--/--> |
+| рыночные ставки как есть (мир M) | <!--=layers.macro_neutral.v0 r1-->1 368,8<!--/--> | <!--=layers.macro_neutral.d r1-->419,9<!--/--> | <!--=layers.macro_neutral.equity r1-->948,9<!--/--> | <!--=layers.macro_neutral.price r0-->3 576<!--/--> | <!--=layers.macro_neutral.terminal_share p1-->45,8<!--/--> % | <!--=layers.macro_neutral.ev_ebitda_fwd r2-->4,17<!--/-->× | <!--=layers.macro_neutral.v0_to_d r2-->3,26<!--/--> |
 
-EV слоя «свой макро-взгляд», млрд ₽: PV свободного потока прогноза <!--=layers.analytical.pv_fcff r1-->593,9<!--/-->, PV налогового щита <!--=layers.analytical.pv_shield r1-->102,0<!--/-->, PV терминала <!--=layers.analytical.pv_terminal r1-->622,6<!--/-->; минус PV издержек размещения долга <!--=layers.analytical.pv_issuance r1-->5,0<!--/-->, процентов сверх справедливого спреда <!--=layers.analytical.pv_excess_spread r1-->4,0<!--/--> и кэрри финансовой подушки <!--=layers.analytical.pv_buffer_carry r1-->3,2<!--/--> (§5).
+EV слоя «свой макро-взгляд», млрд ₽: PV свободного потока прогноза <!--=layers.analytical.pv_fcff r1-->589,9<!--/-->, PV налогового щита <!--=layers.analytical.pv_shield r1-->103,2<!--/-->, PV терминала <!--=layers.analytical.pv_terminal r1-->628,5<!--/-->; минус PV издержек размещения долга <!--=layers.analytical.pv_issuance r1-->5,0<!--/-->, процентов сверх справедливого спреда <!--=layers.analytical.pv_excess_spread r1-->4,1<!--/--> и кэрри финансовой подушки <!--=layers.analytical.pv_buffer_carry r1-->3,3<!--/--> (§5).
 
 | Только этот мир | цена, ₽ | V0, млрд ₽ | ставка терминала | инфляция LT | реальная ставка |
 |---|---|---|---|---|---|
-| N «Нормализация» | <!--=worlds_only.N.price r0-->3 813<!--/--> | <!--=worlds_only.N.v0 r1-->1 436,1<!--/--> | <!--=worlds_only.N.r_terminal p2-->12,34<!--/--> % | <!--=worlds_only.N.lt_inflation p1-->4,0<!--/--> % | <!--=worlds_only.N.real_terminal p2-->8,34<!--/--> % |
-| H «Высокие ставки надолго» | <!--=worlds_only.H.price r0-->2 942<!--/--> | <!--=worlds_only.H.v0 r1-->1 193,6<!--/--> | <!--=worlds_only.H.r_terminal p2-->16,04<!--/--> % | <!--=worlds_only.H.lt_inflation p1-->5,5<!--/--> % | <!--=worlds_only.H.real_terminal p2-->10,54<!--/--> % |
-| M «Рыночный как есть» | <!--=worlds_only.M.price r0-->3 446<!--/--> | <!--=worlds_only.M.v0 r1-->1 332,7<!--/--> | <!--=worlds_only.M.r_terminal p2-->20,04<!--/--> % | <!--=worlds_only.M.lt_inflation p1-->9,8<!--/--> % | <!--=worlds_only.M.real_terminal p2-->10,24<!--/--> % |
+| N «Нормализация» | <!--=worlds_only.N.price r0-->3 796<!--/--> | <!--=worlds_only.N.v0 r1-->1 431,4<!--/--> | <!--=worlds_only.N.r_terminal p2-->12,24<!--/--> % | <!--=worlds_only.N.lt_inflation p1-->4,0<!--/--> % | <!--=worlds_only.N.real_terminal p2-->8,24<!--/--> % |
+| H «Высокие ставки надолго» | <!--=worlds_only.H.price r0-->2 920<!--/--> | <!--=worlds_only.H.v0 r1-->1 187,5<!--/--> | <!--=worlds_only.H.r_terminal p2-->15,94<!--/--> % | <!--=worlds_only.H.lt_inflation p1-->5,5<!--/--> % | <!--=worlds_only.H.real_terminal p2-->10,44<!--/--> % |
+| M «Рыночный как есть» | <!--=worlds_only.M.price r0-->3 576<!--/--> | <!--=worlds_only.M.v0 r1-->1 368,8<!--/--> | <!--=worlds_only.M.r_terminal p2-->20,04<!--/--> % | <!--=worlds_only.M.lt_inflation p1-->10,1<!--/--> % | <!--=worlds_only.M.real_terminal p2-->9,94<!--/--> % |
 
 ### Стоимость бизнеса против рынка
 
 - **V\*** — стоимость бизнеса, при которой та же функция «EV → цена» даёт рыночную цену: <!--=point.v_star r1-->879,8<!--/--> млрд ₽ (§7.3).
-- EV медианы — <!--=band.center_ev.v0_median r1-->1 292,8<!--/--> млрд ₽, **<!--=band.center_ev.gap_median sp1-->+46,9<!--/--> %** к V\*; EV точки — <!--=point.v0_point r1-->1 320,0<!--/--> млрд ₽ (<!--=point.gap_point sp1-->+50,0<!--/--> %).
-- 1 % EV — <!--=band.center_ev.rub_per_1pct_ev_median r1-->46,7<!--/--> ₽ медианы и <!--=point.rub_per_1pct_ev_point r1-->47,6<!--/--> ₽ точки; капитал — <!--=point.equity_share_of_ev p0-->68<!--/--> % EV точки.
+- EV медианы — <!--=band.center_ev.v0_median r1-->1 310,7<!--/--> млрд ₽, **<!--=band.center_ev.gap_median sp1-->+49,0<!--/--> %** к V\*; EV точки — <!--=point.v0_point r1-->1 339,4<!--/--> млрд ₽ (<!--=point.gap_point sp1-->+52,2<!--/--> %).
+- 1 % EV — <!--=band.center_ev.rub_per_1pct_ev_median r1-->47,3<!--/--> ₽ медианы и <!--=point.rub_per_1pct_ev_point r1-->48,3<!--/--> ₽ точки; капитал — <!--=point.equity_share_of_ev p0-->69<!--/--> % EV точки.
 - Требования на дату оценки (слой «свой макро-взгляд»), млрд ₽: чистый долг якоря <!--=claims.net_debt_fact r3-->310,647<!--/--> + операционная касса <!--=claims.opcash_anchor r1-->51,7<!--/--> + строки моста <!--=claims.bridge_total r3-->8,704<!--/--> + объявленные дивиденды с отсечкой до даты оценки <!--=claims.dividends_declared r3-->60,425<!--/--> − денежный результат прошедшего времени <!--=claims.rolled_analytical r1-->10,7<!--/--> = <!--=claims.d_analytical r1-->420,8<!--/-->.
 - Акции: <!--=inputs.shares_mln r3-->245,981<!--/--> млн в обращении и <!--=inputs.treasury_mln r3-->25,592<!--/--> млн казначейских; пакет в цене продан по <!--=inputs.treasury_sale_price_k r4-->0,9116<!--/--> рыночной цены — <!--=inputs.treasury_value r1-->42,2<!--/--> млрд ₽ капиталу; дисконт за управление <!--=inputs.governance_discount p0-->2<!--/--> % (§7.2, раздел 10, A-V7).
 
@@ -63,13 +63,13 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 
 | Суждение | книга | диапазон книги | нужно рынку: медиана | нужно рынку: точка |
 |---|---|---|---|---|
-| долгосрочный уровень маржи (сдвиг целей LT, A-C0) | 0 | −0,5…+0,4 п.п. | <!--=band.reverse_dcf[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].solved sp2-->−1,16<!--/--> п.п. | <!--=band.reverse_dcf[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].point_solved sp2-->−1,20<!--/--> п.п. |
-| поддерживающий capex (сдвиг уровней, A-K1) | 0 | ±0,4 п.п. | <!--=band.reverse_dcf[name=Поддерживающий capex (сдвиг всех уровней)].solved sp2-->+0,74<!--/--> п.п. | <!--=band.reverse_dcf[name=Поддерживающий capex (сдвиг всех уровней)].point_solved sp2-->+0,78<!--/--> п.п. |
-| стоимость открытия, млрд ₽ на тыс. м² (A-K3) | 0,0548 | 0,047–0,063 | <!--=band.reverse_dcf[name=Стоимость открытия, млрд ₽ на тыс. м²].solved r3-->0,150<!--/--> | <!--=band.reverse_dcf[name=Стоимость открытия, млрд ₽ на тыс. м²].point_solved r3-->0,155<!--/--> |
-| бета активов β_u (A-V1) | 0,60 | 0,45–0,75 | <!--=band.reverse_dcf[name=Бета активов β_u].solved r2-->1,38<!--/--> | <!--=band.reverse_dcf[name=Бета активов β_u].point_solved r2-->1,42<!--/--> |
-| премия за риск ERP (A-V2) | 5,57 % | 4,9–6,5 % | <!--=band.reverse_dcf[name=Премия за риск ERP].solved p1-->12,9<!--/--> % | <!--=band.reverse_dcf[name=Премия за риск ERP].point_solved p1-->13,2<!--/--> % |
-| дисконт за управление (A-V7) | 2 % | 0–5 % | <!--=band.reverse_dcf[name=Дисконт за управление].solved p1-->46,6<!--/--> % | <!--=band.reverse_dcf[name=Дисконт за управление].point_solved p1-->47,8<!--/--> % |
-| трафик LFL (сдвиг состояний, A-R4) | 0 | −0,8…+0,4 п.п. | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,53<!--/--> п.п. в год | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].point_solved sp2-->−1,54<!--/--> п.п. в год |
+| долгосрочный уровень маржи (сдвиг целей LT, A-C0) | 0 | −0,5…+0,4 п.п. | <!--=band.reverse_dcf[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].solved sp2-->−1,19<!--/--> п.п. | <!--=band.reverse_dcf[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].point_solved sp2-->−1,23<!--/--> п.п. |
+| поддерживающий capex (сдвиг уровней, A-K1) | 0 | ±0,4 п.п. | <!--=band.reverse_dcf[name=Поддерживающий capex (сдвиг всех уровней)].solved sp2-->+0,76<!--/--> п.п. | <!--=band.reverse_dcf[name=Поддерживающий capex (сдвиг всех уровней)].point_solved sp2-->+0,80<!--/--> п.п. |
+| стоимость открытия, млрд ₽ на тыс. м² (A-K3) | 0,0548 | 0,047–0,063 | <!--=band.reverse_dcf[name=Стоимость открытия, млрд ₽ на тыс. м²].solved r3-->0,153<!--/--> | <!--=band.reverse_dcf[name=Стоимость открытия, млрд ₽ на тыс. м²].point_solved r3-->0,159<!--/--> |
+| бета активов β_u (A-V1) | 0,60 | 0,45–0,75 | <!--=band.reverse_dcf[name=Бета активов β_u].solved r2-->1,40<!--/--> | <!--=band.reverse_dcf[name=Бета активов β_u].point_solved r2-->1,44<!--/--> |
+| премия за риск ERP (A-V2) | 5,57 % | 4,9–6,5 % | <!--=band.reverse_dcf[name=Премия за риск ERP].solved p1-->13,1<!--/--> % | <!--=band.reverse_dcf[name=Премия за риск ERP].point_solved p1-->13,4<!--/--> % |
+| дисконт за управление (A-V7) | 2 % | 0–5 % | <!--=band.reverse_dcf[name=Дисконт за управление].solved p1-->47,8<!--/--> % | <!--=band.reverse_dcf[name=Дисконт за управление].point_solved p1-->48,9<!--/--> % |
+| трафик LFL (сдвиг состояний, A-R4) | 0 | −0,8…+0,4 п.п. | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,56<!--/--> п.п. в год | <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].point_solved sp2-->−1,57<!--/--> п.п. в год |
 | чистый рост площади 2027–2030 (A-R7) | 0 | −1,0…+0,8 п.п. | недостижимо на отрезке −5…+4 п.п. | недостижимо |
 | инфляция мира M (A-M6) | 0 | −0,3…+0,5 п.п. | недостижимо на отрезке −5…+8 п.п. | недостижимо |
 
@@ -81,24 +81,24 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 
 | Ось (суждение) | книга; диапазон | доля полосы | точка при низе / верхе, ₽ |
 |---|---|---|---|
-| долгосрочный уровень маржи (A-C0) | 0; −0,5…+0,4 п.п. | <!--=band.contributions[axis=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].share p1-->16,4<!--/--> % | <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_low r0-->2 735<!--/--> / <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_high r0-->3 928<!--/--> |
-| поддерживающий capex (A-K1) | 0; ±0,4 п.п. | <!--=band.contributions[axis=Поддерживающий capex (сдвиг всех уровней)].share p1-->27,6<!--/--> % | <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_low r0-->4 215<!--/--> / <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_high r0-->2 581<!--/--> |
-| бета активов β_u (A-V1) | 0,60; 0,45–0,75 | <!--=band.contributions[axis=Бета активов β_u].share p1-->7,7<!--/--> % | <!--=band.judgements[name=Бета активов β_u].price_low r0-->3 872<!--/--> / <!--=band.judgements[name=Бета активов β_u].price_high r0-->3 000<!--/--> |
-| премия за риск ERP (A-V2) | 5,57 %; 4,9–6,5 % | <!--=band.contributions[axis=Премия за риск ERP].share p1-->2,2<!--/--> % | <!--=band.judgements[name=Премия за риск ERP].price_low r0-->3 615<!--/--> / <!--=band.judgements[name=Премия за риск ERP].price_high r0-->3 124<!--/--> |
-| дисконт за управление (A-V7) | 2 %; 0–5 % | <!--=band.contributions[axis=Дисконт за управление].share p1-->0,1<!--/--> % | <!--=band.judgements[name=Дисконт за управление].price_low r0-->3 466<!--/--> / <!--=band.judgements[name=Дисконт за управление].price_high r0-->3 293<!--/--> |
-| трафик LFL (A-R4) | 0; −0,8…+0,4 п.п. | <!--=band.contributions[axis=Трафик LFL (сдвиг всех состояний)].share p1-->22,4<!--/--> % | <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 510<!--/--> / <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 903<!--/--> |
-| чистый рост площади 2027–2030 (A-R7) | 0; −1,0…+0,8 п.п. | <!--=band.contributions[axis=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].share p1-->0,0<!--/--> % | <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_low r0-->3 385<!--/--> / <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_high r0-->3 407<!--/--> |
-| стоимость открытия (A-K3) | 0,0548; 0,047–0,063 | <!--=band.contributions[axis=Стоимость открытия, млрд ₽ на тыс. м²].share p1-->1,1<!--/--> % | <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_low r0-->3 521<!--/--> / <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_high r0-->3 266<!--/--> |
-| инфраструктура на м² прироста (A-K4) | 0,0278; 0,019–0,037 | <!--=band.contributions[axis=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].share p1-->0,0<!--/--> % | <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_low r0-->3 447<!--/--> / <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_high r0-->3 345<!--/--> |
-| плотность новой площади (A-R5d) | 0,83; 0,73–0,93 | <!--=band.contributions[axis=Плотность новой площади].share p1-->5,9<!--/--> % | <!--=band.judgements[name=Плотность новой площади].price_low r0-->3 048<!--/--> / <!--=band.judgements[name=Плотность новой площади].price_high r0-->3 740<!--/--> |
-| продуктивность закрываемой площади (A-R6) | 0,6; 0,4–0,8 | <!--=band.contributions[axis=Продуктивность закрываемой площади].share p1-->9,4<!--/--> % | <!--=band.judgements[name=Продуктивность закрываемой площади].price_low r0-->3 879<!--/--> / <!--=band.judgements[name=Продуктивность закрываемой площади].price_high r0-->2 944<!--/--> |
-| операционная касса (A-W3) | 1,06 %; 0,60–1,45 % | <!--=band.contributions[axis=Операционная касса].share p1-->2,1<!--/--> % | <!--=band.judgements[name=Операционная касса].price_low r0-->3 535<!--/--> / <!--=band.judgements[name=Операционная касса].price_high r0-->3 280<!--/--> |
-| оборотный капитал, долгосрочный уровень (A-W1) | 0; ±0,5 п.п. | <!--=band.contributions[axis=Оборотный капитал, долгосрочный уровень (сдвиг)].share p1-->0,8<!--/--> % | <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_low r0-->3 569<!--/--> / <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_high r0-->3 225<!--/--> |
-| постоянные налоговые разницы (A-T2) | 0,17 %; −0,13…+0,45 % | <!--=band.contributions[axis=Постоянные налоговые разницы].share p1-->2,5<!--/--> % | <!--=band.judgements[name=Постоянные налоговые разницы].price_low r0-->3 579<!--/--> / <!--=band.judgements[name=Постоянные налоговые разницы].price_high r0-->3 227<!--/--> |
-| LTI (A-C7) | 0,20 %; 0,12–0,26 % | <!--=band.contributions[axis=LTI].share p1-->0,2<!--/--> % | <!--=band.judgements[name=LTI].price_low r0-->3 550<!--/--> / <!--=band.judgements[name=LTI].price_high r0-->3 282<!--/--> |
-| целевой рычаг (A-F6) | 1,3×; 1,0–1,6× | <!--=band.contributions[axis=Целевой рычаг].share p1-->1,0<!--/--> % | <!--=band.judgements[name=Целевой рычаг].price_low r0-->3 275<!--/--> / <!--=band.judgements[name=Целевой рычаг].price_high r0-->3 523<!--/--> |
-| веса миров (A-P1) | 35/45/20; к 25/50/25 и к 40/45/15 | <!--=band.contributions[axis=Веса миров].share p1-->0,0<!--/--> % | <!--=band.judgements[name=Веса миров].price_low r0-->3 366<!--/--> / <!--=band.judgements[name=Веса миров].price_high r0-->3 406<!--/--> |
-| инфляция мира M (A-M6) | 0; −0,3…+0,5 п.п. | <!--=band.contributions[axis=Инфляция мира M].share p1-->0,5<!--/--> % | <!--=band.judgements[name=Инфляция мира M].price_low r0-->3 309<!--/--> / <!--=band.judgements[name=Инфляция мира M].price_high r0-->3 556<!--/--> |
+| долгосрочный уровень маржи (A-C0) | 0; −0,5…+0,4 п.п. | <!--=band.contributions[axis=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].share p1-->16,2<!--/--> % | <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_low r0-->2 793<!--/--> / <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_high r0-->4 008<!--/--> |
+| поддерживающий capex (A-K1) | 0; ±0,4 п.п. | <!--=band.contributions[axis=Поддерживающий capex (сдвиг всех уровней)].share p1-->27,1<!--/--> % | <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_low r0-->4 296<!--/--> / <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_high r0-->2 640<!--/--> |
+| бета активов β_u (A-V1) | 0,60; 0,45–0,75 | <!--=band.contributions[axis=Бета активов β_u].share p1-->7,8<!--/--> % | <!--=band.judgements[name=Бета активов β_u].price_low r0-->3 959<!--/--> / <!--=band.judgements[name=Бета активов β_u].price_high r0-->3 058<!--/--> |
+| премия за риск ERP (A-V2) | 5,57 %; 4,9–6,5 % | <!--=band.contributions[axis=Премия за риск ERP].share p1-->2,3<!--/--> % | <!--=band.judgements[name=Премия за риск ERP].price_low r0-->3 692<!--/--> / <!--=band.judgements[name=Премия за риск ERP].price_high r0-->3 186<!--/--> |
+| дисконт за управление (A-V7) | 2 %; 0–5 % | <!--=band.contributions[axis=Дисконт за управление].share p1-->0,1<!--/--> % | <!--=band.judgements[name=Дисконт за управление].price_low r0-->3 538<!--/--> / <!--=band.judgements[name=Дисконт за управление].price_high r0-->3 361<!--/--> |
+| трафик LFL (A-R4) | 0; −0,8…+0,4 п.п. | <!--=band.contributions[axis=Трафик LFL (сдвиг всех состояний)].share p1-->22,8<!--/--> % | <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 553<!--/--> / <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 990<!--/--> |
+| чистый рост площади 2027–2030 (A-R7) | 0; −1,0…+0,8 п.п. | <!--=band.contributions[axis=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].share p1-->0,0<!--/--> % | <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_low r0-->3 452<!--/--> / <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_high r0-->3 479<!--/--> |
+| стоимость открытия (A-K3) | 0,0548; 0,047–0,063 | <!--=band.contributions[axis=Стоимость открытия, млрд ₽ на тыс. м²].share p1-->1,0<!--/--> % | <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_low r0-->3 593<!--/--> / <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_high r0-->3 335<!--/--> |
+| инфраструктура на м² прироста (A-K4) | 0,0278; 0,019–0,037 | <!--=band.contributions[axis=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].share p1-->0,0<!--/--> % | <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_low r0-->3 517<!--/--> / <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_high r0-->3 415<!--/--> |
+| плотность новой площади (A-R5d) | 0,83; 0,73–0,93 | <!--=band.contributions[axis=Плотность новой площади].share p1-->5,9<!--/--> % | <!--=band.judgements[name=Плотность новой площади].price_low r0-->3 109<!--/--> / <!--=band.judgements[name=Плотность новой площади].price_high r0-->3 820<!--/--> |
+| продуктивность закрываемой площади (A-R6) | 0,6; 0,4–0,8 | <!--=band.contributions[axis=Продуктивность закрываемой площади].share p1-->9,6<!--/--> % | <!--=band.judgements[name=Продуктивность закрываемой площади].price_low r0-->3 965<!--/--> / <!--=band.judgements[name=Продуктивность закрываемой площади].price_high r0-->3 000<!--/--> |
+| операционная касса (A-W3) | 1,06 %; 0,60–1,45 % | <!--=band.contributions[axis=Операционная касса].share p1-->2,1<!--/--> % | <!--=band.judgements[name=Операционная касса].price_low r0-->3 607<!--/--> / <!--=band.judgements[name=Операционная касса].price_high r0-->3 349<!--/--> |
+| оборотный капитал, долгосрочный уровень (A-W1) | 0; ±0,5 п.п. | <!--=band.contributions[axis=Оборотный капитал, долгосрочный уровень (сдвиг)].share p1-->0,8<!--/--> % | <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_low r0-->3 642<!--/--> / <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_high r0-->3 293<!--/--> |
+| постоянные налоговые разницы (A-T2) | 0,17 %; −0,13…+0,45 % | <!--=band.contributions[axis=Постоянные налоговые разницы].share p1-->2,5<!--/--> % | <!--=band.judgements[name=Постоянные налоговые разницы].price_low r0-->3 651<!--/--> / <!--=band.judgements[name=Постоянные налоговые разницы].price_high r0-->3 295<!--/--> |
+| LTI (A-C7) | 0,20 %; 0,12–0,26 % | <!--=band.contributions[axis=LTI].share p1-->0,2<!--/--> % | <!--=band.judgements[name=LTI].price_low r0-->3 622<!--/--> / <!--=band.judgements[name=LTI].price_high r0-->3 351<!--/--> |
+| целевой рычаг (A-F6) | 1,3×; 1,0–1,6× | <!--=band.contributions[axis=Целевой рычаг].share p1-->1,0<!--/--> % | <!--=band.judgements[name=Целевой рычаг].price_low r0-->3 342<!--/--> / <!--=band.judgements[name=Целевой рычаг].price_high r0-->3 596<!--/--> |
+| веса миров (A-P1) | 35/45/20; к 25/50/25 и к 40/45/15 | <!--=band.contributions[axis=Веса миров].share p1-->0,0<!--/--> % | <!--=band.judgements[name=Веса миров].price_low r0-->3 440<!--/--> / <!--=band.judgements[name=Веса миров].price_high r0-->3 473<!--/--> |
+| инфляция мира M (A-M6) | 0; −0,3…+0,5 п.п. | <!--=band.contributions[axis=Инфляция мира M].share p1-->0,5<!--/--> % | <!--=band.judgements[name=Инфляция мира M].price_low r0-->3 374<!--/--> / <!--=band.judgements[name=Инфляция мира M].price_high r0-->3 636<!--/--> |
 
 Две трети полосы держат три суждения о компании — поддерживающий capex, трафик и долгосрочная маржа; оси рынка капитала (β_u, ERP) и макро (веса миров, инфляция M) вместе — около десятой части.
 
@@ -108,21 +108,21 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 
 | Факт маржи 2П2026 | медиана, ₽ | изменение медианы | точка, ₽ | изменение точки | P(«Стресс») после факта |
 |---|---|---|---|---|---|
-| <!--=band.next_report.table[0].margin p1-->5,3<!--/--> % | <!--=band.next_report.table[0].median r0-->2 953<!--/--> | <!--=band.next_report.table[0].d_median s0-->−346<!--/--> | <!--=band.next_report.table[0].point r0-->3 040<!--/--> | <!--=band.next_report.table[0].d_point s0-->−357<!--/--> | <!--=band.next_report.table[0].posterior.stress p1-->51,5<!--/--> % |
-| <!--=band.next_report.table[1].margin p1-->5,6<!--/--> % | <!--=band.next_report.table[1].median r0-->3 010<!--/--> | <!--=band.next_report.table[1].d_median s0-->−289<!--/--> | <!--=band.next_report.table[1].point r0-->3 097<!--/--> | <!--=band.next_report.table[1].d_point s0-->−300<!--/--> | <!--=band.next_report.table[1].posterior.stress p1-->50,2<!--/--> % |
-| <!--=band.next_report.table[2].margin p1-->5,9<!--/--> % | <!--=band.next_report.table[2].median r0-->3 157<!--/--> | <!--=band.next_report.table[2].d_median s0-->−142<!--/--> | <!--=band.next_report.table[2].point r0-->3 249<!--/--> | <!--=band.next_report.table[2].d_point s0-->−148<!--/--> | <!--=band.next_report.table[2].posterior.stress p1-->45,6<!--/--> % |
-| <!--=band.next_report.table[3].margin p1-->6,2<!--/--> % | <!--=band.next_report.table[3].median r0-->3 307<!--/--> | <!--=band.next_report.table[3].d_median s0-->+8<!--/--> | <!--=band.next_report.table[3].point r0-->3 404<!--/--> | <!--=band.next_report.table[3].d_point s0-->+7<!--/--> | <!--=band.next_report.table[3].posterior.stress p1-->41,1<!--/--> % |
-| <!--=band.next_report.table[4].margin p1-->6,5<!--/--> % | <!--=band.next_report.table[4].median r0-->3 457<!--/--> | <!--=band.next_report.table[4].d_median s0-->+158<!--/--> | <!--=band.next_report.table[4].point r0-->3 561<!--/--> | <!--=band.next_report.table[4].d_point s0-->+164<!--/--> | <!--=band.next_report.table[4].posterior.stress p1-->36,7<!--/--> % |
-| <!--=band.next_report.table[5].margin p1-->6,8<!--/--> % | <!--=band.next_report.table[5].median r0-->3 611<!--/--> | <!--=band.next_report.table[5].d_median s0-->+312<!--/--> | <!--=band.next_report.table[5].point r0-->3 717<!--/--> | <!--=band.next_report.table[5].d_point s0-->+320<!--/--> | <!--=band.next_report.table[5].posterior.stress p1-->32,5<!--/--> % |
-| <!--=band.next_report.table[6].margin p1-->7,1<!--/--> % | <!--=band.next_report.table[6].median r0-->3 677<!--/--> | <!--=band.next_report.table[6].d_median s0-->+378<!--/--> | <!--=band.next_report.table[6].point r0-->3 783<!--/--> | <!--=band.next_report.table[6].d_point s0-->+386<!--/--> | <!--=band.next_report.table[6].posterior.stress p1-->31,5<!--/--> % |
+| <!--=band.next_report.table[0].margin p1-->5,3<!--/--> % | <!--=band.next_report.table[0].median r0-->3 017<!--/--> | <!--=band.next_report.table[0].d_median s0-->−347<!--/--> | <!--=band.next_report.table[0].point r0-->3 104<!--/--> | <!--=band.next_report.table[0].d_point s0-->−363<!--/--> | <!--=band.next_report.table[0].posterior.stress p1-->51,5<!--/--> % |
+| <!--=band.next_report.table[1].margin p1-->5,6<!--/--> % | <!--=band.next_report.table[1].median r0-->3 074<!--/--> | <!--=band.next_report.table[1].d_median s0-->−290<!--/--> | <!--=band.next_report.table[1].point r0-->3 162<!--/--> | <!--=band.next_report.table[1].d_point s0-->−305<!--/--> | <!--=band.next_report.table[1].posterior.stress p1-->50,2<!--/--> % |
+| <!--=band.next_report.table[2].margin p1-->5,9<!--/--> % | <!--=band.next_report.table[2].median r0-->3 219<!--/--> | <!--=band.next_report.table[2].d_median s0-->−144<!--/--> | <!--=band.next_report.table[2].point r0-->3 316<!--/--> | <!--=band.next_report.table[2].d_point s0-->−151<!--/--> | <!--=band.next_report.table[2].posterior.stress p1-->45,6<!--/--> % |
+| <!--=band.next_report.table[3].margin p1-->6,2<!--/--> % | <!--=band.next_report.table[3].median r0-->3 370<!--/--> | <!--=band.next_report.table[3].d_median s0-->+7<!--/--> | <!--=band.next_report.table[3].point r0-->3 474<!--/--> | <!--=band.next_report.table[3].d_point s0-->+7<!--/--> | <!--=band.next_report.table[3].posterior.stress p1-->41,1<!--/--> % |
+| <!--=band.next_report.table[4].margin p1-->6,5<!--/--> % | <!--=band.next_report.table[4].median r0-->3 525<!--/--> | <!--=band.next_report.table[4].d_median s0-->+161<!--/--> | <!--=band.next_report.table[4].point r0-->3 634<!--/--> | <!--=band.next_report.table[4].d_point s0-->+167<!--/--> | <!--=band.next_report.table[4].posterior.stress p1-->36,7<!--/--> % |
+| <!--=band.next_report.table[5].margin p1-->6,8<!--/--> % | <!--=band.next_report.table[5].median r0-->3 687<!--/--> | <!--=band.next_report.table[5].d_median s0-->+324<!--/--> | <!--=band.next_report.table[5].point r0-->3 793<!--/--> | <!--=band.next_report.table[5].d_point s0-->+326<!--/--> | <!--=band.next_report.table[5].posterior.stress p1-->32,5<!--/--> % |
+| <!--=band.next_report.table[6].margin p1-->7,1<!--/--> % | <!--=band.next_report.table[6].median r0-->3 756<!--/--> | <!--=band.next_report.table[6].d_median s0-->+392<!--/--> | <!--=band.next_report.table[6].point r0-->3 859<!--/--> | <!--=band.next_report.table[6].d_point s0-->+392<!--/--> | <!--=band.next_report.table[6].posterior.stress p1-->31,5<!--/--> % |
 
-**Нейтральная маржа** — факт, при котором медиана не меняется: <!--=band.next_report.neutral.median p2-->6,19<!--/--> %; каждые 0,1 п.п. факта — ≈<!--=band.next_report.rub_per_01pp r0-->44<!--/--> ₽ медианы. Ожидание модели на 2П2026 (слой «свой макро-взгляд») — <!--=paths.halves[period=2026H2].margin p2-->6,18<!--/--> %; прогноз компании «не ниже 6 %» за 2026 г. требует во 2П не меньше 6,28 %.
+**Нейтральная маржа** — факт, при котором медиана не меняется: <!--=band.next_report.neutral.median p2-->6,19<!--/--> %; каждые 0,1 п.п. факта — ≈<!--=band.next_report.rub_per_01pp r0-->45<!--/--> ₽ медианы. Ожидание модели на 2П2026 (слой «свой макро-взгляд») — <!--=paths.halves[period=2026H2].margin p2-->6,18<!--/--> %; прогноз компании «не ниже 6 %» за 2026 г. требует во 2П не меньше 6,28 %.
 
 ### Гейты
 
 | Гейт (§13.2) | масса в слое «свой макро-взгляд» |
 |---|---|
-| EV / скорр. EBITDA текущего и следующего полугодий вне коридора мира | <!--=gates[name=ev_ebitda].mass r3-->0,047<!--/--> |
+| EV / скорр. EBITDA текущего и следующего полугодий вне коридора мира | <!--=gates[name=ev_ebitda].mass r3-->0,062<!--/--> |
 | маржа полугодия вне коридора | <!--=gates[name=margin_range].mass r3-->0,000<!--/--> |
 | capex / выручка года вне коридора | <!--=gates[name=capex_range].mass r3-->0,000<!--/--> |
 | доля PV терминала в EV вне коридора | <!--=gates[name=terminal_share].mass r3-->0,000<!--/--> |
@@ -144,19 +144,21 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 
 **Ключ.** `worlds.{N, H, M}` (поля `name`, `key_rate`, `cpi`, `food_cpi`, `zero_curve`, `lt.inflation`), происхождение — `worlds.source`.
 
-**Значение** (книга Магнита 1.6, кривая 18.09.2026, тег `book-1.6`, коммит `7751de03c17fd5c43195a989540d1bdf23cdfc4c`):
+**Значение** (книга Магнита 1.7 — миры после решения Банка России 23.10.2026: прогноз ЦБ 23.10, итоговая ОНДКП 28.10, макроопрос 14.10, кривая ОФЗ и ОФЗ-ИН — окно 23–28.10.2026; тег `book-1.7`, коммит — `worlds.source.tag_commit`):
 
 | Мир | ключевая ставка | ИПЦ | прод. ИПЦ | кривая 1 / 3 / 5 / 10 лет / LT | инфляция LT |
 |---|---|---|---|---|---|
-| N «Нормализация» | 13,9 % (2П2026) → 8,0 % с 2030 г. | 6,5 → 4,0 % с 2029 г. | 5,1 → 5,7 % (1П2027) → 4,3 % | 13,16 / 11,55 / 10,61 / 9,85 / 9,0 % | 4,0 % |
-| H «Высокие ставки надолго» | 14,0 % до конца 2027 г. → 10,5 % с 2031 г. | 6,6 → 5,5 % с 2030 г. | 5,3 → 7,2 % (2П2027) → 6,0 % | 13,88 / 14,43 / 14,05 / 13,44 / 12,7 % | 5,5 % |
-| M «Рыночный как есть» | 14,0 → 17,5 % (2029–2030) → 17,0 % с 2031 г. | 6,5 → 12,5 % (1П2033) → 9,8 % с 2035 г. | 5,2 → 13,0 % → 10,3 % | 13,60 / 15,48 / 16,14 / 16,46 / 16,7 % | 9,8 % |
+| N «Нормализация» | 14,05 % (2П2026) → 8,0 % с 2031 г. | 6,6 → 4,0 % с 2029 г. | 5,2 → 6,2 % (1П2027) → 4,3 % | 13,36 / 12,03 / 11,00 / 10,04 / 8,9 % | 4,0 % |
+| H «Высокие ставки надолго» | 14,05 % (2П2026) → 15,0 % в 2027 г. → 10,5 % с 2031 г. | 6,7 → 7,5 % (1П2027) → 5,5 % с 2032 г. | 5,3 → 8,0 % (1П2027) → 6,0 % | 14,40 / 15,02 / 14,53 / 13,68 / 12,6 % | 5,5 % |
+| M «Рыночный как есть» | 14,0 → 17,7 % (2П2030) → 17,3 % с 2032 г. | 6,6 → 11,4 % (2П2030) → 10,1 % | 5,2 → 11,9 % (2П2030) → 10,6 % | 14,06 / 15,51 / 16,09 / 16,49 / 16,7 % | 10,1 % |
+
+Что изменилось против книги Магнита 1.6 (кривая 18.09.2026): N и H подняты новыми входами Банка России (ключевая 2027 г.: N 12,25 → 12,9 %, H 14,0 → 15,0 % — проинфляционный сценарий итоговой ОНДКП); текущее полугодие ИПЦ, продовольствия и зарплат во всех мирах — по факту (продовольствие 2П2026 — 5,2–5,3 %); средний ИПЦ мира H согласован с его ИПЦ на конец периода; мир M — окно рынка 23–28.10 (π_ss 9,8 → 10,1 %, ключевая 2027 г. 15,15 → 15,7 %); уровень кривой в терминале N/H — правилом рецепта (9,0 / 12,7 → 8,9 / 12,6 %). Правила и входы — `magnit-850oa/data/assumptions/WORLDS-RECIPE.md`, журнал — `V1.7-CHANGES.md` книги Магнита.
 
 **Класс.** A/B (миры собраны книгой Магнита из кривой ОФЗ, ОФЗ-ИН и прогнозов Банка России).
 
 **Обоснование.** Миры, веса слоёв и λ — суждение о макро, а не о компании; отдельные миры дали бы двум панелям владельца разные ставки и инфляцию на одну дату. Облигации X5 (AAA, G-спред ≈1 п.п.) о мирах говорят меньше облигаций Магнита, поэтому свой набор из них не выводится. Поля миров перенесены без правки чисел (`docs/DECISIONS.md`, 28.09.2026). Целостность держат два замка: схема книги сверяет хэш `worlds.source.kernel_sha256` с содержимым миров самой книги, а `python ops/tools/check_worlds.py` читает книгу Магнита на её теге из соседнего репозитория (только чтение) и сверяет поле за полем и тем же хэшем — расхождений 0.
 
-**Чем может ошибаться.** Миры устаревают вместе с кривой: пересборка — вместе с Магнитом после заседания Банка России со среднесрочным прогнозом (ближайшее — 23.10.2026) или по флагу `book_update` (A-G8); порядок — `data/assumptions/README.md`, «Миры ставок».
+**Чем может ошибаться.** Миры устаревают вместе с кривой: пересборка — вместе с Магнитом после заседания Банка России со среднесрочным прогнозом (следующее опорное — февраль 2027 г.; ближайшее заседание — 18.12.2026) или по флагу `book_update` (A-G8); порядок — `data/assumptions/README.md`, «Миры ставок».
 
 ### A-P1. Веса миров слоя «свой макро-взгляд»
 
@@ -164,7 +166,7 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 
 **Обоснование.** Веса общие с книгой Магнита 1.6: числа и ось — побайтно её (`inputs/magnit_book.json` → `joint.world_prob`, ось «Веса миров»; сверяет `check_fragment.py`); обоснование Магнита — история ошибок прогнозов Банка России (инфляция выше прогноза 6 раз из 6 в 2021–2026 гг.).
 
-**Цена ошибки.** Концы оси — <!--=band.judgements[name=Веса миров].price_low r0-->3 366<!--/--> / <!--=band.judgements[name=Веса миров].price_high r0-->3 406<!--/--> ₽ точки (размах <!--=band.judgements[name=Веса миров].swing r0-->40<!--/--> ₽).
+**Цена ошибки.** Концы оси — <!--=band.judgements[name=Веса миров].price_low r0-->3 440<!--/--> / <!--=band.judgements[name=Веса миров].price_high r0-->3 473<!--/--> ₽ точки (размах <!--=band.judgements[name=Веса миров].swing r0-->33<!--/--> ₽).
 
 **Чем может ошибаться.** Это суждение владельца; меняется только вместе с книгой Магнита.
 
@@ -182,13 +184,13 @@ EV слоя «свой макро-взгляд», млрд ₽: PV свобод�
 
 ### A-M6. Ось «Инфляция мира M»
 
-**Ключ.** Ось полосы (`kind: shift`) по `worlds.M.cpi`, `worlds.M.food_cpi`, `worlds.M.lt.inflation`. **Значение.** Книга — сдвиг 0. **Диапазон.** −0,3…+0,5 п.п.; та же ось в обратном DCF (поиск −5…+8 п.п.). **Распределение.** Треугольное. **Класс.** A/B (как у Магнита: π_ss мира M — форвардные BEI 2034H1–2036H2 = 9,80 %; ось — дата, ликвидность ОФЗ-ИН, экстраполяция).
+**Ключ.** Ось полосы (`kind: shift`) по `worlds.M.cpi`, `worlds.M.food_cpi`, `worlds.M.lt.inflation`. **Значение.** Книга — сдвиг 0. **Диапазон.** −0,3…+0,5 п.п.; та же ось в обратном DCF (поиск −5…+8 п.п.). **Распределение.** Треугольное. **Класс.** A/B (как у Магнита: π_ss мира M — форвардные BEI 2034H1–2036H2 на окне 23–28.10.2026 = 10,12 %; ось — дата, ликвидность ОФЗ-ИН, экстраполяция).
 
 **Обоснование.** Общая ось книги Магнита 1.6 (`inputs/magnit_book.json`, «Инфляция мира M (дата, ликвидность ОФЗ-ИН)»: shift_low −0,003, shift_high 0,005). У X5 она весомее, чем у Магнита (там 0,3 % дисперсии): инфляция мира M сразу двигает чек (A-R1, A-R1h) и номинальный рост терминала.
 
-**Цена ошибки.** <!--=band.judgements[name=Инфляция мира M].price_low r0-->3 309<!--/--> / <!--=band.judgements[name=Инфляция мира M].price_high r0-->3 556<!--/--> ₽ точки (размах <!--=band.judgements[name=Инфляция мира M].swing r0-->247<!--/--> ₽).
+**Цена ошибки.** <!--=band.judgements[name=Инфляция мира M].price_low r0-->3 374<!--/--> / <!--=band.judgements[name=Инфляция мира M].price_high r0-->3 636<!--/--> ₽ точки (размах <!--=band.judgements[name=Инфляция мира M].swing r0-->261<!--/--> ₽).
 
-**Чем может ошибаться.** Ось заведомо односторонняя вокруг рыночного BEI; пересобирается с мирами после заседания Банка России 23.10.2026.
+**Чем может ошибаться.** Ось заведомо односторонняя вокруг рыночного BEI; пересобирается с мирами (последний раз — после заседания Банка России 23.10.2026, книга Магнита 1.7).
 
 ---
 
@@ -264,13 +266,13 @@ mid, low и сход к нулю — C.
 - **Сход к нулю к 2036 г.** Доля X5 на рынке — 16,6 % (2025, INFOLine в `x5-ar25.pdf`, стр. 35); ФЗ-381 «О торговле»
   (ст. 14; X3 §5) запрещает сети с долей более 25 % продовольственной розницы муниципального образования приобретать и брать в
   аренду новую площадь — в плотных городах рост упирается в потолок, остаются регионы экспансии (Дальний Восток, Сибирь)
-  и «Чижик». На пути книги выручка X5 растёт на 8,3–10,0 % в год против рынка +6,5…+7,8 % (прогноз INFOLine до 2029 г.,
-  `x5-ar25.pdf`, стр. 31), доля — 16,6 → ≈18,0 % к 2029 г. (`check_2026h2.py`, разд. 4): медленнее, чем +1 п.п. в год
+  и «Чижик». На пути книги выручка X5 растёт на 8,6–10,4 % в год против рынка +6,5…+7,8 % (прогноз INFOLine до 2029 г.,
+  `x5-ar25.pdf`, стр. 31), доля — 16,6 → ≈18,2 % к 2029 г. (`check_2026h2.py`, разд. 4): медленнее, чем +1 п.п. в год
   в 2022–2025 гг.
-- Рост сети почти не создаёт стоимости при ставках миров: ось −1,0…+0,8 п.п. меняет точку на <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].swing r0-->22<!--/--> ₽
+- Рост сети почти не создаёт стоимости при ставках миров: ось −1,0…+0,8 п.п. меняет точку на <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].swing r0-->27<!--/--> ₽
   — открытие окупается по ставке, близкой к ставке дисконтирования.
 
-**Цена ошибки.** −1,0 / +0,8 п.п. → <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_low r0-->3 385<!--/--> / <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_high r0-->3 407<!--/--> ₽ точки (размах <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].swing r0-->22<!--/--> ₽, доля полосы <!--=band.contributions[axis=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].share p1-->0,0<!--/--> %); в обратном DCF рыночной цены ось не даёт нигде на отрезке поиска.
+**Цена ошибки.** −1,0 / +0,8 п.п. → <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_low r0-->3 452<!--/--> / <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].price_high r0-->3 479<!--/--> ₽ точки (размах <!--=band.judgements[name=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].swing r0-->27<!--/--> ₽, доля полосы <!--=band.contributions[axis=Чистый рост площади 2027–2030 (сдвиг всех тарифов)].share p1-->0,0<!--/--> %); в обратном DCF рыночной цены ось не даёт нигде на отрезке поиска.
 
 **Чем может ошибаться.** 2П2026 уже наполовину прошло; операционные результаты 3 кв. (16.10.2026) книга 1.1.4 учла только
 трафиком (A-R4), тарифы площади по ним не пересматривались. Цели 2028 г. компания
@@ -376,7 +378,7 @@ d = 0,83 значит: новый магазин выходит на ≈0,79 с�
 локациях и регионах экспансии, часть выручки они забирают у соседних магазинов сети. Смесь стратегии-2028 — 1,025:
 плотность держится. Ось 0,73–0,93 покрывает ±2,3 СО и разброс по форме кривой (0,76–0,88 при κ 0,6).
 
-**Цена ошибки.** 0,73 / 0,93 → <!--=band.judgements[name=Плотность новой площади].price_low r0-->3 048<!--/--> / <!--=band.judgements[name=Плотность новой площади].price_high r0-->3 740<!--/--> ₽ точки (размах <!--=band.judgements[name=Плотность новой площади].swing r0-->693<!--/--> ₽, доля полосы <!--=band.contributions[axis=Плотность новой площади].share p1-->5,9<!--/--> %).
+**Цена ошибки.** 0,73 / 0,93 → <!--=band.judgements[name=Плотность новой площади].price_low r0-->3 109<!--/--> / <!--=band.judgements[name=Плотность новой площади].price_high r0-->3 820<!--/--> ₽ точки (размах <!--=band.judgements[name=Плотность новой площади].swing r0-->710<!--/--> ₽, доля полосы <!--=band.contributions[axis=Плотность новой площади].share p1-->5,9<!--/--> %).
 
 **Чем может ошибаться.** В NL 2024–2025 гг. — покупки 2023 г. («Тамерлан», «Виктория») и Vprok.ru (вне LFL):
 d может быть завышена на сотые. d и κ в подборе связаны (d* 0,79 / 0,83 / 0,87 при κ 0,4 / 0,6 / 0,8).
@@ -402,7 +404,7 @@ d может быть завышена на сотые. d и κ в подбор�
 почти постоянны на магазин; при продажах 60 % средней их доля растёт до ≈21 %, с коммунальными и прочими — до ≈24 %,
 равно валовой марже 23,8 %: магазин выходит в ноль по EBITDA. Как у Магнита (0,6; 0,4–0,8). Подъём от ротации в терминале: (0,83 − 0,6) × 2 % = **0,46 %** в год (черновик — 0,70 %).
 
-**Цена ошибки.** 0,4 / 0,8 → <!--=band.judgements[name=Продуктивность закрываемой площади].price_low r0-->3 879<!--/--> / <!--=band.judgements[name=Продуктивность закрываемой площади].price_high r0-->2 944<!--/--> ₽ точки (размах <!--=band.judgements[name=Продуктивность закрываемой площади].swing r0-->935<!--/--> ₽, доля полосы <!--=band.contributions[axis=Продуктивность закрываемой площади].share p1-->9,4<!--/--> %).
+**Цена ошибки.** 0,4 / 0,8 → <!--=band.judgements[name=Продуктивность закрываемой площади].price_low r0-->3 965<!--/--> / <!--=band.judgements[name=Продуктивность закрываемой площади].price_high r0-->3 000<!--/--> ₽ точки (размах <!--=band.judgements[name=Продуктивность закрываемой площади].swing r0-->965<!--/--> ₽, доля полосы <!--=band.contributions[axis=Продуктивность закрываемой площади].share p1-->9,6<!--/--> %).
 
 **Чем может ошибаться.** Первичкой не раскрыт. Часть закрытий — переезды и окончание аренды, а не худшие точки
 (κ выше). Суждение сильное (цена ошибки — выше).
@@ -463,7 +465,7 @@ Results, стр. 30 и старый лист Operating Results_Q, стр. 47; И
 терминал.
 
 **Чем может ошибаться.** Реальный чек в терминале — суждение с большой ценой: +0,1 / −0,1 п.п. сдвига LT всех состояний —
-+95 / −93 ₽ точки, +0,1 / −0,1 п.п. трафика всех лет — +122 / −120 ₽ (`valuation_effect.py`, разд. 2). Отставание чека
++99 / −96 ₽ точки, +0,1 / −0,1 п.п. трафика всех лет — +126 / −123 ₽ (`valuation_effect.py`, разд. 2). Отставание чека
 от инфляции может продолжиться (онлайн-ритейлеры, дискаунтеры).
 
 ### A-R4. LFL-трафик по состояниям спроса
@@ -505,9 +507,9 @@ Results, стр. 30 и старый лист Operating Results_Q, стр. 47; И
 (`ticket.py`, разд. 5) — рынок в натуральном выражении растёт на +0…+0,5 % в год, доля X5 в терминале слегка теряется.
 Ось асимметрична вниз: за 2011–2026 гг. реальный LFL X5 (отчётный) был −0,9 % в год, у зрелой сети — ниже.
 
-**Цена ошибки.** −0,8 / +0,4 п.п. → <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 510<!--/--> / <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 903<!--/--> ₽ точки (размах <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].swing r0-->1 394<!--/--> ₽, доля полосы <!--=band.contributions[axis=Трафик LFL (сдвиг всех состояний)].share p1-->22,4<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,53<!--/--> п.п. в год (обратный DCF медианы).
+**Цена ошибки.** −0,8 / +0,4 п.п. → <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 553<!--/--> / <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 990<!--/--> ₽ точки (размах <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].swing r0-->1 436<!--/--> ₽, доля полосы <!--=band.contributions[axis=Трафик LFL (сдвиг всех состояний)].share p1-->22,8<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Трафик LFL (сдвиг всех состояний)].solved sp2-->−1,56<!--/--> п.п. в год (обратный DCF медианы).
 
-**Чем может ошибаться.** Самое дорогое суждение области: ось −0,8…+0,4 п.п. — <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 510<!--/-->…<!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 903<!--/--> ₽ точки. Отнесение всего
+**Чем может ошибаться.** Самое дорогое суждение области: ось −0,8…+0,4 п.п. — <!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_low r0-->2 553<!--/-->…<!--=band.judgements[name=Трафик LFL (сдвиг всех состояний)].price_high r0-->3 990<!--/--> ₽ точки. Отнесение всего
 созревания к трафику (а не частью к чеку) — суждение. Восстановление 2П2026–2027 опирается на один квартал: вернись
 трафик 4 кв. к уровню 1П2026 — центр 2П2026 и 2027 г. завышен.
 
@@ -584,20 +586,20 @@ Results, стр. 14, 24). В 2П2026 добавляются дистрибьют
 | эффективная площадь | +5,85 % |
 | — вне отчётного LFL (NL) | +4,48 % |
 | — созревание в отчётном LFL (m) | +1,37 п.п. |
-| LFL-чек с НДС | +4,98 % |
+| LFL-чек с НДС | +5,00 % |
 | клин НДС | −0,72 % |
 | LFL-трафик зрелой сети | +0,60 % |
 | прочая выручка | +0,30 % |
 | **выручка** | **+11,4 % (<!--=paths.halves[period=2026H2].revenue r0-->2 671<!--/--> млрд ₽)**, клетки +10,3…+13,5 % |
 
-Год 2026 — **+11,0 %** (<!--=paths.annual[year=2026].revenue r0-->5 151<!--/--> млрд ₽). Прогноз компании +12–16 % требует во 2П2026 +13,4…+21,1 %: книга ниже нижней
+Год 2026 — **+11,0 %** (<!--=paths.annual[year=2026].revenue r0-->5 152<!--/--> млрд ₽). Прогноз компании +12–16 % требует во 2П2026 +13,4…+21,1 %: книга ниже нижней
 границы на 2,0 п.п. Ретро-оценка 3 кв. 2026 (X5-indicators §4, разностная форма без подгонки) — +9,4…+10,7 %: книга
 выше верхнего края на 0,7 п.п., в пределах RMSE метода 2,5 п.п.; факт 3 кв. — +13,0 % (операционные результаты
 16.10.2026, с. 1). Расхождение с компанией: (1) продовольственная инфляция упала сильнее, чем было видно 20.03.2026 — январь–февраль
 5,7 % г/г, 2 кв. 3,4 %, июль–август 4,7 % против 8,7 % во 2П2025 (каждый 1 п.п. — 0,63 п.п. чека); (2) чистый прирост
 площади 1П2026 на 41 % ниже г/г, рост средней площади 2П2026 ≈ +5,6 % против +8,8 % годом раньше; (3) клин НДС −0,7 п.п.
 (LFL с НДС, выручка — без). Для +13,4 % отчётный LFL 2П2026 должен быть ≈8,7 % — вдвое выше 2 кв. 2026 (3 кв. — 7,4 %). В 2025 г. компания
-тоже промахнулась по выручке (+18,8 % против ≈20 %; X3 §1.3). На значениях черновика было бы +12,2 %.
+тоже промахнулась по выручке (+18,8 % против ≈20 %; X3 §1.3). На значениях черновика было бы +12,3 %.
 
 ---
 
@@ -730,7 +732,7 @@ A-P2) — 0,215, но шум второй шкалы в ней учтён два
 с 01.01.2027; A-G1 X3) и структура стратегии-2028 (−0,35 п.п.); вверх — реалистичная смесь 2030 г. (+0,17) и класс
 с Empire (+0,14). Бутстрэп центра: 95 % −0,31…+0,33 п.п. (одной оценки по шкале f — −0,25…+0,29); ось его покрывает.
 
-**Цена ошибки.** −0,5 / +0,4 п.п. → <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_low r0-->2 735<!--/--> / <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_high r0-->3 928<!--/--> ₽ точки (размах <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].swing r0-->1 192<!--/--> ₽, доля полосы <!--=band.contributions[axis=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].share p1-->16,4<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].solved sp2-->−1,16<!--/--> п.п. (обратный DCF медианы).
+**Цена ошибки.** −0,5 / +0,4 п.п. → <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_low r0-->2 793<!--/--> / <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].price_high r0-->4 008<!--/--> ₽ точки (размах <!--=band.judgements[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].swing r0-->1 214<!--/--> ₽, доля полосы <!--=band.contributions[axis=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].share p1-->16,2<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Долгосрочный уровень маржи (сдвиг целей LT всех режимов)].solved sp2-->−1,19<!--/--> п.п. (обратный DCF медианы).
 
 **Чем может ошибаться.** Ошибка среднего класса посчитана по десяти эпизодам, и бутстрэп занижает её в √(10/9) раза: по
 s/√n ошибка центра 0,174, σ среднего 0,223, t(9)-интервал центра ±0,39 п.п.; хвост регулирования — суждение.
@@ -882,7 +884,7 @@ databook — копия 3 кв. 2016, квартал восстановлен и
 персоналу», МСФО 2025; обязательство — строка моста `lti_liability`). Низ оси — среднее 2021–2024 гг. (0,124 %,
 сворачивание программы), верх — продолжение расширения.
 
-**Цена ошибки.** 0,12 / 0,26 % → <!--=band.judgements[name=LTI].price_low r0-->3 550<!--/--> / <!--=band.judgements[name=LTI].price_high r0-->3 282<!--/--> ₽ точки (размах <!--=band.judgements[name=LTI].swing r0-->268<!--/--> ₽, доля полосы <!--=band.contributions[axis=LTI].share p1-->0,2<!--/--> %).
+**Цена ошибки.** 0,12 / 0,26 % → <!--=band.judgements[name=LTI].price_low r0-->3 622<!--/--> / <!--=band.judgements[name=LTI].price_high r0-->3 351<!--/--> ₽ точки (размах <!--=band.judgements[name=LTI].swing r0-->271<!--/--> ₽, доля полосы <!--=band.contributions[axis=LTI].share p1-->0,2<!--/--> %).
 
 **Чем может ошибаться.** Выплаты LTI могут зависеть от результата и цены акции — при слабых годах расход снижается.
 
@@ -1002,7 +1004,7 @@ D&A до МСФО 16 без обесценения — 2,32 % выручки (20
 Проверки (`capex.py`, раздел 9; это не основание уровня):
 - **capex 2026 года** (1П факт + 2П модели при сети книги — рост и закрытия 2П2026; поддерживающий 2П2026 — формулой
   ядра §4.5; в определении компании, без прочих инвестиционных платежей): 3,82 % выручки при среднем тарифе и
-  базовом уровне (3,52–4,22 % по тарифам роста и уровням; ожидание по уровням 3,83 %) — на уровне факта 1П2026
+  базовом уровне (3,52–4,23 % по тарифам роста и уровням; ожидание по уровням 3,83 %) — на уровне факта 1П2026
   (3,74 %), на 0,7–0,9 п.п. ниже прогноза компании (4,5–4,7 %: за 2П2026 он требует 138–149 млрд ₽ против ≈104 млрд
   модели); с прочими платежами — 3,93 %.
   Прогноз компании X5 исполняет с недобором: 2025 г. — 4,64 % против пересмотренных «≈5,5 %»
@@ -1018,7 +1020,7 @@ D&A до МСФО 16 без обесценения — 2,32 % выручки (20
 Поэтому ось симметрична: коридор замещения тянет вниз, прогноз компании (модель 2026 г. на 0,7–0,9 п.п. ниже него) —
 вверх.
 
-**Цена ошибки.** −0,4 / +0,4 п.п. → <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_low r0-->4 215<!--/--> / <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_high r0-->2 581<!--/--> ₽ точки (размах <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].swing r0-->1 634<!--/--> ₽, доля полосы <!--=band.contributions[axis=Поддерживающий capex (сдвиг всех уровней)].share p1-->27,6<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Поддерживающий capex (сдвиг всех уровней)].solved sp2-->+0,74<!--/--> п.п. (обратный DCF медианы).
+**Цена ошибки.** −0,4 / +0,4 п.п. → <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_low r0-->4 296<!--/--> / <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].price_high r0-->2 640<!--/--> ₽ точки (размах <!--=band.judgements[name=Поддерживающий capex (сдвиг всех уровней)].swing r0-->1 656<!--/--> ₽, доля полосы <!--=band.contributions[axis=Поддерживающий capex (сдвиг всех уровней)].share p1-->27,1<!--/--> %); рыночную цену даёт сдвиг <!--=band.reverse_dcf[name=Поддерживающий capex (сдвиг всех уровней)].solved sp2-->+0,76<!--/--> п.п. (обратный DCF медианы).
 
 **Чем может ошибаться.** Удельная стоимость реконструкции и цикл — суждение (X5 не раскрывает; при 43,4
 вместо 31,5 тыс. ₽/м² базовый стационар выше на ≈0,11 п.п.). Статья «поддержание магазинов» 2025 г. — доля
@@ -1065,7 +1067,7 @@ IT и прочие инвестиционные платежи (программ
 (МСФО 2025, прим. 6, стр. 21; МСФО 1П2026, прим. 5, стр. 12); Магнит (слайды компании) — 48 тыс. ₽/м². Грубая
 оценка X3 (≈61 тыс. ₽ на м²) делила на чистый прирост, а не на валовое открытие.
 
-**Цена ошибки.** 0,047 / 0,063 → <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_low r0-->3 521<!--/--> / <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_high r0-->3 266<!--/--> ₽ точки (размах <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].swing r0-->255<!--/--> ₽, доля полосы <!--=band.contributions[axis=Стоимость открытия, млрд ₽ на тыс. м²].share p1-->1,1<!--/--> %).
+**Цена ошибки.** 0,047 / 0,063 → <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_low r0-->3 593<!--/--> / <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].price_high r0-->3 335<!--/--> ₽ точки (размах <!--=band.judgements[name=Стоимость открытия, млрд ₽ на тыс. м²].swing r0-->257<!--/--> ₽, доля полосы <!--=band.contributions[axis=Стоимость открытия, млрд ₽ на тыс. м²].share p1-->1,0<!--/--> %).
 
 **Чем может ошибаться.** Доли статей — из слайдов (для 2024 г. — от «капзатрат компании» 166,4 при денежных
 158,5); площадь закрываемого магазина принята средней по формату (если закрываются меньшие, цена выше на
@@ -1091,7 +1093,7 @@ X5 в неё — прочие инвестиционные платежи, A-K1)
 мощностей нет: X5 ввела 11 РЦ в 2025 г., 10 РЦ «Пятёрочки» строятся на 2026–2027 гг. (годовой отчёт 2025),
 «низкий уровень свободных складских площадей на рынке» (`x5_q4_2025_financial_results_rus.pdf`, стр. 2).
 
-**Цена ошибки.** 0,019 / 0,037 → <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_low r0-->3 447<!--/--> / <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_high r0-->3 345<!--/--> ₽ точки (размах <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].swing r0-->102<!--/--> ₽, доля полосы <!--=band.contributions[axis=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].share p1-->0,0<!--/--> %).
+**Цена ошибки.** 0,019 / 0,037 → <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_low r0-->3 517<!--/--> / <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].price_high r0-->3 415<!--/--> ₽ точки (размах <!--=band.judgements[name=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].swing r0-->103<!--/--> ₽, доля полосы <!--=band.contributions[axis=Инфраструктура на м² прироста, млрд ₽ на тыс. м²].share p1-->0,0<!--/--> %).
 
 **Чем может ошибаться.** Ввод транспорта — не денежный capex (лаг через незавершённое строительство); доля РЦ
 под прирост — суждение; часть РЦ X5 арендует — тогда capex меньше, а аренда в марже больше.
@@ -1182,7 +1184,7 @@ Financial Position!R19, R23, R25, R48, R52; состав R54 — МСФО 1П202
 Разброс декабрей (−4,0…−3,1 %) задаёт ось ±0,5 п.п.; ось сдвигает только долгосрочный уровень — ближний
 декабрь привязан к факту якоря.
 
-**Цена ошибки.** −0,5 / +0,5 п.п. → <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_low r0-->3 569<!--/--> / <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_high r0-->3 225<!--/--> ₽ точки (размах <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].swing r0-->344<!--/--> ₽, доля полосы <!--=band.contributions[axis=Оборотный капитал, долгосрочный уровень (сдвиг)].share p1-->0,8<!--/--> %).
+**Цена ошибки.** −0,5 / +0,5 п.п. → <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_low r0-->3 642<!--/--> / <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].price_high r0-->3 293<!--/--> ₽ точки (размах <!--=band.judgements[name=Оборотный капитал, долгосрочный уровень (сдвиг)].swing r0-->349<!--/--> ₽, доля полосы <!--=band.contributions[axis=Оборотный капитал, долгосрочный уровень (сдвиг)].share p1-->0,8<!--/--> %).
 
 **Чем может ошибаться.** Декабрей в одном определении — три; в 2024 г. в «прочих» было обязательство перед
 бывшей материнской компанией (исключено по сумме выплаты); НДС 22 % с 2026 г. поднял налоги к уплате
@@ -1223,7 +1225,7 @@ Financial Position!R19, R23, R25, R48, R52; состав R54 — МСФО 1П202
 Нижний край оси — июнь 2025 г. (0,57 %), верхний — среднее «касса + путь + текущие счета» (1,45 %). У X5
 несвободная касса выше, чем у Магнита (0,5 %): одни деньги в пути — 1,2–2,0 дня выручки.
 
-**Цена ошибки.** 0,60 / 1,45 % → <!--=band.judgements[name=Операционная касса].price_low r0-->3 535<!--/--> / <!--=band.judgements[name=Операционная касса].price_high r0-->3 280<!--/--> ₽ точки (размах <!--=band.judgements[name=Операционная касса].swing r0-->254<!--/--> ₽, доля полосы <!--=band.contributions[axis=Операционная касса].share p1-->2,1<!--/--> %).
+**Цена ошибки.** 0,60 / 1,45 % → <!--=band.judgements[name=Операционная касса].price_low r0-->3 607<!--/--> / <!--=band.judgements[name=Операционная касса].price_high r0-->3 349<!--/--> ₽ точки (размах <!--=band.judgements[name=Операционная касса].swing r0-->258<!--/--> ₽, доля полосы <!--=band.contributions[axis=Операционная касса].share p1-->2,1<!--/--> %).
 
 **Чем может ошибаться.** Три даты с разбивкой; касса в пути зависит от дня недели отчётной даты.
 
@@ -1302,7 +1304,7 @@ Financial Position!R19, R23, R25, R48, R52; состав R54 — МСФО 1П202
 0,089 %). Состав 2023–2025: недостачи запасов сверх норм +0,06, иные ставки (по-видимому, IT-дочки с льготной
 ставкой) −0,05, прочие невычитаемые +0,13 % выручки. Диапазон — крайние наблюдения (2025 и 2023).
 
-**Цена ошибки.** −0,13 / +0,45 % → <!--=band.judgements[name=Постоянные налоговые разницы].price_low r0-->3 579<!--/--> / <!--=band.judgements[name=Постоянные налоговые разницы].price_high r0-->3 227<!--/--> ₽ точки (размах <!--=band.judgements[name=Постоянные налоговые разницы].swing r0-->351<!--/--> ₽, доля полосы <!--=band.contributions[axis=Постоянные налоговые разницы].share p1-->2,5<!--/--> %).
+**Цена ошибки.** −0,13 / +0,45 % → <!--=band.judgements[name=Постоянные налоговые разницы].price_low r0-->3 651<!--/--> / <!--=band.judgements[name=Постоянные налоговые разницы].price_high r0-->3 295<!--/--> ₽ точки (размах <!--=band.judgements[name=Постоянные налоговые разницы].swing r0-->356<!--/--> ₽, доля полосы <!--=band.contributions[axis=Постоянные налоговые разницы].share p1-->2,5<!--/--> %).
 
 **Чем может ошибаться.** «Прочие» меняют знак год к году и не расшифрованы; льгота IT-компаний (5 % до 2030 г.)
 может закончиться (+0,05 п.п.).
@@ -1425,7 +1427,7 @@ cpn(y) = m × ((1 + y)^(1/m) − 1), и за полугодие модель н�
 только у 003P-03 (размещён в 12.2023, погашен 05.06.2026). Все 9 фиксированных выпусков в обращении на 28.09.2026
 (124,7 млрд ₽) и все размещения с 12.2024 — с ежемесячным купоном. G-спред A-F1b измерен к эффективной доходности по
 номиналу ((1 + c/m)^m − 1), поэтому в ставку долга новый фикс входит купоном, а не доходностью. Пример — мир N, 2П2026:
-доходность 12,65 % → купон 11,97 %, за полугодие 5,99 % (корень от доходности — 6,14 %).
+доходность 13,13 % → купон 12,40 %, за полугодие 6,20 % (корень от доходности — 6,36 %).
 
 **Чем может ошибаться.** Новые выпуски могут платить купон реже: квартальный купон начисляет больше ежемесячного.
 
@@ -1439,7 +1441,7 @@ cpn(y) = m × ((1 + y)^(1/m) − 1), и за полугодие модель н�
 1,3. Стартовый долг модели (ЧД 310,647 + дивиденды к выплате 60,425) к отчётной EBITDA до МСФО 16 LTM 287,0 — уже 1,29×.
 Низ оси — среднее кварталов нынешней политики 03.2025–06.2026 (0,84–1,17, среднее 1,05×: компания пока держит меньше
 цели); верх — симметрично +0,3 (прежний режим 2017–2021 гг. — 1,66–1,73×, предел выплат политики — 2,0×). Цена ошибки:
-1,0 / 1,6× → <!--=band.judgements[name=Целевой рычаг].price_low r0-->3 275<!--/--> / <!--=band.judgements[name=Целевой рычаг].price_high r0-->3 523<!--/--> ₽ точки (доля полосы <!--=band.contributions[axis=Целевой рычаг].share p1-->1,0<!--/--> %) — рычаг двигает оценку через щит (за вычетом издержек размещения и процентов сверх справедливого спреда).
+1,0 / 1,6× → <!--=band.judgements[name=Целевой рычаг].price_low r0-->3 342<!--/--> / <!--=band.judgements[name=Целевой рычаг].price_high r0-->3 596<!--/--> ₽ точки (доля полосы <!--=band.contributions[axis=Целевой рычаг].share p1-->1,0<!--/--> %) — рычаг двигает оценку через щит (за вычетом издержек размещения и процентов сверх справедливого спреда).
 
 **Чем может ошибаться.** Политика утверждена на 4 года (до 2029 г.); щит на целевом рычаге в терминале — правило метода.
 
@@ -1485,8 +1487,8 @@ cpn(y) = m × ((1 + y)^(1/m) − 1), и за полугодие модель н�
 - *Вложения и ассоциированные* — активы вне ЧД и вне EBITDA, по балансу.
 - *LTI — не требование.* Программа денежная и скользящая (расход 3,76 / 7,14 млрд в 2024–2025 гг., 9,72 LTM; остаток 31.12.2025 —
   11,64 = 1,63 года расхода). Модель платит LTI деньгами в момент начисления (A-C7, §4.4), а компания — с лагом, поэтому
-  PV денег программы ≈ PV начислений − S·g/(r − g): без строки модель уже переплачивает 3,8 / 4,1 / 7,6 млрд (N / H / M), со
-  строкой переплатила бы 11,7 / 12,0 / 15,5. Цена решения: строка LTI в мосте — −28 ₽.
+  PV денег программы ≈ PV начислений − S·g/(r − g): без строки модель уже переплачивает 3,8 / 4,2 / 8,0 млрд (N / H / M), со
+  строкой переплатила бы 11,7 / 12,1 / 15,9. Цена решения: строка LTI в мосте — −28 ₽.
 - *Вне моста:* аренда МСФО 16 (742,991 — базис до МСФО 16), капитальные обязательства 29,882 (это capex прогноза),
   казначейские акции (в формуле цены — ниже и A-V7), цена «Города 77» (сделка 20.07.2026, после якоря; не раскрыта — null).
   Дивиденды к выплате и невыплаченный остаток финала 2025 (14,4 на 13.08.2026) — не строка, а реестр объявленных.
@@ -1532,7 +1534,7 @@ cpn(y) = m × ((1 + y)^(1/m) − 1), и за полугодие модель н�
 (операционный рычаг Магнита, ВП/EBITDA 4,73 против 4,09); у X5 поправки нет — X5 сама себе аналог. Центр 0,60 — то же окно:
 одна измерительная база двух панелей, середина окон 2 / 3 / 5 лет. Диапазон ± 0,15, как у Магнита: низ — 95 % окна одной акции
 (0,43) и собственные β_u аналогов 0,30–0,57 (Лента, Магнит, окна 2–3 года); верх — 95 % окна 3 года (0,73) и окно 5 лет (0,65).
-Премия β_u × ERP = 3,34 п.п. (у Магнита 3,90). Цена ошибки: 0,45 / 0,75 → <!--=band.judgements[name=Бета активов β_u].price_low r0-->3 872<!--/--> / <!--=band.judgements[name=Бета активов β_u].price_high r0-->3 000<!--/--> ₽ точки (размах <!--=band.judgements[name=Бета активов β_u].swing r0-->872<!--/--> ₽, доля полосы <!--=band.contributions[axis=Бета активов β_u].share p1-->7,7<!--/--> % — главное суждение рынка капитала).
+Премия β_u × ERP = 3,34 п.п. (у Магнита 3,90). Цена ошибки: 0,45 / 0,75 → <!--=band.judgements[name=Бета активов β_u].price_low r0-->3 959<!--/--> / <!--=band.judgements[name=Бета активов β_u].price_high r0-->3 058<!--/--> ₽ точки (размах <!--=band.judgements[name=Бета активов β_u].swing r0-->901<!--/--> ₽, доля полосы <!--=band.contributions[axis=Бета активов β_u].share p1-->7,8<!--/--> % — главное суждение рынка капитала).
 
 **Чем может ошибаться.** Окно 3 года держат 29 недель ГДР FIVE 09.2023–04.2024 с β_E 1,93 (у Магнита и Ленты в тот же
 период — 1,40 и 1,39); без них — 0,51.
@@ -1547,7 +1549,7 @@ cpn(y) = m × ((1 + y)^(1/m) − 1), и за полугодие модель н�
 8,13 − 2,56 = 5,57 % — дефолтный спред уже в доходности ОФЗ (как у Магнита, общий рыночный параметр). Низ — реализованная
 премия акций над ОФЗ с 2003 г., 4,9 п.п. (книга Магнита 1.6, A-V2). Верх Магнита 6,2 % — λ-конвенция (λ = 1: страновая часть
 премии без масштаба β) при β 0,70: (0,70 × 4,23 + 3,90 − 2,56)/0,70 = 6,14 %. X5 переносит правило, а не число: при β 0,60 та
-же конвенция даёт (0,60 × 4,23 + 1,34)/0,60 = **6,46 % → 6,5 %**. Цена ошибки: 4,9 / 6,5 % → <!--=band.judgements[name=Премия за риск ERP].price_low r0-->3 615<!--/--> / <!--=band.judgements[name=Премия за риск ERP].price_high r0-->3 124<!--/--> ₽ точки (доля полосы <!--=band.contributions[axis=Премия за риск ERP].share p1-->2,2<!--/--> %).
+же конвенция даёт (0,60 × 4,23 + 1,34)/0,60 = **6,46 % → 6,5 %**. Цена ошибки: 4,9 / 6,5 % → <!--=band.judgements[name=Премия за риск ERP].price_low r0-->3 692<!--/--> / <!--=band.judgements[name=Премия за риск ERP].price_high r0-->3 186<!--/--> ₽ точки (доля полосы <!--=band.contributions[axis=Премия за риск ERP].share p1-->2,3<!--/--> %).
 
 **Чем может ошибаться.** Бета ОФЗ к рынку не ноль (итоговый аудит Магнита 26.09.2026, находка KEQ-1: 0,14–0,25;
 `magnit-850oa-handoff/reference/audit-full-2026-09-26/C2_major.md`) — конвенция премии над ОФЗ —
@@ -1572,7 +1574,7 @@ ERP. **Ключи.** `valuation.treasury_sale_price_k`, `valuation.governance_di
   X5 Retail Group N.V. прошёл по 2 121 ₽ при VWAP 2К2025 3 329 ₽ — миноритариям не в убыток.
 
 Сумма g = 0,5 + 1,5 = 2 %. Низ оси — X5 на уровне среднего эмитента (страновой риск уже в ERP); верх — утечки 3 % + ликвидность
-2 % = 5 % (у Магнита центр 10 %). Крайние судьбы пакета — внутри ожидания k, не на оси. Цена ошибки g: 0 / 5 % → <!--=band.judgements[name=Дисконт за управление].price_low r0-->3 466<!--/--> / <!--=band.judgements[name=Дисконт за управление].price_high r0-->3 293<!--/--> ₽ точки (доля полосы <!--=band.contributions[axis=Дисконт за управление].share p1-->0,1<!--/--> %).
+2 % = 5 % (у Магнита центр 10 %). Крайние судьбы пакета — внутри ожидания k, не на оси. Цена ошибки g: 0 / 5 % → <!--=band.judgements[name=Дисконт за управление].price_low r0-->3 538<!--/--> / <!--=band.judgements[name=Дисконт за управление].price_high r0-->3 361<!--/--> ₽ точки (доля полосы <!--=band.contributions[axis=Дисконт за управление].share p1-->0,1<!--/--> %).
 
 **Чем может ошибаться.** Составляющие g прямо не измеряются: ликвидность оценена по уровню листинга, весу в индексе и обороту,
 непрозрачность — по раскрытию; раскрытая сделка со связанной стороной с убытком сдвинула бы g к верху оси
@@ -1584,7 +1586,7 @@ ERP. **Ключи.** `valuation.treasury_sale_price_k`, `valuation.governance_di
 Мертона Магнита не нужен. **Ключ.** `valuation.headline.print_step`. **Значение.** Шаг печати **50 ₽**. **Класс.** A (расчёт).
 
 **Обоснование** (`model_check.py`, раздел «Кредитный пут слоя»; рубли на акцию — функцией цены §7.2). Кредитный пут слоя при
-σ_EV = σ полной доходности X5 (26,6 %, недели, X4) × E/V слоя (0,678 при V0/D <!--=layers.analytical.v0_to_d r2-->3,10<!--/-->) = 18,0 %: на сроке долга 1,24 года
+σ_EV = σ полной доходности X5 (26,6 %, недели, X4) × E/V слоя (0,679 при V0/D <!--=layers.analytical.v0_to_d r2-->3,11<!--/-->) = 18,0 %: на сроке долга 1,24 года
 (средний срок облигаций до оферт) — 2·10⁻⁷ млрд ₽, **0,00 ₽ на акцию**; на 3 года — 0,03 ₽; при σ акции 40 % и 3 годах — 3,2 ₽. На рыночных числах (V\* <!--=point.v_star r1-->879,8<!--/-->, D <!--=claims.d_analytical r1-->420,8<!--/-->, E/V\* ≈0,52, σ_EV 13,9 %) — 1,6·10⁻⁵ млрд ₽. Капитал —
 линейная функция V0 (с пакетом тоже), поэтому «один опцион против среднего по клеткам» не возникает. Шаг 50 ₽ = 2,8 % цены
 1 808,5 ₽ (у Магнита 50 ₽ ≈ 3,1 %); 1 % EV ≈ 32 ₽ на акцию по рынку (V* × 0,98 × 10 / 271,57 млн акций).
@@ -1605,13 +1607,13 @@ margin); целевой рычаг (1,0–1,6); веса миров (общая)
 доходность кассы — не оси: размах каждой — 0,6–37 ₽ (больше всех — спред фикса base 37 ₽, доходность кассы 27 ₽, спред
 флоатеров base 25 ₽; A-F1b, A-F2, A-F1; раздел 9).
 
-**Результат** (раздел 0): медиана <!--=band.stats.median r0-->3 299<!--/--> ₽, P10–P90 <!--=band.stats.p10 r0-->2 540<!--/-->–<!--=band.stats.p90 r0-->4 077<!--/--> ₽. Вклад осей рынка капитала и финансирования: β_u <!--=band.contributions[axis=Бета активов β_u].share p1-->7,7<!--/--> %, ERP <!--=band.contributions[axis=Премия за риск ERP].share p1-->2,2<!--/--> %, целевой рычаг <!--=band.contributions[axis=Целевой рычаг].share p1-->1,0<!--/--> %, инфляция M <!--=band.contributions[axis=Инфляция мира M].share p1-->0,5<!--/--> %, дисконт за управление <!--=band.contributions[axis=Дисконт за управление].share p1-->0,1<!--/--> %, веса миров <!--=band.contributions[axis=Веса миров].share p2-->0,04<!--/--> %; две трети полосы — capex, трафик и маржа LT.
+**Результат** (раздел 0): медиана <!--=band.stats.median r0-->3 364<!--/--> ₽, P10–P90 <!--=band.stats.p10 r0-->2 593<!--/-->–<!--=band.stats.p90 r0-->4 166<!--/--> ₽. Вклад осей рынка капитала и финансирования: β_u <!--=band.contributions[axis=Бета активов β_u].share p1-->7,8<!--/--> %, ERP <!--=band.contributions[axis=Премия за риск ERP].share p1-->2,3<!--/--> %, целевой рычаг <!--=band.contributions[axis=Целевой рычаг].share p1-->1,0<!--/--> %, инфляция M <!--=band.contributions[axis=Инфляция мира M].share p1-->0,5<!--/--> %, дисконт за управление <!--=band.contributions[axis=Дисконт за управление].share p1-->0,1<!--/--> %, веса миров <!--=band.contributions[axis=Веса миров].share p2-->0,03<!--/--> %; две трети полосы — capex, трафик и маржа LT.
 
 ### A-V11. Обратный DCF
 
 **Ключи.** `valuation.reverse_dcf.{subsample, axes}`. **Значение.** Подвыборка 200 прогонов (у Магнита — 200); 9 осей: маржа LT,
 поддерживающий capex, стоимость открытия, β_u (поиск 0,2–2,0), ERP (0–20 %), дисконт за управление (поиск 0–90 %, диапазон
-книги 0–5 %), трафик, чистый рост площади 2027–2030, инфляция мира M (−5…+8 п.п.). **Обоснование.** Поиск идёт на подвыборке прогонов со сдвигом δ к полной полосе, затем решение уточняется секущей на полной полосе (§11): печатается медиана полной полосы, невязка `gap_full` — несколько рублей. Отрезки поиска проверены на книге 1.1.1: рыночную цену <!--=inputs.market_price r1-->1 808,5<!--/--> ₽ медиана даёт при β_u <!--=band.reverse_dcf[name=Бета активов β_u].solved r2-->1,38<!--/-->, ERP <!--=band.reverse_dcf[name=Премия за риск ERP].solved p1-->12,9<!--/--> %, дисконте <!--=band.reverse_dcf[name=Дисконт за управление].solved p0-->47<!--/--> %, точка — при β_u <!--=band.reverse_dcf[name=Бета активов β_u].point_solved r2-->1,42<!--/-->, ERP <!--=band.reverse_dcf[name=Премия за риск ERP].point_solved p1-->13,2<!--/--> %, дисконте <!--=band.reverse_dcf[name=Дисконт за управление].point_solved p0-->48<!--/--> % — внутри отрезков; все решения — раздел 0, «Что заложено в цену». Единицы — в словаре витрины (`п.п.`, `%`, `bn_per_m2` — «тыс. ₽/м²»).
+книги 0–5 %), трафик, чистый рост площади 2027–2030, инфляция мира M (−5…+8 п.п.). **Обоснование.** Поиск идёт на подвыборке прогонов со сдвигом δ к полной полосе, затем решение уточняется секущей на полной полосе (§11): печатается медиана полной полосы, невязка `gap_full` — несколько рублей. Отрезки поиска проверены на книге 1.1.1: рыночную цену <!--=inputs.market_price r1-->1 808,5<!--/--> ₽ медиана даёт при β_u <!--=band.reverse_dcf[name=Бета активов β_u].solved r2-->1,40<!--/-->, ERP <!--=band.reverse_dcf[name=Премия за риск ERP].solved p1-->13,1<!--/--> %, дисконте <!--=band.reverse_dcf[name=Дисконт за управление].solved p0-->48<!--/--> %, точка — при β_u <!--=band.reverse_dcf[name=Бета активов β_u].point_solved r2-->1,44<!--/-->, ERP <!--=band.reverse_dcf[name=Премия за риск ERP].point_solved p1-->13,4<!--/--> %, дисконте <!--=band.reverse_dcf[name=Дисконт за управление].point_solved p0-->49<!--/--> % — внутри отрезков; все решения — раздел 0, «Что заложено в цену». Единицы — в словаре витрины (`п.п.`, `%`, `bn_per_m2` — «тыс. ₽/м²»).
 
 ### A-V12. Что даст отчёт за 2П2026
 
@@ -1629,7 +1631,7 @@ margin); целевой рычаг (1,0–1,6); веса миров (общая)
 опускает до <!--=band.next_report.table[6].posterior.stress p1-->31,5<!--/--> % (+0,15 п.п.); факт 6,2 % почти не двигает вероятности. Ориентиры: пол «6+ %» — 2П ≥ 6,28 %; наивные
 эталоны — 6,48 % («как 2П2025»), 6,09 % (простое среднее 2П2025 и 1П2026), 5,70 % («как 1П2026»).
 
-**Результат** (раздел 0): нейтральная маржа <!--=band.next_report.neutral.median p2-->6,19<!--/--> %, 0,1 п.п. факта — ≈<!--=band.next_report.rub_per_01pp r0-->44<!--/--> ₽ медианы.
+**Результат** (раздел 0): нейтральная маржа <!--=band.next_report.neutral.median p2-->6,19<!--/--> %, 0,1 п.п. факта — ≈<!--=band.next_report.rub_per_01pp r0-->45<!--/--> ₽ медианы.
 
 **Чем может ошибаться.** Сетка устаревает с фактом 3К2026 — её центр стоит сдвигать к новому ожиданию модели.
 
@@ -1648,9 +1650,9 @@ margin); целевой рычаг (1,0–1,6); веса миров (общая)
 до МСФО 16 + объявленные и не выплаченные дивиденды), по средней ключевой квартала: режим N (≤ 8,5 %) — NTM 4,23–6,43× в
 2018Q4–2021Q4 (2,44–2,75× в 2022Q3–2023Q2, ГДР голландского холдинга); режим M (≥ 14 %, 2023Q4–2026Q2) — NTM 3,06–4,32×, LTM
 3,22–5,19×; аналоги LTM 1П2026: Магнит 3,50×, Лента 3,79×, Fix Price 2,00×; X5 25.09.2026 — 2,84×. Верх — 1,25 × максимум NTM
-своего режима (N 6,43 → 8,0; M 4,32 → 5,5), у H — интерполяция по узлу LT кривой (9,0 / 12,7 / 16,7 %): 7,0 (своих кварталов H
+своего режима (N 6,43 → 8,0; M 4,32 → 5,5), у H — интерполяция по узлу LT кривой (8,9 / 12,6 / 16,7 %): 7,0 (своих кварталов H
 три, все — шок 2022 г.). Низ 1,5× — ниже минимума истории X5 (2,44×) и Fix Price (2,0×), у порога нулевого капитала при нынешнем
-долге (≈1,3×). Масса на книге 1.1.4 — <!--=gates[name=ev_ebitda].mass r3-->0,047<!--/-->: снизу — «Стресс» при высоком capex у низа коридора 1,5× (миры N / H / M — <!--=cells[world=N&regime=stress&capex=high].ev_ebitda_fwd r2-->1,59<!--/-->× / <!--=cells[world=H&regime=stress&capex=high].ev_ebitda_fwd r2-->1,45<!--/-->× / <!--=cells[world=M&regime=stress&capex=high].ev_ebitda_fwd r2-->1,62<!--/-->×; срабатывают клетки ниже 1,5×), сверху — мир M: «Частичный возврат» при низком capex <!--=cells[world=M&regime=partial&capex=low].ev_ebitda_fwd r2-->5,93<!--/-->×, «Полный возврат» при низком <!--=cells[world=M&regime=full&capex=low].ev_ebitda_fwd r2-->7,40<!--/-->× и базовом <!--=cells[world=M&regime=full&capex=base].ev_ebitda_fwd r2-->6,60<!--/-->×; мир N: «Полный возврат» при низком capex <!--=cells[world=N&regime=full&capex=low].ev_ebitda_fwd r2-->8,51<!--/-->× (объяснение — `gate_explanations.yaml`).
+долге (≈1,3×). Масса на книге 1.1.4 — <!--=gates[name=ev_ebitda].mass r3-->0,062<!--/-->: снизу — «Стресс» при высоком capex у низа коридора 1,5× (миры N / H / M — <!--=cells[world=N&regime=stress&capex=high].ev_ebitda_fwd r2-->1,59<!--/-->× / <!--=cells[world=H&regime=stress&capex=high].ev_ebitda_fwd r2-->1,41<!--/-->× / <!--=cells[world=M&regime=stress&capex=high].ev_ebitda_fwd r2-->1,66<!--/-->×; срабатывают клетки ниже 1,5×), сверху — мир M: «Частичный возврат» при низком capex <!--=cells[world=M&regime=partial&capex=low].ev_ebitda_fwd r2-->6,08<!--/-->×, «Полный возврат» при низком <!--=cells[world=M&regime=full&capex=low].ev_ebitda_fwd r2-->7,61<!--/-->× и базовом <!--=cells[world=M&regime=full&capex=base].ev_ebitda_fwd r2-->6,79<!--/-->×; мир N: «Полный возврат» при низком capex <!--=cells[world=N&regime=full&capex=low].ev_ebitda_fwd r2-->8,47<!--/-->× (объяснение — `gate_explanations.yaml`).
 
 ### A-G2. Коридор маржи
 
@@ -1667,14 +1669,14 @@ margin); целевой рычаг (1,0–1,6); веса миров (общая)
 ### A-G4. Коридор доли терминала
 
 **Ключ.** `checks.terminal_share`. **Значение.** **0,15–0,65**. **Класс.** B. **Обоснование** (`gates.py`, раздел 4). У ровного
-потока доля PV после конца явного участка = ((1 + g)/(1 + r))^10,27: N 0,453, H 0,376, M 0,400 (r = z_LT + премия, g ≈ π_LT);
+потока доля PV после конца явного участка = ((1 + g)/(1 + r))^10,27: N 0,457, H 0,379, M 0,412 (r = z_LT + премия, g ≈ π_LT);
 ± 0,2 — на форму пути (стресс сжимает явный поток, полный возврат растягивает). Доля считается на чистом терминале: PV терминала и его щита за вычетом вычетов финансирования терминала. Масса на книге — <!--=gates[name=terminal_share].mass r3-->0,000<!--/-->.
 
 ### A-G5. Коридор реальной ставки
 
 **Ключ.** `checks.real_rate`. **Значение.** **2–13 %**. **Класс.** B. **Обоснование** (`gates.py`, раздел 5). Как у Магнита
-(`REAL_RATE_RANGE`): миры общие, гейт ловит рассогласованный мир. У X5 по мирам книги — 8,34 / 10,54 / 10,24 %, по концам осей β,
-ERP и инфляции M — 7,21–12,08 %.
+(`REAL_RATE_RANGE`): миры общие, гейт ловит рассогласованный мир. У X5 по мирам книги — 8,24 / 10,44 / 9,94 %, по концам осей β,
+ERP и инфляции M — 7,11–11,98 %.
 
 ### A-G6. Предел рычага пути
 
@@ -1687,9 +1689,9 @@ ERP и инфляции M — 7,21–12,08 %.
 **Ключ.** `checks.min_v0_to_d`. **Значение.** **1,5**. **Класс.** A (расчёт). **Обоснование** (`model_check.py`). При σ_EV
 слоя 18,0 % кредитный пут при V0/D 1,5 — 3,0 ₽ на акцию на сроке 1,24 года и достигает 25 ₽ (полшага печати) только на сроке
 ≈2,9 года; ниже 1,5 внутренняя стоимость перестаёт быть точной — нужен возврат к структурной оценке (§7.2). На книге
-1.1.4 V0/D слоёв — <!--=layers.analytical.v0_to_d r2-->3,10<!--/--> (свой взгляд), <!--=layers.market_implied.v0_to_d r2-->3,11<!--/--> (вменённые рынком), <!--=layers.macro_neutral.v0_to_d r2-->3,17<!--/--> (рыночные ставки). Капитал клеток
-«Стресс» при высоком capex — невелик: <!--=cells[world=N&regime=stress&capex=high].equity r1-->78,2<!--/--> / <!--=cells[world=H&regime=stress&capex=high].equity r1-->34,0<!--/--> / <!--=cells[world=M&regime=stress&capex=high].equity r1-->87,9<!--/--> млрд ₽ в мирах N / H / M —
-все выше нуля (в мире «Высокие ставки надолго» — при EV <!--=cells[world=H&regime=stress&capex=high].ev r0-->463<!--/--> млрд ₽, близкой к долгу), и гейт `equity_cushion` на книге
+1.1.4 V0/D слоёв — <!--=layers.analytical.v0_to_d r2-->3,11<!--/--> (свой взгляд), <!--=layers.market_implied.v0_to_d r2-->3,16<!--/--> (вменённые рынком), <!--=layers.macro_neutral.v0_to_d r2-->3,26<!--/--> (рыночные ставки). Капитал клеток
+«Стресс» при высоком capex — невелик: <!--=cells[world=N&regime=stress&capex=high].equity r1-->76,7<!--/--> / <!--=cells[world=H&regime=stress&capex=high].equity r1-->24,1<!--/--> / <!--=cells[world=M&regime=stress&capex=high].equity r1-->101,6<!--/--> млрд ₽ в мирах N / H / M —
+все выше нуля (в мире «Высокие ставки надолго» — при EV <!--=cells[world=H&regime=stress&capex=high].ev r0-->453<!--/--> млрд ₽, близкой к долгу), и гейт `equity_cushion` на книге
 не срабатывает (масса <!--=gates[name=equity_cushion].mass r3-->0,000<!--/-->). Уйди капитал клетки ниже нуля, её цена осталась бы положительной
 (выручка от продажи казначейского пакета, §7.2), а слои — далеко от предела (объяснение гейта на этот случай —
 `gate_explanations.yaml`).
@@ -1721,7 +1723,7 @@ ERP и инфляции M — 7,21–12,08 %.
 
 ### Разрыв с рынком
 
-Рынок ниже полосы 80 %: вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->0,40<!--/--> %, и ни одно суждение в пределах своего диапазона рыночную цену не даёт (раздел 0, «Что заложено в цену»). Больше всего разрыв держат поддерживающий capex (модель 2026 г. ниже прогноза компании, A-K1), трафик зрелой сети (A-R4) и долгосрочная маржа (A-C0). Модель к рынку не подгоняется: разрыв проверяется новой версией книги пакетом найденных ошибок обоих знаков (`docs/DECISIONS.md`, 28.09.2026).
+Рынок ниже полосы 80 %: вероятность, что справедливая цена ниже рыночной, — <!--=band.stats.p_below p2-->0,25<!--/--> %, и ни одно суждение в пределах своего диапазона рыночную цену не даёт (раздел 0, «Что заложено в цену»). Больше всего разрыв держат поддерживающий capex (модель 2026 г. ниже прогноза компании, A-K1), трафик зрелой сети (A-R4) и долгосрочная маржа (A-C0). Модель к рынку не подгоняется: разрыв проверяется новой версией книги пакетом найденных ошибок обоих знаков (`docs/DECISIONS.md`, 28.09.2026).
 
 ### Открытые вопросы (решает владелец или ведущий)
 

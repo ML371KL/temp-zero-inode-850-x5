@@ -2,12 +2,12 @@
  "_about": "Миры книги X5 (= книга Магнита 1.7, кривая 28.10.2026): ключевая, кривая, π_LT",
  "source": {
   "file": "x5-850/data/assumptions/assumptions.draft.yaml",
-  "sha256": "f680150929a78a74bfb9696d628690cfaa31ed057a68d0d311786f0b07aabd7e"
+  "sha256": "226e20b8abdc46c06aa8de6258c6d862217e59057a6f009052521d97859872d6"
  },
  "worlds_source": {
   "book": "magnit-850oa book-1.7",
   "curve_date": "2026-10-28",
-  "tag_commit": "2dddccc6544e2c4bcb4715105cd855a80615e51c",
+  "tag_commit": "c34a9efbd33016fea6f8198e2f42426fa86b6602",
   "kernel_sha256": "92ee3dd15a592f60d1e816c048fc3d5c2f381dbe4a1e9e18b9324345a6b4a493"
  },
  "worlds": {

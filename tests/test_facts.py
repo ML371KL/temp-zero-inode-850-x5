@@ -414,11 +414,18 @@ def test_peers_and_brokers():
 
 
 def test_guidance_ranges():
+    """Диапазоны прогноза компании; равные границы — точечный прогноз («около 12 %»).
+    Маржа — «не ниже» (adj_margin_min) или «около» (adj_margin + adj_margin_kind: approx)."""
     g = load("guidance")
     for key in ("revenue_growth", "capex_pct", "net_debt_to_ebitda"):
         lo, hi = v(g[key])
-        assert lo < hi, key
-    assert v(g["adj_margin_min"]) > 0 and v(g["openings_min"]) > 0
+        assert 0 < lo <= hi, key
+    assert ("adj_margin" in g) != ("adj_margin_min" in g), "маржа — ровно одного вида"
+    if "adj_margin" in g:
+        assert g.get("adj_margin_kind") == "approx" and v(g["adj_margin"]) > 0
+    else:
+        assert "adj_margin_kind" not in g and v(g["adj_margin_min"]) > 0
+    assert v(g["openings_min"]) > 0
 
 
 def test_actuals_entries_follow_the_format():

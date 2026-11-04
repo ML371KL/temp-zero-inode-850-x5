@@ -46,6 +46,16 @@ def test_the_book_stands_on_the_version_of_its_state(manifest, source):
     assert A.check(manifest, source, ROOT) == []
 
 
+def test_the_engine_is_the_family_engine_of_the_state():
+    """Движок приёма один на семейство: копия `ops/tools/adopt_worlds.py` побайтово равна образцу источника
+    (`model-kit/adopt_worlds.py`) на коммите, с которого принята версия миров, — его хэш команда пишет в состояние.
+    Правка движка — только в источнике; модель получает её копией (без сети: сверка с хэшем состояния)."""
+    state = A.read_state(ROOT)
+    assert state.get("engine_sha256"), "в состоянии нет хэша образца движка: версию миров принимала прежняя команда"
+    own = hashlib.sha256((ROOT / "ops" / "tools" / "adopt_worlds.py").read_bytes()).hexdigest()
+    assert own == state["engine_sha256"], "копия движка не равна образцу источника на коммите приёма (правили руками?)"
+
+
 def test_the_template_names_the_record_of_the_state(manifest):
     """Миры книги X5 — проекция записи состояния: запись — побайтовая копия (sha256 состояния), дата кривых книги и
     `worlds.source.curve_date` — дата снимка записи (числа миров сверяет правило project_worlds в --check)."""

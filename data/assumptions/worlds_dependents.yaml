@@ -120,11 +120,11 @@ steps:
     title: "таблицы книги: results.json, run_output.txt (полоса 2 000, зерно книги)"
     cmd: ["{python}", "-B", "-m", "model.book_results"]
     timeout: 7200
-  - id: quick
-    kind: quick
+  - id: table-numbers
+    kind: numbers
     title: "числа книги из таблиц: точка, медиана, печать, низ, верх, миры"
     cmd: ["{python}", "-B", "ops/tools/worlds_book.py", "quick", "--out", "var/adopt/quick.json"]
-    out: var/adopt/quick.json
+    file: var/adopt/quick.json
   - id: gates
     kind: gates
     title: "сработавшие гейты книги (results.json)"

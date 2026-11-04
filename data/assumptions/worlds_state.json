@@ -8,8 +8,8 @@
  "record_asof": "2026-10-28",
  "curve_date": "2026-10-28",
  "overlay_sha256": "8611f015aeb6206f4e0c5a6471e2db310c471d11c29953f388edd9b56d39c54d",
- "source_commit": "7f8140d39323",
- "engine_sha256": "3f50fc6ee7dc9d544d9d4c2d726e826114c0ace2df4c7709319b47f71f446035",
+ "source_commit": "94f961596b32",
+ "engine_sha256": "fd9aa160472bb0f04ecdc9529166f04758e3a01f578450ee2c4e577a5d0ebc8f",
  "files": {
   "data/assumptions/worlds_source.json": {
    "src": "record/worlds_source.json",

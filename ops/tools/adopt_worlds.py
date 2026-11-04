@@ -513,11 +513,11 @@ class Run:
         n = self.report["numbers"]
         b, a = n.get("before") or {}, n.get("after") or {}
 
-        def r(x, nd=2):
-            return "—" if x is None else f"{x:.{nd}f}".replace(".", ",")
+        def r(x, nd=2):                                   # как в тексте документов: разряды пробелом, запятая
+            return "—" if x is None else f"{x:,.{nd}f}".replace(",", " ").replace(".", ",")
         out = {"n.point_before": r(b.get("point")), "n.point_after": r(a.get("point")),
                "n.median_before": r(b.get("median")), "n.median_after": r(a.get("median")),
-               "n.print_before": b.get("print", "—"), "n.print_after": a.get("print", "—")}
+               "n.print_before": r(b.get("print"), 0), "n.print_after": r(a.get("print"), 0)}
         for k in ("low", "high"):
             out[f"n.{k}_before"], out[f"n.{k}_after"] = r(b.get(k)), r(a.get(k))
         return out

@@ -83,7 +83,8 @@
                             происхождения — индексу, правила дают числа шаблона, сверки шагов `run` проходят, движок
                             равен образцу состояния (сторож тестов).
 `--from-step` продолжает прошлый прогон той же версии и того же режима: числа и гейты «до», флаги и коммиты пройденных
-шагов — из его отчёта.
+шагов — из его отчёта; смена версии, начатая им (состояние уже на новой версии), продолжается — шаги `when: change`
+идут, версия «было», номер книги и коммит начала — его.
 
 Отчёт — схема `adopt-worlds-report-v1`: числа книги «было → стало» (`numbers`, из таблиц), сдвиг в шагах печати, гейты
 до и после, изменённые числа книги, красные флаги, коммиты, CI; записи шагов, названные манифестом (`report_files:
@@ -457,6 +458,7 @@ class Run:
         self.commits: list[str] = []
         self.installed: dict[str, str] = {}
         self.start = git(tree, "rev-parse", "HEAD").strip()     # коммит, с которого начат приём (книга «было»)
+        self.report["start_commit"] = self.start
         own = tree / ENGINE_REL
         own_sha = sha256_bytes(own.read_bytes()) if own.exists() else None
         kit_sha = source.engine_sha256(source.commit())
@@ -775,6 +777,17 @@ class Run:
         old = json.loads(prev.read_text(encoding="utf-8"))
         if old.get("version") != self.v or old.get("mode") != self.report["mode"]:
             return
+        was = str(old.get("from_version") or self.from_v)
+        if was != self.from_v:                         # прошлый прогон начал смену версии (состояние уже на новой):
+            self.from_v = was                          # шаги `when: change` идут, «было» — книга начала приёма
+            self.from_entry = self.src.entry(was) if was in self.src.index["versions"] else None
+            self.ctx.update(context(self.m, self.entry, self.from_entry, self.v, self.from_v))
+            self.report["from_version"] = was
+            fb = (old.get("book") or {}).get("from_version")
+            if fb:
+                self.book_before = str(fb)
+                self.ctx.update({"book.from_version": self.book_before, "book.version_before": self.book_before})
+            self.start = self.report["start_commit"] = old.get("start_commit") or self.start
         for key in ("numbers", "quick", "gates"):
             if ((old.get(key) or {}).get("before")) is not None:
                 self.report[key]["before"] = old[key]["before"]

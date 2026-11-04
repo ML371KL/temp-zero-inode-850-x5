@@ -1,0 +1,22 @@
+{
+ "schema": "worlds-state-v1",
+ "version": "1.7",
+ "origin": "magnit-850oa book-1.7",
+ "title": "миры ставок после решения Банка России 23.10.2026",
+ "record_sha256": "1e905cb77c1d3a81cc89d6b80769171a60c0169d103340d3e7314bd8030d6f00",
+ "record_csv_sha256": "5fc8e86b97b9647e54dc7ef61cd34043aae6a4b8f5b492048abe6dd8957e87b0",
+ "record_asof": "2026-10-28",
+ "curve_date": "2026-10-28",
+ "overlay_sha256": "8611f015aeb6206f4e0c5a6471e2db310c471d11c29953f388edd9b56d39c54d",
+ "source_commit": "7e36023a41ff",
+ "files": {
+  "data/assumptions/worlds_source.json": {
+   "src": "record/worlds_source.json",
+   "sha256": "1e905cb77c1d3a81cc89d6b80769171a60c0169d103340d3e7314bd8030d6f00"
+  },
+  "data/assumptions/worlds_source.csv": {
+   "src": "record/worlds_source.csv",
+   "sha256": "5fc8e86b97b9647e54dc7ef61cd34043aae6a4b8f5b492048abe6dd8957e87b0"
+  }
+ }
+}

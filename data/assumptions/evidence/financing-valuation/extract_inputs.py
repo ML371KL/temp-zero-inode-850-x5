@@ -7,6 +7,8 @@
 с диска (`--damodaran ПУТЬ`), в репозиторий кладётся только выписка и sha256.
 
     python -B extract_inputs.py [--damodaran ctryprem.html] [--cbr2013 keyrate_2013_2023.html]
+    python -B extract_inputs.py --worlds      # только снимок миров inputs/worlds.json (из черновика книги; папка
+                                              # передачи не нужна — шаг команды приёма миров ops/tools/adopt_worlds.py)
 
 Анализ (`rates.py` и др.) читает только `inputs/` и работает без сети и без openpyxl.
 """
@@ -481,6 +483,9 @@ def copy_small() -> None:
 
 
 def main() -> None:
+    if "--worlds" in sys.argv:
+        build_worlds()
+        return
     dam = cbr13 = None
     if "--damodaran" in sys.argv:
         dam = sys.argv[sys.argv.index("--damodaran") + 1]

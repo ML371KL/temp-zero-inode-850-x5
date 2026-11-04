@@ -1,0 +1,206 @@
+# Манифест приёма миров ставок семейства 850 — книга X5 (команда ops/tools/adopt_worlds.py).
+#
+# X5 своих миров не собирает: миры книги — проекция записи миров общего источника в поля схемы X5 (правило
+# ops/tools/worlds_rules.py:project_worlds; та же математика, что у сборщика книги-источника 850oa). Запись лежит в
+# дереве побайтовой копией (worlds_source.json/.csv, CRLF) — приём не ждёт выпуска книги Магнита; сверка с книгой
+# Магнита на теге — ops/tools/check_worlds.py, когда тег выпущен. Что зависит от миров и как пересчитывается — шаги
+# ниже; на какой версии стоит книга — data/assumptions/worlds_state.json (пишет команда). Сторож
+# tests/test_worlds_dependents.py: читатели миров названы в `readers`, правила дают числа книги (adopt_worlds.py --check).
+#
+# Шаги `when: change` идут только при смене версии миров (номер и дата книги, заморозка журналов, прогулка, журналы):
+# на книге, уже стоящей на версии, прогон — неподвижная точка (книга, листы и таблицы бит в бит, дифф дерева пуст).
+schema: worlds-dependents-v1
+model: x5
+title: "X5 850"
+print_step: 50                           # шаг печати медианы на витрине, ₽ (valuation.headline.print_step)
+stop: {median_print_steps: 2}            # сдвиг медианы больше двух шагов печати — красный флаг
+workers_env: [X5_WORKERS]
+workers: 2                               # общая машина: тяжёлые прогоны — два процесса
+git_identity: {name: ML371KL, email: "304002195+ML371KL@users.noreply.github.com"}
+record: data/assumptions/worlds_source.json
+template: data/assumptions/assumptions.yaml   # у X5 машинная книга правится сама (сборщика нет)
+
+steps:
+  # ---------------------------------------------------------------- запись и миры книги
+  - id: record
+    kind: install
+    title: "запись миров {version} побайтово (CRLF)"
+    files:
+      - {src: record/worlds_source.json, dst: data/assumptions/worlds_source.json}
+      - {src: record/worlds_source.csv, dst: data/assumptions/worlds_source.csv}
+  - id: bump
+    kind: run
+    when: change
+    title: "номер книги {book.from_version} → младший разряд + 1, дата книги — день приёма"
+    cmd: ["{python}", "-B", "ops/tools/worlds_book.py", "bump"]
+  - id: state
+    kind: state
+    title: "состояние: книга на мирах {version}"
+  - id: project
+    kind: rule
+    title: "миры книги и черновика — проекция записи {version}; дата кривых, kernel_sha256, книга-источник"
+    module: ops/tools/worlds_rules.py
+    function: project_worlds
+    comments_flag: false
+  - id: snapshot-worlds
+    kind: run
+    title: "снимок миров листа финансирования (inputs/worlds.json — из черновика)"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/financing-valuation/extract_inputs.py", "--worlds"]
+  - id: snapshot-book
+    kind: run
+    title: "снимок книги листа capex (inputs/book_refs.json)"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/capex-wc-tax/build_inputs.py", "--book-refs"]
+
+  # ---------------------------------------------------------------- листы, читающие миры
+  - id: rates
+    kind: run
+    title: "лист финансирования: ставки по мирам (справка)"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/financing-valuation/rates.py"]
+  - id: bridge
+    kind: run
+    title: "лист финансирования: мост LTI по мирам (справка)"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/financing-valuation/bridge.py"]
+  - id: model-check
+    kind: run
+    title: "лист финансирования: клетки ядра на книге"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/financing-valuation/model_check.py"]
+  - id: gates-sheet
+    kind: run
+    title: "лист финансирования: коридоры гейтов (EV/EBITDA мира H — по узлу LT миров)"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/financing-valuation/gates.py"]
+  - id: ev-ebitda
+    kind: rule
+    title: "коридор checks.ev_ebitda книги и фрагмента = выход листа гейтов"
+    module: ops/tools/worlds_rules.py
+    function: ev_ebitda
+  - id: band-check
+    kind: run
+    title: "лист финансирования: полоса и обратный DCF на книге (≈3 мин)"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/financing-valuation/band_check.py"]
+    timeout: 3600
+  - id: capex
+    kind: run
+    title: "лист capex: проверки capex 2026 (ИПЦ миров 2П2026)"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/capex-wc-tax/capex.py"]
+  - id: check-2026h2
+    kind: run
+    title: "лист сети: выручка 2П2026 ядром"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/network-revenue/check_2026h2.py"]
+  - id: valuation-effect
+    kind: run
+    title: "лист сети: цена суждений ядром"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/network-revenue/valuation_effect.py"]
+  - id: fragment-fv
+    kind: run
+    title: "черновик + фрагменты = книга; фрагмент финансирования = выходы листа"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/financing-valuation/check_fragment.py"]
+  - id: fragment-capex
+    kind: run
+    title: "фрагмент capex согласован"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/capex-wc-tax/check_fragment.py"]
+  - id: fragment-network
+    kind: run
+    title: "фрагмент сети согласован"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/network-revenue/check_fragment.py"]
+  - id: fragment-margin
+    kind: run
+    title: "фрагмент маржи согласован"
+    cmd: ["{python}", "-B", "data/assumptions/evidence/margin/check_fragment.py"]
+
+  # ---------------------------------------------------------------- журналы прежней версии (до перерисовки меток)
+  - id: freeze
+    kind: run
+    when: change
+    title: "журнал книги {book.from_version} и запись истории заморожены (метки → текст)"
+    cmd: ["{python}", "-B", "ops/tools/worlds_book.py", "freeze", "data/assumptions/V{book.from_version}-CHANGES.md", "docs/CHANGELOG.md"]
+
+  # ---------------------------------------------------------------- таблицы
+  - id: tables
+    kind: run
+    title: "таблицы книги: results.json, run_output.txt (полоса 2 000, зерно книги)"
+    cmd: ["{python}", "-B", "-m", "model.book_results"]
+    timeout: 7200
+  - id: quick
+    kind: quick
+    title: "числа книги из таблиц: точка, медиана, печать, низ, верх, миры"
+    cmd: ["{python}", "-B", "ops/tools/worlds_book.py", "quick", "--out", "var/adopt/quick.json"]
+    out: var/adopt/quick.json
+  - id: gates
+    kind: gates
+    title: "сработавшие гейты книги (results.json)"
+    file: data/assumptions/results.json
+    path: gates
+    flag: fired
+  - id: control
+    kind: run
+    title: "контрольная модель: docs/CONTROL-MODEL.md"
+    cmd: ["{python}", "-B", "-m", "tests.independent_model", "--report"]
+    timeout: 3600
+
+  # ---------------------------------------------------------------- прогулка и журналы (только при смене версии)
+  - id: walk
+    kind: run
+    when: change
+    title: "прогулка книги {book.from_version} → {book.version}: номер и дата, дата кривых, миры N, H, M, коридоры"
+    cmd: ["{python}", "-B", "ops/tools/worlds_book.py", "walk"]
+  - id: journal
+    kind: journal
+    when: change
+    title: "журнал версии {book.version} и запись истории"
+    entries:
+      - file: data/assumptions/V{book.version}-CHANGES.md
+        text: |
+          # Книга X5 {book.version}: миры ставок {version}
+
+          Дата: {today_ru}. Журнал прежней версии — `V{book.from_version}-CHANGES.md` (заморожен: его числа — текст).
+
+          **Суждения X5 не менялись.** Версия {book.version} — миры ставок {version} общего источника семейства 850 ({labels.walk_step}): запись `worlds_source.json` sha256 `{record.sha256}`, снимок {record.curve_date_ru}; миры книги — проекция записи (`ops/tools/worlds_rules.py:project_worlds`), принята командой `ops/tools/adopt_worlds.py --version {version}`. Дата кривых `meta.curve_as_of` — {record.curve_date}.
+
+          | | книга {book.from_version} | книга {book.version} |
+          |---|---|---|
+          | **медиана по суждениям** (печать) | {n.print_before} ₽ | **<!--=band.printed.median r0-->…<!--/--> ₽** |
+          | медиана точно | {n.median_before} ₽ | <!--=band.stats.median r1-->…<!--/--> ₽ |
+          | точка (центр) | {n.point_before} ₽ | <!--=point.central r1-->…<!--/--> ₽ |
+          | точка: низ / верх | {n.low_before} / {n.high_before} ₽ | <!--=point.low r1-->…<!--/--> / <!--=point.high r1-->…<!--/--> ₽ |
+
+          Разложение точки — прогулка `evidence/worlds/walk-{book.version}.txt`; коридор EV/EBITDA мира H — лист `financing-valuation/gates.py`. Таблица миров (книга, §1), абзацы «что изменилось», числа объяснений гейтов (`gate_explanations.yaml`) — просмотр ведущего.
+      - file: docs/CHANGELOG.md
+        before: "## "
+        text: |
+          ## Книга {book.version}: миры ставок {version} ({today_ru})
+
+          - Приём версии миров {version} командой `ops/tools/adopt_worlds.py --version {version}` (журнал версии — `data/assumptions/V{book.version}-CHANGES.md`): запись `{record.sha256}` (снимок {record.curve_date_ru}), миры — проекция записи; суждения X5 — книги {book.from_version}.
+          - Числа: медиана {n.median_before} → {n.median_after} ₽ (печать {n.print_before} → {n.print_after}), точка {n.point_before} → {n.point_after} ₽.
+
+  # ---------------------------------------------------------------- тексты и сторож
+  - id: render
+    kind: run
+    title: "числа документов метками из results.json"
+    cmd: ["{python}", "-B", "ops/tools/render_numbers.py"]
+  - id: render-check
+    kind: run
+    title: "документы равны перерисовке"
+    cmd: ["{python}", "-B", "ops/tools/render_numbers.py", "--check"]
+  - id: guard
+    kind: run
+    title: "сторож: книга стоит на версии состояния, читатели миров названы"
+    cmd: ["{python}", "-B", "-m", "pytest", "-q", "-p", "no:cacheprovider", "tests/test_worlds_dependents.py"]
+
+# Листы и инструменты, которые читают запись миров или происхождение миров книги (сторож сверяет список с деревом).
+readers:
+  ops/tools/adopt_worlds.py: {step: ""}
+  ops/tools/worlds_rules.py: {step: project}
+  data/assumptions/evidence/financing-valuation/extract_inputs.py: {step: snapshot-worlds}
+  model/book_results.py: {step: tables, note: "пишет worlds.source книги в results.json (происхождение)"}
+  model/payload.py: {step: "", note: "печать происхождения миров на витрине (читает книгу; выпуск конвейера)"}
+  ops/tools/mock_payload.py: {step: "", note: "образец выпуска для витрины (происхождение миров из книги)"}
+
+# Числа, которые зависят от миров, но правилом не пересчитываются: суждение (просмотр ведущего при приёме).
+judgement:
+  checks.terminal_share: "[0,15; 0,65] — литерал суждения; справка листа гейтов (доли ровного потока ± 0,2) на мирах 1.7 — 0,18–0,66"
+  checks.real_rate: "[0,02; 0,13] — литерал (как у Магнита); справка — gates_out.json → real_rate"
+  joint (общие суждения с Магнитом): "веса миров, рыночные веса, нейтральный мир, λ — сверка check_fragment с inputs/magnit_book.json (выписка книги Магнита 1.6 — не пересобиралась)"
+  worlds.source.tag_commit: "коммит тега книги-источника записи — не поле записи; правило его не пишет (check_worlds.py сверяет с тегом Магнита)"
+  network-revenue/inputs/book_refs.json: "снимок миров черновика 1.1.1 (нужна папка передачи) — справки ticket.py на старых мирах"
+  gate_explanations.yaml: "числа текстов объяснений (EV/EBITDA клеток, капитал, масса) — по results.json руками"
+  ASSUMPTIONS-BOOK.md §1: "таблица миров и абзац «что изменилось» — числами, не метками"

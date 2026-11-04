@@ -52,12 +52,22 @@
   gates     сработавшие гейты из JSON (`file`, `path`; `cmd` — команда, которая его пишет; строки таблиц — записи с
             полем `flag`, именем `name`, отбором `where`) — до и после;
   journal   записи журналов по шаблону с числами отчёта (`{n.median_after}`, `{book.version}` …): `after` — строка-якорь
-            (с подстановками), запись встаёт строкой после неё; `before` — перед первым вхождением; иначе — в конец.
+            (с подстановками), запись встаёт строкой после неё; `before` — перед первым вхождением; иначе — в конец;
+  marks     числа в текстах документов (`files`: пути и маски) — метки <!--~ист:путь формат-->значение<!--~--> из
+            источников шага (`sources: {имя: файл}` — запись миров, надстройка, машинная книга, таблицы; `cmd` —
+            команда листа, который пишет свой источник): таблицы и числа миров в тексте книги руками не пишутся;
+  gate_texts объяснения сработавших гейтов (`file`) из шаблона ведущего (`template`): слова — шаблона, числа — метки
+            {{ист:путь формат}} из таблиц книги и выхода листа гейтов (`cmd`, `sources`); сработавшие гейты — `fired`
+            ({source, path, where, flag, name}, как у `gates`); запись погасшего гейта снимается (директива «#= всегда» —
+            запись держится: коридор гейта), сработавший гейт без записи и смена состава («#= состав: путь = JSON» —
+            состав, на котором писались слова) — красные флаги: слова пишет ведущий. Язык меток — раздел «числа в
+            текстах» ниже.
 У любого шага: `title`; `when: change` — шаг только при смене версии миров (номер книги, журналы, прогулка): приём
 той же версии его пропускает; `check: false` — `--check` шаг не сверяет.
 
 Числа журналов: `{n.point_before}`, `{n.median_after}`, `{n.low_before}`, `{n.high_after}` … — числа книги (`numbers`),
-разряды пробелом и запятая; `{n.print_*}` — с числом знаков шага печати (`print_step`).
+разряды пробелом и запятая, половина — вверх (327,025 → 327,03); `{n.print_*}` — с числом знаков шага печати
+(`print_step`).
 Номер книги: `{book.version}` — номер в шаблоне (`template`, адрес `book_version`, по умолчанию `meta.version`) на
 начало шага, `{book.from_version}` (= `{book.version_before}`) — на начало прогона. С ключом манифеста `book_version`
 шаг `state` при смене версии миров пишет в состояние блок `book` — с какой версии книги, с какого коммита и в какой день
@@ -80,8 +90,9 @@
                             в конце — push ветки (без `--no-push`) и прогон CI (`--ci record` — номер прогона, `wait` —
                             дождаться итога). Слияние в main и выкладка — не здесь: по «да» владельца;
   --check                   ничего не пишет: копии файлов версии из `worlds_state.json` равны источнику, ключи
-                            происхождения — индексу, правила дают числа шаблона, сверки шагов `run` проходят, движок
-                            равен образцу состояния (сторож тестов).
+                            происхождения — индексу, правила дают числа шаблона, сверки шагов `run` проходят, числа
+                            меток и объяснения гейтов равны своим источникам (`marks`, `gate_texts`), движок равен
+                            образцу состояния (сторож тестов).
 `--from-step` продолжает прошлый прогон той же версии и того же режима: числа и гейты «до», флаги и коммиты пройденных
 шагов — из его отчёта; смена версии, начатая им (состояние уже на новой версии), продолжается — шаги `when: change`
 идут, версия «было», номер книги и коммит начала — его.
@@ -105,6 +116,7 @@ import shutil
 import subprocess
 import sys
 import time
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Any, Callable
 
@@ -119,7 +131,7 @@ MANIFEST_SCHEMA = "worlds-dependents-v1"
 STATE_SCHEMA = "worlds-state-v1"
 REPORT_SCHEMA = "adopt-worlds-report-v1"
 INDEX_SCHEMA = "850-worlds-index-v1"
-KINDS = ("install", "state", "set", "rule", "run", "loop", "numbers", "quick", "gates", "journal")
+KINDS = ("install", "state", "set", "rule", "run", "loop", "numbers", "quick", "gates", "journal", "marks", "gate_texts")
 OK, FAILED, BAD_INPUT = 0, 1, 2
 CO_AUTHOR = "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 NUM_IN_COMMENT = re.compile(r"\d[\d\s]*[.,]\d")
@@ -219,11 +231,19 @@ def decimals_of(step: Any) -> int:
     return len(s.split(".")[1]) if "." in s else 0
 
 
+def half_up(x: float | Decimal, nd: int, scale: int = 1) -> Decimal:
+    """Округление половины вверх по десятичной записи числа — кратчайшей, которой Python печатает float (327,025 →
+    327,03; 50,575 → 50,58), а не по двоичной (формат Python дал бы 327,02 и 50,57: 327,025 в двоичной записи —
+    327,0249…); `scale` — множитель до округления, в десятичной арифметике (доля → проценты: 0,06415 → 6,415)."""
+    d = x if isinstance(x, Decimal) else Decimal(repr(float(x)))
+    return (d * scale).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_UP)
+
+
 def ru_num(x: Any, nd: int = 2) -> str:
-    """Число для текста документов: разряды пробелом, запятая (3 173,11; 14,35)."""
+    """Число для текста документов: разряды пробелом, запятая (3 173,11; 14,35), половина — вверх."""
     if x is None or isinstance(x, bool) or not isinstance(x, (int, float)):
         return "—" if x is None else str(x)
-    return f"{x:,.{nd}f}".replace(",", " ").replace(".", ",")
+    return f"{half_up(x, nd):,.{nd}f}".replace(",", " ").replace(".", ",")
 
 
 # ----------------------------------------------------------------------------------------------- точечная запись YAML
@@ -381,6 +401,455 @@ def numbers_in_comments(path: Path, keys: list[str]) -> list[str]:
         if NUM_IN_COMMENT.search(" ".join(chunk)):
             out.append(k)
     return out
+
+
+# ----------------------------------------------------------------------------------------------- числа в текстах (метки)
+# Метка — выражение и формат: «ист:путь формат». ист — имя источника шага (`sources: {имя: файл JSON/YAML}`); путь — как
+# у render_numbers моделей: имена через точку, ["ключ.с.точкой"], [3] (элемент; [-1] — последний), [поле=значение&…] —
+# единственный элемент списка с такими полями, [*условие] — все такие элементы (список; [*] — все), дальше имя поля
+# берётся у каждого; условия: = != ^= (начинается с) ~= (список содержит / подстрока) < <= > >= (числа или строки),
+# & — и, | — или (в строке таблицы markdown «|» режет ячейку: там — только в шаблоне гейтов), «п=а,б» — одно из;
+# хвост @функция: @min @max @mean @sum @len @abs @neg @first @last @sorted @uniq @span (→ [min, max]),
+# @keys(поле,поле,…) (→ отсортированные «з/з/з» элементов), @argmax(значение,подпись) @argmin(…) (подпись элемента с
+# наибольшим / наименьшим значением), @settle(значение,подпись) (подпись первого элемента, с которого значение равно
+# последнему до конца). Выражение — путь, число или арифметика над ними: + − * / и скобки, через пробел
+# («( 1 + book:a ) / ( 1 + book:b ) - 1»); * и / прежде + и −.
+# Формат: r|p|s|sp и знаков 0–4 (r — число, p — доля в процентах ×100, s/sp — со знаком «+»/«−»), хвосты t (без
+# хвостовых нулей, не меньше одного знака) и T (без хвостовых нулей до целого); y — число YAML как есть, yN — N знаков
+# без хвостовых нулей, ysN — N значащих цифр; str — строка как есть; d — дата ДД.ММ.ГГГГ; h — полугодие «2П2030»;
+# yr — год периода. Список
+# из двух чисел — «а–б» (равные после печати — одно). Разряды — пробелом, запятая, минус — типографский, половина
+# округляется вверх. В тексте документа (шаг `marks`) метка стоит внутри строки: <!--~ист:путь формат-->значение<!--~-->
+# (значение между метками переписывает команда; строка с метки не начинается — CommonMark прочёл бы её HTML-блоком);
+# в шаблоне объяснений гейтов (шаг `gate_texts`) — {{ист:путь формат}}.
+DOC_MARK = re.compile(r"<!--~(.+?)-->(.*?)<!--~-->")
+TPL_MARK = re.compile(r"\{\{(.+?)\}\}")
+FMT = re.compile(r"(?:(r|p|s|sp)([0-4])([tT]?)|y(s?)([0-6]?)|str|d|h|yr)")
+_TOK = re.compile(r'\.?([^.\[\]@"]+)|\["([^"]*)"\]|\[(-?\d+)\]|\[(\*?)([^\]]*)\]|@(\w+)(?:\(([^)]*)\))?')
+_COND = re.compile(r"^(.+?)(!=|\^=|~=|<=|>=|=|<|>)(.*)$")
+_OPS = ("+", "−", "-", "*", "/")
+
+
+class MarkError(Exception):
+    """Метка не разобрана: нет источника, пути или формат не тот."""
+
+
+def _field_of(item: Any, dotted: str) -> Any:
+    for part in dotted.split("."):
+        if isinstance(item, dict) and part in item:
+            item = item[part]
+        elif isinstance(item, list) and re.fullmatch(r"-?\d+", part):
+            item = item[int(part)]
+        else:
+            return None
+    return item
+
+
+def _num(x: Any) -> float | None:
+    if isinstance(x, bool):
+        return None
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
+
+
+def _match(item: Any, cond: str) -> bool:
+    """Условие отбора: «п=з&п2=з2» (и), «…|…» (или: группы условий); у = и != значение «а,б» — одно из."""
+    if "|" in cond:
+        return any(_match(item, c) for c in cond.split("|"))
+    for c in [c for c in cond.split("&") if c]:
+        m = _COND.match(c)
+        if not m:
+            raise MarkError(f"условие «{c}» без знака сравнения")
+        field, op, want = m.groups()
+        have = _field_of(item, field.strip())
+        if op == "~=":
+            ok = want in [str(x) for x in have] if isinstance(have, list) else (have is not None and want in str(have))
+        elif op in ("<", "<=", ">", ">="):
+            a, b = _num(have), _num(want)
+            if a is None or b is None:
+                a, b = str(have), want
+            ok = {"<": a < b, "<=": a <= b, ">": a > b, ">=": a >= b}[op]
+        elif op == "^=":
+            ok = have is not None and str(have).startswith(want)
+        else:
+            ok = str(have) in want.split(",")
+            ok = ok if op == "=" else not ok
+        if not ok:
+            return False
+    return True
+
+
+def _apply(fn: str, args: str | None, node: Any) -> Any:
+    xs = node if isinstance(node, list) else [node]
+    nums = [_num(x) for x in xs]
+    a = [s.strip() for s in (args or "").split(",") if s.strip()]
+    if fn in ("min", "max", "mean", "sum", "span") and (not xs or any(v is None for v in nums)):
+        raise MarkError(f"@{fn}: не числа или пусто")
+    if fn == "min":
+        return min(nums)
+    if fn == "max":
+        return max(nums)
+    if fn == "mean":
+        return math.fsum(nums) / len(nums)
+    if fn == "sum":
+        return math.fsum(nums)
+    if fn == "span":
+        return [min(nums), max(nums)]
+    if fn == "len":
+        return len(xs)
+    if fn in ("abs", "neg"):
+        if not isinstance(node, list) and nums[0] is not None:
+            return abs(nums[0]) if fn == "abs" else -nums[0]
+        if isinstance(node, list) and all(v is not None for v in nums):
+            return [abs(v) if fn == "abs" else -v for v in nums]
+        raise MarkError(f"@{fn}: не число")
+    if fn == "first":
+        return xs[0]
+    if fn == "last":
+        return xs[-1]
+    if fn == "sorted":
+        return sorted(xs, key=lambda v: (str(type(v)), v))
+    if fn == "uniq":
+        return [json.loads(s) for s in sorted({json.dumps(v, ensure_ascii=False, sort_keys=True) for v in xs})]
+    if fn == "keys":
+        return sorted("/".join(str(_field_of(x, f)) for f in a) for x in xs)
+    if fn in ("argmax", "argmin", "settle"):
+        if len(a) != 2 or not xs:
+            raise MarkError(f"@{fn}(значение,подпись): два поля и непустой список")
+        vals = [(_num(_field_of(x, a[0])), _field_of(x, a[1])) for x in xs]
+        if any(v is None for v, _ in vals):
+            raise MarkError(f"@{fn}: у элемента нет числа {a[0]}")
+        if fn == "settle":
+            i = len(vals) - 1
+            while i > 0 and abs(vals[i - 1][0] - vals[-1][0]) <= 1e-12:
+                i -= 1
+            return vals[i][1]
+        best = (max if fn == "argmax" else min)(vals, key=lambda t: t[0])
+        return best[1]
+    raise MarkError(f"неизвестная функция @{fn}")
+
+
+def resolve_path(data: Any, path: str) -> Any:
+    """Значение по пути метки (см. выше); MarkError с причиной, если пути нет."""
+    node, pos, many = data, 0, False
+    while pos < len(path):
+        m = _TOK.match(path, pos)
+        if not m or m.end() == pos:
+            raise MarkError(f"путь «{path}» не разобран с позиции {pos}")
+        name, raw, index, star, cond, fn, args = m.groups()
+        if fn is not None:
+            node, many = _apply(fn, args, node), False
+        elif name is not None or raw is not None:
+            key = name if name is not None else raw
+            if many:
+                node = [x[key] if isinstance(x, dict) and key in x else _field_of(x, key) for x in node]
+                if any(v is None for v in node):
+                    raise MarkError(f"не у всех элементов есть «{key}» ({path[:pos]})")
+            elif isinstance(node, dict) and key in node:
+                node = node[key]
+            else:
+                raise MarkError(f"нет ключа «{key}» в «{path[:pos] or 'корне'}»")
+        elif index is not None:
+            if not isinstance(node, list) or not -len(node) <= int(index) < len(node):
+                raise MarkError(f"нет элемента [{index}] в «{path[:pos]}»")
+            node = node[int(index)]
+            many = False
+        else:
+            items = node if isinstance(node, list) else (list(node.values()) if isinstance(node, dict) else None)
+            if items is None:
+                raise MarkError(f"[{cond}]: «{path[:pos]}» не список")
+            hits = [x for x in items if not cond or _match(x, cond)]
+            if star:
+                node, many = hits, True
+            elif len(hits) != 1:
+                raise MarkError(f"[{cond}] в «{path[:pos]}»: строк {len(hits)}, нужна одна")
+            else:
+                node = hits[0]
+        pos = m.end()
+    return node
+
+
+def _ru(d: Decimal, nd: int, signed: bool) -> str:
+    text = f"{abs(d):,.{nd}f}".replace(",", " ").replace(".", ",")
+    if d == 0:
+        return text                               # у округлённого нуля знака нет: не «−0,0»
+    return ("−" if d < 0 else "+" if signed else "") + text
+
+
+def format_value(value: Any, fmt: str) -> str:
+    m = FMT.fullmatch(fmt)
+    if not m:
+        raise MarkError(f"неизвестный формат «{fmt}»")
+    kind, digits, trim, ysig, ydig = m.groups()
+    if fmt == "str":
+        return str(value)
+    if fmt in ("d", "h", "yr"):
+        s = str(value)
+        if fmt == "d":
+            return ru_date(s)
+        mm = re.fullmatch(r"(\d{4})H([12])", s)
+        if not mm:
+            raise MarkError(f"формат {fmt} ждёт полугодие ГГГГH1|H2, а не {s!r}")
+        return f"{mm.group(2)}П{mm.group(1)}" if fmt == "h" else mm.group(1)
+    if isinstance(value, list):
+        if len(value) != 2:
+            raise MarkError(f"формат {fmt}: список из {len(value)} — печатается только пара «а–б»")
+        a, b = (format_value(v, fmt) for v in value)
+        return a if a == b else f"{a}–{b}"
+    x = _num(value)
+    if x is None or not math.isfinite(x):
+        raise MarkError(f"формат {fmt} ждёт число, а не {value!r}")
+    if kind is None:                                  # число YAML
+        if ydig == "":
+            if ysig:
+                raise MarkError(f"формат {fmt}: ys — с числом значащих цифр (ys2)")
+            return repr(float(value)) if isinstance(value, float) else str(value)
+        nd = int(ydig)
+        if ysig:                                      # значащие цифры: 0,04794 → 0,048 (ys2)
+            dx = Decimal(repr(x))
+            nd = nd - 1 - dx.adjusted() if dx else 1
+        s = format(half_up(x, nd).normalize(), "f") if nd >= 0 else format(half_up(x, 0), "f")
+        return s if "." in s else s + ".0"
+    nd = int(digits)
+    d = half_up(x, nd, 100 if "p" in kind else 1)
+    s = _ru(d, nd, "s" in kind)
+    if trim and "," in s:
+        s = s.rstrip("0")
+        s = s + "0" if s.endswith(",") and trim == "t" else s.rstrip(",")
+    return s
+
+
+def split_spec(spec: str) -> list[str]:
+    """Слова метки через пробел; пробел внутри […] и "…" слов не делит («name=Веса миров»)."""
+    out, cur, depth, quote = [], "", 0, False
+    for ch in spec:
+        if ch == '"':
+            quote = not quote
+        elif not quote and ch == "[":
+            depth += 1
+        elif not quote and ch == "]":
+            depth -= 1
+        if ch.isspace() and depth == 0 and not quote:
+            if cur:
+                out.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    return out + ([cur] if cur else [])
+
+
+def eval_mark(spec: str, sources: dict[str, Any]) -> str:
+    """«выражение формат» → текст значения."""
+    parts = split_spec(spec)
+    if len(parts) < 2:
+        raise MarkError(f"метка «{spec}»: нужны выражение и формат")
+    fmt, expr = parts[-1], parts[:-1]
+
+    def operand(tok: str) -> Any:
+        if re.fullmatch(r"[−-]?\d+(\.\d+)?", tok):
+            return float(tok.replace("−", "-"))
+        name, sep, path = tok.partition(":")
+        if not sep or name not in sources:
+            raise MarkError(f"источник «{name}» не назван в шаге (sources) или его файла нет")
+        return resolve_path(sources[name], path)
+
+    pos = 0
+
+    def peek() -> str | None:
+        return expr[pos] if pos < len(expr) else None
+
+    def arith(a: Any, op: str, b: Any) -> float:
+        x, y = _num(a), _num(b)
+        if x is None or y is None:
+            raise MarkError(f"метка «{spec}»: арифметика — только над числами")
+        return {"+": x + y, "−": x - y, "-": x - y, "*": x * y, "/": x / y if y else math.nan}[op]
+
+    def atom() -> Any:
+        nonlocal pos
+        tok = peek()
+        if tok is None or tok in _OPS or tok == ")":
+            raise MarkError(f"метка «{spec}»: ожидался путь, число или «(»")
+        pos += 1
+        if tok == "(":
+            v = add()
+            if peek() != ")":
+                raise MarkError(f"метка «{spec}»: нет «)»")
+            pos += 1
+            return v
+        return operand(tok)
+
+    def mul() -> Any:
+        nonlocal pos
+        v = atom()
+        while peek() in ("*", "/"):
+            op = expr[pos]
+            pos += 1
+            v = arith(v, op, atom())
+        return v
+
+    def add() -> Any:
+        nonlocal pos
+        v = mul()
+        while peek() in ("+", "-", "−"):
+            op = expr[pos]
+            pos += 1
+            v = arith(v, op, mul())
+        return v
+
+    val = add()
+    if pos != len(expr):
+        raise MarkError(f"метка «{spec}»: лишнее «{expr[pos]}» (знаки и скобки — через пробел)")
+    return format_value(val, fmt)
+
+
+def load_sources(tree: Path, spec: dict | None, ctx: dict | None = None) -> dict[str, Any]:
+    """Источники шага: имя → данные файла JSON или YAML (нет файла — имени нет: метка на него — ошибка метки)."""
+    out = {}
+    for name, rel in (spec or {}).items():
+        p = tree / (expand(str(rel), ctx) if ctx else str(rel))
+        if p.exists():
+            text = p.read_bytes().decode("utf-8")
+            out[name] = json.loads(text) if p.suffix == ".json" else yaml.safe_load(text)
+    return out
+
+
+def render_doc_marks(text: str, sources: dict) -> tuple[str, int, list[str]]:
+    """Значения меток документа (шаг `marks`) → (текст, число меток, ошибки «строка N: причина»)."""
+    lines, errors, count = text.split("\n"), [], 0
+    for i, line in enumerate(lines):
+        if "<!--~" not in line:
+            continue
+        if line.lstrip().startswith("<!--~"):
+            errors.append(f"строка {i + 1}: метка в начале строки — CommonMark прочтёт строку HTML-блоком")
+
+        def put(m: re.Match) -> str:
+            nonlocal count
+            count += 1
+            try:
+                return f"<!--~{m.group(1)}-->{eval_mark(m.group(1), sources)}<!--~-->"
+            except MarkError as e:
+                errors.append(f"строка {i + 1}: {m.group(1)}: {e}")
+                return m.group(0)
+        new = DOC_MARK.sub(put, line)
+        if new.count("<!--~") != 2 * len(DOC_MARK.findall(line)):
+            errors.append(f"строка {i + 1}: метка не закрыта на той же строке")
+        lines[i] = new
+    return "\n".join(lines), count, errors
+
+
+def fired_names(data: Any, spec: dict) -> list[str]:
+    """Сработавшие гейты из записи таблиц: список записей ({name, fired, kind, …}; отбор `where`, поле `flag`) или
+    словарь «имя → запись / флаг»."""
+    fired = get(data, _path(spec["path"])) if spec.get("path") else data
+    flag, name, where = spec.get("flag", "fired"), spec.get("name", "name"), spec.get("where") or {}
+    if isinstance(fired, list):
+        return sorted(str(x[name]) if isinstance(x, dict) else str(x) for x in fired
+                      if not isinstance(x, dict) or (x.get(flag) and all(x.get(k) == v for k, v in where.items())))
+    return sorted(str(k) for k, v in fired.items() if (v.get(flag) if isinstance(v, dict) else v))
+
+
+_TOP_KEY = re.compile(r"^([A-Za-z_][\w]*):(\s.*)?$")
+
+
+def split_entries(text: str) -> tuple[list[str], list[tuple[str | None, list[str]]]]:
+    """Текст файла объяснений → шапка и записи по порядку: (имя гейта, строки) или (None, строки-разделитель:
+    комментарии верхнего уровня между записями и пустые строки после них). Запись — строка ключа и строки под ней
+    (с отступом и пустые) до следующей строки верхнего уровня."""
+    lines = text.split("\n")
+    if lines and lines[-1] == "":
+        lines = lines[:-1]
+    keys = [i for i, ln in enumerate(lines) if _TOP_KEY.match(ln)]
+    if not keys:
+        return lines, []
+    head, items, i = lines[:keys[0]], [], keys[0]
+    while i < len(lines):
+        if _TOP_KEY.match(lines[i]):
+            j = i + 1
+            while j < len(lines) and (not lines[j] or lines[j][0] in " \t"):
+                j += 1
+            items.append((_TOP_KEY.match(lines[i]).group(1), lines[i:j]))
+        else:
+            j = i
+            while j < len(lines) and not _TOP_KEY.match(lines[j]):
+                j += 1
+            items.append((None, lines[i:j]))
+        i = j
+    return head, items
+
+
+def render_gate_texts(template: str, current: str | None, sources: dict, fired: list[str]) -> dict:
+    """Файл объяснений из шаблона (шаг `gate_texts`): слова — шаблона, числа — метки {{…}}; запись погасшего гейта
+    снимается (кроме записей с директивой «#= всегда»), сработавший гейт без записи и запись, чей состав не тот, на
+    котором писались слова (директива «#= состав: выражение = JSON»), — красные флаги. Метка записи не разобралась
+    (состав сменился так, что пути нет) — запись прежняя из файла и флаг; прежней нет — ошибка."""
+    head, items = split_entries(template)
+    old = dict((n, ls) for n, ls in split_entries(current)[1] if n) if current else {}
+    flags, gone, out_lines, errors, kept, fallback = [], [], [], [], [], []
+
+    def render_line(ln: str) -> str:
+        return TPL_MARK.sub(lambda m: eval_mark(m.group(1), sources), ln)
+
+    for ln in head:
+        try:
+            out_lines.append(render_line(ln))
+        except MarkError as e:
+            errors.append(f"шапка: {e}")
+    for name, lines in items:
+        if name is None:
+            try:
+                out_lines += [render_line(ln) for ln in lines]
+            except MarkError as e:
+                errors.append(f"разделитель: {e}")
+            continue
+        directives = [ln.strip()[2:].strip() for ln in lines if ln.strip().startswith("#=")]
+        body = [ln for ln in lines if not ln.strip().startswith("#=")]
+        always = any(d == "всегда" for d in directives)
+        if name not in fired and not always:
+            gone.append(name)
+            continue
+        try:
+            rendered = [render_line(ln) for ln in body]
+            for d in directives:
+                if d == "всегда":
+                    continue
+                m = re.fullmatch(r"состав:\s*(.+?)\s+=\s+(\[.*\]|\{.*\}|\".*\"|[-\d.]+|true|false|null)", d)
+                if not m:
+                    raise MarkError(f"директива «#= {d}» не разобрана (#= состав: выражение = JSON | #= всегда)")
+                expr = m.group(1)
+                parts = split_spec(expr)
+                name_, sep, path = parts[0].partition(":")
+                if len(parts) != 1 or not sep or name_ not in sources:
+                    raise MarkError(f"состав: «{expr}» — путь источника шага")
+                have = resolve_path(sources[name_], path)
+                want = json.loads(m.group(2))
+                if json.dumps(have, ensure_ascii=False, sort_keys=True) != json.dumps(want, ensure_ascii=False, sort_keys=True):
+                    flags.append(f"гейт {name}: состав не тот, на котором писались слова шаблона ({expr}: было "
+                                 f"{json.dumps(want, ensure_ascii=False)[:160]}, стало {json.dumps(have, ensure_ascii=False)[:160]})"
+                                 " — текст собран метками, слова просмотреть ведущему")
+            out_lines += rendered
+            kept.append(name)
+        except MarkError as e:
+            if name in old:
+                flags.append(f"гейт {name}: метка шаблона не разобралась ({e}) — запись прежняя, слова и метки "
+                             "просмотреть ведущему")
+                out_lines += old[name]
+                kept.append(name)
+                fallback.append(name)
+            else:
+                errors.append(f"гейт {name}: {e}")
+    for name in fired:
+        if name not in kept:
+            flags.append(f"гейт {name} сработал, а записи в шаблоне нет — слова объяснения пишет ведущий (без записи "
+                         "сборка выпуска упадёт)")
+    text = "\n".join(out_lines) + "\n"
+    if not errors:
+        try:
+            yaml.safe_load(text)
+        except yaml.YAMLError as e:
+            errors.append(f"файл объяснений из шаблона не читается как YAML: {str(e).splitlines()[0]}")
+    return {"text": text, "flags": flags, "gone": gone, "kept": kept, "errors": errors, "fallback": fallback}
 
 
 # ----------------------------------------------------------------------------------------------- файлы версии
@@ -716,6 +1185,49 @@ class Run:
         self.report["gates"][phase] = names
         return {"fired": names}
 
+    def step_marks(self, s: dict) -> dict:
+        """Числа в текстах документов метками <!--~ист:путь формат--> из источников шага (запись миров, надстройка,
+        машинная книга, таблицы, выход листа `cmd`): значение между метками переписывается."""
+        if s.get("cmd"):
+            self.sh(s["cmd"], timeout=s.get("timeout"), log=s["id"])
+        sources = load_sources(self.tree, s.get("sources"), self.ctx)
+        changed, count = [], 0
+        for rel in doc_files(self.tree, s):
+            p = self.tree / rel
+            text = p.read_bytes().decode("utf-8")
+            new, n, errors = render_doc_marks(text, sources)
+            if errors:
+                raise Stop(f"{rel}: метки не разобраны: " + "; ".join(errors[:4]) + (" …" if len(errors) > 4 else ""))
+            if not n:
+                raise Stop(f"{rel}: в файле нет меток <!--~…--> — манифест называет файл без чисел")
+            count += n
+            if new != text:
+                p.write_bytes(new.encode("utf-8"))
+                changed.append(rel)
+        return {"changed": changed, "marks": count}
+
+    def step_gate_texts(self, s: dict) -> dict:
+        """Объяснения сработавших гейтов из шаблона ведущего: числа — метками из таблиц книги и выхода листа гейтов;
+        погасший гейт — запись снимается; новый гейт и смена состава — красные флаги (слова пишет ведущий)."""
+        if s.get("cmd"):
+            self.sh(s["cmd"], timeout=s.get("timeout"), log=s["id"])
+        sources = load_sources(self.tree, s.get("sources"), self.ctx)
+        fs = s["fired"]
+        if fs["source"] not in sources:
+            raise Stop(f"{s['id']}: нет файла источника сработавших гейтов «{fs['source']}»")
+        fired = fired_names(sources[fs["source"]], fs)
+        out = self.tree / s["file"]
+        cur = out.read_bytes().decode("utf-8") if out.exists() else None
+        res = render_gate_texts((self.tree / s["template"]).read_bytes().decode("utf-8"), cur, sources, fired)
+        if res["errors"]:
+            raise Stop(f"{s['template']}: " + "; ".join(res["errors"][:4]))
+        self.report["red_flags"] += [f"{s['id']}: {f}" for f in res["flags"]]
+        changed = []
+        if res["text"] != cur:
+            out.write_bytes(res["text"].encode("utf-8"))
+            changed.append(s["file"])
+        return {"changed": changed, "gates": res["kept"], "gone": res["gone"], **({"flags": res["flags"]} if res["flags"] else {})}
+
     def step_journal(self, s: dict) -> dict:
         changed = []
         ctx = {**self.ctx, **self.summary_ctx()}
@@ -1037,6 +1549,45 @@ def git(cwd: Path, *args: str) -> str:
     return p.stdout
 
 
+def doc_files(tree: Path, s: dict) -> list[str]:
+    """Файлы шага `marks` (пути и маски от корня дерева), по порядку, без повторов."""
+    out = []
+    for g in s.get("files") or []:
+        hits = sorted(p.relative_to(tree).as_posix() for p in tree.glob(g) if p.is_file()) if any(c in g for c in "*?[") \
+            else ([g] if (tree / g).exists() else [])
+        if not hits:
+            raise Stop(f"{s['id']}: нет файла {g}")
+        out += [h for h in hits if h not in out]
+    return out
+
+
+def check_texts(s: dict, tree: Path) -> list[str]:
+    """--check шагов `marks` и `gate_texts`: тексты равны выходу меток на файлах дерева (выход листа `cmd` — его
+    записанный файл; лист не запускается)."""
+    sources = load_sources(tree, s.get("sources"))
+    bad = []
+    if s["kind"] == "marks":
+        for rel in doc_files(tree, s):
+            text = (tree / rel).read_bytes().decode("utf-8")
+            new, n, errors = render_doc_marks(text, sources)
+            bad += [f"{rel}: {e}" for e in errors[:3]]
+            if not errors and new != text:
+                bad.append(f"{rel}: числа меток не равны источникам шага {s['id']} (adopt_worlds пишет их сам)")
+        return bad
+    fs = s["fired"]
+    if fs["source"] not in sources:
+        return [f"шаг {s['id']}: нет файла источника сработавших гейтов «{fs['source']}»"]
+    out = tree / s["file"]
+    cur = out.read_bytes().decode("utf-8") if out.exists() else None
+    res = render_gate_texts((tree / s["template"]).read_bytes().decode("utf-8"), cur, sources,
+                            fired_names(sources[fs["source"]], fs))
+    bad += [f"{s['template']}: {e}" for e in res["errors"][:3]]
+    bad += [f"{s['template']}: метки записи {n} не разобрались на таблицах дерева" for n in res["fallback"]]
+    if not res["errors"] and res["text"] != cur:
+        bad.append(f"{s['file']}: не равен шаблону {s['template']} с числами таблиц (пишет шаг {s['id']}, руками не править)")
+    return bad
+
+
 def walk_steps(steps: list[dict]) -> list[dict]:
     """Шаги манифеста с телами циклов (`loop`) — плоским списком."""
     out = []
@@ -1120,6 +1671,11 @@ def check(manifest: dict, source: Source | None, tree: Path = ROOT, say: Callabl
     rc = RuleContext(tree=tree, entry=entry, version=v, say=say, manifest=manifest)
     env = dict(os.environ, PYTHONIOENCODING="utf-8", WORLDS_VERSION=v, WORLDS_FROM_VERSION=v)
     for s in walk_steps(manifest["steps"]):
+        if s["kind"] in ("marks", "gate_texts") and s.get("check", True) is not False:
+            try:
+                bad += check_texts(s, tree)
+            except Stop as e:
+                bad.append(f"шаг {s['id']}: {e}")
         if s["kind"] == "run" and isinstance(s.get("check"), list):   # шаг-команда со своей сверкой (копии листов, файлы)
             p = subprocess.run([sys.executable if c == "{python}" else str(c) for c in s["check"]], cwd=tree,
                                capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)

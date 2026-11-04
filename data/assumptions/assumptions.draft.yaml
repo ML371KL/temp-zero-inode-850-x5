@@ -13,12 +13,13 @@ meta:
   last_period: "2036H2"
   valuation_date: "2026-09-25"    # дата оценки книги = дата рыночной цены книги
   market_price: 1808.5            # ₽, закрытие ISS TQBR 25.09.2026 — цена книги
-  curve_as_of: "2026-10-28"       # дата кривых миров (общая с книгой Магнита 1.7: окно 23–28.10.2026)
+  curve_as_of: "2026-10-28"       # дата кривых миров = дата снимка записи миров (worlds_source.json → curve_date)
   basis: "до МСФО 16"
 
-# worlds: вставляется целиком из общей макро-основы (книга Магнита 1.6) — см. worlds.source
+# worlds: проекция записи миров общего источника (worlds_source.json; версия — worlds_state.json) в поля схемы X5 —
+# пишет команда приёма ops/tools/adopt_worlds.py (правило ops/tools/worlds_rules.py:project_worlds) — см. worlds.source
 # worlds:
-#   source: {book: "magnit-850oa book-1.6", curve_date: "2026-09-18", sha256_of_kernel: ...}
+#   source: {book: <книга-источник записи>, curve_date: <дата снимка>, tag_commit: ..., kernel_sha256: ...}
 #   N: {name: ..., key_rate: {...}, cpi: {...}, food_cpi: {...}, zero_curve: {"1":..,"3":..,"5":..,"10":..,"LT":..}, lt: {inflation: ..}}
 #   H: ...
 #   M: ...

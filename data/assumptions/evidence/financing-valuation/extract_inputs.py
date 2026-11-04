@@ -35,6 +35,13 @@ def sha(path: Path) -> str:
 
 
 def rel(path: Path) -> str:
+    """Путь файла выписки: внутри репозитория — от его канонического имени `x5-850/` (выход не зависит от имени
+    папки клона: рабочее дерево ветки или временная копия команды приёма миров дают те же байты), вне — от
+    родителя репозитория (папка передачи)."""
+    try:
+        return "x5-850/" + path.relative_to(REPO).as_posix()
+    except ValueError:
+        pass
     try:
         return str(path.relative_to(REPO.parent)).replace("\\", "/")
     except ValueError:
@@ -452,7 +459,9 @@ def build_worlds() -> None:
     import yaml
     draft = yaml.safe_load((REPO / "data/assumptions/assumptions.draft.yaml").read_text(encoding="utf-8"))
     W = draft["worlds"]
-    dump("worlds.json", {"_about": "Миры книги X5 (= книга Магнита 1.7, кривая 28.10.2026): ключевая, кривая, π_LT",
+    src = W["source"]
+    curve = dt.date.fromisoformat(str(src["curve_date"])).strftime("%d.%m.%Y")
+    dump("worlds.json", {"_about": f"Миры книги X5 (= {src['book']}, кривая {curve}): ключевая, кривая, π_LT",
                          "source": src_note(REPO / "data/assumptions/assumptions.draft.yaml"),
                          "worlds_source": W["source"],
                          "worlds": {w: {"key_rate": W[w]["key_rate"], "zero_curve": W[w]["zero_curve"],

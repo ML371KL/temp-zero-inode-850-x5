@@ -132,6 +132,9 @@ def flat(d: Any, prefix: str = "") -> dict[str, Any]:
     if isinstance(d, dict):
         for k, v in d.items():
             out.update(flat(v, f"{prefix}{k}."))
+    elif isinstance(d, list) and d:                       # элементы списка — по номеру (адрес `ключ.0` точечной записи)
+        for i, v in enumerate(d):
+            out.update(flat(v, f"{prefix}{i}."))
     else:
         out[prefix[:-1]] = d
     return out
@@ -776,6 +779,12 @@ def write_report(rep: dict, path: Path) -> None:
         for k in ("point", "median", "print", "low", "high"):
             md.append(f"| {k} | {(n.get('before') or {}).get(k, '—')} | {(n.get('after') or {}).get(k, '—')} |")
         md.append("")
+    g = rep.get("gates") or {}
+    if g:
+        md += ["## Гейты", ""] + [f"- {k}: {', '.join(v) if v else '—'}" for k, v in g.items()] + [""]
+    if rep.get("dependents"):
+        md += ["## Числа книги по правилам (было → стало)", ""] + [
+            f"- {k}: {v[0]} → {v[1]}" for k, v in list(rep["dependents"].items())[:60]] + [""]
     if "tree" in rep:
         ch = rep["tree"]["changed"]
         md += ["## Дерево", "", f"изменено файлов: {len(ch)}" + (": " + ", ".join(ch[:20]) if ch else ""), ""]

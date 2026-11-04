@@ -42,6 +42,11 @@ steps:
     module: ops/tools/worlds_rules.py
     function: project_worlds
     comments_flag: false
+  - id: worlds-text
+    kind: marks
+    title: "таблица миров книги (§1) и π_ss мира M (A-M6) — метками из записи {version}"
+    sources: {rec: data/assumptions/worlds_source.json}
+    files: [data/assumptions/ASSUMPTIONS-BOOK.md]
   - id: snapshot-worlds
     kind: run
     title: "снимок миров листа финансирования (inputs/worlds.json — из черновика)"
@@ -131,6 +136,14 @@ steps:
     file: data/assumptions/results.json
     path: gates
     flag: fired
+  - id: gate-texts
+    kind: gate_texts
+    title: "объяснения сработавших гейтов: слова шаблона gate_explanations.tpl, числа — таблицы книги, книга, лист гейтов"
+    template: data/assumptions/gate_explanations.tpl
+    file: data/assumptions/gate_explanations.yaml
+    sources: {res: data/assumptions/results.json, book: data/assumptions/assumptions.yaml,
+              gs: data/assumptions/evidence/financing-valuation/gates_out.json}
+    fired: {source: res, path: gates, flag: fired}
   - id: control
     kind: run
     title: "контрольная модель: docs/CONTROL-MODEL.md"
@@ -163,7 +176,7 @@ steps:
           | точка (центр) | {n.point_before} ₽ | <!--=point.central r1-->…<!--/--> ₽ |
           | точка: низ / верх | {n.low_before} / {n.high_before} ₽ | <!--=point.low r1-->…<!--/--> / <!--=point.high r1-->…<!--/--> ₽ |
 
-          Разложение точки — прогулка `evidence/worlds/walk-{book.version}.txt`; коридор EV/EBITDA мира H — лист `financing-valuation/gates.py`. Таблица миров (книга, §1), абзацы «что изменилось», числа объяснений гейтов (`gate_explanations.yaml`) — просмотр ведущего.
+          Разложение точки — прогулка `evidence/worlds/walk-{book.version}.txt`; коридор EV/EBITDA мира H — лист `financing-valuation/gates.py`. Таблица миров (книга, §1) и числа объяснений гейтов — команда (метки записи и таблиц); абзацы «что изменилось» и слова объяснений (шаблон `gate_explanations.tpl`) — просмотр ведущего.
       - file: docs/CHANGELOG.md
         before: "## "
         text: |
@@ -202,5 +215,5 @@ judgement:
   joint (общие суждения с Магнитом): "веса миров, рыночные веса, нейтральный мир, λ — сверка check_fragment с inputs/magnit_book.json (выписка книги Магнита 1.6 — не пересобиралась)"
   worlds.source.tag_commit: "коммит тега книги-источника записи — не поле записи; правило его не пишет (check_worlds.py сверяет с тегом Магнита)"
   network-revenue/inputs/book_refs.json: "снимок миров черновика 1.1.1 (нужна папка передачи) — справки ticket.py на старых мирах"
-  gate_explanations.yaml: "числа текстов объяснений (EV/EBITDA клеток, капитал, масса) — по results.json руками"
-  ASSUMPTIONS-BOOK.md §1: "таблица миров и абзац «что изменилось» — числами, не метками"
+  gate_explanations.tpl: "слова объяснений гейтов и состав, на котором они писались (#= состав), — ведущий; числа — метки шага gate-texts; коридор массы expected_mass — суждение"
+  ASSUMPTIONS-BOOK.md §1: "абзац «что изменилось» — проза ведущего (таблица миров — метки шага worlds-text)"

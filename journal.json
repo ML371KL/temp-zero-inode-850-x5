@@ -1,0 +1,42 @@
+{
+ "entries": [
+  {
+   "actual": null,
+   "benchmarks": {
+    "last_half": 0.056980552,
+    "mean_two_halves": 0.0608915017,
+    "same_half_last_year": 0.0648024513
+   },
+   "errors": null,
+   "forecast": 0.0619867792,
+   "id": "2026H2-x5.adj_margin",
+   "period": "2026H2",
+   "recorded_at": "2026-09-28",
+   "release_sha": "f1d33e74654ae96e7e5783cf60f1c996f3f059a11da557b63c8267e6f7534797",
+   "target": "x5.adj_margin"
+  },
+  {
+   "actual": null,
+   "benchmarks": {
+    "last_half": 0.105402,
+    "mean_two_halves": 0.135787,
+    "same_half_last_year": 0.166172
+   },
+   "errors": null,
+   "forecast": 0.0972189454,
+   "id": "2026H2-x5.revenue_growth",
+   "period": "2026H2",
+   "recorded_at": "2026-09-28",
+   "release_sha": "f1d33e74654ae96e7e5783cf60f1c996f3f059a11da557b63c8267e6f7534797",
+   "target": "x5.revenue_growth"
+  }
+ ],
+ "rule": "прогноз модели на открытое полугодие записывается один раз и не меняется; после отчёта вносится факт и ошибки прогноза и эталонов; прогноз допускается к цене после четырёх отчётных полугодий вне выборки, если его средняя квадратичная ошибка не больше 0,8 от ошибки лучшего наивного эталона; решение — за владельцем",
+ "status": "копим зачёт: 0 из 4 полугодий",
+ "releases": {
+  "f1d33e74654ae96e7e5783cf60f1c996f3f059a11da557b63c8267e6f7534797": {
+   "book_version": "1.0",
+   "generated_at": "2026-09-28T13:25:08Z"
+  }
+ }
+}

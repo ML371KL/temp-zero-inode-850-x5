@@ -61,7 +61,7 @@
 - Секретов в репозитории нет: конвейер работает токеном задания `GITHUB_TOKEN`.
 - Теги версий книги — `book-<версия>` (`data/assumptions/README.md`).
 
-### 2.4. Cloudflare (аккаунт `7e159ad9043e61c10f79aec6411ee48b`)
+### 2.4. Cloudflare
 - Pages-проект **`tzi-850-x5`** → https://tzi-850-x5.pages.dev: классический проект с прямой выкладкой, создан через API; production-ветка — `main` (выкладка с другой меткой уезжает в preview). Статика — `web/`, функции — `functions/`; `wrangler.toml` нет.
 - R2 и биндингов нет: дверь `/api/model` берёт выпуск с raw.githubusercontent.com (`docs/DASHBOARD.md`, «Дверь данных»).
 

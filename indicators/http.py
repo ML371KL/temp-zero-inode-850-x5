@@ -11,6 +11,11 @@
 * **Сырой ответ ложится на диск ДО разбора** — `var/raw/<источник>/<дата>/`
   с `.meta.json` (адрес, время, sha256). Разбор можно починить задним числом,
   потерянные байты — нет.
+* **Чужой корень — только своему хосту.** С 23.11.2026 iss.moex.com отдаёт сертификат
+  Russian Trusted Sub CA (корень Минцифры), которого нет ни в хранилище раннера GitHub, ни в
+  хранилище сервера. Корень (`tls/`, копия файла Яндекса 850, sha256 закреплён тестом)
+  добавляется к обычному хранилищу ТОЛЬКО для хостов `EXTRA_CA`; прочим — обычная проверка.
+  Проверка TLS не отключается никогда.
 """
 
 from __future__ import annotations
@@ -20,6 +25,7 @@ import hashlib
 import json
 import os
 import re
+import ssl
 import time
 import urllib.error
 import urllib.parse
@@ -29,6 +35,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+TLS_DIR = Path(__file__).resolve().parent / "tls"
+TRUSTED_CA = TLS_DIR / "russian_trusted_ca.pem"
+# Хост → файл дополнительного корня. Только ISS Мосбиржи: у прочих хостов сборщиков
+# (www.cbr.ru и др.) сертификат проходит обычную проверку.
+EXTRA_CA: dict[str, Path] = {
+    "iss.moex.com": TRUSTED_CA,
+}
 
 USER_AGENT = ("x5-850/1.0 (fair value research pipeline; "
               "+https://github.com/ML371KL/temp-zero-inode-850-x5)")
@@ -105,6 +119,17 @@ def save_raw(source: str, name: str, response: Response, *,
     return path
 
 
+def tls_context(url: str) -> ssl.SSLContext | None:
+    """Обычное хранилище + корень Минцифры для хостов `EXTRA_CA`; прочим — None (обычная проверка)."""
+    host = (urllib.parse.urlsplit(url).hostname or "").lower()
+    extra = EXTRA_CA.get(host)
+    if extra is None:
+        return None
+    context = ssl.create_default_context()
+    context.load_verify_locations(cafile=str(extra))
+    return context
+
+
 def _throttle(host: str) -> None:
     last = _last_call.get(host)
     if last is not None:
@@ -159,11 +184,12 @@ def read_json_source(source: str | Path) -> dict:
 def _get(url: str, data: bytes | None, headers: dict[str, str], host: str,
          timeout: float, attempts: int) -> Response:
     last_error: Exception | None = None
+    context = tls_context(url)
     for attempt in range(1, attempts + 1):
         _throttle(host)
         request = urllib.request.Request(url, data=data, headers=headers)
         try:
-            with urllib.request.urlopen(request, timeout=timeout) as reply:
+            with urllib.request.urlopen(request, timeout=timeout, context=context) as reply:
                 body = reply.read()
                 if (reply.headers.get("Content-Encoding") or "").lower() == "gzip":
                     body = gzip.decompress(body)

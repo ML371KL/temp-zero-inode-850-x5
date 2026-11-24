@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import email.message
 import gzip
+import hashlib
 import io
 import json
+import re
+import ssl
 import sys
 import urllib.error
 from pathlib import Path
@@ -43,7 +46,8 @@ def opener(monkeypatch):
     """Очередь ответов вместо сети; паузы — в список, без сна."""
     queue, seen, sleeps = [], [], []
 
-    def urlopen(request, timeout=None):
+    def urlopen(request, timeout=None, context=None):
+        request.tls_context = context
         seen.append(request)
         item = queue.pop(0)
         if isinstance(item, Exception):
@@ -134,3 +138,55 @@ def test_strict_json_refuses_nan(tmp_path):
         http.read_json_source(path)
     path.write_text('{"x": 1}', encoding="utf-8")
     assert http.read_json_source(str(path)) == {"x": 1}
+
+
+# Корень Минцифры (indicators/tls/russian_trusted_ca.pem — копия файла Сбера, байт в байт).
+TRUSTED_CA_SHA256 = "2a7455f829c30f88b6105b41bba3055f1754748b5165fbba8751163f87f1fc9a"
+ROOT_SHA256 = "D26D2D0231B7C39F92CC738512BA54103519E4405D68B5BD703E9788CA8ECF31"        # Russian Trusted Root CA
+SUB_2024_SHA256 = "21557850 36C900DB B5F1BB2A 1569C80C 55595BD6 BF94867A 29BBDDBC 7D88A3F2".replace(" ", "")
+
+
+def _pem_prints() -> list[str]:
+    text = http.TRUSTED_CA.read_text(encoding="utf-8")
+    blocks = re.findall(r"-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----", text, re.S)
+    return [hashlib.sha256(ssl.PEM_cert_to_DER_cert(b)).hexdigest().upper() for b in blocks]
+
+
+def test_trusted_ca_file_is_the_pinned_one():
+    assert hashlib.sha256(http.TRUSTED_CA.read_bytes()).hexdigest() == TRUSTED_CA_SHA256
+    assert _pem_prints() == [ROOT_SHA256, SUB_2024_SHA256]
+
+
+def test_mintsifry_root_is_added_only_for_iss():
+    assert http.EXTRA_CA == {"iss.moex.com": http.TRUSTED_CA}
+    ctx = http.tls_context("https://ISS.moex.com:443/iss/engines/stock/zcyc.json")
+    assert isinstance(ctx, ssl.SSLContext)
+    # Проверка не ослаблена: сертификат обязателен, имя сверяется.
+    assert ctx.verify_mode == ssl.CERT_REQUIRED and ctx.check_hostname
+    loaded = {hashlib.sha256(der).hexdigest().upper() for der in ctx.get_ca_certs(binary_form=True)}
+    assert ROOT_SHA256 in loaded
+    for url in ("https://www.cbr.ru/scripts/XML_daily.asp", "https://cbr.ru/x", "https://github.com/ML371KL",
+                "https://moex.com/", "https://www.moex.com/", "https://iss.moex.com.evil.example/iss",
+                "http://iss.moex.com@evil.example/iss"):
+        assert http.tls_context(url) is None, url
+
+
+def test_fetch_passes_the_context_only_to_iss(opener, tmp_path):
+    queue, seen, _ = opener
+    queue += [FakeReply(b'{"a": 1}'), FakeReply(b'{"b": 2}')]
+    http.fetch(URL, source="iss", name="a.json", root=tmp_path)
+    http.fetch("https://www.cbr.ru/x.json", source="cbr", name="b.json", root=tmp_path)
+    assert isinstance(seen[0].tls_context, ssl.SSLContext)
+    assert seen[1].tls_context is None
+
+
+@pytest.mark.network
+def test_live_iss_handshake_with_the_pinned_file_alone():
+    """Контекст только с файлом корня, без хранилища машины: файла хватит серверу."""
+    import socket
+
+    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)          # пустой набор корней, имя сверяется
+    ctx.load_verify_locations(cafile=str(http.TRUSTED_CA))
+    with socket.create_connection(("iss.moex.com", 443), timeout=20) as sock:
+        with ctx.wrap_socket(sock, server_hostname="iss.moex.com") as tls:
+            assert tls.version()
